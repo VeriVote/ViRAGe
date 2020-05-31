@@ -1,7 +1,5 @@
 package com.fr2501.virage;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -30,23 +28,5 @@ public class TestExtendedPrologParser {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		
 		parser.parseFramework(new File("test/resources/framework.pl"));
-	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void parseEmptyClause() {
-		String clause = "";
-		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-		
-		parser.parseSingleClause(clause);
-	}
-	
-	@Test
-	public void parseSingleClause() {
-		String clause = "a :- b, c.";
-		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-		
-		String res = parser.parseSingleClause(clause).toString();
-		
-		assertTrue(clause.equals(res));
 	}
 }

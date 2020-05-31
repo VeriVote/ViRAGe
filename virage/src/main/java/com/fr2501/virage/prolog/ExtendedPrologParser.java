@@ -7,6 +7,4 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 public interface ExtendedPrologParser {
 	public FrameworkRepresentation parseFramework(File framework);
 	public FrameworkRepresentation parseFramework(String framework);
-	
-	public PrologClause parseSingleClause(String clause);
 }

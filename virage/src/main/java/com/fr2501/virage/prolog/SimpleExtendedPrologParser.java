@@ -2,13 +2,23 @@ package com.fr2501.virage.prolog;
 
 import java.io.File;
 
+import com.fr2501.util.SimpleFileReader;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
 public class SimpleExtendedPrologParser implements ExtendedPrologParser {
+	SimpleFileReader fileReader;
+	PrologParser prologParser;
+	
+	public SimpleExtendedPrologParser() {
+		this.fileReader = new SimpleFileReader();
+		this.prologParser = new SimplePrologParser();
+	}
+	
 	@Override
 	public FrameworkRepresentation parseFramework(File file) {
-		// TODO Auto-generated method stub
-		return null;
+		String framework = this.fileReader.readFileByLine(file);
+		
+		return this.parseFramework(framework);
 	}
 
 	@Override
@@ -16,11 +26,4 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public PrologClause parseSingleClause(String clause) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
