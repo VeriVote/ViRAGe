@@ -10,7 +10,7 @@ import org.junit.Test;
 public class TestSetup 
 {
     @Test
-    public void shouldAnswerWithTrue() {
+    public void sanityCheck() {
         assertTrue(true);
     }
 }
