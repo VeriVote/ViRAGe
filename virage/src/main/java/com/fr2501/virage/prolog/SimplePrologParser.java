@@ -9,10 +9,13 @@ public class SimplePrologParser implements PrologParser {
 	@Override
 	public PrologClause parseSingleClause(String clause) {
 		if(clause.equals("")) throw new IllegalArgumentException();
+		if(clause.charAt(clause.length()-1) != '.') throw new IllegalArgumentException();
 		
 		String sanitizedClause = clause.replace(" ", "");
+		sanitizedClause = sanitizedClause.replace(".", "");
 		
 		String[] cedents = sanitizedClause.split(":-");
+		
 		
 		if(cedents.length > 2) {
 			throw new IllegalArgumentException();
@@ -31,6 +34,8 @@ public class SimplePrologParser implements PrologParser {
 	}
 	
 	private PrologPredicate breakdownPredicate(String string) {
+		System.out.println(string);
+		
 		if(string.equals("")) throw new IllegalArgumentException();
 		String name = "";
 		List<PrologPredicate> parameters = new LinkedList<PrologPredicate>();
@@ -40,27 +45,34 @@ public class SimplePrologParser implements PrologParser {
 		for(int i=0; i<string.length(); i++) {
 			char current = string.charAt(i);
 			
-			if(level == 1) {
-				currentPredicate += current;
-			}
-			
 			if(current == '(') {
 				level++;
+				if(level == 1) continue;
 			} else if(current == ')') {
 				level--;
 				if(level<0) {
 					throw new IllegalArgumentException();
 				}
-			} else if(current == ',' || i == string.length()-1) {
-				if(level == 1) {
-					parameters.add(this.breakdownPredicate(currentPredicate));
-					currentPredicate = "";
-				} else if(current != '.'){
+				if(level == 0) continue;
+			} else {		
+				if(level == 0) {
 					name += current;
+				} else if(level == 1) {
+					if(current == ',') {
+						parameters.add(this.breakdownPredicate(currentPredicate));
+						currentPredicate = "";
+						continue;
+					}
 				}
-			} else if(level == 0) {
-				name += current;
 			}
+				
+			if(level>0) {
+				currentPredicate += current;
+			}
+		}
+		
+		if(!currentPredicate.equals("")) {
+			parameters.add(this.breakdownPredicate(currentPredicate));
 		}
 		
 		if(level != 0) {
@@ -90,6 +102,10 @@ public class SimplePrologParser implements PrologParser {
 			
 			if(level == 0) {
 				if(current == ',' || i == antecedentString.length()-1) {
+					if(i == antecedentString.length()-1) {
+						currentPredicate += current;
+					}
+					
 					res.add((this.breakdownPredicate(currentPredicate)));
 					currentPredicate = "";
 					continue;
