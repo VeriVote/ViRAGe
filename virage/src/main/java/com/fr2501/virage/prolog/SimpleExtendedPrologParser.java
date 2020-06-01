@@ -23,7 +23,10 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
 	@Override
 	public FrameworkRepresentation parseFramework(String string) {
-		// TODO Auto-generated method stub
-		return null;
+		FrameworkRepresentation framework = new FrameworkRepresentation();
+		
+		
+		
+		return framework;
 	}
 }
