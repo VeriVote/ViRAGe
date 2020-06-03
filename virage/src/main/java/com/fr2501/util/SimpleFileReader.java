@@ -15,6 +15,8 @@ public class SimpleFileReader {
 	private final static Logger logger = LogManager.getLogger(SimpleFileReader.class.getName());
 	
 	public String readFileByLine(File file) {
+		logger.info("Trying to read from file " + file);
+		
 		String res = "";
 		
 		try {
@@ -28,10 +30,10 @@ public class SimpleFileReader {
 			}
 		} catch(FileNotFoundException e) {
 			// TODO
-			logger.error("Invalid file.");
+			logger.fatal("Invalid file.");
 		} catch(IOException e) {
 			// TODO
-			logger.error("Something went wrong while reading the file.");
+			logger.fatal("Something went wrong while reading the file.");
 		} finally {
 			try {
 				this.reader.close();
