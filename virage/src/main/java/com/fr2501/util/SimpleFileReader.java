@@ -6,8 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 public class SimpleFileReader {
 	private BufferedReader reader;
+	private final static Logger logger = LogManager.getLogger(SimpleFileReader.class.getName());
 	
 	public String readFileByLine(File file) {
 		String res = "";
@@ -23,19 +28,16 @@ public class SimpleFileReader {
 			}
 		} catch(FileNotFoundException e) {
 			// TODO
-			e.printStackTrace();
-			System.out.println("Invalid file.");
+			logger.error("Invalid file.");
 		} catch(IOException e) {
 			// TODO
-			e.printStackTrace();
-			System.out.println("Something went wrong while reading the file.");
+			logger.error("Something went wrong while reading the file.");
 		} finally {
 			try {
 				this.reader.close();
 			} catch(IOException e) {
 				// TODO
-				e.printStackTrace();
-				System.out.println("Reader could not be closed.");
+				logger.error("Reader could not be closed.");
 			}
 		}
 		

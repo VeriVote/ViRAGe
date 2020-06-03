@@ -5,9 +5,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class SimplePrologParser implements PrologParser {
+	private final static Logger logger = LogManager.getLogger(SimplePrologParser.class.getName());
+	
 	@Override
 	public PrologClause parseSingleClause(String clause) {
+		logger.trace("parseSingleClause(" + clause + ")");
+		
 		if(clause.equals("")) throw new IllegalArgumentException();
 		if(clause.charAt(clause.length()-1) != '.') throw new IllegalArgumentException();
 		
@@ -34,7 +41,7 @@ public class SimplePrologParser implements PrologParser {
 	}
 	
 	private PrologPredicate breakdownPredicate(String string) {
-		System.out.println(string);
+		logger.trace("breakdownPredicate(" + string + ")");
 		
 		if(string.equals("")) throw new IllegalArgumentException();
 		String name = "";
