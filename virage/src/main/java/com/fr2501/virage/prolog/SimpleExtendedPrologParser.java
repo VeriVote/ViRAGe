@@ -1,6 +1,7 @@
 package com.fr2501.virage.prolog;
 
 import java.io.File;
+import java.util.List;
 
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.virage.types.FrameworkRepresentation;
@@ -16,13 +17,13 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 	
 	@Override
 	public FrameworkRepresentation parseFramework(File file) {
-		String framework = this.fileReader.readFileByLine(file);
+		List<String> framework = this.fileReader.readFileByLine(file);
 		
 		return this.parseFramework(framework);
 	}
 
 	@Override
-	public FrameworkRepresentation parseFramework(String string) {
+	public FrameworkRepresentation parseFramework(List<String> representation) {
 		FrameworkRepresentation framework = new FrameworkRepresentation();
 		
 		
