@@ -146,8 +146,6 @@ public class TestPrologParser {
 		
 		PrologClause parse = parser.parseSingleClause(clause);
 		
-		System.out.println(parse.toString());
-		
 		assertTrue(parse.equals(res));
 	}
 	

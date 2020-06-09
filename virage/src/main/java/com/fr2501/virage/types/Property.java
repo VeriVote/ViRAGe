@@ -2,14 +2,19 @@ package com.fr2501.virage.types;
 
 import java.util.List;
 
-public class Property extends FrameworkComponent {
-	private String origin;
+public class Property {
+	private String name;
+	private List<ComponentType> parameters;
 	
-	public Property(String name, String type, List<FrameworkComponent> parameters) {
-		super(name, type, parameters);
+	public Property(String name, List<ComponentType> parameters) {
+		this.name = name;
+		this.parameters = parameters;
 	}
 	
-	public String getOrigin() {
-		return this.origin;
+	public String getName() {
+		return this.name;
+	}
+	public List<ComponentType> getParameters() {
+		return this.parameters;
 	}
 }

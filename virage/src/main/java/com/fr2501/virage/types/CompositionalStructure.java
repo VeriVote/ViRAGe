@@ -2,8 +2,19 @@ package com.fr2501.virage.types;
 
 import java.util.List;
 
-public class CompositionalStructure extends FrameworkComponent {
-	public CompositionalStructure(String name, String type, List<FrameworkComponent> parameters) {
-		super(name, type, parameters);
+public class CompositionalStructure {
+	private String name;
+	private List<ComponentType> parameters;
+	
+	public CompositionalStructure(String name, List<ComponentType> parameters) {
+		this.name = name;
+		this.parameters = parameters;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	public List<ComponentType> getParameters() {
+		return this.parameters;
 	}
 }

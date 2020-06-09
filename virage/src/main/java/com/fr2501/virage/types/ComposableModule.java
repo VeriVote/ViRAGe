@@ -2,8 +2,12 @@ package com.fr2501.virage.types;
 
 import java.util.List;
 
-public class ComposableModule extends FrameworkComponent {
-	public ComposableModule(String name, String type, List<FrameworkComponent> parameters) {
-		super(name, type, parameters);
+public class ComposableModule extends Component {
+	public ComposableModule(ComponentType type, String name) {
+		super(type, name);
+	}
+	
+	public ComposableModule(ComponentType type, String name, List<ComponentType> parameters) {
+		super(type, name, parameters);
 	}
 }

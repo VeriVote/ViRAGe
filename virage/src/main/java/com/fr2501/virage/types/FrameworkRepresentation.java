@@ -5,6 +5,7 @@ import java.util.Set;
 
 public class FrameworkRepresentation {
 	private Set<ComponentType> componentTypes;
+	private Set<Component> components;
 	private Set<ComposableModule> composableModules;
 	private Set<CompositionalStructure> compositionalStructures;
 	private Set<CompositionRule> compositionRules;
@@ -12,6 +13,7 @@ public class FrameworkRepresentation {
 	
 	public FrameworkRepresentation() {
 		this.componentTypes = new HashSet<ComponentType>();
+		this.components = new HashSet<Component>();
 		this.composableModules = new HashSet<ComposableModule>();
 		this.compositionalStructures = new HashSet<CompositionalStructure>();
 		this.compositionRules = new HashSet<CompositionRule>();
@@ -20,6 +22,10 @@ public class FrameworkRepresentation {
 	
 	public void addComponentType(ComponentType ct) {
 		this.componentTypes.add(ct);
+	}
+	
+	public void addComponent(Component c) {
+		this.components.add(c);
 	}
 	
 	public void addComposableModule(ComposableModule cm) {
