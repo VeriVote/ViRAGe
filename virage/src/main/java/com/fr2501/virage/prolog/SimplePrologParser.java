@@ -16,9 +16,11 @@ public class SimplePrologParser implements PrologParser {
 		logger.trace("parseSingleClause(" + clause + ")");
 		
 		if(clause.equals("")) throw new IllegalArgumentException();
-		if(clause.charAt(clause.length()-1) != '.') throw new IllegalArgumentException();
 		
-		String sanitizedClause = clause.replace(" ", "");
+		String sanitizedClause = this.sanitizeClause(clause);		
+		if(sanitizedClause.charAt(sanitizedClause.length()-1) != '.') {
+			throw new IllegalArgumentException();
+		}
 		sanitizedClause = sanitizedClause.replace(".", "");
 		
 		String[] cedents = sanitizedClause.split(":-");
@@ -38,6 +40,14 @@ public class SimplePrologParser implements PrologParser {
 		antecedents = this.splitAntecedents(antecedentString);
 		
 		return new PrologClause(succedent, antecedents);
+	}
+	
+	private String sanitizeClause(String clause) {
+		String res = clause.replace(" ", "");
+		res = res.replace("\n", "");
+		res = res.replace("\t", "");
+		
+		return res;
 	}
 	
 	private PrologPredicate breakdownPredicate(String string) {

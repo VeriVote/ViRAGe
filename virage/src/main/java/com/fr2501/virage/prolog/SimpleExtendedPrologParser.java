@@ -14,7 +14,10 @@ import com.fr2501.util.SimpleFileReader;
 import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.ComposableModule;
+import com.fr2501.virage.types.CompositionRule;
+import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.Property;
 
 public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 	SimpleFileReader fileReader;
@@ -68,7 +71,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 			case COMPOSITIONAL_STRUCTURE: 	compositionalStructureSection.add(currentLine); break;
 			case PROPERTY: 					propertySection.add(currentLine); 				break;
 			case COMPOSITION_RULE: 			compositionRuleSection.add(currentLine); 		break;
-			default: 						throw new MalformedEPLFileException();
+			default: 						// no-op, invalid call.
 			}
 		}
 		
@@ -90,66 +93,69 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	private void parseCompositionTypeSection(FrameworkRepresentation framework, List<String> lines) throws MalformedEPLFileException {
+		ComponentType currentType = null;
+		
 		// Starting at 1, because first line has to be the header by construction.
 		for(int i=1; i<lines.size(); i++) {
 			String currentLine = lines.get(i);
-			ComponentType currentType = null;
 			
 			if(currentLine.startsWith("==")) {
 				// New type.
 				currentLine = this.sanitizeLine(currentLine);
 				currentType = new ComponentType(currentLine);
-				framework.addComponentType(currentType);
+				framework.add(currentType);
 			} else {
 				// New Instance of given type.
 				if(currentType == null) {
+					logger.error("No type defined for \"" + currentLine + "\".");
 					throw new MalformedEPLFileException();
 				}
 				
-				// Eclipse claims these lines to be dead, they are not.
 				currentLine = this.sanitizeLine(currentLine);
 				
 				List<ComponentType> parameters = this.extractParameters(currentLine);
 				
-				framework.addComponent(new Component(currentType, currentLine, parameters));
+				framework.add(new Component(currentType, currentLine, parameters));
 			}
 		}
 	}
 	
 	private void parseSimpleSection(FrameworkRepresentation framework, List<String> lines, ParserState state) throws MalformedEPLFileException {
-		// Has to be there by construction.
 		String header = lines.get(0);
-		String[] splits = header.split("-");
 		ComponentType type = null;
 		
-		if(splits.length > 1) {
-			if(splits.length == 2) {
-				// Alias is defined, this shall be a type.
-				String typeString = this.sanitizeLine(splits[1]);
-				type = new ComponentType(typeString);
-				framework.addComponentType(type);
+		// Composable modules are the core component of the framework, the type shall be renameable.
+		if(state == ParserState.COMPOSABLE_MODULE) {
+			String[] splits = header.split("-");
+			
+			if(splits.length > 1) {
+				if(splits.length == 2) {
+					// Alias is defined, this shall be a type.
+					String typeString = this.sanitizeLine(splits[1]);
+					type = new ComponentType(typeString);
+				} else {
+					logger.error("Malformed header: \"" + lines.get(0) + "\"");
+					throw new MalformedEPLFileException();
+				}
 			} else {
-				throw new MalformedEPLFileException();
+				// Default type.
+				type = new ComponentType(ExtendedPrologStrings.COMPOSABLE_MODULE);
 			}
-		} else {
-			// Default type.
-			switch(state) {
-			case COMPOSABLE_MODULE: type = new ComponentType(ExtendedPrologStrings.COMPOSABLE_MODULE); break;
-			default: // no-op, invalid call.
-			}
-
+			
+			framework.add(type);
 		}
 		
 		// Starting at 1 due to header.
 		for(int i=1; i<lines.size(); i++) {
-			String module = lines.get(i);
+			String name = lines.get(i);
 			
-			List<ComponentType> parameters = this.extractParameters(module);
+			List<ComponentType> parameters = this.extractParameters(name);
 			
 			switch(state) {
-			case COMPOSABLE_MODULE: framework.addComposableModule(new ComposableModule(type, module, parameters)); break;
+			case COMPOSABLE_MODULE: framework.add(new ComposableModule(type, name, parameters)); break;
+			case COMPOSITIONAL_STRUCTURE: framework.add(new CompositionalStructure(name, parameters)); break;
+			case PROPERTY: framework.add(new Property(name, parameters));
 			default: // no-op, invalid call.
 			}
 		}
@@ -167,6 +173,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 			if(origin.equals("")) {
 				// No origin.
 				if(!currentLine.startsWith("=")) {
+					logger.error("No origin specified for: \"" + currentLine + "\"");
 					throw new MalformedEPLFileException();
 				} else {
 					origin = this.sanitizeLine(currentLine);
@@ -179,15 +186,17 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 					continue;
 				} else {
 					// Origin and name set, looking for Prolog clause now.
+					prologString += currentLine;
+					
 					if(currentLine.contains(".")) {
 						// Clause finished. Start Prolog Parser.
-						prologString = prologString.replace("\n", "");
 						
 						PrologClause clause = this.prologParser.parseSingleClause(prologString);
-						// TODO: translate clause
+						framework.add(new CompositionRule(name, origin, clause));
 						
-					} else {
-						prologString += currentLine;
+						origin = "";
+						name = "";
+						prologString = "";
 					}
 				}
 			}
@@ -204,6 +213,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 		
 		// Opening, but no closing bracket.
 		if(!component.contains(")")) {
+			logger.error("Opening, but no closing bracket on: \"" + component + "\"");
 			throw new MalformedEPLFileException();
 		}
 		
@@ -212,7 +222,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 		Matcher matcher = pattern.matcher(component);
 		
 		if(matcher.find()) {
-			String parameterString = matcher.group(1);
+			String parameterString = matcher.group();
 			// Remove parameters from component for simpler processing in calling method.
 			component = component.replace(parameterString, "");
 			

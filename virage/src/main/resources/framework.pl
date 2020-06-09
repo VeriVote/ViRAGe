@@ -1,6 +1,4 @@
-% ==== framework_component
-%
-% === composition_type
+% === component_type
 % == aggregator
 % max_aggregator
 % == natural_number
@@ -9,7 +7,7 @@
 % == alternative
 % == set
 %
-% === composable_module
+% === composable_module - electoral_module
 % defer_module
 % elect_module
 % pass_module(natural_number)

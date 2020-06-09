@@ -20,27 +20,46 @@ public class FrameworkRepresentation {
 		this.properties = new HashSet<Property>();
 	}
 	
-	public void addComponentType(ComponentType ct) {
+	public Set<ComponentType> getComponentTypes() {
+		return this.componentTypes;
+	}
+	public Set<Component> getComponents() {
+		return this.components;
+	}
+	public Set<ComposableModule> getComposableModules() {
+		return this.composableModules;
+	}
+	public Set<CompositionalStructure> getCompositionalStructures() {
+		return this.compositionalStructures;
+	}
+	public Set<CompositionRule> getCompositionRules() {
+		return this.compositionRules;
+	}
+	public Set<Property> getProperties() {
+		return this.properties;
+	}
+
+	public void add(ComponentType ct) {
 		this.componentTypes.add(ct);
 	}
 	
-	public void addComponent(Component c) {
+	public void add(Component c) {
 		this.components.add(c);
 	}
 	
-	public void addComposableModule(ComposableModule cm) {
+	public void add(ComposableModule cm) {
 		this.composableModules.add(cm);
 	}
 	
-	public void addCompositionalStructure(CompositionalStructure cs) {
+	public void add(CompositionalStructure cs) {
 		this.compositionalStructures.add(cs);
 	}
 	
-	public void addCompositionRule(CompositionRule cr) {
+	public void add(CompositionRule cr) {
 		this.compositionRules.add(cr);
 	}
 	
-	public void addProperty(Property p) {
+	public void add(Property p) {
 		this.properties.add(p);
 	}
 } 
