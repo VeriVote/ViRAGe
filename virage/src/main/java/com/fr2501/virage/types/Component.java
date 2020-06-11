@@ -3,6 +3,8 @@ package com.fr2501.virage.types;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fr2501.util.StringUtils;
+
 /**
  * 
  * A component of the modular framework (e.g. composable modules, aggregators ...)
@@ -35,5 +37,12 @@ public class Component implements TypedAndParameterized {
 	@Override
 	public List<ComponentType> getParameters() {
 		return this.parameters;
+	}
+	
+	@Override
+	public String toString() {
+		String res = "(" + this.type + ") " + this.name + "(" + StringUtils.printCollection(this.parameters) + ")";
+		
+		return res;
 	}
 }

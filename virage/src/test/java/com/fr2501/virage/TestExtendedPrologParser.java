@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import com.fr2501.virage.prolog.ExtendedPrologParser;
@@ -14,6 +16,8 @@ import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
 public class TestExtendedPrologParser {
+	private Logger logger = LogManager.getLogger(TestExtendedPrologParser.class);
+	
 	@Test(expected = FileNotFoundException.class)
 	public void loadNonExistingFile() throws IOException, MalformedEPLFileException {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
@@ -45,6 +49,8 @@ public class TestExtendedPrologParser {
 	public void loadFrameworkFile() throws IOException, MalformedEPLFileException {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
-		parser.parseFramework(new File("src/main/resources/framework.pl"));
+		FrameworkRepresentation fr = parser.parseFramework(new File("src/main/resources/framework.pl"));
+		
+		logger.debug(fr.toString());
 	}
 }

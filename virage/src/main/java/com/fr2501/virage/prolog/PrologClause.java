@@ -36,14 +36,16 @@ public class PrologClause {
 		String res = "";
 		
 		res += this.succedent.toString();
-		res += " :- ";
-		int ctr = 0;
-		for(PrologPredicate antecedent: antecedents) {
-			ctr++;
-			res += antecedent.toString();
-			
-			if(ctr<this.antecedents.size()) {
-				res += ",";
+		if(!this.antecedents.isEmpty()) {
+			res += " :- ";
+			int ctr = 0;
+			for(PrologPredicate antecedent: antecedents) {
+				ctr++;
+				res += antecedent.toString();
+				
+				if(ctr<this.antecedents.size()) {
+					res += ",";
+				}
 			}
 		}
 		res += ".";

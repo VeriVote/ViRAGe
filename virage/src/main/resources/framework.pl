@@ -28,7 +28,6 @@
 % loop_composition(electoral_module, termination_condition)
 %
 % === property
-% = electoral_modules.thy
 % monotone(electoral_module)
 % defer_monotone(electoral_module)
 % defer_lift_invariant(electoral_module)
@@ -43,8 +42,6 @@
 % disjoint_compatible(electoral_module, electoral_module)
 % invariant_monotone(electoral_module)
 % defer_invariant_monotone(electoral_module)
-%
-% = aggregators.thy
 % commutative_agg(aggregator)
 % conservative(aggregator)
 %

@@ -111,6 +111,49 @@ public class FrameworkRepresentation {
 		this.checkTypes(p);
 		this.properties.add(p);
 	}
+	
+	@Override
+	public String toString() {
+		String res = "";
+		
+		res += "ComponentTypes:\n";
+		for(ComponentType ct: this.componentTypes) {
+			res += "\t" + ct.toString() + "\n";
+		}
+		res += "\n";
+		
+		res += "Components:\n";
+		for(Component c: this.components) {
+			res += "\t" + c.toString() + "\n";
+		}
+		res += "\n";
+		
+		res += "ComposableModules:\n";
+		for(ComposableModule cm: this.composableModules) {
+			res += "\t" + cm.toString() + "\n";
+		}
+		res += "\n";
+		
+		res += "CompositionalStructures:\n";
+		for(CompositionalStructure cs: this.compositionalStructures) {
+			res += "\t" + cs.toString() + "\n";
+		}
+		res += "\n";
+		
+		res += "Property:\n";
+		for(Property p: this.properties) {
+			res += "\t" + p.toString() + "\n";
+		}
+		res += "\n";
+		
+		res += "CompositionRules:\n";
+		for(CompositionRule cr: this.compositionRules) {
+			res += "\t" + cr.toString() + "\n";
+		}
+		res += "\n";
+		
+		return res;
+	}
 
 	private void checkTypes(TypedAndParameterized object) {
 		this.checkTypes((Typed) object);

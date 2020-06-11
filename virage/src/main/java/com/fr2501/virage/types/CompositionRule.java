@@ -29,4 +29,10 @@ public class CompositionRule {
 	public PrologClause getClause() {
 		return this.clause;
 	}
+	
+	public String toString() {
+		String res = this.name + ": " + clause.toString() + " (from " + this.origin + ")";
+		
+		return res;
+	}
 }
