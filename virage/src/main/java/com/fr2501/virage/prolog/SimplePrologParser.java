@@ -8,6 +8,11 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * 
+ * A simple implementation of the {@link PrologParser} interface
+ *
+ */
 public class SimplePrologParser implements PrologParser {
 	private final static Logger logger = LogManager.getLogger(SimplePrologParser.class.getName());
 	

@@ -20,6 +20,11 @@ import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 
+/**
+ * 
+ * A very simple implementation of the {@link ExtendedPrologParser}
+ *
+ */
 public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 	SimpleFileReader fileReader;
 	private final PrologParser prologParser;
@@ -39,6 +44,13 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 		return this.parseFramework(framework);
 	}
 
+	/**
+	 * This method does the actual parsing.
+	 * 
+	 * @param representation a line-by-line representation of the extended Prolog file.
+	 * @return a {@link FrameworkRepresentation} of the input.
+	 * @throws MalformedEPLFileException if the input does not follow the specification of the extended Prolog format.
+	 */
 	private FrameworkRepresentation parseFramework(List<String> representation) throws MalformedEPLFileException {
 		logger.trace("parseFramework(representation)");
 		

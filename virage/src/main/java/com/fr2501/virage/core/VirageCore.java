@@ -4,9 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Hello world!
+ * 
+ * The main application
  *
  */
+
 public class VirageCore 
 {
 	private final static String _NAME = "ViRAGe";

@@ -1,9 +1,13 @@
 package com.fr2501.virage.prolog;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * 
+ * Represents a single Prolog clause
+ *
+ */
 public class PrologClause {
 	private PrologPredicate succedent;
 	private Set<PrologPredicate> antecedents;
@@ -19,16 +23,12 @@ public class PrologClause {
 		this.antecedents.add(antecedent);
 	}
 	
+	/**
+	 * Creates a Prolog clause without any antecedents (i.e. a fact).
+	 */
 	public PrologClause(PrologPredicate fact) {
 		this.succedent = fact;
 		this.antecedents = new HashSet<PrologPredicate>();
-	}
-	
-	private PrologPredicate getSuccedent() {
-		return this.succedent;
-	}
-	private Set<PrologPredicate> getAntecedents() {
-		return this.antecedents;
 	}
 	
 	@Override
@@ -50,30 +50,35 @@ public class PrologClause {
 		
 		return res;
 	}
-	
-	public boolean equals(PrologClause clause) {
-		if(!this.getSuccedent().equals(clause.getSuccedent())) {
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((antecedents == null) ? 0 : antecedents.hashCode());
+		result = prime * result + ((succedent == null) ? 0 : succedent.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		}
-		
-		if(this.getAntecedents().size() != clause.getAntecedents().size()) {
+		if (getClass() != obj.getClass())
 			return false;
-		}
-		
-		for(PrologPredicate antecedent: this.getAntecedents()) {
-			boolean found = false;
-			
-			for(PrologPredicate compAntecedent: clause.getAntecedents()) {
-				if(antecedent.equals(compAntecedent)) {
-					found = true;
-				}
-			}
-			
-			if(!found) {
+		PrologClause other = (PrologClause) obj;
+		if (antecedents == null) {
+			if (other.antecedents != null)
 				return false;
-			}
-		}
-		
+		} else if (!antecedents.equals(other.antecedents))
+			return false;
+		if (succedent == null) {
+			if (other.succedent != null)
+				return false;
+		} else if (!succedent.equals(other.succedent))
+			return false;
 		return true;
 	}
 }

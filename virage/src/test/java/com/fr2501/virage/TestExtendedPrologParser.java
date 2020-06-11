@@ -44,8 +44,7 @@ public class TestExtendedPrologParser {
 	@Test
 	public void loadFrameworkFile() throws IOException, MalformedEPLFileException {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-		
-		// TODO Names are broken
+
 		parser.parseFramework(new File("src/main/resources/framework.pl"));
 	}
 }

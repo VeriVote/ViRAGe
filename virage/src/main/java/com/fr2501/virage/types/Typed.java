@@ -1,7 +1,8 @@
 package com.fr2501.virage.types;
 
-import java.util.List;
-
+/**
+ * Typed parts of the framework
+ */
 public interface Typed {
 	public ComponentType getType();
 }

@@ -6,6 +6,13 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * 
+ * The data model required to represent the compositional framework as a whole
+ * <p>
+ * It is designed for the electoral module framework, but not at all limited to it.
+ *
+ */
 public class FrameworkRepresentation {
 	private Logger logger = LogManager.getLogger(FrameworkRepresentation.class);
 	
@@ -28,50 +35,83 @@ public class FrameworkRepresentation {
 	public Set<ComponentType> getComponentTypes() {
 		return this.componentTypes;
 	}
+
 	public Set<Component> getComponents() {
 		return this.components;
 	}
+
 	public Set<ComposableModule> getComposableModules() {
 		return this.composableModules;
 	}
+
 	public Set<CompositionalStructure> getCompositionalStructures() {
 		return this.compositionalStructures;
 	}
+
 	public Set<CompositionRule> getCompositionRules() {
 		return this.compositionRules;
 	}
+
 	public Set<Property> getProperties() {
 		return this.properties;
 	}
-
+	
+	/**
+	 * Adds a @link{ComponentType} to the FrameworkRepresentation.
+	 * @param ct the @link{ComponentType} to be added
+	 */
 	public void add(ComponentType ct) {
 		this.componentTypes.add(ct);
 	}
 	
+	/**
+	 * Adds a @link{Component} to the FrameworkRepresentation.
+	 * Performs type check without throwing any exceptions.
+	 * @param c the @link{Component} to be added
+	 */
 	public void add(Component c) {
 		this.checkTypes(c);
 		this.components.add(c);
 	}
 	
+	/**
+	 * Adds a @link{ComposableModule} to the FrameworkRepresentation
+	 * Performs type check without throwing any exceptions.
+	 * @param cm the @link{ComposableModule} to be added
+	 */
 	public void add(ComposableModule cm) {
 		this.checkTypes(cm);
 		this.composableModules.add(cm);
 	}
 	
+	/**
+	 * Adds a @link{CompositionalStructure} to the FrameworkRepresentation
+	 * Performs type check without throwing any exceptions.
+	 * @param cs the @link{CompositionalStructure} to be added
+	 */
 	public void add(CompositionalStructure cs) {
 		this.checkTypes(cs);
 		this.compositionalStructures.add(cs);
 	}
 	
+	/**
+	 * Adds a @link{CompositionRule} to the FrameworkRepresentation
+	 * @param cr the @link{ComposiotionRule} to be added
+	 */
 	public void add(CompositionRule cr) {
 		this.compositionRules.add(cr);
 	}
 	
+	/**
+	 * Adds a @link{Property} to the FrameworkRepresentation
+	 * Performs type check without throwing any exceptions.
+	 * @param ct the @link{Property} to be added
+	 */
 	public void add(Property p) {
 		this.checkTypes(p);
 		this.properties.add(p);
 	}
-	
+
 	private void checkTypes(TypedAndParameterized object) {
 		this.checkTypes((Typed) object);
 		this.checkTypes((Parameterized) object); 

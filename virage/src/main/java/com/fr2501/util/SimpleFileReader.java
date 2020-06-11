@@ -11,11 +11,22 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
+/**
+ * 
+ * Utility class to read files line by line.
+ *
+ */
 public class SimpleFileReader {
 	private BufferedReader reader;
 	private final static Logger logger = LogManager.getLogger(SimpleFileReader.class.getName());
 	
+	/**
+	 * Reads the specified file line by line.
+	 * 
+	 * @param file the file to be read.
+	 * @return a list containing the lines of that file.
+	 * @throws IOException if reading the file is not possible.
+	 */
 	public List<String> readFileByLine(File file) throws IOException {
 		logger.info("Trying to read from file \"" + file + "\"");
 		
@@ -31,11 +42,9 @@ public class SimpleFileReader {
 				line = reader.readLine();
 			}
 		} catch(FileNotFoundException e) {
-			// TODO
 			logger.fatal("Invalid file.");
 			throw e;
 		} catch(IOException e) {
-			// TODO
 			logger.fatal("Something went wrong while reading the file.");
 			throw e;
 		}

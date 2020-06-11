@@ -2,6 +2,11 @@ package com.fr2501.virage.types;
 
 import com.fr2501.virage.prolog.PrologClause;
 
+/**
+ * 
+ * A composition rule stating different kinds of relations between components, compositional structures and properties
+ *
+ */
 public class CompositionRule {
 	private String name;
 	private String origin;
@@ -16,9 +21,11 @@ public class CompositionRule {
 	public String getName() {
 		return this.name;
 	}
+
 	public String getOrigin() {
 		return this.origin;
 	}
+
 	public PrologClause getClause() {
 		return this.clause;
 	}
