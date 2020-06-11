@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.SimpleFileReader;
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.ComposableModule;
@@ -115,6 +116,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 				currentLine = this.sanitizeLine(currentLine);
 				
 				List<ComponentType> parameters = this.extractParameters(currentLine);
+				currentLine = this.removeBracketExpression(currentLine);
 				
 				framework.add(new Component(currentType, currentLine, parameters));
 			}
@@ -151,6 +153,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 			String name = lines.get(i);
 			
 			List<ComponentType> parameters = this.extractParameters(name);
+			name = this.removeBracketExpression(name);
 			
 			switch(state) {
 			case COMPOSABLE_MODULE: framework.add(new ComposableModule(type, name, parameters)); break;
@@ -223,8 +226,6 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 		
 		if(matcher.find()) {
 			String parameterString = matcher.group();
-			// Remove parameters from component for simpler processing in calling method.
-			component = component.replace(parameterString, "");
 			
 			// Remove whitespace.
 			parameterString = parameterString.replace(" ", "");
@@ -241,6 +242,20 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 		}
 		
 		return res;
+	}
+	
+	private String removeBracketExpression(String string) {
+		String regex = "\\(.*\\)";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(string);
+		
+		if(matcher.find()) {
+			String parameterString = matcher.group();
+			// Remove parameters from component for simpler processing in calling method.
+			string = string.replace(parameterString, "");
+		}
+		
+		return string;
 	}
 	
 	private ParserState newState(String line, ParserState oldState) {
@@ -269,7 +284,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 	
 	private String sanitizeLine(String line) {
 		String res = line.replaceAll("=", "");
-		res = res.replaceAll(" ", "");
+		res = StringUtils.removeWhitespace(res);
 		
 		return res;
 	}

@@ -24,8 +24,8 @@
 % === compositional_structure
 % downgrade(electoral_module)
 % sequential_composition(electoral_module, electoral_module)
-% parallel_composition(electoral_module, electoral_module)
-% loop_composition(electoral_module, electoral_module)
+% parallel_composition(electoral_module, electoral_module, aggregator)
+% loop_composition(electoral_module, termination_condition)
 %
 % === property
 % = electoral_modules.thy
