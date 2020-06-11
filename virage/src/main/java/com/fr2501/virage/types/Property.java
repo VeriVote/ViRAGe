@@ -2,7 +2,7 @@ package com.fr2501.virage.types;
 
 import java.util.List;
 
-public class Property {
+public class Property implements Parameterized {
 	private String name;
 	private List<ComponentType> parameters;
 	

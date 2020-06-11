@@ -2,7 +2,7 @@ package com.fr2501.virage.types;
 
 import java.util.List;
 
-public class CompositionalStructure {
+public class CompositionalStructure implements Parameterized {
 	private String name;
 	private List<ComponentType> parameters;
 	

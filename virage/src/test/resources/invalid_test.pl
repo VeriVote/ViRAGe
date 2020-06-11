@@ -1,4 +1,4 @@
-% === composition_type
+% === component_type
 % == type_a
 % a
 % a2

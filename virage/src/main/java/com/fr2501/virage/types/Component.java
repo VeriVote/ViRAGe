@@ -3,7 +3,7 @@ package com.fr2501.virage.types;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Component {
+public class Component implements TypedAndParameterized {
 	private ComponentType type;
 	private String name;
 	private List<ComponentType> parameters;
