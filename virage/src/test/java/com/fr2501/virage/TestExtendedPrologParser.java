@@ -42,7 +42,7 @@ public class TestExtendedPrologParser {
 		assertTrue(framework.getComponents().size() == 3);
 		assertTrue(framework.getComposableModules().size() == 2);
 		assertTrue(framework.getProperties().size() == 3);
-		assertTrue(framework.getCompositionRules().size() == 2);
+		assertTrue(framework.getCompositionRules().size() == 3);
 	}
 	
 	@Test

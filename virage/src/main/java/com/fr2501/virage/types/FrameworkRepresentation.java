@@ -1,6 +1,8 @@
 package com.fr2501.virage.types;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +22,7 @@ public class FrameworkRepresentation {
 	private Set<Component> components;
 	private Set<ComposableModule> composableModules;
 	private Set<CompositionalStructure> compositionalStructures;
-	private Set<CompositionRule> compositionRules;
+	private List<CompositionRule> compositionRules;
 	private Set<Property> properties;
 	
 	public FrameworkRepresentation() {
@@ -28,7 +30,7 @@ public class FrameworkRepresentation {
 		this.components = new HashSet<Component>();
 		this.composableModules = new HashSet<ComposableModule>();
 		this.compositionalStructures = new HashSet<CompositionalStructure>();
-		this.compositionRules = new HashSet<CompositionRule>();
+		this.compositionRules = new LinkedList<CompositionRule>();
 		this.properties = new HashSet<Property>();
 	}
 	
@@ -48,7 +50,7 @@ public class FrameworkRepresentation {
 		return this.compositionalStructures;
 	}
 
-	public Set<CompositionRule> getCompositionRules() {
+	public List<CompositionRule> getCompositionRules() {
 		return this.compositionRules;
 	}
 

@@ -19,6 +19,9 @@
 %
 % === composition_rule
 % = origin
+% fact_a
+property_a(a).
+% = origin
 % rule_a
 property_a(X) :-
 	property_b(X,_).
