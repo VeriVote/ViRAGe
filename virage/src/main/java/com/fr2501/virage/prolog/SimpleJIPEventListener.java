@@ -11,6 +11,11 @@ import com.ugos.jiprolog.engine.JIPTerm;
 // TODO: Documentation
 public class SimpleJIPEventListener implements JIPEventListener {
 	private Logger logger = LogManager.getLogger(SimpleJIPEventListener.class);
+	private JIPQueryManager manager;
+	
+	public SimpleJIPEventListener(JIPQueryManager manager) {
+		this.manager = manager;
+	}
 
 	@Override
 	public void closeNotified(JIPEvent arg0) {
@@ -20,14 +25,11 @@ public class SimpleJIPEventListener implements JIPEventListener {
 	@Override
 	public void endNotified(JIPEvent arg0) {
 		logger.trace("end: " + arg0.getQueryHandle());
-		arg0.getSource().closeQuery(arg0.getQueryHandle());
 	}
 
 	@Override
 	public void errorNotified(JIPErrorEvent arg0) {
 		logger.trace("error: " + arg0.getQueryHandle());
-		
-		arg0.getSource().closeQuery(arg0.getQueryHandle());
 	}
 
 	@Override
