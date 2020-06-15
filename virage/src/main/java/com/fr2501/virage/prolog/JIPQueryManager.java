@@ -1,6 +1,5 @@
 package com.fr2501.virage.prolog;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +7,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.ugos.jiprolog.engine.JIPEngine;
 import com.ugos.jiprolog.engine.JIPErrorEvent;
@@ -21,7 +19,6 @@ public class JIPQueryManager implements Runnable, JIPEventListener {
 	
 	private static final long DEFAULT_TIMEOUT = 1000000;
 	private long timeoutMillis;
-	private long timeSinceLastCheck = 0;
 	
 	// Sorted List/Priority Queue might make more sense, but for now this will do.
 	private Map<Integer, Long> timeouts;
@@ -29,14 +26,12 @@ public class JIPQueryManager implements Runnable, JIPEventListener {
 	
 	private JIPEngine engine;
 	
-	private FrameworkRepresentation framework;
-	private InputStream frameworkStream;
-	
 	public void run() {
 		while(true) {
 			this.checkForTimeouts();
 			try {
-				Thread.sleep(100);
+				// TODO: Think about a better solution.
+				Thread.sleep(this.timeoutMillis/10);
 			} catch (InterruptedException e) {
 				logger.warn("Thread.sleep() was impossible.");
 				e.printStackTrace();
@@ -49,11 +44,8 @@ public class JIPQueryManager implements Runnable, JIPEventListener {
 		this.timeouts = new HashMap<Integer, Long>();
 		this.results = new HashMap<Integer, QueryResult>();
 		this.engine = new JIPEngine();
-		this.framework = framework;
-		
-		this.frameworkStream = this.convertFrameworkToInputStream();
+
 		this.engine.addEventListener(this);
-		this.engine.consultStream(this.frameworkStream, "framework");
 	}
 	
 	public void setTimeout(long timeoutMillis) {
@@ -77,6 +69,18 @@ public class JIPQueryManager implements Runnable, JIPEventListener {
 		while(this.results.get(queryHandle).getState() == QueryState.PENDING);
 		
 		return this.results.get(queryHandle);
+	}
+	
+	public QueryResult getResult(int queryHandle) {
+		return results.get(queryHandle);
+	}
+	
+	public void consult(InputStream is, String name) {
+		this.engine.consultStream(is, name);
+	}
+	
+	public void consultFile(String path) {
+		this.engine.unconsultFile(path);
 	}
 	
 	@Override
@@ -125,24 +129,8 @@ public class JIPQueryManager implements Runnable, JIPEventListener {
 		logger.trace("term: " + arg0.getQueryHandle());	
 	}
 	
-	private InputStream convertFrameworkToInputStream() {
-		String clauseString = "";
-		
-		for(CompositionRule cr: this.framework.getCompositionRules()) {
-			clauseString += cr.getClause().toString() + "\n";
-		}
-		
-		InputStream is = new ByteArrayInputStream(clauseString.getBytes());
-		
-		return is;
-	}
-	
 	private void checkForTimeouts() {
 		long currentTime = System.currentTimeMillis();
-		
-		if(currentTime-this.timeSinceLastCheck < (this.timeoutMillis/100)) {
-			return;
-		}
 		
 		for(int queryHandle: this.timeouts.keySet()) {
 			if(this.results.get(queryHandle).getState() != QueryState.PENDING) {

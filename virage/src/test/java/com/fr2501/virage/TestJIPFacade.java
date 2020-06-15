@@ -7,7 +7,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fr2501.virage.prolog.ExtendedPrologParser;
-import com.fr2501.virage.prolog.JIPFacade;
 import com.fr2501.virage.prolog.JIPQueryManager;
 import com.fr2501.virage.prolog.JIPQueryManagerFactory;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
