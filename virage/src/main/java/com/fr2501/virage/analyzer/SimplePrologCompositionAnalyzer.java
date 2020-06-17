@@ -5,7 +5,6 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fr2501.virage.prolog.JIPFacade;
 import com.fr2501.virage.prolog.JPLFacade;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
@@ -18,7 +17,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) {
 		logger.info("Initialising SimplePrologCompositionAnalyzer.");
 		
-		this.facade = new JPLFacade(framework, this.DEFAULT_TIMEOUT);
+		this.facade = new JPLFacade(framework, DEFAULT_TIMEOUT);
 	}
 	
 	@Override
