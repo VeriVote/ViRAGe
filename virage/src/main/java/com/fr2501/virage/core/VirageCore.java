@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
@@ -24,7 +25,7 @@ public class VirageCore {
 	
 	private static ExtendedPrologParser extendedPrologParser;
 	private static FrameworkRepresentation framework;
-	private static VirageSearchManager manager;
+	private static VirageSearchManager searchManager;
 
     public static void main(String[] args) throws IOException, MalformedEPLFileException {
         logger.info("--- " + _NAME + " version " + _VERSION);
@@ -32,6 +33,10 @@ public class VirageCore {
         
         extendedPrologParser = new SimpleExtendedPrologParser();
         framework = extendedPrologParser.parseFramework(new File("src/main/resources/framework.pl"));
-        manager = new VirageSearchManager();
+        
+        searchManager = new VirageSearchManager();
+        searchManager.addAnalyzer(new SimplePrologCompositionAnalyzer(framework));
+        
+        logger.info("--- Terminating " + _NAME + ".");
     }
 }

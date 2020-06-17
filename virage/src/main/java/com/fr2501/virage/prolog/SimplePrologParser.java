@@ -54,7 +54,7 @@ public class SimplePrologParser implements PrologParser {
 		
 		return res;
 	}
-	
+
 	private PrologPredicate breakdownPredicate(String string) {
 		logger.trace("breakdownPredicate(" + string + ")");
 		

@@ -15,7 +15,7 @@ public class QueryResult {
 		return this.state;
 	}
 	
-	public void setState(QueryState state) {
+	protected void setState(QueryState state) {
 		this.state = state;
 	}
 	
@@ -23,7 +23,13 @@ public class QueryResult {
 		return this.term;
 	}
 	
-	public void setTerm(String term) {
+	protected void setTerm(String term) {
 		this.term = term;
+	}
+	
+	@Override
+	public String toString() {
+		String res = "(" + queryHandle + ") " + state.toString() + " " + term;
+		return res;
 	}
 }

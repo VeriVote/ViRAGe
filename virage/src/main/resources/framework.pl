@@ -67,6 +67,28 @@ defer_lift_invariant(pass_module(_)).
 % = drop_module.thy 
 % drop_module_defer_lift_invariant
 defer_lift_invariant(drop_module(_)).
+% = sequential_composition.thy 
+% defer_lift_invariant_seq
+defer_lift_invariant(sequential_composition(X,Y)) :-
+	defer_lift_invariant(X),
+	defer_lift_invariant(Y).
+% = sequential_composition.thy 
+% defer_invariant_monotone_to_defer_lift_invariant
+defer_lift_invariant(sequential_composition(X,Y)) :-
+	defer_invariant_monotone(X),
+	non_electing(Y),
+	defers(Y,1),
+	defer_monotone(Y).
+% = parallel_composition.thy 
+% defer_lift_invariant_par
+defer_lift_invariant(parallel_composition(X,Y,max_aggregator)) :-
+	disjoint_compatible(X,Y),
+	defer_lift_invariant(X),
+	defer_lift_invariant(Y).
+% = loop_composition.thy 
+% loop_comp_preserves_defer_lift_invariant
+defer_lift_invariant(loop_composition(X,_)) :-
+	defer_lift_invariant(X).
 
 % = pass_module.thy
 % pass_module_non_blocking
@@ -101,7 +123,7 @@ electing(sequential_composition(X,Y)) :-
 non_electing(defer_module).
 % = downgrade.thy 
 % downgrade_non_electing
-non_electing(downgrade(X)).
+non_electing(downgrade(_)).
 % = pass_module.thy 
 % pass_module_non_electing
 non_electing(pass_module(_)).
@@ -176,28 +198,6 @@ invariant_monotone(plurality_module).
 % = downgrade.thy 
 % invariant_monotone_downgrade
 defer_invariant_monotone(downgrade(X)) :- invariant_monotone(X).
-% = sequential_composition.thy 
-% defer_lift_invariant_seq
-defer_lift_invariant(sequential_composition(X,Y)) :-
-	defer_lift_invariant(X),
-	defer_lift_invariant(Y).
-% = sequential_composition.thy 
-% defer_invariant_monotone_to_defer_lift_invariant
-defer_lift_invariant(sequential_composition(X,Y)) :-
-	defer_invariant_monotone(X),
-	non_electing(Y),
-	defers(Y,1),
-	defer_monotone(Y).
-% = parallel_composition.thy 
-% defer_lift_invariant_par
-defer_lift_invariant(parallel_composition(X,Y,max_aggregator)) :-
-	disjoint_compatible(X,Y),
-	defer_lift_invariant(X),
-	defer_lift_invariant(Y).
-% = loop_composition.thy 
-% loop_comp_preserves_defer_lift_invariant
-defer_lift_invariant(loop_composition(X,_)) :-
-	defer_lift_invariant(X).
 
 % = max_aggregator.thy 
 % max_aggregator_conservative

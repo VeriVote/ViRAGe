@@ -6,18 +6,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.prolog.JIPFacade;
+import com.fr2501.virage.prolog.JPLFacade;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 
 public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	private static final Logger logger = LogManager.getLogger();
-	private JIPFacade facade;
+	private JPLFacade facade;
 	
 	public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) {
-		logger.debug("Initialising SimplePrologCompositionAnalyzer.");
+		logger.info("Initialising SimplePrologCompositionAnalyzer.");
 		
-		this.facade = new JIPFacade(framework);
+		this.facade = new JPLFacade(framework, this.DEFAULT_TIMEOUT);
 	}
 	
 	@Override

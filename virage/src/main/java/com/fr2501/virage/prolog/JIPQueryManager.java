@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fr2501.virage.types.FrameworkRepresentation;
 import com.ugos.jiprolog.engine.JIPEngine;
 import com.ugos.jiprolog.engine.JIPErrorEvent;
 import com.ugos.jiprolog.engine.JIPEvent;
@@ -16,8 +15,9 @@ import com.ugos.jiprolog.engine.JIPEventListener;
 // TODO: Documentation
 public class JIPQueryManager implements Runnable, JIPEventListener {
 	private static final Logger logger = LogManager.getLogger(JIPQueryManager.class);
+	private static JIPQueryManager instance = null;
 	
-	private static final long DEFAULT_TIMEOUT = 1000000;
+	private static final long DEFAULT_TIMEOUT = 10000;
 	private long timeoutMillis;
 	
 	// Sorted List/Priority Queue might make more sense, but for now this will do.
@@ -31,7 +31,7 @@ public class JIPQueryManager implements Runnable, JIPEventListener {
 			this.checkForTimeouts();
 			try {
 				// TODO: Think about a better solution.
-				Thread.sleep(this.timeoutMillis/10);
+				Thread.sleep(this.timeoutMillis/100);
 			} catch (InterruptedException e) {
 				logger.warn("Thread.sleep() was impossible.");
 				e.printStackTrace();
@@ -39,21 +39,38 @@ public class JIPQueryManager implements Runnable, JIPEventListener {
 		}
 	}
 	
-	protected JIPQueryManager(FrameworkRepresentation framework) {
+	private JIPQueryManager() {
+		logger.info("Initialising JIPQueryManager.");
+		
 		this.timeoutMillis = JIPQueryManager.DEFAULT_TIMEOUT;
 		this.timeouts = new HashMap<Integer, Long>();
 		this.results = new HashMap<Integer, QueryResult>();
 		this.engine = new JIPEngine();
 
 		this.engine.addEventListener(this);
+		
+		Thread thread = new Thread(this, "JIPQueryManager");
+		thread.start();
+	}
+	
+	public static JIPQueryManager getInstance() {
+		if(instance == null) {
+			instance = new JIPQueryManager();
+		}
+		
+		return instance;
 	}
 	
 	public void setTimeout(long timeoutMillis) {
 		this.timeoutMillis = timeoutMillis;
 	}
 	
-	public int openQuery(String query) {	
+	public int openQuery(String query) {
+		logger.debug("Trying to open query \"" + query + "\".");
+		
 		int queryHandle = this.engine.openQuery(query);
+		
+		logger.debug("Handle: " + queryHandle + ".");
 		
 		long startingTime = System.currentTimeMillis();
 		
@@ -80,22 +97,32 @@ public class JIPQueryManager implements Runnable, JIPEventListener {
 	}
 	
 	public void consultFile(String path) {
-		this.engine.unconsultFile(path);
+		this.engine.consultFile(path);
 	}
 	
 	@Override
 	public void closeNotified(JIPEvent arg0) {
 		logger.trace("close: " + arg0.getQueryHandle());
+		if((this.results.get(arg0.getQueryHandle()).getState() == QueryState.PENDING)) {
+			this.updateResultState(arg0.getQueryHandle(), QueryState.FAILED);
+		}
 	}
 
 	@Override
 	public void endNotified(JIPEvent arg0) {
-		logger.trace("end: " + arg0.getQueryHandle());
+		logger.trace("end: " + arg0.getQueryHandle() + "; " + arg0.getTerm());
+		if((this.results.get(arg0.getQueryHandle()).getState() == QueryState.PENDING)) {
+			this.updateResultState(arg0.getQueryHandle(), QueryState.FAILED);
+		}
 	}
 
 	@Override
 	public void errorNotified(JIPErrorEvent arg0) {
-		logger.trace("error: " + arg0.getQueryHandle());
+		logger.error("error: " + arg0.getQueryHandle());
+		logger.error(arg0.getError());
+		
+		this.updateResultState(arg0.getQueryHandle(), QueryState.ERROR);
+		this.engine.closeQuery(arg0.getQueryHandle());
 	}
 
 	@Override
@@ -126,7 +153,7 @@ public class JIPQueryManager implements Runnable, JIPEventListener {
 
 	@Override
 	public void termNotified(JIPEvent arg0) {
-		logger.trace("term: " + arg0.getQueryHandle());	
+		logger.trace("term: " + arg0.getQueryHandle() + "; " + arg0.getTerm());	
 	}
 	
 	private void checkForTimeouts() {
@@ -140,9 +167,9 @@ public class JIPQueryManager implements Runnable, JIPEventListener {
 			long endTime = this.timeouts.get(queryHandle);
 			
 			if(endTime < currentTime) {
+				logger.info("Query " + queryHandle + " timed out.");
 				this.engine.closeQuery(queryHandle);
 				this.updateResultState(queryHandle, QueryState.TIMEOUT);
-				logger.info("Query " + queryHandle + " timed out.");
 			}
 		}
 	}

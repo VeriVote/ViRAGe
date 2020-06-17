@@ -1,42 +1,23 @@
-% Taken from https://www.metalevel.at/acomip/
+expand([Node | Path], ExpandedPaths) :-
+bagof(
+[Node1, Node | Path],
+(s(Node, Node1), \+ member(Node1, Path)),
+ExpandedPaths).
+expand([Node | Path], ExpandedPaths) :-
+bagof(
+[Node1, Node | Path],
+(s(Node, Node1), \+ member(Node1, Path)),
+ExpandedPaths),
+!.
+expand(Path, []).
 
-:- use_module(library(clpfd)).
+%% breadth_first_search(+Node, -Path)
+breadth_first_search(Node, Path) :-
+bf_search_aux([[Node]], Path).
 
-mi_clause(G, Body) :-
-        clause(G, B),
-        defaulty_better(B, Body).
-
-defaulty_better(true, true).
-defaulty_better((A,B), (BA,BB)) :-
-        defaulty_better(A, BA),
-        defaulty_better(B, BB).
-defaulty_better(G, g(G)) :-
-        G \= true,
-        G \= (_,_).
-
-:- op(750, xfy, =>).
-
-mi_tree(true, true).
-mi_tree((A,B), (TA,TB)) :-
-        mi_tree(A, TA),
-        mi_tree(B, TB).
-mi_tree(g(G), TBody => G) :-
-        mi_clause(G, Body),
-        mi_tree(Body, TBody).
-
-mi_limit(Goal, Max) :-
-        mi_limit(Goal, Max, _).
-
-mi_limit(true, N, N).
-mi_limit((A,B), N0, N) :-
-        mi_limit(A, N0, N1),
-        mi_limit(B, N1, N).
-mi_limit(g(G), N0, N) :-
-        N0 #> 0,
-        N1 #= N0 - 1,
-        mi_clause(G, Body),
-        mi_limit(Body, N1, N).
-
-mi_id(Goal) :-
-        length(_, N),
-        mi_limit(Goal, N).
+bf_search_aux([[Node | Path] | _], [Node | Path]) :-
+goal(Node).
+bf_search_aux([CurrentPath | NextPaths], FinalPath) :-
+expand(CurrentPath, ExpandedPaths),
+append(NextPaths, ExpandedPaths, NewPaths),
+bf_search_aux(NewPaths, FinalPath).

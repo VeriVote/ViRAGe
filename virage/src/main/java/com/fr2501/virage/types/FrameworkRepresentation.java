@@ -18,6 +18,8 @@ import org.apache.logging.log4j.Logger;
 public class FrameworkRepresentation {
 	private Logger logger = LogManager.getLogger(FrameworkRepresentation.class);
 	
+	private String absolutePath;
+	
 	private Set<ComponentType> componentTypes;
 	private Set<Component> components;
 	private Set<ComposableModule> composableModules;
@@ -25,13 +27,19 @@ public class FrameworkRepresentation {
 	private List<CompositionRule> compositionRules;
 	private Set<Property> properties;
 	
-	public FrameworkRepresentation() {
+	public FrameworkRepresentation(String absolutePath) {
+		this.absolutePath = absolutePath;
+		
 		this.componentTypes = new HashSet<ComponentType>();
 		this.components = new HashSet<Component>();
 		this.composableModules = new HashSet<ComposableModule>();
 		this.compositionalStructures = new HashSet<CompositionalStructure>();
 		this.compositionRules = new LinkedList<CompositionRule>();
 		this.properties = new HashSet<Property>();
+	}
+	
+	public String getAbsolutePath() {
+		return this.absolutePath;
 	}
 	
 	public Set<ComponentType> getComponentTypes() {

@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
@@ -19,53 +20,44 @@ public class JIPFacade {
 	private InputStream frameworkStream;
 	
 	public JIPFacade(FrameworkRepresentation framework) {
-		logger.debug("Initialising JIPFacade");
+		logger.info("Initialising JIPFacade.");
 		
+		this.framework = framework;
 		this.frameworkStream = this.convertFrameworkToInputStream();
+		
+		this.manager = JIPQueryManager.getInstance();
+		
 		this.manager.consult(this.frameworkStream, "framework");
 		this.manager.consultFile("src/main/resources/meta_interpreter.pl");
-		
-		this.manager = JIPQueryManagerFactory.getJIPQueryManager(framework);
 	}
 	
 	public void setTimeout(long millis) {
 		this.manager.setTimeout(millis);
 	}
 	
-	public QueryResult iterativeDeepeningQuery(List<String> parts) {
-		String query = "?- mi_id(g(";
+	public QueryResult simpleQuery(List<String> parts) {
+		String query = "?- ";
 		
-		for(String part: parts) {
-			query += part + ",";
-		}
+		query += StringUtils.printCollection(parts);
 		
-		// Remove last ','.
-		query = query.substring(0, query.length()-1);
+		query += ".";
 		
-		query += ")).";
-		
-		int queryHandle = this.manager.openQuery(query);
-		
-		QueryResult result = this.manager.getResult(queryHandle);
-		while(this.manager.getResult(queryHandle).getState() == QueryState.PENDING) {
-			result = this.manager.getResult(queryHandle);
-		}
-		
-		return result;
+		return this.sendQuery(query);
 	}
 	
-	public QueryResult treeQuery(List<String> parts) {
-		String query = "?- mi_tree(g(";
+	public QueryResult limitedQuery(List<String> parts) {
+		String query = "?- breadth_first_search((";
 		
-		for(String part: parts) {
-			query += part + ",";
-		}
+		query += StringUtils.printCollection(parts);
 		
-		// Remove last ','.
-		query = query.substring(0, query.length()-1);
+		query += ")," + "R";
 		
-		query += "), T).";
+		query += ").";
 		
+		return this.sendQuery(query);
+	}
+	
+	private QueryResult sendQuery(String query) {
 		int queryHandle = this.manager.openQuery(query);
 		
 		QueryResult result = this.manager.getResult(queryHandle);
