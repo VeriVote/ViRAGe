@@ -8,9 +8,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
-import com.fr2501.virage.analyzer.SearchResult;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
+import com.fr2501.virage.types.SearchResult;
 
 // TODO: Documentation
 public class VirageSearchManager {
@@ -27,9 +27,9 @@ public class VirageSearchManager {
 		this.analyzers.add(analyzer);
 	}
 	
-	public List<SearchResult> analyzeComposition(DecompositionTree composition, Set<Property> properties) {
+	public List<SearchResult<Boolean>> analyzeComposition(DecompositionTree composition, Set<Property> properties) {
 		// TODO Parallelize.
-		List<SearchResult> results = new LinkedList<SearchResult>();
+		List<SearchResult<Boolean>> results = new LinkedList<SearchResult<Boolean>>();
 		
 		for(int i=0; i<this.analyzers.size(); i++) {
 			results.add(this.analyzers.get(i).analyzeComposition(composition, properties));
@@ -38,9 +38,9 @@ public class VirageSearchManager {
 		return results;
 	}
 	
-	public List<SearchResult> generateComposition(Set<Property> properties) {
+	public List<SearchResult<Set<DecompositionTree>>> generateComposition(Set<Property> properties) throws Exception {
 		// TODO Parallelize.
-		List<SearchResult> results = new LinkedList<SearchResult>();
+		List<SearchResult<Set<DecompositionTree>>> results = new LinkedList<SearchResult<Set<DecompositionTree>>>();
 		
 		for(int i=0; i<this.analyzers.size(); i++) {
 			results.add(this.analyzers.get(i).generateComposition(properties));

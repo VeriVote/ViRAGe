@@ -1,5 +1,6 @@
 package com.fr2501.virage;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import org.jpl7.PrologException;
 import org.junit.Test;
 
 import com.fr2501.virage.prolog.JPLFacade;
+import com.fr2501.virage.types.SearchResult;
 
 public class TestJPLFacade {
 	private static final String validTestPath = "src/test/resources/valid_test.pl";
@@ -24,13 +26,15 @@ public class TestJPLFacade {
 	}
 	
 	@Test
-	public void testSimpleQuery() {
+	public void testSimpleQuery() throws Exception {
 		JPLFacade facade = new JPLFacade(1000);
 		facade.consultFile(validTestPath);
 		
 		String query = "property_a(X)";
 		
-		Set<Map<String, String>> results = facade.query(query);
+		SearchResult<Set<Map<String, String>>> result = facade.query(query);
+		
+		Set<Map<String, String>> results = result.getValue();
 		
 		assertTrue(results.size() == 2);
 		
@@ -41,5 +45,19 @@ public class TestJPLFacade {
 		
 		assertTrue(results.contains(a));
 		assertTrue(results.contains(b));
+	}
+	
+	@Test
+	public void testFactQuery() throws Exception {
+		JPLFacade facade = new JPLFacade(1000);
+		facade.consultFile(validTestPath);
+		
+		String query = "property_a(d)";
+		
+		SearchResult<Boolean> result = facade.factQuery(query);
+		
+		boolean booleanResult = result.getValue();
+		
+		assertFalse(booleanResult);
 	}
 }

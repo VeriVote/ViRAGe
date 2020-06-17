@@ -1,9 +1,9 @@
 package com.fr2501.virage.prolog;
 
 public enum QueryState {
-	PENDING,
 	TIMEOUT,
+	TIMEOUT_WITH_SOLUTIONS,
 	FAILED,
 	ERROR,
-	SUCCESS,
+	SUCCESS
 }
