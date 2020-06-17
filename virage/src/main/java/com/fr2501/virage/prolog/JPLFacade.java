@@ -19,11 +19,8 @@ public class JPLFacade {
 	private FrameworkRepresentation framework;
 	private long timeout;
 	
-	public JPLFacade(FrameworkRepresentation framework, long timeout) {
+	public JPLFacade(long timeout) {
 		this.timeout = timeout;
-		
-		this.framework = framework;
-		this.consultFile(this.framework.getAbsolutePath());
 	}
 	
 	public void setTimeout(long timeout) {
@@ -35,22 +32,12 @@ public class JPLFacade {
 		q.hasSolution();
 	}
 	
-	public Set<Map<String, String>> simpleQuery(String queryString) {
-		return this.simpleQuery(queryString, this.timeout);
-	}
-	
-	public Set<Map<String, String>> simpleQuery(String queryString, long timeout) {
+	protected Set<Map<String, String>> simpleQuery(String queryString) {
 		Set<Map<String, String>> results = new HashSet<Map<String, String>>();
-		long endTime = System.currentTimeMillis() + timeout;
 		
 		Query query = new Query(queryString);
 		
 		while(query.hasMoreSolutions()) {
-			if(endTime < System.currentTimeMillis()) {
-				query.close();
-				break;
-			}
-			
 			Map<String, Term> solution = query.nextSolution();
 			Map<String, String> result = new HashMap<String, String>();
 			
@@ -65,25 +52,25 @@ public class JPLFacade {
 		return results;
 	}
 	
-	public Set<Map<String, String>> iterativeDeepeningQuery(String queryString) {
-		return this.iterativeDeepeningQuery(queryString, this.timeout);
+	public Set<Map<String, String>> query(String queryString) {
+		return this.query(queryString, this.timeout);
 	}
 	
-	public Set<Map<String, String>> iterativeDeepeningQuery(String queryString, long timeout) {
+	public Set<Map<String, String>> query(String queryString, long timeout) {
 		Set<Map<String, String>> results = new HashSet<Map<String, String>>();
-		long startTime = System.currentTimeMillis();
 		long endTime = System.currentTimeMillis() + timeout;
 		
-		// TODO
-		String unusedVariable = "R";
+		// Feels a bit hacky, but it works.
+		String unusedVariable = "X";
+		while(queryString.contains(unusedVariable)) {
+			unusedVariable += unusedVariable;
+		}
 		
 		int maxDepth=0;
 		while(System.currentTimeMillis() < endTime) {
-			long elapsedTime = System.currentTimeMillis() - startTime;
-			
 			String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + "," + unusedVariable + ")";
 			
-			Set<Map<String, String>> result = this.simpleQuery(actualQuery, timeout-elapsedTime);
+			Set<Map<String, String>> result = this.simpleQuery(actualQuery);
 			
 			boolean anyExceeded = false;
 			for(Map<String, String> map: result) {

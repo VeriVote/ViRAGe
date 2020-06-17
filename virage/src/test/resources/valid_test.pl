@@ -24,10 +24,14 @@ property_a(a).
 % = origin
 % rule_a
 property_a(X) :-
-	property_b(X,_).
+	property_b(X).
+
+% = origin
+% rule_b
+property_b(b).
 
 % = origin2
 % rule_b
 property_c(X,Y) :-
 	property_a(X),
-	property_b(X, module_1).
+	property_b(Y).

@@ -6,5 +6,4 @@ public enum QueryState {
 	FAILED,
 	ERROR,
 	SUCCESS,
-	HAS_MORE_CHOICES
 }

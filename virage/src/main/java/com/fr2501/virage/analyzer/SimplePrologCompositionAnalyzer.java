@@ -13,11 +13,14 @@ import com.fr2501.virage.types.Property;
 public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	private static final Logger logger = LogManager.getLogger();
 	private JPLFacade facade;
+	private FrameworkRepresentation framework;
 	
 	public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) {
 		logger.info("Initialising SimplePrologCompositionAnalyzer.");
+		this.framework = framework;
 		
-		this.facade = new JPLFacade(framework, DEFAULT_TIMEOUT);
+		this.facade = new JPLFacade(DEFAULT_TIMEOUT);
+		this.facade.consultFile(this.framework.getAbsolutePath());
 	}
 	
 	@Override

@@ -1,58 +1,45 @@
 package com.fr2501.virage;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.jpl7.Atom;
-import org.jpl7.Compound;
-import org.jpl7.Query;
-import org.jpl7.Term;
-import org.jpl7.Variable;
-import org.junit.BeforeClass;
+import org.jpl7.PrologException;
 import org.junit.Test;
 
-import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.JPLFacade;
-import com.fr2501.virage.prolog.MalformedEPLFileException;
-import com.fr2501.virage.prolog.QueryResult;
-import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
-import com.fr2501.virage.types.FrameworkRepresentation;
 
 public class TestJPLFacade {
-	private static ExtendedPrologParser parser;
-	private static FrameworkRepresentation framework;
-	private static final String path = "src/main/resources/framework.pl";
+	private static final String validTestPath = "src/test/resources/valid_test.pl";
 	
-	@BeforeClass
-	public static void setup() {
-		parser = new SimpleExtendedPrologParser();
-		try {
-			framework = parser.parseFramework(new File(path));
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (MalformedEPLFileException e) {
-			e.printStackTrace();
-		}
+	@Test(expected = PrologException.class)
+	public void testMalformedQuery() {
+		JPLFacade facade = new JPLFacade(1000);
+		
+		String query = "(,this is not a ) legit ,;. query @ all.)(";
+		
+		facade.query(query);
 	}
 	
 	@Test
-	public void testNothing() throws InterruptedException {
-		JPLFacade facade = new JPLFacade(framework, 100);
+	public void testSimpleQuery() {
+		JPLFacade facade = new JPLFacade(1000);
+		facade.consultFile(validTestPath);
 		
-		facade.consultFile("src/main/resources/framework.pl");
+		String query = "property_a(X)";
 		
-		Set<Map<String, String>> res = facade.iterativeDeepeningQuery("electing(X)", 5);
+		Set<Map<String, String>> results = facade.query(query);
 		
-		for(Map<String, String> map: res) {
-			System.out.println("---");
-			
-			for(String key: map.keySet()) {
-				System.out.println(key + ": " + map.get(key));
-			}
-		}
+		assertTrue(results.size() == 2);
+		
+		Map<String, String> a = new HashMap<String, String>();
+		a.put("X", "a");
+		Map<String, String> b = new HashMap<String, String>();
+		b.put("X", "b");
+		
+		assertTrue(results.contains(a));
+		assertTrue(results.contains(b));
 	}
 }
