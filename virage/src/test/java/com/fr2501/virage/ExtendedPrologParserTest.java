@@ -15,8 +15,8 @@ import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
-public class TestExtendedPrologParser {
-	private Logger logger = LogManager.getLogger(TestExtendedPrologParser.class);
+public class ExtendedPrologParserTest {
+	private Logger logger = LogManager.getLogger(ExtendedPrologParserTest.class);
 	
 	@Test(expected = FileNotFoundException.class)
 	public void loadNonExistingFile() throws IOException, MalformedEPLFileException {

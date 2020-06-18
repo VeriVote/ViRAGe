@@ -21,7 +21,7 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
-public class TestJPLFacade {
+public class JPLFacadeTest {
 	private static final String validTestPath = "src/test/resources/valid_test.pl";
 	
 	@Test(expected = PrologException.class)

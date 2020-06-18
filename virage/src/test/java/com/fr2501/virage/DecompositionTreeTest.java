@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.fr2501.virage.types.DecompositionTree;
 
-public class TestDecompositionTree {
+public class DecompositionTreeTest {
 	@Test
 	public void TestConstruction() {
 		String tree = "root(b(c,d), e, f(g(h,i)))";

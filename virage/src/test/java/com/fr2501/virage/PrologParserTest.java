@@ -14,7 +14,7 @@ import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
 
-public class TestPrologParser {
+public class PrologParserTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void parseEmptyClause() {
 		String clause = "";
