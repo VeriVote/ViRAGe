@@ -148,6 +148,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 					// Alias is defined, this shall be a type.
 					String typeString = this.sanitizeLine(splits[1]);
 					type = new ComponentType(typeString);
+					framework.setAlias(typeString);
 				} else {
 					logger.error("Malformed header: \"" + lines.get(0) + "\"");
 					throw new MalformedEPLFileException();

@@ -1,0 +1,44 @@
+package com.fr2501.virage;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.fr2501.virage.prolog.ExtendedPrologStrings;
+import com.fr2501.virage.types.*;
+
+public class TestDataGenerator {
+	private FrameworkRepresentation framework;
+	private List<Property> eligibleProperties;
+	
+	public TestDataGenerator(FrameworkRepresentation framework) {
+		this.framework = framework;
+		
+		for(Property property: framework.getProperties()) {
+			if(property.getArity() == 1) {
+				List<ComponentType> parameters = property.getParameters();
+				ComponentType parameter = parameters.get(0);
+				
+				if(parameter.getName().equals(framework.getAlias()) ||
+						parameter.getName().equals(ExtendedPrologStrings.COMPOSABLE_MODULE)) {
+					eligibleProperties.add(property);
+				}
+			}
+		}
+	}
+	
+	public Set<Property> getRandomComposableModuleProperties(int amount) {
+		if(amount > eligibleProperties.size()) {
+			throw new IllegalArgumentException();
+		}
+		
+		Set<Property> res = new HashSet<Property>();
+		
+		while(res.size() != amount) {
+			int idx = (int) (res.size() * Math.random());
+			res.add(eligibleProperties.get(idx));
+		}
+		
+		return res;
+	}
+}

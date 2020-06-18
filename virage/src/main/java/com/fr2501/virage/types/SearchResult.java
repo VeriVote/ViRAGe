@@ -17,14 +17,13 @@ public class SearchResult<T> {
 	
 	public T getValue() throws Exception {
 		if(!this.hasValue()) {
-			// TODO Better type
+			// TODO: Better type
 			throw new Exception();
 		}
-		
 		return this.value;
 	}
 	
 	public boolean hasValue() {
-		return (this.state == QueryState.TIMEOUT_WITH_SOLUTIONS || this.state == QueryState.SUCCESS);
+		return (this.value != null);
 	}
 }

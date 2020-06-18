@@ -27,6 +27,8 @@ public class FrameworkRepresentation {
 	private List<CompositionRule> compositionRules;
 	private Set<Property> properties;
 	
+	private String composableModuleAlias;
+	
 	public FrameworkRepresentation(String absolutePath) {
 		this.absolutePath = absolutePath;
 		
@@ -64,6 +66,14 @@ public class FrameworkRepresentation {
 
 	public Set<Property> getProperties() {
 		return this.properties;
+	}
+	
+	public String getAlias() {
+		return this.composableModuleAlias;
+	}
+	
+	public void setAlias(String alias) {
+		this.composableModuleAlias = alias;
 	}
 	
 	/**

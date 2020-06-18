@@ -58,12 +58,8 @@ public class JPLFacade {
 	
 	public SearchResult<Boolean> factQuery(String queryString, long timeout) {
 		long endTime = System.currentTimeMillis() + timeout;
-		
-		// Feels a bit hacky, but it works.
+
 		String unusedVariable = "X";
-		while(queryString.contains(unusedVariable)) {
-			unusedVariable += unusedVariable;
-		}
 		
 		int maxDepth=0;
 		while(System.currentTimeMillis() < endTime) {
