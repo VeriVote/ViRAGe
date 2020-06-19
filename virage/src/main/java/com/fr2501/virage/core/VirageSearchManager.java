@@ -38,9 +38,9 @@ public class VirageSearchManager {
 		return results;
 	}
 	
-	public List<SearchResult<Set<DecompositionTree>>> generateComposition(Set<Property> properties) throws Exception {
+	public List<SearchResult<DecompositionTree>> generateComposition(Set<Property> properties) throws Exception {
 		// TODO Parallelize.
-		List<SearchResult<Set<DecompositionTree>>> results = new LinkedList<SearchResult<Set<DecompositionTree>>>();
+		List<SearchResult<DecompositionTree>> results = new LinkedList<SearchResult<DecompositionTree>>();
 		
 		for(int i=0; i<this.analyzers.size(); i++) {
 			results.add(this.analyzers.get(i).generateComposition(properties));

@@ -16,6 +16,7 @@ import org.junit.Test;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.JPLFacade;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
+import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
@@ -25,7 +26,7 @@ public class JPLFacadeTest {
 	private static final String validTestPath = "src/test/resources/valid_test.pl";
 	
 	@Test(expected = PrologException.class)
-	public void testMalformedQuery() {
+	public void testInvalidQuery() {
 		JPLFacade facade = new JPLFacade(1000);
 		
 		String query = "(,this is not a ) legit ,;. query @ all.)(";
@@ -40,19 +41,9 @@ public class JPLFacadeTest {
 		
 		String query = "property_a(X)";
 		
-		SearchResult<Set<Map<String, String>>> result = facade.query(query);
+		SearchResult<Map<String, String>> result = facade.query(query);
 		
-		Set<Map<String, String>> results = result.getValue();
-		
-		assertTrue(results.size() == 2);
-		
-		Map<String, String> a = new HashMap<String, String>();
-		a.put("X", "a");
-		Map<String, String> b = new HashMap<String, String>();
-		b.put("X", "b");
-		
-		assertTrue(results.contains(a));
-		assertTrue(results.contains(b));
+		assertTrue(result.getState() == QueryState.SUCCESS);
 	}
 	
 	@Test

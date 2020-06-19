@@ -55,9 +55,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	}
 
 	@Override
-	public SearchResult<Set<DecompositionTree>> generateComposition(Set<Property> properties) throws Exception {
-		Set<DecompositionTree> res = new HashSet<DecompositionTree>();
-		
+	public SearchResult<DecompositionTree> generateComposition(Set<Property> properties) throws Exception {
 		for(Property property: properties) {
 			if(property.getArity() != 1) {
 				throw new IllegalArgumentException();
@@ -72,23 +70,22 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 		
 		String query = StringUtils.printCollection(propertyStrings);
 		
-		SearchResult<Set<Map<String, String>>> resultSets = this.facade.query(query);
+		SearchResult<Map<String, String>> result = this.facade.query(query);
 		
-		if(resultSets.hasValue()) {
-			for(Map<String, String> map: resultSets.getValue()) {
-				if(!map.containsKey("X")) {
-					// This should never happen.
-					throw new Exception();
-				}
-				
-				String solution = map.get("X");
-				DecompositionTree solutionTree = new DecompositionTree(solution);
-				res.add(solutionTree);
+		if(result.hasValue()) {
+			Map<String, String> resultMap = result.getValue();
+			
+			if(!resultMap.containsKey("X")) {
+				// This should never happen.
+				throw new Exception();
 			}
 				
-			return new SearchResult<Set<DecompositionTree>>(resultSets.getState(), res);
+			String solution = resultMap.get("X");
+			DecompositionTree solutionTree = new DecompositionTree(solution);
+				
+			return new SearchResult<DecompositionTree>(result.getState(), solutionTree);
 		} else {
-			return new SearchResult<Set<DecompositionTree>>(QueryState.FAILED, new HashSet<DecompositionTree>());
+			return new SearchResult<DecompositionTree>(result.getState(), null);
 		}
 	}
 

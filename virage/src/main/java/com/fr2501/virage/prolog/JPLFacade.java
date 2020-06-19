@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jpl7.Atom;
+import org.jpl7.PrologException;
 import org.jpl7.Query;
 import org.jpl7.Term;
 
@@ -17,6 +20,7 @@ import com.fr2501.virage.types.SearchResult;
 
 // TODO: Document
 public class JPLFacade {
+	private static final Logger logger = LogManager.getLogger(JPLFacade.class);
 	private long timeout;
 	
 	public JPLFacade(long timeout) {
@@ -32,24 +36,32 @@ public class JPLFacade {
 		q.hasSolution();
 	}
 	
-	protected Set<Map<String, String>> simpleQuery(String queryString) {
-		Set<Map<String, String>> results = new HashSet<Map<String, String>>();
+	protected Map<String, String> simpleQueryWithTimeout(String queryString, long timeout) {
+		float timeoutInSeconds = ((float) timeout) / 1000.0f;
 		
-		Query query = new Query(queryString);
+		String actualQuery = "call_with_time_limit(" + timeoutInSeconds + ",(" + queryString + "))";
 		
-		while(query.hasMoreSolutions()) {
-			Map<String, Term> solution = query.nextSolution();
-			Map<String, String> result = new HashMap<String, String>();
-			
-			for(String key: solution.keySet()) {
-				String termString = solution.get(key).toString();
+		Query query = new Query(actualQuery);
+		
+		try {
+			if(query.hasMoreSolutions()) {
+				Map<String, Term> solution = query.nextSolution();
+				Map<String, String> result = new HashMap<String, String>();
 				
-				result.put(key, termString);
-				results.add(result);
+				for(String key: solution.keySet()) {
+					String termString = solution.get(key).toString();
+					
+					result.put(key, termString);
+					
+				}
+
+				return result;
+			} else {
+				return null;
 			}
+		} catch(PrologException e) {
+			return new HashMap<String, String>();
 		}
-		
-		return results;
 	}
 	 
 	public SearchResult<Boolean> factQuery(String queryString) {
@@ -57,102 +69,102 @@ public class JPLFacade {
 	}
 	
 	public SearchResult<Boolean> factQuery(String queryString, long timeout) {
-		long endTime = System.currentTimeMillis() + timeout;
-
-		String unusedVariable = "X";
+long endTime = System.currentTimeMillis() + timeout;
+		
+		String unusedVariable = this.findUnusedVariable(queryString);
 		
 		int maxDepth=0;
 		while(System.currentTimeMillis() < endTime) {
+			logger.debug("Current maxDepth: " + maxDepth);
+			long remainingTime = endTime -System.currentTimeMillis();
 			String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + "," + unusedVariable + ")";
 			
-			Set<Map<String, String>> result = this.simpleQuery(actualQuery);
+			Map<String, String> result = this.simpleQueryWithTimeout(actualQuery, remainingTime);
 			
-			boolean anyExceeded = false;
-			for(Map<String, String> map: result) {
-				if(!map.containsKey(unusedVariable)) {
-					// TODO: What does this mean?
-					continue;
-				}
-				
-				if(map.get(unusedVariable).equals("depth_limit_exceeded")) {
-					anyExceeded = true;
-				}
-				
-				if(StringUtils.isNumeric(map.get(unusedVariable))) {
-					return new SearchResult<Boolean>(QueryState.SUCCESS, true);
-				}
+			if(result == null) {
+				// No solution, query failed.
+				return new SearchResult<Boolean>(QueryState.FAILED, false);
 			}
 			
-			if(!anyExceeded) {
-				if(result.isEmpty()) {
-					// No branch went over limit and no branch succeeded, query is unsolvable.
-					return new SearchResult<Boolean>(QueryState.FAILED, false);
-				} else {
-					return new SearchResult<Boolean>(QueryState.SUCCESS, true);
-				}
+			if(!result.containsKey(unusedVariable)) {
+				// Empty Map was received, malformed query or timeout.
+				// Distinction is impossible, so timeout is assumed.
+				return new SearchResult<Boolean>(QueryState.TIMEOUT, null);
+			}
+
+			if(result.get(unusedVariable).equals("depth_limit_exceeded")) {
+				// Depth limit exceeded, increase and try again.
+				maxDepth++;
+				continue;
+			}
+
+			if(StringUtils.isNumeric(result.get(unusedVariable))) {
+				// Query succeeded.
+				result.remove(unusedVariable);
+				return new SearchResult<Boolean>(QueryState.SUCCESS, true);
 			}
 			
 			maxDepth++;
 		}
 		
-
-		return new SearchResult<Boolean>(QueryState.TIMEOUT, false);
+		return new SearchResult<Boolean>(QueryState.TIMEOUT, null);
 	}
 	
-	public SearchResult<Set<Map<String, String>>> query(String queryString) {
+	public SearchResult<Map<String,String>> query(String queryString) {
 		return this.query(queryString, this.timeout);
 	}
 	
-	public SearchResult<Set<Map<String, String>>> query(String queryString, long timeout) {
-		Set<Map<String, String>> results = new HashSet<Map<String, String>>();
+	public SearchResult<Map<String, String>> query(String queryString, long timeout) {
 		long endTime = System.currentTimeMillis() + timeout;
 		
+		String unusedVariable = this.findUnusedVariable(queryString);
+		
+		int maxDepth=0;
+		while(System.currentTimeMillis() < endTime) {
+			logger.debug("Current maxDepth: " + maxDepth);
+			long remainingTime = endTime -System.currentTimeMillis();
+			String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + "," + unusedVariable + ")";
+
+			Map<String, String> result = new HashMap<String, String>();
+			
+			result = this.simpleQueryWithTimeout(actualQuery, remainingTime);
+			
+			if(result == null) {
+				// No solution, query failed.
+				return new SearchResult<Map<String, String>>(QueryState.FAILED, null);
+			}
+			
+			if(!result.containsKey(unusedVariable)) {
+				// Empty Map was received, malformed query or timeout.
+				// Distinction is impossible, so timeout is assumed.
+				return new SearchResult<Map<String, String>>(QueryState.TIMEOUT, null);
+			}
+
+			if(result.get(unusedVariable).equals("depth_limit_exceeded")) {
+				// Depth limit exceeded, increase and try again.
+				maxDepth++;
+				continue;
+			}
+
+			if(StringUtils.isNumeric(result.get(unusedVariable))) {
+				// Query succeeded.
+				result.remove(unusedVariable);
+				return new SearchResult<Map<String, String>>(QueryState.SUCCESS, result);
+			}
+			
+			maxDepth++;
+		}
+		
+		return new SearchResult<Map<String, String>>(QueryState.TIMEOUT, null);
+	}
+	
+	private String findUnusedVariable(String queryString) {
 		// Feels a bit hacky, but it works.
 		String unusedVariable = "X";
 		while(queryString.contains(unusedVariable)) {
 			unusedVariable += unusedVariable;
 		}
 		
-		int maxDepth=0;
-		while(System.currentTimeMillis() < endTime) {
-			String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + "," + unusedVariable + ")";
-			
-			Set<Map<String, String>> result = this.simpleQuery(actualQuery);
-			
-			boolean anyExceeded = false;
-			for(Map<String, String> map: result) {
-				if(!map.containsKey(unusedVariable)) {
-					// TODO: What does this mean?
-					continue;
-				}
-				
-				if(map.get(unusedVariable).equals("depth_limit_exceeded")) {
-					anyExceeded = true;
-				}
-				
-				if(StringUtils.isNumeric(map.get(unusedVariable))) {
-					map.remove(unusedVariable);
-					results.add(map);
-					continue;
-				}
-			}
-			
-			if(!anyExceeded) {
-				if(result.isEmpty()) {
-					// No branch went over limit and no branch succeeded, query is unsolvable.
-					return new SearchResult<Set<Map<String, String>>>(QueryState.FAILED, results);
-				} else {
-					return new SearchResult<Set<Map<String, String>>>(QueryState.SUCCESS, results);
-				}
-			}
-			
-			maxDepth++;
-		}
-		
-		if(results.isEmpty()) {
-			return new SearchResult<Set<Map<String, String>>>(QueryState.TIMEOUT, results);
-		} else {
-			return new SearchResult<Set<Map<String, String>>>(QueryState.TIMEOUT_WITH_SOLUTIONS, results);
-		}
+		return unusedVariable;
 	}
 }

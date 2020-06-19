@@ -13,5 +13,5 @@ public interface CompositionAnalyzer {
 	
 	public void setTimeout(long millis);
 	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, Set<Property> properties);
-	public SearchResult<Set<DecompositionTree>> generateComposition(Set<Property> properties) throws Exception;
+	public SearchResult<DecompositionTree> generateComposition(Set<Property> properties) throws Exception;
 }
