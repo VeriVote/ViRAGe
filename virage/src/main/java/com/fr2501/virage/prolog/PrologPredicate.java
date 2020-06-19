@@ -21,6 +21,8 @@ public class PrologPredicate {
 	
 	/**
 	 * Creates a predicate without any parameters (arity 0).
+	 * 
+	 * @param name the name of the predicate
 	 */
 	public PrologPredicate(String name) {
 		this.name = name;

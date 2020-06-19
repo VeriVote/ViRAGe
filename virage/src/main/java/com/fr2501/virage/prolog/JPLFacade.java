@@ -36,7 +36,7 @@ public class JPLFacade {
 		q.hasSolution();
 	}
 	
-	protected Map<String, String> simpleQueryWithTimeout(String queryString, long timeout) {
+	public Map<String, String> simpleQueryWithTimeout(String queryString, long timeout) {
 		float timeoutInSeconds = ((float) timeout) / 1000.0f;
 		
 		String actualQuery = "call_with_time_limit(" + timeoutInSeconds + ",(" + queryString + "))";
@@ -69,7 +69,7 @@ public class JPLFacade {
 	}
 	
 	public SearchResult<Boolean> factQuery(String queryString, long timeout) {
-long endTime = System.currentTimeMillis() + timeout;
+		long endTime = System.currentTimeMillis() + timeout;
 		
 		String unusedVariable = this.findUnusedVariable(queryString);
 		
@@ -110,11 +110,11 @@ long endTime = System.currentTimeMillis() + timeout;
 		return new SearchResult<Boolean>(QueryState.TIMEOUT, null);
 	}
 	
-	public SearchResult<Map<String,String>> query(String queryString) {
-		return this.query(queryString, this.timeout);
+	public SearchResult<Map<String,String>> iterativeDeepeningQuery(String queryString) {
+		return this.iterativeDeepeningQuery(queryString, this.timeout);
 	}
 	
-	public SearchResult<Map<String, String>> query(String queryString, long timeout) {
+	public SearchResult<Map<String, String>> iterativeDeepeningQuery(String queryString, long timeout) {
 		long endTime = System.currentTimeMillis() + timeout;
 		
 		String unusedVariable = this.findUnusedVariable(queryString);

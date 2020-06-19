@@ -31,7 +31,7 @@ public class JPLFacadeTest {
 		
 		String query = "(,this is not a ) legit ,;. query @ all.)(";
 		
-		facade.query(query);
+		facade.iterativeDeepeningQuery(query);
 	}
 	
 	@Test
@@ -41,7 +41,7 @@ public class JPLFacadeTest {
 		
 		String query = "property_a(X)";
 		
-		SearchResult<Map<String, String>> result = facade.query(query);
+		SearchResult<Map<String, String>> result = facade.iterativeDeepeningQuery(query);
 		
 		assertTrue(result.getState() == QueryState.SUCCESS);
 	}

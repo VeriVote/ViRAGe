@@ -70,7 +70,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 		
 		String query = StringUtils.printCollection(propertyStrings);
 		
-		SearchResult<Map<String, String>> result = this.facade.query(query);
+		SearchResult<Map<String, String>> result = this.facade.iterativeDeepeningQuery(query);
 		
 		if(result.hasValue()) {
 			Map<String, String> resultMap = result.getValue();

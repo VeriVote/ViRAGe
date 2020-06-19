@@ -48,6 +48,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 	 * This method does the actual parsing.
 	 * 
 	 * @param representation a line-by-line representation of the extended Prolog file.
+	 * @param path the path to the framework (required for compatibility reasons)
 	 * @return a {@link FrameworkRepresentation} of the input.
 	 * @throws MalformedEPLFileException if the input does not follow the specification of the extended Prolog format.
 	 */

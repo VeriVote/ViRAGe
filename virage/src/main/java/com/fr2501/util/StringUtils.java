@@ -41,7 +41,7 @@ public class StringUtils {
 	
 	/**
 	 * Checks whether a String is a number
-	 * @param strNum 
+	 * @param strNum the String to be checked
 	 * @return true if strNum represents a number, false otherwise.
 	 */
 	public static boolean isNumeric(String strNum) {

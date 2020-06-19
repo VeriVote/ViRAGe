@@ -123,9 +123,9 @@ public class FrameworkRepresentation {
 	}
 	
 	/**
-	 * Adds a @link{Property} to the FrameworkRepresentation
+	 * Adds a {@link Property} to the FrameworkRepresentation
 	 * Performs type check without throwing any exceptions.
-	 * @param ct the @link{Property} to be added
+	 * @param p the {@link com.fr2501.virage.types.Property} to be added
 	 */
 	public void add(Property p) {
 		this.checkTypes(p);

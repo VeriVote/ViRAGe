@@ -25,6 +25,7 @@ public class PrologClause {
 	
 	/**
 	 * Creates a Prolog clause without any antecedents (i.e. a fact).
+	 * @param fact the fact
 	 */
 	public PrologClause(PrologPredicate fact) {
 		this.succedent = fact;
