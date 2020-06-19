@@ -1,6 +1,5 @@
 package com.fr2501.virage.analyzer;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -11,17 +10,28 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.JPLFacade;
-import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
+import com.fr2501.virage.types.ValueNotPresentException;
 
+/**
+ * 
+ * Simple implementation of the {@link CompositionAnalyzer}, using Prolog with iterative deepening.
+ *
+ */
 public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	private static final Logger logger = LogManager.getLogger();
+	
+	private static final long DEFAULT_TIMEOUT = 10000;
 	private JPLFacade facade;
 	private FrameworkRepresentation framework;
 	
+	/**
+	 * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
+	 * @param framework the framework
+	 */
 	public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) {
 		logger.info("Initialising SimplePrologCompositionAnalyzer.");
 		this.framework = framework;
@@ -55,7 +65,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	}
 
 	@Override
-	public SearchResult<DecompositionTree> generateComposition(Set<Property> properties) throws Exception {
+	public SearchResult<DecompositionTree> generateComposition(Set<Property> properties) {
 		for(Property property: properties) {
 			if(property.getArity() != 1) {
 				throw new IllegalArgumentException();
@@ -72,12 +82,13 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 		
 		SearchResult<Map<String, String>> result = this.facade.iterativeDeepeningQuery(query);
 		
+		Map<String, String> resultMap = null;
 		if(result.hasValue()) {
-			Map<String, String> resultMap = result.getValue();
-			
-			if(!resultMap.containsKey("X")) {
+			try {
+				resultMap = result.getValue();
+			} catch(ValueNotPresentException e) {
 				// This should never happen.
-				throw new Exception();
+				logger.warn(e);
 			}
 				
 			String solution = resultMap.get("X");

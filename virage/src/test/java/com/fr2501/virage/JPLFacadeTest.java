@@ -3,23 +3,13 @@ package com.fr2501.virage;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.jpl7.PrologException;
-import org.junit.Before;
 import org.junit.Test;
 
-import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.JPLFacade;
-import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.QueryState;
-import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
-import com.fr2501.virage.types.FrameworkRepresentation;
-import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
 public class JPLFacadeTest {

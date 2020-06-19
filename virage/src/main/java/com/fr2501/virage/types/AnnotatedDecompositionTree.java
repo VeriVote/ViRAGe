@@ -3,7 +3,10 @@ package com.fr2501.virage.types;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO: Documentation
+/**
+ * Encapsulates a {@link DecompositionTree}, adding different kinds of annotations to it.
+ *
+ */
 public class AnnotatedDecompositionTree {
 	private DecompositionTree tree;
 	private Map<DecompositionTree, Map<Property, CompositionRule>> annotations;

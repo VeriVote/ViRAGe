@@ -12,7 +12,12 @@ import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
-// TODO: Documentation
+/**
+ * 
+ * A class used to enable the use of different solvers at the same time without having
+ * to change application code.
+ *
+ */
 public class VirageSearchManager {
 	private static final Logger logger = LogManager.getLogger(VirageSearchManager.class);
 	private List<CompositionAnalyzer> analyzers;
@@ -23,10 +28,20 @@ public class VirageSearchManager {
 		this.analyzers = new LinkedList<CompositionAnalyzer>();
 	}
 	
+	/**
+	 * Adds an analyzer to the manager
+	 * @param analyzer the analyzer
+	 */
 	public void addAnalyzer(CompositionAnalyzer analyzer) {
 		this.analyzers.add(analyzer);
 	}
 	
+	/**
+	 * Calls {@link CompositionAnalyzer#analyzeComposition(DecompositionTree, Set)} on all its analyzers
+	 * @param composition the decomposition tree
+	 * @param properties the desired property set
+	 * @return a list of results, ordered in the same way as the analyzers
+	 */
 	public List<SearchResult<Boolean>> analyzeComposition(DecompositionTree composition, Set<Property> properties) {
 		// TODO Parallelize.
 		List<SearchResult<Boolean>> results = new LinkedList<SearchResult<Boolean>>();
@@ -38,7 +53,12 @@ public class VirageSearchManager {
 		return results;
 	}
 	
-	public List<SearchResult<DecompositionTree>> generateComposition(Set<Property> properties) throws Exception {
+	/**
+	 * Calls {@link CompositionAnalyzer#generateComposition(Set)} on all its analyzers
+	 * @param properties the desired property set
+	 * @return a list of results, ordered in the same way as the analyzers
+	 */
+	public List<SearchResult<DecompositionTree>> generateComposition(Set<Property> properties) {
 		// TODO Parallelize.
 		List<SearchResult<DecompositionTree>> results = new LinkedList<SearchResult<DecompositionTree>>();
 		

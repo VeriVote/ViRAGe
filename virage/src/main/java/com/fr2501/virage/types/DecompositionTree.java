@@ -5,6 +5,11 @@ import java.util.List;
 
 import com.fr2501.util.StringUtils;
 
+/**
+ * 
+ * A class for representing decomposition trees
+ *
+ */
 public class DecompositionTree {
 	private String label;
 	private int arity;
@@ -41,6 +46,11 @@ public class DecompositionTree {
 		return children;
 	}
 
+	/**
+	 * Creates a DecompositionTree object from a string in bracket notation
+	 * @param s the string
+	 * @return a DecompositionTree representing s
+	 */
 	public static DecompositionTree parseString(String s) {
 		s = StringUtils.removeWhitespace(s);
 		

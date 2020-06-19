@@ -16,12 +16,12 @@ public class TestDataGenerator {
 		this.framework = framework;
 		this.eligibleProperties = new LinkedList<Property>();
 		
-		for(Property property: framework.getProperties()) {
+		for(Property property: this.framework.getProperties()) {
 			if(property.getArity() == 1) {
 				List<ComponentType> parameters = property.getParameters();
 				ComponentType parameter = parameters.get(0);
 				
-				if(parameter.getName().equals(framework.getAlias()) ||
+				if(parameter.getName().equals(this.framework.getAlias()) ||
 						parameter.getName().equals(ExtendedPrologStrings.COMPOSABLE_MODULE)) {
 					this.eligibleProperties.add(property);
 				}

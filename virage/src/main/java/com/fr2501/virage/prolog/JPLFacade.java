@@ -1,11 +1,7 @@
 package com.fr2501.virage.prolog;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,10 +11,13 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 
 import com.fr2501.util.StringUtils;
-import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.SearchResult;
 
-// TODO: Document
+/**
+ * 
+ * A class used to interface with JPL7.
+ *
+ */
 public class JPLFacade {
 	private static final Logger logger = LogManager.getLogger(JPLFacade.class);
 	private long timeout;
@@ -31,11 +30,23 @@ public class JPLFacade {
 		this.timeout = timeout;
 	}
 	
+	/**
+	 * Consult a file so it becomes available within the JPL engine.
+	 * @param path path to the file
+	 */
 	public void consultFile(String path) {
 		Query q = new Query("consult", new Term[] {new Atom(path)});
 		q.hasSolution();
 	}
 	
+	/**
+	 * Simple Prolog query, returns only the first result due to Prolog limitations.
+	 * 
+	 * @param queryString the query
+	 * @param timeout the timeout
+	 * @return a {@link Map} containing the result. If query was malformed or no solution
+	 * is found within timeout, an empty Map is returned.
+	 */
 	public Map<String, String> simpleQueryWithTimeout(String queryString, long timeout) {
 		float timeoutInSeconds = ((float) timeout) / 1000.0f;
 		
@@ -63,11 +74,22 @@ public class JPLFacade {
 			return new HashMap<String, String>();
 		}
 	}
-	 
+	
+	/**
+	 * A query not containing variables, only asking for true or false, using default timeout.
+	 * @param queryString the query
+	 * @return a SearchResult representing the result of the query
+	 */
 	public SearchResult<Boolean> factQuery(String queryString) {
 		return this.factQuery(queryString, this.timeout);
 	}
 	
+	/**
+	 * A query not containing variables, only asking for true or false, using default timeout.
+	 * @param queryString the query
+	 * @param timeout the timeout
+	 * @return a SearchResult representing the result of the query
+	 */
 	public SearchResult<Boolean> factQuery(String queryString, long timeout) {
 		long endTime = System.currentTimeMillis() + timeout;
 		
@@ -110,10 +132,21 @@ public class JPLFacade {
 		return new SearchResult<Boolean>(QueryState.TIMEOUT, null);
 	}
 	
+	/**
+	 * A query containing variables, using default timeout.
+	 * @param queryString the query
+	 * @return a SearchResult representing the result of the query
+	 */
 	public SearchResult<Map<String,String>> iterativeDeepeningQuery(String queryString) {
 		return this.iterativeDeepeningQuery(queryString, this.timeout);
 	}
 	
+	/**
+	 * A query containing variables.
+	 * @param queryString the query
+	 * @param timeout the timeout
+	 * @return a SearchResult representing the result of the query
+	 */
 	public SearchResult<Map<String, String>> iterativeDeepeningQuery(String queryString, long timeout) {
 		long endTime = System.currentTimeMillis() + timeout;
 		
