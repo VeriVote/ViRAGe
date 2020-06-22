@@ -13,4 +13,5 @@ public abstract class ExtendedPrologStrings {
 	public final static String COMPOSITIONAL_STRUCTURE_HEADER = "=== compositional_structure";
 	public final static String PROPERTY_HEADER = "=== property";
 	public final static String COMPOSITION_RULE_HEADER = "=== composition_rule";
+	public final static String COMPONENT = "component";
 }

@@ -17,7 +17,7 @@ public class SimplePrologParser implements PrologParser {
 	private final static Logger logger = LogManager.getLogger(SimplePrologParser.class.getName());
 	
 	@Override
-	public PrologClause parseSingleClause(String clause) {
+	public PrologClause parseSingleClause(String clause) {		
 		logger.trace("parseSingleClause(" + clause + ")");
 		
 		if(clause.equals("")) throw new IllegalArgumentException();

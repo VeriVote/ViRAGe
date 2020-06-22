@@ -77,6 +77,72 @@ public class FrameworkRepresentation {
 	}
 	
 	/**
+	 * Returns the {@link Property} with the given name.
+	 * @param name the name
+	 * @return the {@link Property}, null if it does not exist.
+	 */
+	public Property getProperty(String name) {
+		for(Property property: this.properties) {
+			if(property.getName().equals(name)) {
+				return property;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns the {@link ComposableModule} with the given name.
+	 * @param name the name
+	 * @return the {@link ComposableModule}, null if it does not exist.
+	 */
+	public ComposableModule getComposableModule(String name) {
+		for(ComposableModule module: this.composableModules) {
+			if(module.getName().equals(name)) {
+				return module;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns the {@link CompositionalStructure} with the given name.
+	 * @param name the name
+	 * @return the {@link CompositionalStructure}, null if it does not exist.
+	 */
+	public CompositionalStructure getCompositionalStructure(String name) {
+		for(CompositionalStructure component: this.compositionalStructures) {
+			if(component.getName().equals(name)) {
+				return component;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns the {@link Component} with the given name.
+	 * @param name the name
+	 * @return the {@link Component}, null if it does not exist.
+	 */
+	public Component getComponent(String name) {
+		for(Component component: this.components) {
+			if(component.getName().equals(name)) {
+				return component;
+			}
+		}
+		
+		for(ComposableModule module: this.composableModules) {
+			if(module.getName().equals(name)) {
+				return module;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Adds a @link{ComponentType} to the FrameworkRepresentation.
 	 * @param ct the @link{ComponentType} to be added
 	 */
@@ -125,7 +191,7 @@ public class FrameworkRepresentation {
 	/**
 	 * Adds a {@link Property} to the FrameworkRepresentation
 	 * Performs type check without throwing any exceptions.
-	 * @param p the {@link com.fr2501.virage.types.Property} to be added
+	 * @param p the {@link Property} to be added
 	 */
 	public void add(Property p) {
 		this.checkTypes(p);

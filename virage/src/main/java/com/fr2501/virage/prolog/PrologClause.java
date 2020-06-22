@@ -23,6 +23,22 @@ public class PrologClause {
 		this.antecedents.add(antecedent);
 	}
 	
+	public PrologPredicate getSuccedent() {
+		return this.succedent;
+	}
+	
+	public Set<PrologPredicate> getAntecedents() {
+		return this.antecedents;
+	}
+	
+	/**
+	 * Checks, whether a clause is a fact.
+	 * @return true if {@code this} is a fact, false otherwise
+	 */
+	public boolean isAFact() {
+		return this.antecedents.isEmpty();
+	}
+	
 	/**
 	 * Creates a Prolog clause without any antecedents (i.e. a fact).
 	 * @param fact the fact

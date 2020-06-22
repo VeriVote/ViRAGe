@@ -46,7 +46,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	}
 	
 	@Override
-	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, Set<Property> properties) {
+	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, Set<Property> properties) {		
 		for(Property property: properties) {
 			if(property.getArity() != 1) {
 				throw new IllegalArgumentException();

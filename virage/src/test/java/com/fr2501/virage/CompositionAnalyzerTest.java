@@ -1,5 +1,7 @@
 package com.fr2501.virage;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
@@ -21,12 +23,14 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
-public class CompositionAnalyzerTest {
+public abstract class CompositionAnalyzerTest {
 	private static final Logger logger = LogManager.getLogger(CompositionAnalyzerTest.class);
 	
 	private static final String FRAMEWORK_PATH = "src/main/resources/framework.pl";
-	private TestDataGenerator generator;
-	private FrameworkRepresentation framework;
+	protected TestDataGenerator generator;
+	protected FrameworkRepresentation framework;
+	
+	protected abstract CompositionAnalyzer createInstance();
 	
 	@Before
 	public void setup() throws IOException, MalformedEPLFileException {
@@ -44,8 +48,9 @@ public class CompositionAnalyzerTest {
 		int success = 0;
 		int timeout = 0;
 		int failure = 0;
+		int error = 0;
 		
-		CompositionAnalyzer analyzer = new SimplePrologCompositionAnalyzer(this.framework);
+		CompositionAnalyzer analyzer = this.createInstance();
 		analyzer.setTimeout(TIMEOUT);
 		
 		for(int i=0; i<RUNS; i++) {
@@ -67,10 +72,23 @@ public class CompositionAnalyzerTest {
 				} else if(result.getState() == QueryState.FAILED) {
 					failure++;
 					logger.info("No solution exists.");
+				} else if(result.getState() == QueryState.ERROR) {
+					error++;
+					logger.error("An error occured");
 				}
 			}
 		}
 		
-		logger.info("\nSucceeded:\t" + success + "\nTimed out:\t" + timeout + "\nFailed:\t\t" + failure);
+		logger.info("\nSucceeded:\t" + success
+				+ "\nFailed:\t\t" + failure
+				+ "\nTimed out:\t" + timeout
+				+ "\nErrors:\t\t" + error);
+		
+		if(failure == 100 || success == 100 || timeout == 100) {
+			logger.warn("A highly unlikely result occured in the test.\n"
+					+ "This might happen by (a very small) chance, so rerunning the test might help.\n"
+					+ "If the problem persists, something has gone wrong.");
+			fail();
+		}
 	}
 }
