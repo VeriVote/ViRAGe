@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jpl7.JPL;
 
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.JPLFacade;
@@ -21,51 +22,24 @@ import com.fr2501.virage.types.ValueNotPresentException;
  * Simple implementation of the {@link CompositionAnalyzer}, using Prolog with iterative deepening.
  *
  */
-public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
+public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologCompositionAnalyzer {
 	private static final Logger logger = LogManager.getLogger();
-	
-	protected static final long DEFAULT_TIMEOUT = 10000;
-	protected JPLFacade facade;
-	protected FrameworkRepresentation framework;
 	
 	/**
 	 * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
 	 * @param framework the framework
 	 */
-	public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) {
-		logger.info("Initialising SimplePrologCompositionAnalyzer.");
-		this.framework = framework;
-		
-		this.facade = new JPLFacade(DEFAULT_TIMEOUT);
-		this.consultKnowledgeBase();
+	public AdmissionCheckPrologCompositionAnalyzer(FrameworkRepresentation framework) {
+		super(framework);
 	}
 	
+	@Override
 	protected void consultKnowledgeBase() {
-		this.facade.consultFile(this.framework.getAbsolutePath());
-	}
-	
-	@Override
-	public void setTimeout(long millis) {
-		this.facade.setTimeout(millis);
-	}
-	
-	@Override
-	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, Set<Property> properties) {		
-		for(Property property: properties) {
-			if(property.getArity() != 1) {
-				throw new IllegalArgumentException();
-			}
-		}
+		AdmissionGuardGenerator generator = new AdmissionGuardGenerator(this.framework);
+		String path = "src/main/resources/framework_with_admit_guards.pl";
 		
-		String votingRule = composition.toString();
-		
-		List<String> propertyStrings = new LinkedList<String>();
-		for(Property property: properties) {
-			propertyStrings.add(property.getInstantiatedString(votingRule));
-		}
-		String query = StringUtils.printCollection(propertyStrings);
-		
-		return this.facade.factQuery(query);
+		generator.createAdmissionGuardFile(path);
+		this.facade.consultFile(path);
 	}
 
 	@Override
@@ -77,12 +51,16 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 		}
 		
 		// Safety measure to ensure all properties talking about the same element.
+		List<String> admitStrings = new LinkedList<String>();
 		List<String> propertyStrings = new LinkedList<String>();
 		for(Property property: properties) {
-			propertyStrings.add(property.getInstantiatedString("X"));
+			admitStrings.add("admits_" + property.getInstantiatedString("X"));
+			//TODO: Remove magic string
+			propertyStrings.add(property.getName() + "_wa" + property.getInstantiatedStringWithoutName("X"));
 		}
+		admitStrings.addAll(propertyStrings);
 		
-		String query = StringUtils.printCollection(propertyStrings);
+		String query = StringUtils.printCollection(admitStrings);
 		
 		SearchResult<Map<String, String>> result = this.facade.iterativeDeepeningQuery(query);
 		

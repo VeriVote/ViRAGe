@@ -1,4 +1,4 @@
-package com.fr2501.virage.analyzer;
+/*package com.fr2501.virage.analyzer;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,8 +35,8 @@ public class SetBasedCompositionAnalyzer implements CompositionAnalyzer {
 	private Set<Property> simpleProperties;
 	private Set<Property> relationalProperties;
 	
-	private Map<CompositionalStructure, Set<String>> structureSets;
-	private Map<Component, Set<String>> componentSets;
+	private Map<CompositionalStructure, Map<String, Set<String>>> structureSets;
+	private Map<Component, Map<String, Set<String>>> componentSets;
 	
 	public SetBasedCompositionAnalyzer(FrameworkRepresentation framework) {
 		this.framework = framework;
@@ -77,23 +77,53 @@ public class SetBasedCompositionAnalyzer implements CompositionAnalyzer {
  	}
 	
 	private void initializeMaps() {
-		this.structureSets = new HashMap<CompositionalStructure, Set<String>>();
-		this.componentSets = new HashMap<Component, Set<String>>();
+		this.structureSets = new HashMap<CompositionalStructure, Map<String, Set<String>>>();
+		this.componentSets = new HashMap<Component, Map<String, Set<String>>>();
 		
 		for(CompositionalStructure structure: this.framework.getCompositionalStructures()) {
-			this.structureSets.put(structure, new HashSet<String>());
+			this.structureSets.put(structure, new HashMap<String, Set<String>>());
 		}
 		
 		for(Component component: this.framework.getComponents()) {
-			this.componentSets.put(component, new HashSet<String>());
+			this.componentSets.put(component, new HashMap<String, Set<String>>());
 		}
 		
 		for(Component component: this.framework.getComposableModules()) {
-			this.componentSets.put(component, new HashSet<String>());
+			this.componentSets.put(component, new HashMap<String, Set<String>>());
 		}
 		
 		for(CompositionRule rule: this.compositionRules) {
 			PrologPredicate succedent = rule.getSuccedent();
+			
+			// Careful! This is useful only for an occurs check, it omits all instantiations!
+			Property property = rule.getSuccedentAsProperty(this.framework);
+
+			if(this.simpleProperties.contains(property)) {
+				for(PrologPredicate parameter: succedent.getParameters()) {
+					String paramName = parameter.getName();
+					
+					// One of these two will always be null, distinction will be made later.
+					Component component = this.framework.getComponent(paramName);
+					CompositionalStructure structure = this.framework.getCompositionalStructure(paramName);
+					
+					if(component == null && structure == null) {
+						continue;
+					}
+					// A parameter was found which is either a component or a compositional structure
+					
+					Set<String> antecedentStrings = new HashSet<String>();
+				}
+			}
+			
+			/*PrologPredicate succedent = rule.getSuccedent();
+			
+			Set<PrologPredicate> antecedents = rule.getAntecedents();
+			Set<String> antecedentStrings = new HashSet<String>();
+			for(PrologPredicate antecedent: antecedents) {
+				antecedentStrings.add(antecedent.toString());
+			}
+			
+			
 			Property property = rule.getSuccedentAsProperty(this.framework);
 			
 			if(this.simpleProperties.contains(property)) {
@@ -109,7 +139,7 @@ public class SetBasedCompositionAnalyzer implements CompositionAnalyzer {
 					}
 					// A parameter was found which is either a component or a compositional structure
 					
-					List<String> paramStrings = new LinkedList<String>();
+					/*List<String> paramStrings = new LinkedList<String>();
 					for(PrologPredicate param: succedent.getParameters()) {
 						if(param == predicate) {
 							paramStrings.add(ExtendedPrologStrings.COMPONENT.toUpperCase());
@@ -121,7 +151,9 @@ public class SetBasedCompositionAnalyzer implements CompositionAnalyzer {
 					String instantiatedProperty = property.getInstantiatedString(paramStrings);
 					
 					if(component != null) {
-						this.componentSets.get(component).add(instantiatedProperty);
+						Map<String, Set<String>> map = new HashMap<String, Set<String>>();
+						map.put()
+						this.componentSets.get(component).add();
 					} else if(structure != null) {
 						this.structureSets.get(structure).add(instantiatedProperty);
 					}
@@ -173,6 +205,7 @@ public class SetBasedCompositionAnalyzer implements CompositionAnalyzer {
 			
 			if(this.checkSubsumptionalSubset(structureSet, propertyStrings)) {
 				// Found an applicable compositional structure
+				logger.info(structure.getName());
 				
 				// TODO: Find new required sets
 				
@@ -218,4 +251,4 @@ public class SetBasedCompositionAnalyzer implements CompositionAnalyzer {
 			return false;
 		}
 	}
-}
+}*/

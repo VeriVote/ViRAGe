@@ -38,12 +38,32 @@ public class Property implements Parameterized {
 		return res;
 	}
 	
+	public String getInstantiatedStringWithoutName(String string) {
+		if(this.parameters.size() != 1) {
+			throw new IllegalArgumentException();
+		}
+		
+		String res = "(" + string + ")";
+		
+		return res;
+	}
+	
 	public String getInstantiatedString(List<String> strings) {
 		if(strings.size() != this.parameters.size()) {
 			throw new IllegalArgumentException();
 		}
 		
 		String res = this.name + "(" + StringUtils.printCollection(strings) + ")";
+		
+		return res;
+	}
+	
+	public String getInstantiatedStringWithoutName(List<String> strings) {
+		if(strings.size() != this.parameters.size()) {
+			throw new IllegalArgumentException();
+		}
+		
+		String res = "(" + StringUtils.printCollection(strings) + ")";
 		
 		return res;
 	}

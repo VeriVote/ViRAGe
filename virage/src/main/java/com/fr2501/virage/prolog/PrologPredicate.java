@@ -12,11 +12,19 @@ public class PrologPredicate {
 	private String name;
 	private List<PrologPredicate> parameters;
 	private int arity;
+	private int depth;
 	
 	public PrologPredicate(String name, List<PrologPredicate> parameters) {
 		this.name = name;
 		this.parameters = parameters;
 		this.arity = parameters.size();
+		
+		this.depth = 0;
+		for(PrologPredicate parameter: this.parameters) {
+			if(parameter.depth >= this.depth) {
+				this.depth = parameter.depth+1;
+			}
+		}
 	}
 	
 	/**
@@ -40,6 +48,10 @@ public class PrologPredicate {
 
 	public int getArity() {
 		return this.arity;
+	}
+	
+	public int getDepth() {
+		return this.depth;
 	}
 	
 	@Override
@@ -92,8 +104,18 @@ public class PrologPredicate {
 		if (parameters == null) {
 			if (other.parameters != null)
 				return false;
-		} else if (!parameters.equals(other.parameters))
+		}
+		
+		if(this.parameters.size() != other.parameters.size()) {
 			return false;
+		}
+		
+		for(int i=0; i<this.parameters.size(); i++) {
+			if(!this.parameters.get(i).equals(other.parameters.get(i))) {
+				return false;
+			}
+		}
+		
 		return true;
 	}
 }

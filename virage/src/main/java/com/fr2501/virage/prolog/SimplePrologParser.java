@@ -41,7 +41,7 @@ public class SimplePrologParser implements PrologParser {
 		}
 		
 		String antecedentString = cedents[1];
-		Set<PrologPredicate> antecedents;
+		List<PrologPredicate> antecedents;
 		antecedents = this.splitAntecedents(antecedentString);
 		
 		return new PrologClause(succedent, antecedents);
@@ -104,9 +104,9 @@ public class SimplePrologParser implements PrologParser {
 		return new PrologPredicate(name, parameters);
 	}
 	
-	private Set<PrologPredicate> splitAntecedents(String antecedentString) {
+	private List<PrologPredicate> splitAntecedents(String antecedentString) {
 		if(antecedentString.equals("")) throw new IllegalArgumentException();
-		Set<PrologPredicate> res = new HashSet<PrologPredicate>();
+		List<PrologPredicate> res = new LinkedList<PrologPredicate>();
 		String currentPredicate = "";
 		int level = 0;
 		

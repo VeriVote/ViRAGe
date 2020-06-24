@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpl7.Atom;
+import org.jpl7.JPL;
 import org.jpl7.PrologException;
 import org.jpl7.Query;
 import org.jpl7.Term;
@@ -20,10 +21,16 @@ import com.fr2501.virage.types.SearchResult;
  */
 public class JPLFacade {
 	private static final Logger logger = LogManager.getLogger(JPLFacade.class);
+	private static final long DEFAULT_TIMEOUT = 10000;
 	private long timeout;
+	
+	public JPLFacade() {
+		this(JPLFacade.DEFAULT_TIMEOUT);
+	}
 	
 	public JPLFacade(long timeout) {
 		this.timeout = timeout;
+		JPL.init();
 	}
 	
 	public void setTimeout(long timeout) {

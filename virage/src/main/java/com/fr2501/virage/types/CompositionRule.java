@@ -1,6 +1,7 @@
 package com.fr2501.virage.types;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fr2501.virage.prolog.PrologClause;
@@ -34,7 +35,7 @@ public class CompositionRule {
 		return this.clause;
 	}
 	
-	public Set<PrologPredicate> getAntecedents() {
+	public List<PrologPredicate> getAntecedents() {
 		return this.clause.getAntecedents();
 	}
 	

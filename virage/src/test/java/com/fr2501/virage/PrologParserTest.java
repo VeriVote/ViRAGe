@@ -31,7 +31,7 @@ public class PrologParserTest {
 		}
 		
 		{
-			Set<PrologPredicate> antecedents = new HashSet<PrologPredicate>();
+			LinkedList<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
 			antecedents.add(new PrologPredicate("b"));
 			antecedents.add(new PrologPredicate("c"));
 			PrologClause clause2 = new PrologClause(new PrologPredicate("a"), antecedents);	
@@ -50,7 +50,7 @@ public class PrologParserTest {
 			PrologPredicate c = new PrologPredicate("c", X);
 			PrologPredicate d = new PrologPredicate("d", XY);
 			
-			Set<PrologPredicate> antecedents = new HashSet<PrologPredicate>();
+			List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
 			antecedents.add(b);
 			antecedents.add(c);
 			antecedents.add(d);
@@ -82,7 +82,7 @@ public class PrologParserTest {
 			
 			PrologPredicate mono = new PrologPredicate("monotone", param);
 			
-			Set<PrologPredicate> antecedents = new HashSet<PrologPredicate>();
+			List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
 			antecedents.add(dli);
 			antecedents.add(nel);
 			antecedents.add(ele);
@@ -108,7 +108,7 @@ public class PrologParserTest {
 	@Test
 	public void parseSimpleClause() {
 		String clause = "a :- b,c.";
-		Set<PrologPredicate> antecedents = new HashSet<PrologPredicate>();
+		List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
 		antecedents.add(new PrologPredicate("b"));
 		antecedents.add(new PrologPredicate("c"));
 		PrologClause res = new PrologClause(new PrologPredicate("a"), antecedents);	
@@ -135,7 +135,7 @@ public class PrologParserTest {
 		PrologPredicate c = new PrologPredicate("c", X);
 		PrologPredicate d = new PrologPredicate("d", XY);
 		
-		Set<PrologPredicate> antecedents = new HashSet<PrologPredicate>();
+		List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
 		antecedents.add(b);
 		antecedents.add(c);
 		antecedents.add(d);
@@ -167,19 +167,19 @@ public class PrologParserTest {
 		PrologPredicate seq = new PrologPredicate("sequential_composition", XY);
 		PrologPredicate dli = new PrologPredicate("defer_lift_invariant", X);
 		PrologPredicate nel = new PrologPredicate("non_electing", X);
-		PrologPredicate ele = new PrologPredicate("electing", Y);
 		PrologPredicate def = new PrologPredicate("defers", X1);
+		PrologPredicate ele = new PrologPredicate("electing", Y);
 		
 		List<PrologPredicate> param = new LinkedList<PrologPredicate>();
 		param.add(seq);
 		
 		PrologPredicate mono = new PrologPredicate("monotone", param);
 		
-		Set<PrologPredicate> antecedents = new HashSet<PrologPredicate>();
+		LinkedList<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
 		antecedents.add(dli);
 		antecedents.add(nel);
-		antecedents.add(ele);
 		antecedents.add(def);
+		antecedents.add(ele);
 		
 		PrologClause reference = new PrologClause(mono, antecedents);
 		

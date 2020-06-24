@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fr2501.util.StringUtils;
+import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
@@ -22,6 +23,7 @@ import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
+import com.fr2501.virage.types.ValueNotPresentException;
 
 public abstract class CompositionAnalyzerTest {
 	private static final Logger logger = LogManager.getLogger(CompositionAnalyzerTest.class);
@@ -88,6 +90,65 @@ public abstract class CompositionAnalyzerTest {
 			logger.warn("A highly unlikely result occured in the test.\n"
 					+ "This might happen by (a very small) chance, so rerunning the test might help.\n"
 					+ "If the problem persists, something has gone wrong.");
+			fail();
+		}
+	}
+	
+	// The SimplePrologCompositionAnalyzer is considered to be correct and
+	// is thus used as a baseline for all other implementations of CompositionAnalyzer.
+	@Test
+	public void testAccordanceWithSPCA() throws ValueNotPresentException {
+		SimplePrologCompositionAnalyzer spca = new SimplePrologCompositionAnalyzer(this.framework);
+		CompositionAnalyzer self = this.createInstance();
+		
+		final int RUNS = 100;
+		final int TIMEOUT = 10;
+		
+		spca.setTimeout(TIMEOUT);
+		self.setTimeout(TIMEOUT);
+		
+		int conflicts = 0;
+		int errors = 0;
+		int improvements = 0;
+		
+		for(int i=0; i<RUNS; i++) {
+			int amount = (int) (5 * Math.random()) + 1;
+			
+			Set<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
+			
+			logger.info(StringUtils.printCollection(properties));
+			
+			SearchResult<DecompositionTree> trustedResult = spca.generateComposition(properties);
+			SearchResult<DecompositionTree> result = self.generateComposition(properties);
+			
+			if(result.getState() == QueryState.ERROR) {
+				errors++;
+			}
+			
+			if(trustedResult.getState() == QueryState.FAILED) {
+				if(result.getState() == QueryState.SUCCESS) {
+					conflicts++;
+				}
+			}
+			
+			if(trustedResult.getState() == QueryState.SUCCESS) {
+				if(result.getState() == QueryState.FAILED) {
+					conflicts++;
+				}
+			}
+			
+			if(trustedResult.getState() == QueryState.TIMEOUT) {
+				if(result.getState() == QueryState.SUCCESS || result.getState() == QueryState.FAILED) {
+					improvements++;
+				}
+			}
+		}
+	
+		logger.info("Errors: " + errors);
+		logger.info("Conflicts: " + conflicts);
+		logger.info("Improvements: " + improvements);
+		
+		if(errors > 0 || conflicts > 0) {
 			fail();
 		}
 	}
