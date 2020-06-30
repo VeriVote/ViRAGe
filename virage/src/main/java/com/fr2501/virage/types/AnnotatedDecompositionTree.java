@@ -19,4 +19,8 @@ public class AnnotatedDecompositionTree {
 	public DecompositionTree getTree() {
 		return this.tree;
 	}
+	
+	public Map<DecompositionTree, Map<Property, CompositionRule>> getAnnotations() {
+		return this.annotations;
+	}
 }

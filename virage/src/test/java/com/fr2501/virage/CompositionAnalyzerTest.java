@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fr2501.util.StringUtils;
-import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.prolog.ExtendedPrologParser;

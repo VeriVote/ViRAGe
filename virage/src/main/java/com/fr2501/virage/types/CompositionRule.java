@@ -1,8 +1,6 @@
 package com.fr2501.virage.types;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.fr2501.virage.prolog.PrologClause;
 import com.fr2501.virage.prolog.PrologPredicate;

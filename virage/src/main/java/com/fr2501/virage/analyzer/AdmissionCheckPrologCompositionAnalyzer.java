@@ -7,10 +7,8 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jpl7.JPL;
 
 import com.fr2501.util.StringUtils;
-import com.fr2501.virage.prolog.JPLFacade;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
