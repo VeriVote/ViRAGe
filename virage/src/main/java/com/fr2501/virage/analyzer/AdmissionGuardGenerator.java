@@ -11,7 +11,12 @@ import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
-// TODO: Document
+/**
+ * 
+ * This class generates a new Prolog file containing admission guards from
+ * a given {@link FrameworkRepresentation}.
+ *
+ */
 public class AdmissionGuardGenerator {
 	private FrameworkRepresentation framework;
 	
@@ -19,6 +24,10 @@ public class AdmissionGuardGenerator {
 		this.framework = framework;
 	}
 	
+	/**
+	 * Generates the file containing the admission guards
+	 * @param path the file to be written to
+	 */
 	public void createAdmissionGuardFile(String path) {
 		List<CompositionRule> newRules = this.generateAdmissionGuards();
 		
@@ -33,7 +42,7 @@ public class AdmissionGuardGenerator {
 	}
 	
 	private List<CompositionRule> generateAdmissionGuards() {
-		List<CompositionRule> originalRules = framework.getCompositionRules();
+		List<CompositionRule> originalRules = this.framework.getCompositionRules();
 		List<CompositionRule> newRules = new LinkedList<CompositionRule>();
 			
 		// First, generate the rules that introduce the admission guards.
