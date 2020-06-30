@@ -111,6 +111,13 @@ public abstract class CompositionAnalyzerTest {
 		int errors = 0;
 		int improvements = 0;
 		
+		int selfTimeout = 0;
+		int trustedTimeout = 0;
+		int selfSuccess = 0;
+		int trustedSuccess = 0;
+		int selfFailure = 0;
+		int trustedFailure = 0;
+		
 		for(int i=0; i<RUNS; i++) {
 			int amount = (int) (5 * Math.random()) + 1;
 			
@@ -126,22 +133,39 @@ public abstract class CompositionAnalyzerTest {
 			}
 			
 			if(trustedResult.getState() == QueryState.FAILED) {
+				trustedFailure++;
 				if(result.getState() == QueryState.SUCCESS) {
 					conflicts++;
+					selfSuccess++;
+				} else {
+					selfFailure++;
 				}
 			}
 			
 			if(trustedResult.getState() == QueryState.SUCCESS) {
+				trustedSuccess++;
 				if(result.getState() == QueryState.FAILED) {
 					conflicts++;
+					selfFailure++;
+				} else {
+					selfSuccess++;
 				}
 			}
 			
 			if(trustedResult.getState() == QueryState.TIMEOUT) {
-				if(result.getState() == QueryState.SUCCESS || result.getState() == QueryState.FAILED) {
+				trustedTimeout++;
+				if(result.getState() == QueryState.SUCCESS) {
 					improvements++;
+					selfSuccess++;
+				} else if(result.getState() == QueryState.FAILED) {
+					improvements++;
+					selfFailure++;
+				} else {
+					selfTimeout++;
 				}
 			}
+			
+			
 		}
 	
 		logger.info("Errors: " + errors);
@@ -150,6 +174,16 @@ public abstract class CompositionAnalyzerTest {
 		
 		if(errors > 0 || conflicts > 0) {
 			fail();
+		} else {
+			logger.info("Trusted:");
+			logger.info("\tTimeouts: " + trustedTimeout);
+			logger.info("\tFailures: " + trustedFailure);
+			logger.info("\tSuccesses: " + trustedSuccess);	
+			logger.info("-----");
+			logger.info("Self:");
+			logger.info("\tTimeouts: " + selfTimeout);
+			logger.info("\tFailures: " + selfFailure);
+			logger.info("\tSuccesses: " + selfSuccess);
 		}
 	}
 }
