@@ -14,7 +14,7 @@ import com.fr2501.virage.types.SearchResult;
 
 /**
  * 
- * A class used to enable the use of different solvers at the same time without having
+ * A class used to enable the use of different solvers without having
  * to change application code.
  *
  */

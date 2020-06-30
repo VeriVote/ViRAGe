@@ -54,9 +54,8 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
 		List<String> admitStrings = new LinkedList<String>();
 		List<String> propertyStrings = new LinkedList<String>();
 		for(Property property: properties) {
-			admitStrings.add("admits_" + property.getInstantiatedString("X"));
-			//TODO: Remove magic string
-			propertyStrings.add(property.getName() + "_wa" + property.getInstantiatedStringWithoutName("X"));
+			admitStrings.add(AdmissionGuardStrings.ADMITS + property.getInstantiatedString("X"));
+			propertyStrings.add(property.getName() + AdmissionGuardStrings.SUFFIX + property.getInstantiatedStringWithoutName("X"));
 		}
 		admitStrings.addAll(propertyStrings);
 		

@@ -13,9 +13,6 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 
 // TODO: Document
 public class AdmissionGuardGenerator {
-	private static final String ADMITS = "admits_";
-	private static final String SUFFIX = "_wa";
-	private static final String ORIGIN = "generated";
 	private FrameworkRepresentation framework;
 	
 	public AdmissionGuardGenerator(FrameworkRepresentation framework) {
@@ -43,7 +40,7 @@ public class AdmissionGuardGenerator {
 		for(CompositionRule oldRule: originalRules) {
 			PrologPredicate succedent = oldRule.getSuccedent();
 			
-			String newSuccedentName = ADMITS + succedent.getName();
+			String newSuccedentName = AdmissionGuardStrings.ADMITS + succedent.getName();
 			
 			PrologPredicate newSuccedent;
 			
@@ -55,7 +52,7 @@ public class AdmissionGuardGenerator {
 				newSuccedent = new PrologPredicate(newSuccedentName, succedent.getParameters());
 				
 				for(PrologPredicate antecedent: oldRule.getAntecedents()) {
-					String newAntecedentName = ADMITS + antecedent.getName();
+					String newAntecedentName = AdmissionGuardStrings.ADMITS + antecedent.getName();
 					
 					newAntecedents.add(new PrologPredicate(newAntecedentName, antecedent.getParameters()));
 				}
@@ -67,31 +64,31 @@ public class AdmissionGuardGenerator {
 			}
 			
 			PrologClause newClause = new PrologClause(newSuccedent, newAntecedents);
-			newRules.add(new CompositionRule("", ORIGIN, newClause));
+			newRules.add(new CompositionRule("", AdmissionGuardStrings.ORIGIN, newClause));
 		}
 		
 		// Now, alter the old rules to include them.
 		for(CompositionRule oldRule: originalRules) {
-			String newSuccedentName = oldRule.getSuccedent().getName() + SUFFIX;
+			String newSuccedentName = oldRule.getSuccedent().getName() + AdmissionGuardStrings.SUFFIX;
 			PrologPredicate newSuccedent = new PrologPredicate(newSuccedentName, oldRule.getSuccedent().getParameters());
 			
 			List<PrologPredicate> newAntecedents = new LinkedList<PrologPredicate>();
 			
 			for(PrologPredicate antecedent: oldRule.getAntecedents()) {
-				PrologPredicate newAntecedent = new PrologPredicate(ADMITS + antecedent.getName(), antecedent.getParameters());
+				PrologPredicate newAntecedent = new PrologPredicate(AdmissionGuardStrings.ADMITS + antecedent.getName(), antecedent.getParameters());
 			
 				newAntecedents.add(newAntecedent);
 			}
 			
 			for(PrologPredicate antecedent: oldRule.getAntecedents()) {
-				PrologPredicate newAntecedent = new PrologPredicate(antecedent.getName() + SUFFIX, antecedent.getParameters());
+				PrologPredicate newAntecedent = new PrologPredicate(antecedent.getName() + AdmissionGuardStrings.SUFFIX, antecedent.getParameters());
 			
 				newAntecedents.add(newAntecedent);
 			}
 			
 			PrologClause newClause = new PrologClause(newSuccedent, newAntecedents);
 			
-			newRules.add(new CompositionRule("", ORIGIN, newClause));
+			newRules.add(new CompositionRule("", AdmissionGuardStrings.ORIGIN, newClause));
 		}
 		
 		return newRules;
