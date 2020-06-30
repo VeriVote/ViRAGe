@@ -3,7 +3,7 @@
 % max_aggregator
 % == natural_number
 % == termination_condition
-% defer_eq_condition
+% defer_eq_condition(natural_number)
 % == alternative
 % == set
 %
@@ -161,7 +161,10 @@ defers(sequential_composition(X,Y), 1) :-
 	non_blocking(X),
 	non_electing(X),
 	defers(Y,1).
-
+% = unproven
+% loop_defer_eq_N_defers_N
+defers(loop_composition(_, defer_eq_condition(N)),N).
+	
 % = drop_module.thy 
 % drop_2_module_rejects_2
 rejects(drop_module(2), 2).

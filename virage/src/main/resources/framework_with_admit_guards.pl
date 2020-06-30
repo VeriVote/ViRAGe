@@ -25,6 +25,7 @@ admits_defers(pass_module(1),1).
 admits_defers(pass_module(2),2).
 admits_defers(pass_module(_),_).
 admits_defers(sequential_composition(_,_),1).
+admits_defers(loop_composition(_,defer_eq_condition(_)),_).
 admits_rejects(drop_module(2),2).
 admits_rejects(drop_module(_),_).
 admits_eliminates(parallel_composition(_,_,max_aggregator),1).
@@ -61,6 +62,7 @@ defers_wa(pass_module(1),1).
 defers_wa(pass_module(2),2).
 defers_wa(pass_module(N),N).
 defers_wa(sequential_composition(X,Y),1) :- admits_non_blocking(X),admits_non_electing(X),admits_defers(Y,1),non_blocking_wa(X),non_electing_wa(X),defers_wa(Y,1).
+defers_wa(loop_composition(_,defer_eq_condition(N)),N).
 rejects_wa(drop_module(2),2).
 rejects_wa(drop_module(N),N).
 eliminates_wa(parallel_composition(X,Y,max_aggregator),1) :- admits_defers(X,1),admits_non_electing(X),admits_rejects(Y,2),admits_disjoint_compatible(X,Y),defers_wa(X,1),non_electing_wa(X),rejects_wa(Y,2),disjoint_compatible_wa(X,Y).

@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -39,6 +40,42 @@ public abstract class CompositionAnalyzerTest {
 		this.framework = parser.parseFramework(new File(FRAMEWORK_PATH));
 		
 		this.generator = new TestDataGenerator(framework);
+	}
+	
+	@Test
+	public void testSequentialMajorityComparison() throws ValueNotPresentException {
+		String smc = "sequential_composition(" + 
+						"loop_composition(" + 
+							"parallel_composition(" + 
+								"sequential_composition(" + 
+									"pass_module(2)," + 
+									"sequential_composition(" + 
+										"downgrade(" + 
+											"plurality_module)," + 
+										"pass_module(1)))," + 
+								"drop_module(2)," + 
+								"max_aggregator)," + 
+							"defer_eq_condition(1))," + 
+						"elect_module)";
+		
+		DecompositionTree smcTree = DecompositionTree.parseString(smc);
+		
+		CompositionAnalyzer analyzer = this.createInstance();
+		analyzer.setTimeout(10000);
+		
+		Set<Property> properties = new HashSet<Property>();
+		properties.add(this.framework.getProperty("monotone"));
+		
+		SearchResult<Boolean> result = analyzer.analyzeComposition(smcTree, properties);
+		
+		if(result.getState() == QueryState.TIMEOUT) {
+			logger.warn("The current CompositionAnalyzer is very slow. "
+					+ "This is not an error by definition, but something"
+					+ "seems to be wrong.");
+		}
+		
+		assert(result.hasValue());
+		assert(result.getValue());
 	}
 	
 	@Test
