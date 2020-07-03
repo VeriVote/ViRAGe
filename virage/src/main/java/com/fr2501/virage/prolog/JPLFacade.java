@@ -78,6 +78,11 @@ public class JPLFacade {
 				return null;
 			}
 		} catch(PrologException e) {
+			if(!e.getMessage().equals("time_limit_exceeded")) {
+				logger.error(e);
+				throw e;
+			}
+			
 			return new HashMap<String, String>();
 		}
 	}
@@ -108,7 +113,13 @@ public class JPLFacade {
 			long remainingTime = endTime -System.currentTimeMillis();
 			String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + "," + unusedVariable + ")";
 			
-			Map<String, String> result = this.simpleQueryWithTimeout(actualQuery, remainingTime);
+			Map<String, String> result = new HashMap<String, String>();
+			
+			try {
+				result = this.simpleQueryWithTimeout(actualQuery, remainingTime);
+			} catch(PrologException e) {
+				return new SearchResult<Boolean>(QueryState.ERROR, null);
+			}
 			
 			if(result == null) {
 				// No solution, query failed.
@@ -116,8 +127,7 @@ public class JPLFacade {
 			}
 			
 			if(!result.containsKey(unusedVariable)) {
-				// Empty Map was received, malformed query or timeout.
-				// Distinction is impossible, so timeout is assumed.
+				// Empty Map was received, timeout.
 				return new SearchResult<Boolean>(QueryState.TIMEOUT, null);
 			}
 
@@ -167,7 +177,11 @@ public class JPLFacade {
 
 			Map<String, String> result = new HashMap<String, String>();
 			
-			result = this.simpleQueryWithTimeout(actualQuery, remainingTime);
+			try {
+				result = this.simpleQueryWithTimeout(actualQuery, remainingTime);
+			} catch(PrologException e) {
+				return new SearchResult<Map<String, String>>(QueryState.ERROR, null);
+			}
 			
 			if(result == null) {
 				// No solution, query failed.
@@ -175,8 +189,7 @@ public class JPLFacade {
 			}
 			
 			if(!result.containsKey(unusedVariable)) {
-				// Empty Map was received, malformed query or timeout.
-				// Distinction is impossible, so timeout is assumed.
+				// Empty Map was received, timeout.
 				return new SearchResult<Map<String, String>>(QueryState.TIMEOUT, null);
 			}
 

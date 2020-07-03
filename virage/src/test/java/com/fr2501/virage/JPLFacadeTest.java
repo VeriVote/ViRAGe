@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
-import org.jpl7.PrologException;
 import org.junit.Test;
 
 import com.fr2501.virage.prolog.JPLFacade;
@@ -15,13 +14,15 @@ import com.fr2501.virage.types.SearchResult;
 public class JPLFacadeTest {
 	private static final String validTestPath = "src/test/resources/valid_test.pl";
 	
-	@Test(expected = PrologException.class)
+	@Test
 	public void testInvalidQuery() {
 		JPLFacade facade = new JPLFacade(1000);
 		
 		String query = "(,this is not a ) legit ,;. query @ all.)(";
 		
-		facade.iterativeDeepeningQuery(query);
+		SearchResult<Map<String,String>> result = facade.iterativeDeepeningQuery(query);
+		
+		assertTrue(result.getState() == QueryState.ERROR);
 	}
 	
 	@Test
