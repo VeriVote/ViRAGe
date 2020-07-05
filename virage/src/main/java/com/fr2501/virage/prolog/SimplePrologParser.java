@@ -3,9 +3,6 @@ package com.fr2501.virage.prolog;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  * 
  * A simple implementation of the {@link PrologParser} interface
