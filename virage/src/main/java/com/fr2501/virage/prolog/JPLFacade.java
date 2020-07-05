@@ -51,10 +51,11 @@ public class JPLFacade {
 	 * 
 	 * @param queryString the query
 	 * @param timeout the timeout
-	 * @return a {@link Map} containing the result. If query was malformed or no solution
+	 * @return a {@link Map} containing the result. If no solution
 	 * is found within timeout, an empty Map is returned.
+	 * @throws PrologException if query is malformed.
 	 */
-	public Map<String, String> simpleQueryWithTimeout(String queryString, long timeout) {
+	public Map<String, String> simpleQueryWithTimeout(String queryString, long timeout) throws PrologException {
 		float timeoutInSeconds = ((float) timeout) / 1000.0f;
 		
 		String actualQuery = "call_with_time_limit(" + timeoutInSeconds + ",(" + queryString + "))";
