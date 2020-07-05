@@ -92,6 +92,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 				resultMap = result.getValue();
 			} catch(ValueNotPresentException e) {
 				// This should never happen.
+				logger.warn("This should not have happened.");
 				logger.warn(e);
 			}
 				

@@ -29,7 +29,7 @@ public class SimpleFileWriter {
 				writer.write(o.toString() + "\n");
 			}
 		} catch (IOException e) {
-			logger.warn("Writing to " + path + " was impossible.");
+			logger.error("Writing to " + path + " was impossible.");
 		} finally {
 			try {
 				this.writer.close();

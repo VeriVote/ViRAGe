@@ -11,13 +11,9 @@ import org.apache.logging.log4j.Logger;
  * A simple implementation of the {@link PrologParser} interface
  *
  */
-public class SimplePrologParser implements PrologParser {
-	private final static Logger logger = LogManager.getLogger(SimplePrologParser.class.getName());
-	
+public class SimplePrologParser implements PrologParser {	
 	@Override
-	public PrologClause parseSingleClause(String clause) {		
-		logger.trace("parseSingleClause(" + clause + ")");
-		
+	public PrologClause parseSingleClause(String clause) {				
 		if(clause.equals("")) throw new IllegalArgumentException();
 		
 		String sanitizedClause = this.sanitizeClause(clause);		
@@ -54,8 +50,6 @@ public class SimplePrologParser implements PrologParser {
 	}
 
 	private PrologPredicate breakdownPredicate(String string) {
-		logger.trace("breakdownPredicate(" + string + ")");
-		
 		if(string.equals("")) throw new IllegalArgumentException();
 		String name = "";
 		List<PrologPredicate> parameters = new LinkedList<PrologPredicate>();

@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import com.fr2501.virage.prolog.PrologClause;
@@ -13,8 +15,11 @@ import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
 
 public class PrologParserTest {
+	private static final Logger logger = LogManager.getLogger(PrologParserTest.class);
+	
 	@Test(expected = IllegalArgumentException.class)
 	public void parseEmptyClause() {
+		logger.info("parseEmptyClause()");
 		String clause = "";
 		PrologParser parser = new SimplePrologParser();
 		
@@ -23,6 +28,7 @@ public class PrologParserTest {
 	
 	@Test
 	public void testEquals() {
+		logger.info("testEquals()");
 		{
 			PrologClause clause1 = new PrologClause(new PrologPredicate("a"));
 			assertTrue(clause1.equals(clause1));
@@ -93,6 +99,7 @@ public class PrologParserTest {
 	
 	@Test
 	public void parseFact() {
+		logger.info("parseFact()");
 		String clause = "a.";
 		PrologClause res = new PrologClause(new PrologPredicate("a"));
 		
@@ -105,6 +112,7 @@ public class PrologParserTest {
 	
 	@Test
 	public void parseSimpleClause() {
+		logger.info("parseSimpleClause()");
 		String clause = "a :- b,c.";
 		List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
 		antecedents.add(new PrologPredicate("b"));
@@ -120,6 +128,7 @@ public class PrologParserTest {
 	
 	@Test
 	public void parseComplexClause() {
+		logger.info("parseComplexClause()");
 		String clause = "a(X,Y) :- b,c(X),d(X,Y).";
 		
 		List<PrologPredicate> X = new LinkedList<PrologPredicate>();
@@ -149,6 +158,7 @@ public class PrologParserTest {
 	
 	@Test
 	public void parseRealClause() {
+		logger.info("parseRealClause()");
 		String clause = "monotone(sequential_composition(X,Y)) :- defer_lift_invariant(X),non_electing(X),defers(X,1),electing(Y).";
 		
 		List<PrologPredicate> X = new LinkedList<PrologPredicate>();

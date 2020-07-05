@@ -44,6 +44,7 @@ public abstract class CompositionAnalyzerTest {
 	
 	@Test
 	public void testSequentialMajorityComparison() throws ValueNotPresentException {
+		logger.info("testSequentialMajorityComparison()");
 		String smc = "sequential_composition(" + 
 						"loop_composition(" + 
 							"parallel_composition(" + 
@@ -80,6 +81,7 @@ public abstract class CompositionAnalyzerTest {
 	
 	@Test
 	public void testRandomPropertySets() throws Exception {
+		logger.info("testRandomPropertySets()");
 		final int RUNS = 100;
 		final int TIMEOUT = 10;
 		
@@ -96,20 +98,20 @@ public abstract class CompositionAnalyzerTest {
 			
 			Set<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
 			
-			logger.info(StringUtils.printCollection(properties));
+			logger.debug("Query: " + StringUtils.printCollection(properties));
 			
 			SearchResult<DecompositionTree> result = analyzer.generateComposition(properties);
 			
 			if(result.hasValue()) {
 				success++;
-				logger.info("Result: " + result.getValue().toString());
+				logger.debug("Result: " + result.getValue().toString());
 			} else {
 				if(result.getState() == QueryState.TIMEOUT) {
 					timeout++;
-					logger.info("Query timed out.");
+					logger.debug("Query timed out.");
 				} else if(result.getState() == QueryState.FAILED) {
 					failure++;
-					logger.info("No solution exists.");
+					logger.debug("No solution exists.");
 				} else if(result.getState() == QueryState.ERROR) {
 					error++;
 					logger.error("An error occured");
@@ -117,7 +119,7 @@ public abstract class CompositionAnalyzerTest {
 			}
 		}
 		
-		logger.info("\nSucceeded:\t" + success
+		logger.debug("\nSucceeded:\t" + success
 				+ "\nFailed:\t\t" + failure
 				+ "\nTimed out:\t" + timeout
 				+ "\nErrors:\t\t" + error);
@@ -134,6 +136,7 @@ public abstract class CompositionAnalyzerTest {
 	// is thus used as a baseline for all other implementations of CompositionAnalyzer.
 	@Test
 	public void testAccordanceWithSPCA() throws ValueNotPresentException {
+		logger.info("testAccordanceWithSCPA()");
 		SimplePrologCompositionAnalyzer spca = new SimplePrologCompositionAnalyzer(this.framework);
 		CompositionAnalyzer self = this.createInstance();
 		
@@ -159,7 +162,7 @@ public abstract class CompositionAnalyzerTest {
 			
 			Set<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
 			
-			logger.info(StringUtils.printCollection(properties));
+			logger.debug("Query: " + StringUtils.printCollection(properties));
 			
 			SearchResult<DecompositionTree> trustedResult = spca.generateComposition(properties);
 			SearchResult<DecompositionTree> result = self.generateComposition(properties);
@@ -204,22 +207,22 @@ public abstract class CompositionAnalyzerTest {
 			
 		}
 	
-		logger.info("Errors: " + errors);
-		logger.info("Conflicts: " + conflicts);
-		logger.info("Improvements: " + improvements);
+		logger.debug("Errors: " + errors);
+		logger.debug("Conflicts: " + conflicts);
+		logger.debug("Improvements: " + improvements);
 		
 		if(errors > 0 || conflicts > 0) {
 			fail();
 		} else {
-			logger.info("Trusted:");
-			logger.info("\tTimeouts: " + trustedTimeout);
-			logger.info("\tFailures: " + trustedFailure);
-			logger.info("\tSuccesses: " + trustedSuccess);	
-			logger.info("-----");
-			logger.info("Self:");
-			logger.info("\tTimeouts: " + selfTimeout);
-			logger.info("\tFailures: " + selfFailure);
-			logger.info("\tSuccesses: " + selfSuccess);
+			logger.debug("Trusted:");
+			logger.debug("\tTimeouts: " + trustedTimeout);
+			logger.debug("\tFailures: " + trustedFailure);
+			logger.debug("\tSuccesses: " + trustedSuccess);	
+			logger.debug("-----");
+			logger.debug("Self:");
+			logger.debug("\tTimeouts: " + selfTimeout);
+			logger.debug("\tFailures: " + selfFailure);
+			logger.debug("\tSuccesses: " + selfSuccess);
 		}
 	}
 }

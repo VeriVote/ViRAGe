@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import com.fr2501.virage.prolog.JPLFacade;
@@ -12,10 +14,12 @@ import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.types.SearchResult;
 
 public class JPLFacadeTest {
+	private static final Logger logger = LogManager.getLogger(JPLFacadeTest.class);
 	private static final String validTestPath = "src/test/resources/valid_test.pl";
 	
 	@Test
 	public void testInvalidQuery() {
+		logger.info("testInvalidQuery()");
 		JPLFacade facade = new JPLFacade(1000);
 		
 		String query = "(,this is not a ) legit ,;. query @ all.)(";
@@ -27,6 +31,7 @@ public class JPLFacadeTest {
 	
 	@Test
 	public void testSimpleQuery() throws Exception {
+		logger.info("testSimpleQuery()");
 		JPLFacade facade = new JPLFacade(1000);
 		facade.consultFile(validTestPath);
 		
@@ -39,6 +44,7 @@ public class JPLFacadeTest {
 	
 	@Test
 	public void testFactQuery() throws Exception {
+		logger.info("testFactQuery()");
 		JPLFacade facade = new JPLFacade(1000);
 		facade.consultFile(validTestPath);
 		

@@ -36,9 +36,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 	}
 	
 	@Override
-	public FrameworkRepresentation parseFramework(File file) throws IOException, MalformedEPLFileException {
-		logger.trace("parseFramework(" + file.getAbsolutePath().toString() + ")");
-		
+	public FrameworkRepresentation parseFramework(File file) throws IOException, MalformedEPLFileException {		
 		List<String> framework = this.fileReader.readFileByLine(file);
 		
 		return this.parseFramework(framework, file.getAbsolutePath());
@@ -53,8 +51,6 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 	 * @throws MalformedEPLFileException if the input does not follow the specification of the extended Prolog format.
 	 */
 	private FrameworkRepresentation parseFramework(List<String> representation, String path) throws MalformedEPLFileException {
-		logger.trace("parseFramework(representation)");
-		
 		FrameworkRepresentation framework = new FrameworkRepresentation(path);
 		ParserState state = ParserState.STARTING;
 		

@@ -5,13 +5,18 @@ import static org.junit.Assert.assertTrue;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import com.fr2501.virage.types.DecompositionTree;
 
 public class DecompositionTreeTest {
+	private static final Logger logger = LogManager.getLogger(DecompositionTreeTest.class);
+	
 	@Test
-	public void TestConstruction() {
+	public void testConstruction() {
+		logger.info("testConstruction()");
 		String tree = "root(b(c,d), e, f(g(h,i)))";
 		
 		DecompositionTree c = new DecompositionTree("c");

@@ -80,6 +80,7 @@ public class JPLFacade {
 			}
 		} catch(PrologException e) {
 			if(!e.getMessage().equals("PrologException: time_limit_exceeded")) {
+				logger.error("A Prolog error occured.");
 				logger.error(e);
 				throw e;
 			}
@@ -152,7 +153,7 @@ public class JPLFacade {
 	
 	/**
 	 * A query containing variables, using default timeout.
-	 * @param queryString the query
+	 * @par)am queryString the query
 	 * @return a SearchResult representing the result of the query
 	 */
 	public SearchResult<Map<String,String>> iterativeDeepeningQuery(String queryString) {

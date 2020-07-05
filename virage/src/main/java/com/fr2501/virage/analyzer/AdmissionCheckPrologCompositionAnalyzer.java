@@ -29,6 +29,8 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
 	 */
 	public AdmissionCheckPrologCompositionAnalyzer(FrameworkRepresentation framework) {
 		super(framework);
+		
+		logger.info("Initialising AdmissionCheckPrologCompositionAnalyzer");
 	}
 	
 	@Override
@@ -67,6 +69,7 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
 				resultMap = result.getValue();
 			} catch(ValueNotPresentException e) {
 				// This should never happen.
+				logger.warn("This should not have happened.");
 				logger.warn(e);
 			}
 				

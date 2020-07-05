@@ -20,6 +20,7 @@ public class ExtendedPrologParserTest {
 	
 	@Test(expected = FileNotFoundException.class)
 	public void loadNonExistingFile() throws IOException, MalformedEPLFileException {
+		logger.info("loadNonExistingFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		
 		parser.parseFramework(new File(""));	
@@ -27,6 +28,7 @@ public class ExtendedPrologParserTest {
 	
 	@Test(expected = MalformedEPLFileException.class)
 	public void loadInvalidFile() throws IOException, MalformedEPLFileException {
+		logger.info("loadInvalidFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		
 		parser.parseFramework(new File("src/test/resources/invalid_test.pl"));	
@@ -34,6 +36,7 @@ public class ExtendedPrologParserTest {
 	
 	@Test
 	public void loadValidFile() throws IOException, MalformedEPLFileException {
+		logger.info("loadValidFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		
 		FrameworkRepresentation framework = parser.parseFramework(new File("src/test/resources/valid_test.pl"));
@@ -47,10 +50,9 @@ public class ExtendedPrologParserTest {
 	
 	@Test
 	public void loadFrameworkFile() throws IOException, MalformedEPLFileException {
+		logger.info("loadFrameworkFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
-		FrameworkRepresentation fr = parser.parseFramework(new File("src/main/resources/framework.pl"));
-		
-		logger.debug(fr.toString());
+		parser.parseFramework(new File("src/main/resources/framework.pl"));
 	}
 }
