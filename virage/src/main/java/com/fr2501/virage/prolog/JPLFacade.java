@@ -79,7 +79,7 @@ public class JPLFacade {
 				return null;
 			}
 		} catch(PrologException e) {
-			if(!e.getMessage().equals("time_limit_exceeded")) {
+			if(!e.getMessage().equals("PrologException: time_limit_exceeded")) {
 				logger.error(e);
 				throw e;
 			}
