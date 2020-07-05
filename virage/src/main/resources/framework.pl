@@ -6,12 +6,26 @@
 % defer_eq_condition(natural_number)
 % == alternative
 % == set
+% == eval_func
+% borda_score
+% copeland_score
+% minimax_score
+% == comparator
+% less
+% max
+% leq
+% min
+% avg
+% less_avg
+% leq_avg
 %
 % === composable_module - electoral_module
 % defer_module
 % elect_module
 % pass_module(natural_number)
 % drop_module(natural_number)
+%% threshold value is omitted here.
+% elim_module(eval_func,comparator)
 % plurality_module
 % blacks_rule
 % borda_module
@@ -44,8 +58,87 @@
 % defer_invariant_monotone(electoral_module)
 % commutative_agg(aggregator)
 % conservative(aggregator)
+% condorcet_consistent(electoral_module)
+% defer_condorcet_consistent(electoral_module)
+% condorcet_compatible(electoral_module)
+%% decrementing(electoral_module)
+%% defer_deciding(electoral_module)
+%% rejecting(electoral_module)
+%% eliminating(electoral_module)
+% condorcet_rating(eval_func)
+%% homogeneous(electoral_module)
 %
 % === composition_rule
+% = blacks_rule.thy
+% definition
+black(sequential_composition(condorcet_nonelecting, borda(_))).
+
+% = borda_module.thy
+% definition
+borda(sequential_composition(elim_module(max,borda_score),elect_module)).
+
+% = classic_nanson.thy
+% definition
+classic_nanson(sequential_composition(loop_composition(elim_module(leq_avg, borda_score), defer_eq_condition(1)), elect_module)).
+
+% = copeland.thy
+% definition
+copeland(sequential_composition(elim_module(max,copeland_score),elect_module)).
+
+% = minimax.thy
+% definition
+minimax(sequential_composition(elim_module(max,minimax_score),elect_module)).
+
+% = nanson_baldwin.thy
+% definition
+nanson_baldwin(sequential_composition(loop_composition(elim_module(min,borda_score),defer_eq_condition(1)),elect_module)).
+
+% = schwartz_rule.thy
+% definition
+schwartz(sequential_composition(loop_composition(elim_module(less_avg,borda_score),defer_eq_condition(1)),elect_module)).
+
+% = electoral_modules.thy
+% definition
+defer_deciding(X) :-
+	defers(X,1),
+	non_electing(X).
+
+% = condorcet_consistency.thy
+% condorcet_compatibility_and_defer_deciding_implies_defer_condorcet_consistent
+defer_condorcet_consistent(X) :-
+	condorcet_compatible(X),
+	defer_deciding(X).
+% = elim_module.thy
+% cr_eval_implies_max_elim_is_def_cc
+defer_condorcet_consistent(elim_module(max,F)) :-
+	condorcet_rating(F).
+
+% = copeland.thy
+% copeland_module_is_cc
+condorcet_consistent(X) :-
+	copeland(X).
+% = minimax.thy
+% minimax_module_is_cc
+condorcet_consistent(X) :-
+	minimax(X).
+% = voting_rule_constructors.thy
+% m_defer_cc_implies_elector_m_cc
+condorcet_consistent(sequential_composition(X,elect_module)) :-
+	defer_condorcet_consistent(X).
+% = voting_rule_constructors.thy
+% cr_eval_implies_elect_max_elim_is_cc
+condorcet_consistent(sequential_composition(elim_module(max,F),elect_module)) :-
+	condorcet_rating(F).
+
+% = elim_module.thy
+% cr_eval_implies_max_elim_is_ccomp
+condorcet_compatible(elim_module(max,F)) :-
+	condorcet_rating(F).
+
+% = minimax.thy
+% minimax_score_is_condorcet_rating
+condorcet_rating(minimax_score).
+
 % = sequential_composition.thy 
 % monotone_sequence
 monotone(sequential_composition(X,Y)) :-
@@ -130,6 +223,9 @@ non_electing(pass_module(_)).
 % = drop_module.thy
 % drop_module_non_electing
 non_electing(drop_module(_)).
+% = elim_module.thy
+% elim_module_nonelecting
+non_electing(elim_module(_,_)).
 % = sequential_composition.thy
 % seq_comp_preserves_non_electing
 non_electing(sequential_composition(X,Y)) :-

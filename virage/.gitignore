@@ -1,1 +1,6 @@
 /target/
+/doc/
+/libs/
+/.classpath
+/.project
+/.settings/
