@@ -39,4 +39,15 @@ public class SearchResult<T> {
 	public boolean hasValue() {
 		return (this.value != null);
 	}
+	
+	@Override
+	public String toString() {
+		String res = this.state.toString();
+		
+		if(this.hasValue()) {
+			res +=  ": " + this.value.toString();
+		}
+		
+		return res;
+	}
 }

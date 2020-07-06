@@ -1,5 +1,6 @@
 package com.fr2501.virage.analyzer;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,9 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	/**
 	 * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
 	 * @param framework the framework
+	 * @throws IOException 
 	 */
-	public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) {
+	public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) throws IOException {
 		logger.info("Initialising SimplePrologCompositionAnalyzer.");
 		this.framework = framework;
 		
@@ -40,7 +42,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 		this.consultKnowledgeBase();
 	}
 	
-	protected void consultKnowledgeBase() {
+	protected void consultKnowledgeBase() throws IOException {
 		this.facade.consultFile(this.framework.getAbsolutePath());
 	}
 	

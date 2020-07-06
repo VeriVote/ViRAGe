@@ -32,18 +32,18 @@ public abstract class CompositionAnalyzerTest {
 	protected TestDataGenerator generator;
 	protected FrameworkRepresentation framework;
 	
-	protected abstract CompositionAnalyzer createInstance();
+	protected abstract CompositionAnalyzer createInstance() throws IOException;
 	
 	@Before
 	public void setup() throws IOException, MalformedEPLFileException {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-		this.framework = parser.parseFramework(new File(FRAMEWORK_PATH), "votingRuleFramework");
+		this.framework = parser.parseFramework(new File(FRAMEWORK_PATH));
 		
 		this.generator = new TestDataGenerator(framework);
 	}
 	
 	@Test
-	public void testSequentialMajorityComparison() throws ValueNotPresentException {
+	public void testSequentialMajorityComparison() throws ValueNotPresentException, IOException {
 		logger.info("testSequentialMajorityComparison()");
 		String smc = "sequential_composition(" + 
 						"loop_composition(" + 
@@ -135,7 +135,7 @@ public abstract class CompositionAnalyzerTest {
 	// The SimplePrologCompositionAnalyzer is considered to be correct and
 	// is thus used as a baseline for all other implementations of CompositionAnalyzer.
 	@Test
-	public void testAccordanceWithSPCA() throws ValueNotPresentException {
+	public void testAccordanceWithSPCA() throws ValueNotPresentException, IOException {
 		logger.info("testAccordanceWithSCPA()");
 		SimplePrologCompositionAnalyzer spca = new SimplePrologCompositionAnalyzer(this.framework);
 		CompositionAnalyzer self = this.createInstance();

@@ -1,5 +1,7 @@
 package com.fr2501.virage.analyzer;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -26,23 +28,20 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
 	/**
 	 * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
 	 * @param framework the framework
+	 * @throws IOException 
 	 */
-	public AdmissionCheckPrologCompositionAnalyzer(FrameworkRepresentation framework) {
+	public AdmissionCheckPrologCompositionAnalyzer(FrameworkRepresentation framework) throws IOException {
 		super(framework);
 		
 		logger.info("Initialising AdmissionCheckPrologCompositionAnalyzer");
 	}
 	
 	@Override
-	protected void consultKnowledgeBase() {
+	protected void consultKnowledgeBase() throws IOException {
 		AdmissionGuardGenerator generator = new AdmissionGuardGenerator(this.framework);
 		
-		String frameworkName = this.framework.getName();
-		
-		String path = "src/main/resources/generated/" + frameworkName + "_with_admit_guards.pl";
-		
-		generator.createAdmissionGuardFile(path);
-		this.facade.consultFile(path);
+		File admissionGuards = generator.createAdmissionGuardFile();
+		this.facade.consultFile(admissionGuards.getAbsolutePath());
 	}
 
 	@Override
