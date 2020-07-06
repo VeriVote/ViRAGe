@@ -1,7 +1,7 @@
 package com.fr2501.virage.prolog;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 
@@ -10,25 +10,42 @@ import java.util.Set;
  */
 public class PrologClause {
 	private PrologPredicate succedent;
-	private Set<PrologPredicate> antecedents;
+	private List<PrologPredicate> antecedents;
 	
-	public PrologClause(PrologPredicate succedent, Set<PrologPredicate> antecedents) {
+	public PrologClause(PrologPredicate succedent, List<PrologPredicate> antecedents) {
 		this.succedent = succedent;
 		this.antecedents = antecedents;
 	}
 	
 	public PrologClause(PrologPredicate succedent, PrologPredicate antecedent) {
 		this.succedent = succedent;
-		this.antecedents = new HashSet<PrologPredicate>();
+		this.antecedents = new LinkedList<PrologPredicate>();
 		this.antecedents.add(antecedent);
 	}
 	
 	/**
 	 * Creates a Prolog clause without any antecedents (i.e. a fact).
+	 * @param fact the fact
 	 */
 	public PrologClause(PrologPredicate fact) {
 		this.succedent = fact;
-		this.antecedents = new HashSet<PrologPredicate>();
+		this.antecedents = new LinkedList<PrologPredicate>();
+	}
+	
+	public PrologPredicate getSuccedent() {
+		return this.succedent;
+	}
+	
+	public List<PrologPredicate> getAntecedents() {
+		return this.antecedents;
+	}
+	
+	/**
+	 * Checks, whether a clause is a fact.
+	 * @return true if {@code this} is a fact, false otherwise
+	 */
+	public boolean isAFact() {
+		return this.antecedents.isEmpty();
 	}
 	
 	@Override
@@ -74,13 +91,21 @@ public class PrologClause {
 		if (antecedents == null) {
 			if (other.antecedents != null)
 				return false;
-		} else if (!antecedents.equals(other.antecedents))
-			return false;
+		}
 		if (succedent == null) {
 			if (other.succedent != null)
 				return false;
 		} else if (!succedent.equals(other.succedent))
 			return false;
+		
+		if(this.antecedents.size() != other.antecedents.size()) {
+			return false;
+		}
+		for(int i=0; i<this.antecedents.size(); i++) {
+			if(!this.antecedents.get(i).equals(other.antecedents.get(i))) {
+				return false;
+			}
+		}
 		return true;
 	}
 }

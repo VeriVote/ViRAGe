@@ -1,6 +1,9 @@
 package com.fr2501.virage.types;
 
+import java.util.List;
+
 import com.fr2501.virage.prolog.PrologClause;
+import com.fr2501.virage.prolog.PrologPredicate;
 
 /**
  * 
@@ -30,6 +33,15 @@ public class CompositionRule {
 		return this.clause;
 	}
 	
+	public List<PrologPredicate> getAntecedents() {
+		return this.clause.getAntecedents();
+	}
+	
+	public PrologPredicate getSuccedent() {
+		return this.clause.getSuccedent();
+	}
+	
+	@Override
 	public String toString() {
 		String res = this.name + ": " + clause.toString() + " (from " + this.origin + ")";
 		

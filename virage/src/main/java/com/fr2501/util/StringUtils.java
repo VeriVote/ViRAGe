@@ -1,6 +1,7 @@
 package com.fr2501.util;
 
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -36,5 +37,19 @@ public class StringUtils {
 		res = res.substring(0, res.length()-1);
 		
 		return res;
+	}
+	
+	/**
+	 * Checks whether a String is a number
+	 * @param strNum the String to be checked
+	 * @return true if strNum represents a number, false otherwise.
+	 */
+	public static boolean isNumeric(String strNum) {
+		Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+		
+	    if (strNum == null) {
+	        return false; 
+	    }
+	    return pattern.matcher(strNum).matches();
 	}
 }

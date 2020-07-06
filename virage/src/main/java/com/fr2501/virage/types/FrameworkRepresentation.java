@@ -1,6 +1,8 @@
 package com.fr2501.virage.types;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,20 +18,30 @@ import org.apache.logging.log4j.Logger;
 public class FrameworkRepresentation {
 	private Logger logger = LogManager.getLogger(FrameworkRepresentation.class);
 	
+	private String absolutePath;
+	
 	private Set<ComponentType> componentTypes;
 	private Set<Component> components;
 	private Set<ComposableModule> composableModules;
 	private Set<CompositionalStructure> compositionalStructures;
-	private Set<CompositionRule> compositionRules;
+	private List<CompositionRule> compositionRules;
 	private Set<Property> properties;
 	
-	public FrameworkRepresentation() {
+	private String composableModuleAlias;
+	
+	public FrameworkRepresentation(String absolutePath) {
+		this.absolutePath = absolutePath;
+		
 		this.componentTypes = new HashSet<ComponentType>();
 		this.components = new HashSet<Component>();
 		this.composableModules = new HashSet<ComposableModule>();
 		this.compositionalStructures = new HashSet<CompositionalStructure>();
-		this.compositionRules = new HashSet<CompositionRule>();
+		this.compositionRules = new LinkedList<CompositionRule>();
 		this.properties = new HashSet<Property>();
+	}
+	
+	public String getAbsolutePath() {
+		return this.absolutePath;
 	}
 	
 	public Set<ComponentType> getComponentTypes() {
@@ -48,12 +60,86 @@ public class FrameworkRepresentation {
 		return this.compositionalStructures;
 	}
 
-	public Set<CompositionRule> getCompositionRules() {
+	public List<CompositionRule> getCompositionRules() {
 		return this.compositionRules;
 	}
 
 	public Set<Property> getProperties() {
 		return this.properties;
+	}
+	
+	public String getAlias() {
+		return this.composableModuleAlias;
+	}
+	
+	public void setAlias(String alias) {
+		this.composableModuleAlias = alias;
+	}
+	
+	/**
+	 * Returns the {@link Property} with the given name.
+	 * @param name the name
+	 * @return the {@link Property}, null if it does not exist.
+	 */
+	public Property getProperty(String name) {
+		for(Property property: this.properties) {
+			if(property.getName().equals(name)) {
+				return property;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns the {@link ComposableModule} with the given name.
+	 * @param name the name
+	 * @return the {@link ComposableModule}, null if it does not exist.
+	 */
+	public ComposableModule getComposableModule(String name) {
+		for(ComposableModule module: this.composableModules) {
+			if(module.getName().equals(name)) {
+				return module;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns the {@link CompositionalStructure} with the given name.
+	 * @param name the name
+	 * @return the {@link CompositionalStructure}, null if it does not exist.
+	 */
+	public CompositionalStructure getCompositionalStructure(String name) {
+		for(CompositionalStructure component: this.compositionalStructures) {
+			if(component.getName().equals(name)) {
+				return component;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns the {@link Component} with the given name.
+	 * @param name the name
+	 * @return the {@link Component}, null if it does not exist.
+	 */
+	public Component getComponent(String name) {
+		for(Component component: this.components) {
+			if(component.getName().equals(name)) {
+				return component;
+			}
+		}
+		
+		for(ComposableModule module: this.composableModules) {
+			if(module.getName().equals(name)) {
+				return module;
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -103,9 +189,9 @@ public class FrameworkRepresentation {
 	}
 	
 	/**
-	 * Adds a @link{Property} to the FrameworkRepresentation
+	 * Adds a {@link Property} to the FrameworkRepresentation
 	 * Performs type check without throwing any exceptions.
-	 * @param ct the @link{Property} to be added
+	 * @param p the {@link Property} to be added
 	 */
 	public void add(Property p) {
 		this.checkTypes(p);

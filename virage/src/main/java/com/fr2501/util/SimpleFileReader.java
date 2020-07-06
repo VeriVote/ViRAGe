@@ -42,11 +42,19 @@ public class SimpleFileReader {
 				line = reader.readLine();
 			}
 		} catch(FileNotFoundException e) {
-			logger.fatal("Invalid file.");
+			logger.error("Invalid file.");
 			throw e;
 		} catch(IOException e) {
-			logger.fatal("Something went wrong while reading the file.");
+			logger.error("Something went wrong while reading the file.");
 			throw e;
+		} finally {
+			try {
+				if(this.reader != null) {
+					this.reader.close();
+				}
+			} catch (IOException e) {
+				logger.warn("Closing the FileWriter was impossible.");
+			}
 		}
 		
 		return res;

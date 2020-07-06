@@ -1,25 +1,16 @@
 package com.fr2501.virage.prolog;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * 
  * A simple implementation of the {@link PrologParser} interface
  *
  */
-public class SimplePrologParser implements PrologParser {
-	private final static Logger logger = LogManager.getLogger(SimplePrologParser.class.getName());
-	
+public class SimplePrologParser implements PrologParser {	
 	@Override
-	public PrologClause parseSingleClause(String clause) {
-		logger.trace("parseSingleClause(" + clause + ")");
-		
+	public PrologClause parseSingleClause(String clause) {				
 		if(clause.equals("")) throw new IllegalArgumentException();
 		
 		String sanitizedClause = this.sanitizeClause(clause);		
@@ -41,7 +32,7 @@ public class SimplePrologParser implements PrologParser {
 		}
 		
 		String antecedentString = cedents[1];
-		Set<PrologPredicate> antecedents;
+		List<PrologPredicate> antecedents;
 		antecedents = this.splitAntecedents(antecedentString);
 		
 		return new PrologClause(succedent, antecedents);
@@ -54,10 +45,8 @@ public class SimplePrologParser implements PrologParser {
 		
 		return res;
 	}
-	
+
 	private PrologPredicate breakdownPredicate(String string) {
-		logger.trace("breakdownPredicate(" + string + ")");
-		
 		if(string.equals("")) throw new IllegalArgumentException();
 		String name = "";
 		List<PrologPredicate> parameters = new LinkedList<PrologPredicate>();
@@ -104,9 +93,9 @@ public class SimplePrologParser implements PrologParser {
 		return new PrologPredicate(name, parameters);
 	}
 	
-	private Set<PrologPredicate> splitAntecedents(String antecedentString) {
+	private List<PrologPredicate> splitAntecedents(String antecedentString) {
 		if(antecedentString.equals("")) throw new IllegalArgumentException();
-		Set<PrologPredicate> res = new HashSet<PrologPredicate>();
+		List<PrologPredicate> res = new LinkedList<PrologPredicate>();
 		String currentPredicate = "";
 		int level = 0;
 		

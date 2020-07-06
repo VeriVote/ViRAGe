@@ -15,11 +15,12 @@ import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
-public class TestExtendedPrologParser {
-	private Logger logger = LogManager.getLogger(TestExtendedPrologParser.class);
+public class ExtendedPrologParserTest {
+	private Logger logger = LogManager.getLogger(ExtendedPrologParserTest.class);
 	
 	@Test(expected = FileNotFoundException.class)
 	public void loadNonExistingFile() throws IOException, MalformedEPLFileException {
+		logger.info("loadNonExistingFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		
 		parser.parseFramework(new File(""));	
@@ -27,6 +28,7 @@ public class TestExtendedPrologParser {
 	
 	@Test(expected = MalformedEPLFileException.class)
 	public void loadInvalidFile() throws IOException, MalformedEPLFileException {
+		logger.info("loadInvalidFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		
 		parser.parseFramework(new File("src/test/resources/invalid_test.pl"));	
@@ -34,6 +36,7 @@ public class TestExtendedPrologParser {
 	
 	@Test
 	public void loadValidFile() throws IOException, MalformedEPLFileException {
+		logger.info("loadValidFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		
 		FrameworkRepresentation framework = parser.parseFramework(new File("src/test/resources/valid_test.pl"));
@@ -42,15 +45,14 @@ public class TestExtendedPrologParser {
 		assertTrue(framework.getComponents().size() == 3);
 		assertTrue(framework.getComposableModules().size() == 2);
 		assertTrue(framework.getProperties().size() == 3);
-		assertTrue(framework.getCompositionRules().size() == 2);
+		assertTrue(framework.getCompositionRules().size() == 4);
 	}
 	
 	@Test
 	public void loadFrameworkFile() throws IOException, MalformedEPLFileException {
+		logger.info("loadFrameworkFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
-		FrameworkRepresentation fr = parser.parseFramework(new File("src/main/resources/framework.pl"));
-		
-		logger.debug(fr.toString());
+		parser.parseFramework(new File("src/main/resources/framework.pl"));
 	}
 }
