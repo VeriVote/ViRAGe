@@ -32,7 +32,7 @@ public class VirageCore {
         logger.info("Initialising VirageCore.");
         
         extendedPrologParser = new SimpleExtendedPrologParser();
-        framework = extendedPrologParser.parseFramework(new File("src/main/resources/framework.pl"));
+        framework = extendedPrologParser.parseFramework(new File("src/test/resources/framework.pl"), "votingRuleFramework");
         
         searchManager = new VirageSearchManager();
         searchManager.addAnalyzer(new SimplePrologCompositionAnalyzer(framework));

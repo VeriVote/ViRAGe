@@ -36,10 +36,10 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 	}
 	
 	@Override
-	public FrameworkRepresentation parseFramework(File file) throws IOException, MalformedEPLFileException {		
+	public FrameworkRepresentation parseFramework(File file, String name) throws IOException, MalformedEPLFileException {		
 		List<String> framework = this.fileReader.readFileByLine(file);
 		
-		return this.parseFramework(framework, file.getAbsolutePath());
+		return this.parseFramework(framework, file.getAbsolutePath(), name);
 	}
 
 	/**
@@ -47,11 +47,12 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 	 * 
 	 * @param representation a line-by-line representation of the extended Prolog file.
 	 * @param path the path to the framework (required for compatibility reasons)
+	 * @param a (unique?) identifier for the framework
 	 * @return a {@link FrameworkRepresentation} of the input.
 	 * @throws MalformedEPLFileException if the input does not follow the specification of the extended Prolog format.
 	 */
-	private FrameworkRepresentation parseFramework(List<String> representation, String path) throws MalformedEPLFileException {
-		FrameworkRepresentation framework = new FrameworkRepresentation(path);
+	private FrameworkRepresentation parseFramework(List<String> representation, String path, String name) throws MalformedEPLFileException {
+		FrameworkRepresentation framework = new FrameworkRepresentation(path, name);
 		ParserState state = ParserState.STARTING;
 		
 		List<String> compositionTypeSection = new LinkedList<String>();

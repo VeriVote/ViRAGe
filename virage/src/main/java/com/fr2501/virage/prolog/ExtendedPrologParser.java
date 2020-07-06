@@ -14,9 +14,10 @@ public interface ExtendedPrologParser {
 	/**
 	 * 
 	 * @param file the file containing the framework representation in extended Prolog format.
+	 * @param name a (unique?) identifier for the framework.
 	 * @return a {@link FrameworkRepresentation} containing the framework.
 	 * @throws IOException if an error occurs while reading the file itself.
 	 * @throws MalformedEPLFileException if the file can be read, but not parsed.
 	 */
-	public FrameworkRepresentation parseFramework(File file) throws IOException, MalformedEPLFileException;
+	public FrameworkRepresentation parseFramework(File file, String name) throws IOException, MalformedEPLFileException;
 }

@@ -23,7 +23,7 @@ public class ExtendedPrologParserTest {
 		logger.info("loadNonExistingFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		
-		parser.parseFramework(new File(""));	
+		parser.parseFramework(new File(""), "");	
 	}
 	
 	@Test(expected = MalformedEPLFileException.class)
@@ -31,7 +31,7 @@ public class ExtendedPrologParserTest {
 		logger.info("loadInvalidFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		
-		parser.parseFramework(new File("src/test/resources/invalid_test.pl"));	
+		parser.parseFramework(new File("src/test/resources/invalid_test.pl"), "invalid");	
 	}
 	
 	@Test
@@ -39,7 +39,7 @@ public class ExtendedPrologParserTest {
 		logger.info("loadValidFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		
-		FrameworkRepresentation framework = parser.parseFramework(new File("src/test/resources/valid_test.pl"));
+		FrameworkRepresentation framework = parser.parseFramework(new File("src/test/resources/valid_test.pl"), "valid");
 		
 		assertTrue(framework.getComponentTypes().size() == 3);
 		assertTrue(framework.getComponents().size() == 3);
@@ -53,6 +53,6 @@ public class ExtendedPrologParserTest {
 		logger.info("loadFrameworkFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
-		parser.parseFramework(new File("src/main/resources/framework.pl"));
+		parser.parseFramework(new File("src/test/resources/framework.pl"), "votingRuleFramework");
 	}
 }

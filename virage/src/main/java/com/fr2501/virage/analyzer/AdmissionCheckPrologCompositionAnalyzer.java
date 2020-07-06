@@ -36,7 +36,10 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
 	@Override
 	protected void consultKnowledgeBase() {
 		AdmissionGuardGenerator generator = new AdmissionGuardGenerator(this.framework);
-		String path = "src/main/resources/framework_with_admit_guards.pl";
+		
+		String frameworkName = this.framework.getName();
+		
+		String path = "src/main/resources/generated/" + frameworkName + "_with_admit_guards.pl";
 		
 		generator.createAdmissionGuardFile(path);
 		this.facade.consultFile(path);

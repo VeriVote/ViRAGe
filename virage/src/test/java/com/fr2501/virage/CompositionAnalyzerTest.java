@@ -28,7 +28,7 @@ import com.fr2501.virage.types.ValueNotPresentException;
 public abstract class CompositionAnalyzerTest {
 	private static final Logger logger = LogManager.getLogger(CompositionAnalyzerTest.class);
 	
-	private static final String FRAMEWORK_PATH = "src/main/resources/framework.pl";
+	private static final String FRAMEWORK_PATH = "src/test/resources/framework.pl";
 	protected TestDataGenerator generator;
 	protected FrameworkRepresentation framework;
 	
@@ -37,7 +37,7 @@ public abstract class CompositionAnalyzerTest {
 	@Before
 	public void setup() throws IOException, MalformedEPLFileException {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-		this.framework = parser.parseFramework(new File(FRAMEWORK_PATH));
+		this.framework = parser.parseFramework(new File(FRAMEWORK_PATH), "votingRuleFramework");
 		
 		this.generator = new TestDataGenerator(framework);
 	}

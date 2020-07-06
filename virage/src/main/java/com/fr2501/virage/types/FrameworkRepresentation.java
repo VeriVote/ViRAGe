@@ -19,6 +19,7 @@ public class FrameworkRepresentation {
 	private Logger logger = LogManager.getLogger(FrameworkRepresentation.class);
 	
 	private String absolutePath;
+	private String name;
 	
 	private Set<ComponentType> componentTypes;
 	private Set<Component> components;
@@ -29,8 +30,9 @@ public class FrameworkRepresentation {
 	
 	private String composableModuleAlias;
 	
-	public FrameworkRepresentation(String absolutePath) {
+	public FrameworkRepresentation(String absolutePath, String name) {
 		this.absolutePath = absolutePath;
+		this.name = name;
 		
 		this.componentTypes = new HashSet<ComponentType>();
 		this.components = new HashSet<Component>();
@@ -38,6 +40,10 @@ public class FrameworkRepresentation {
 		this.compositionalStructures = new HashSet<CompositionalStructure>();
 		this.compositionRules = new LinkedList<CompositionRule>();
 		this.properties = new HashSet<Property>();
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 	
 	public String getAbsolutePath() {
