@@ -1,9 +1,12 @@
 package com.fr2501.virage.core;
 
+import java.io.File;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -27,7 +30,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		System.out.println("Please input the absolute path to an EPL file.");
 		String path = this.scanner.nextLine();
 		
-		this.jobs.add(new VirageJob(VirageJobType.PARSE_EPL, path));
+		this.jobs.add(new VirageParseJob(new File(path)));
 		
 		while(true) {
 			System.out.println("Do you want to (g)enerate a composition or (a)nalyze one?");
@@ -35,7 +38,10 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 			if(arg.equals("g")) {
 				this.createGenerationQuery();
 			} else if(arg.equals("a")) {
-				
+				this.createAnalysisQuery();
+			} else if(arg.equals("exit")) {
+				this.jobs.add(new VirageExitJob(0));
+				return;
 			} else {
 				System.out.println("Please try again.");
 				continue;
@@ -46,9 +52,22 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 	private void createGenerationQuery() {
 		System.out.println("Please input the desired properties (separated by ',').");
 		String propertyString = this.scanner.nextLine();
-		propertyString = StringUtils.removeWhitespace(propertyString);
+
+		List<String> properties = StringUtils.separate(",", propertyString);
 		
-		this.jobs.add(new VirageJob(VirageJobType.GENERATE, propertyString));
+		this.jobs.add(new VirageGenerateJob(properties));
+	}
+	
+	private void createAnalysisQuery() {
+		System.out.println("Please input a composition (in Prolog format).");
+		String composition = this.scanner.nextLine();
+		
+		System.out.println("Please input the desired properties (separated by ',').");
+		String propertyString = this.scanner.nextLine();
+
+		List<String> properties = StringUtils.separate(",", propertyString);
+		
+		this.jobs.add(new VirageAnalyzeJob(composition, properties));
 	}
 	
 	@Override

@@ -45,7 +45,7 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
 	}
 
 	@Override
-	public SearchResult<DecompositionTree> generateComposition(Set<Property> properties) {
+	public SearchResult<DecompositionTree> generateComposition(List<Property> properties) {
 		for(Property property: properties) {
 			if(property.getArity() != 1) {
 				throw new IllegalArgumentException();

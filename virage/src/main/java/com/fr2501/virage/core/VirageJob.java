@@ -1,29 +1,28 @@
 package com.fr2501.virage.core;
 
-import java.util.LinkedList;
-import java.util.List;
-
 // TODO: Document
-public class VirageJob {
-	private VirageJobType type;
-	private List<String> arguments;
+public abstract class VirageJob {
+	protected VirageJobState state;
 	
-	public VirageJob(VirageJobType type, String argument) {
-		this.type = type;
-		this.arguments = new LinkedList<String>();
-		this.arguments.add(argument);
+	public VirageJob() {
+		this.state = VirageJobState.PENDING;
 	}
 	
-	public VirageJob(VirageJobType type, List<String> arguments) {
-		this.type = type;
-		this.arguments = arguments;
+	public abstract void execute();
+	
+	public boolean requiresExecutor() {
+		return false;
 	}
 	
-	public VirageJobType getType() {
-		return this.type;
+	public boolean requiresFramework() {
+		return false;
 	}
 	
-	public List<String> getArguments() {
-		return this.arguments;
+	public boolean isReadyToExecute() {
+		return true;
+	}
+	
+	public VirageJobState getState() {
+		return this.state;
 	}
 }

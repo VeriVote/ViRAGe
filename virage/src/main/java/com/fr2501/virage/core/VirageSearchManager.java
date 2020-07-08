@@ -42,7 +42,7 @@ public class VirageSearchManager {
 	 * @param properties the desired property set
 	 * @return a list of results, ordered in the same way as the analyzers
 	 */
-	public List<SearchResult<Boolean>> analyzeComposition(DecompositionTree composition, Set<Property> properties) {
+	public List<SearchResult<Boolean>> analyzeComposition(DecompositionTree composition, List<Property> properties) {
 		// TODO Parallelize.
 		List<SearchResult<Boolean>> results = new LinkedList<SearchResult<Boolean>>();
 		
@@ -59,7 +59,7 @@ public class VirageSearchManager {
 	 * @param properties the desired property set
 	 * @return a list of results, ordered in the same way as the analyzers
 	 */
-	public List<SearchResult<DecompositionTree>> generateComposition(Set<Property> properties) {
+	public List<SearchResult<DecompositionTree>> generateComposition(List<Property> properties) {
 		// TODO Parallelize.
 		List<SearchResult<DecompositionTree>> results = new LinkedList<SearchResult<DecompositionTree>>();
 		

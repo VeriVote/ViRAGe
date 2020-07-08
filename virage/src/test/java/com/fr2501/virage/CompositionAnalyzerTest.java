@@ -5,6 +5,8 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -64,7 +66,7 @@ public abstract class CompositionAnalyzerTest {
 		CompositionAnalyzer analyzer = this.createInstance();
 		analyzer.setTimeout(10000);
 		
-		Set<Property> properties = new HashSet<Property>();
+		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("monotone"));
 		
 		SearchResult<Boolean> result = analyzer.analyzeComposition(smcTree, properties);
@@ -96,7 +98,7 @@ public abstract class CompositionAnalyzerTest {
 		for(int i=0; i<RUNS; i++) {
 			int amount = (int) (5 * Math.random()) + 1;
 			
-			Set<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
+			List<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
 			
 			logger.debug("Query: " + StringUtils.printCollection(properties));
 			
@@ -160,7 +162,7 @@ public abstract class CompositionAnalyzerTest {
 		for(int i=0; i<RUNS; i++) {
 			int amount = (int) (5 * Math.random()) + 1;
 			
-			Set<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
+			List<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
 			
 			logger.debug("Query: " + StringUtils.printCollection(properties));
 			

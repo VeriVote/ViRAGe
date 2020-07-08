@@ -1,11 +1,6 @@
 package com.fr2501.virage.core;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -21,10 +16,8 @@ import org.apache.logging.log4j.Logger;
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
-import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.FrameworkRepresentation;
-import com.fr2501.virage.types.Property;
 
 /**
  * 
@@ -32,6 +25,7 @@ import com.fr2501.virage.types.Property;
  *
  */
 
+@SuppressWarnings("deprecation")
 public class VirageCore {
 	private final static Logger logger = LogManager.getLogger(VirageCore.class.getName());
 	
@@ -53,38 +47,34 @@ public class VirageCore {
         		logger.debug("VirageJob found.");
         		VirageJob job = this.userInterface.getJob();
         		
-        		switch(job.getType()) {
-        		case PARSE_EPL: 
-        			if(this.extendedPrologParser == null) {
-        				this.extendedPrologParser = new SimpleExtendedPrologParser();
+        		if(job.requiresExecutor()) {
+        			// Is there a better solution? Wildcards would probably help a bit.
+        			if(job instanceof VirageExecutorJob) {
+        				if(job instanceof VirageGenerateJob) {
+        					((VirageGenerateJob) job).attachExecutor(this.searchManager);
+        				} else if(job instanceof VirageAnalyzeJob) {
+        					((VirageAnalyzeJob) job).attachExecutor(this.searchManager);
+        				} else if(job instanceof VirageParseJob) {
+        					((VirageParseJob) job).attachExecutor(this.extendedPrologParser);
+        				}
         			}
-        			
-        			String path = job.getArguments().get(0);
-        			try {
-        				this.framework = this.extendedPrologParser.parseFramework(new File(path));
-        			} catch(Exception e) {
-        				logger.error("Something went wrong while reading the file.");
+        		}
+        		
+        		if(job.requiresFramework()) {
+        			if(job instanceof VirageExecutorJobWithFramework) {
+        				((VirageExecutorJobWithFramework<?,?>) job).addFramework(this.framework);
         			}
+        		}
+        		
+        		if(job.isReadyToExecute()) {        			
+        			job.execute();
         			
-        			break;
-        		case GENERATE:
-        			if(this.searchManager == null) {
-        				this.searchManager = new VirageSearchManager();
-        				this.searchManager.addAnalyzer(new SimplePrologCompositionAnalyzer(this.framework));
-        				this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(this.framework));
-        			}
-        			
-        			String propertyString = job.getArguments().get(0);
-        			String[] properties = propertyString.split(",");
-        			Set<Property> propertySet = new HashSet<Property>();
-        			for(String property: properties) {
-        				propertySet.add(this.framework.getProperty(property));
-        			}
-        			
-        			try {
-        				this.searchManager.generateComposition(propertySet);
-        			} catch(Exception e) {
-        				logger.error("Something went wrong while generating the composition.");
+        			// Ugly, but required to get a FrameworkRepresentation from anywhere.
+        			if(job instanceof VirageParseJob) {
+        				if(job.state == VirageJobState.FINISHED) {
+        					this.framework = ((VirageParseJob) job).getResult();
+        					this.initAnalyzers();
+        				}
         			}
         		}
         	} else {
@@ -102,6 +92,18 @@ public class VirageCore {
     		
     		VirageUserInterfaceFactory factory = new VirageUserInterfaceFactory();
     		this.userInterface = factory.getUI(value);
+    	}
+    	
+    	this.extendedPrologParser = new SimpleExtendedPrologParser();
+    	this.searchManager = new VirageSearchManager();
+    }
+    
+    private void initAnalyzers() {
+    	try {
+	    	this.searchManager.addAnalyzer(new SimplePrologCompositionAnalyzer(framework));
+	    	this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
+    	} catch (Exception e) {
+    		logger.error("Initialising CompositionAnalyzers failed.");
     	}
     }
     
