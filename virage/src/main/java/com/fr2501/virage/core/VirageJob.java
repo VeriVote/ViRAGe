@@ -10,19 +10,15 @@ public abstract class VirageJob {
 	
 	public abstract void execute();
 	
-	public boolean requiresExecutor() {
-		return false;
-	}
-	
-	public boolean requiresFramework() {
-		return false;
-	}
-	
 	public boolean isReadyToExecute() {
 		return true;
 	}
 	
 	public VirageJobState getState() {
 		return this.state;
+	}
+	
+	public void setState(VirageJobState state) {
+		this.state = state;
 	}
 }

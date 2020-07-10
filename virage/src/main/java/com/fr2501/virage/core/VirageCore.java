@@ -1,6 +1,8 @@
 package com.fr2501.virage.core;
 
 import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -26,61 +28,101 @@ import com.fr2501.virage.types.FrameworkRepresentation;
  */
 
 @SuppressWarnings("deprecation")
-public class VirageCore {
+public class VirageCore implements Runnable {
 	private final static Logger logger = LogManager.getLogger(VirageCore.class.getName());
 	
 	private CommandLine cl;
+	private String[] args;
+	private VirageUserInterface ui;
 	
-	private VirageUserInterface userInterface = null;
 	private ExtendedPrologParser extendedPrologParser = null;
 	private VirageSearchManager searchManager = null;
 	
 	private FrameworkRepresentation framework = null;
+	
+	private BlockingQueue<VirageJob> jobs;
 
     public VirageCore(String[] args) throws ParseException, InterruptedException, IOException {
         logger.info("Initialising VirageCore.");
         
-        this.init(args);
+        this.args = args;
+        this.jobs = new LinkedBlockingQueue<VirageJob>();
+    }
+    
+    public void run() {
+        try {
+			this.init(this.args);
+		} catch (ParseException e) {
+			logger.error("An error occured.", e);
+			return;
+		}
         
         while(true) {
-        	if(this.userInterface.hasJobs()) {
+        	if(!this.jobs.isEmpty()) {
         		logger.debug("VirageJob found.");
-        		VirageJob job = this.userInterface.getJob();
         		
-        		if(job.requiresExecutor()) {
-        			// Is there a better solution? Wildcards would probably help a bit.
-        			if(job instanceof VirageExecutorJob) {
-        				if(job instanceof VirageGenerateJob) {
-        					((VirageGenerateJob) job).attachExecutor(this.searchManager);
-        				} else if(job instanceof VirageAnalyzeJob) {
-        					((VirageAnalyzeJob) job).attachExecutor(this.searchManager);
-        				} else if(job instanceof VirageParseJob) {
-        					((VirageParseJob) job).attachExecutor(this.extendedPrologParser);
-        				}
-        			}
-        		}
-        		
-        		if(job.requiresFramework()) {
-        			if(job instanceof VirageExecutorJobWithFramework) {
-        				((VirageExecutorJobWithFramework<?,?>) job).addFramework(this.framework);
-        			}
-        		}
-        		
-        		if(job.isReadyToExecute()) {        			
-        			job.execute();
-        			
-        			// Ugly, but required to get a FrameworkRepresentation from anywhere.
-        			if(job instanceof VirageParseJob) {
-        				if(job.state == VirageJobState.FINISHED) {
-        					this.framework = ((VirageParseJob) job).getResult();
-        					this.initAnalyzers();
-        				}
-        			}
-        		}
+        		VirageJob job;
+				try {
+					job = this.jobs.take();
+	        		job.execute();
+				} catch (InterruptedException e) {
+					logger.error("An error occured.", e);
+					return;
+				}
         	} else {
         		// No jobs, busy waiting
         	}
         }
+    }
+    
+    public void submit(VirageJob job) {
+    	if(job.isReadyToExecute()) {        			
+    		this.jobs.add(job);
+		} else {
+			job.setState(VirageJobState.FAILED);
+		}
+    }
+    
+    public void submit(VirageSystemJob job) {
+    	job.execute();
+    }
+    
+    public void submit(VirageParseJob job) {
+    	if(this.extendedPrologParser == null) {
+    		job.setState(VirageJobState.FAILED);
+    	} else {
+    		job.attachExecutor(this.extendedPrologParser);
+    		
+        	while(!this.jobs.isEmpty()) {
+				try {
+					VirageJob pendingJob = this.jobs.take();
+					pendingJob.setState(VirageJobState.FAILED);
+				} catch (InterruptedException e) {
+					logger.error("An error occured.", e);
+				}
+        		
+        	}
+        	
+        	job.execute();
+        	
+        	if(job.getState() == VirageJobState.FINISHED) {
+        		this.framework = job.getResult();
+        		this.initAnalyzers();
+        	} else {
+        		logger.error("An error occured.");
+        	}
+    	}
+    }
+    
+    public void submit(VirageExecutorJobWithFramework<VirageSearchManager,?> job) {
+    	if(this.searchManager == null || this.framework == null) {
+    		job.setState(VirageJobState.FAILED);
+    	} else {
+    		job.attachExecutor(this.searchManager);
+    		job.addFramework(this.framework);
+    		
+        	this.submit((VirageJob) job);
+    	}
     }
     
     private void init(String[] args) throws ParseException {
@@ -91,7 +133,7 @@ public class VirageCore {
     		String value = cl.getOptionValue("ui");
     		
     		VirageUserInterfaceFactory factory = new VirageUserInterfaceFactory();
-    		this.userInterface = factory.getUI(value);
+    		this.ui = factory.getUI(value, this);
     	}
     	
     	this.extendedPrologParser = new SimpleExtendedPrologParser();

@@ -8,10 +8,6 @@ public abstract class VirageExecutorJob<S,T> extends VirageJob {
 	
 	public abstract T getResult();
 	
-	public boolean requiresExecutor() {
-		return !this.hasExecutor;
-	}
-	
 	public void attachExecutor(S executor) {
 		this.executor = executor;
 		

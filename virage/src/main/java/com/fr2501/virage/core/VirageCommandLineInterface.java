@@ -15,13 +15,23 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.StringUtils;
 
+// TODO Document
 public class VirageCommandLineInterface implements VirageUserInterface {
 	private static final Logger logger = LogManager.getLogger(VirageCommandLineInterface.class);
 	private Scanner scanner;
-	
-	private BlockingQueue<VirageJob> jobs;
+	private VirageCore core;
 	
 	private Thread thread;
+	
+	protected VirageCommandLineInterface(VirageCore core) {
+		logger.info("Initialising VirageCommandLineInterface.");
+		
+		this.scanner = new Scanner(System.in);
+		this.core = core;
+		
+		this.thread = new Thread(this, "vcli");
+		this.thread.start();
+	}
 		
 	@Override
 	public void run() {
@@ -30,7 +40,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		System.out.println("Please input the absolute path to an EPL file.");
 		String path = this.scanner.nextLine();
 		
-		this.jobs.add(new VirageParseJob(new File(path)));
+		this.core.submit(new VirageParseJob(new File(path)));
 		
 		while(true) {
 			System.out.println("Do you want to (g)enerate a composition or (a)nalyze one?");
@@ -40,7 +50,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 			} else if(arg.equals("a")) {
 				this.createAnalysisQuery();
 			} else if(arg.equals("exit")) {
-				this.jobs.add(new VirageExitJob(0));
+				this.core.submit(new VirageExitJob(0));
 				return;
 			} else {
 				System.out.println("Please try again.");
@@ -55,7 +65,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
-		this.jobs.add(new VirageGenerateJob(properties));
+		this.core.submit(new VirageGenerateJob(properties));
 	}
 	
 	private void createAnalysisQuery() {
@@ -67,28 +77,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
-		this.jobs.add(new VirageAnalyzeJob(composition, properties));
-	}
-	
-	@Override
-	public void init() {
-		logger.info("Initialising VirageCommandLineInterface.");
-		
-		this.scanner = new Scanner(System.in);
-		
-		this.jobs = new LinkedBlockingQueue<VirageJob>();
-		
-		this.thread = new Thread(this, "vcli");
-		this.thread.start();
-	}
-
-	@Override
-	public boolean hasJobs() {	
-		return !(this.jobs.isEmpty());
-	}
-
-	@Override
-	public VirageJob getJob() throws InterruptedException {
-		return this.jobs.take();
+		this.core.submit(new VirageAnalyzeJob(composition, properties));
 	}
 }

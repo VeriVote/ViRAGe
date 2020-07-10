@@ -13,8 +13,9 @@ public class VirageMain {
 		logger.info("--- " + _NAME + " version " + _VERSION);
 		
 		try {
-			@SuppressWarnings("unused")
 			VirageCore core = new VirageCore(args);
+			Thread coreThread = new Thread(core, "core");
+			coreThread.start();
 		} catch (Exception e) {
 			logger.fatal("An unrecoverable error has occured.", e);
 			logger.fatal("The program will now terminate.");

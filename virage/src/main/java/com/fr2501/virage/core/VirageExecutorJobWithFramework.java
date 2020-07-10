@@ -7,11 +7,6 @@ public abstract class VirageExecutorJobWithFramework<S,T> extends VirageExecutor
 	protected boolean hasFramework = false;
 	protected FrameworkRepresentation framework;
 	
-	@Override
-	public boolean requiresFramework() {
-		return !this.hasFramework;
-	}
-	
 	public void addFramework(FrameworkRepresentation framework) {
 		this.framework = framework;
 		this.hasFramework = true;

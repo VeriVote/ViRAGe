@@ -160,7 +160,7 @@ public abstract class CompositionAnalyzerTest {
 		int trustedFailure = 0;
 		
 		for(int i=0; i<RUNS; i++) {
-			int amount = (int) (5 * Math.random()) + 1;
+			int amount = (int) (10 * Math.random()) + 1;
 			
 			List<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
 			

@@ -7,18 +7,17 @@ import org.apache.logging.log4j.Logger;
 public class VirageUserInterfaceFactory {
 	private static final Logger logger = LogManager.getLogger(VirageUserInterfaceFactory.class);
 	
-	public VirageUserInterface getUI(String string) {
+	public VirageUserInterface getUI(String string, VirageCore core) {
 		VirageUserInterface res;
 		
 		if(string.equals(VirageStrings.CLI_ARG)) {
-			res = new VirageCommandLineInterface();
+			res = new VirageCommandLineInterface(core);
 			
 		} else {
 			logger.info("Invalid ui value, defaulting to cli.");
-			res = new VirageCommandLineInterface();
+			res = new VirageCommandLineInterface(core);
 		}
 		
-		res.init();
 		return res;
 	}
 }
