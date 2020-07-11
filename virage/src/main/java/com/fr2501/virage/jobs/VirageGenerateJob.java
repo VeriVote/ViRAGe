@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.fr2501.virage.core.VirageSearchManager;
+import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
@@ -15,12 +16,14 @@ public class VirageGenerateJob extends VirageExecutorJobWithFramework<VirageSear
 	
 	private List<SearchResult<DecompositionTree>> result;
 	
-	public VirageGenerateJob(List<String> properties) {
+	public VirageGenerateJob(VirageUserInterface issuer, List<String> properties) {
+		super(issuer);
+		
 		this.propertyStrings = properties;
 	}
 
 	@Override
-	public void execute() {
+	public void concreteExecute() {
 		this.properties = new LinkedList<Property>();
 		
 		for(String s: this.propertyStrings) {
@@ -28,8 +31,6 @@ public class VirageGenerateJob extends VirageExecutorJobWithFramework<VirageSear
 		}
 		
 		this.result = this.executor.generateComposition(properties);
-		
-		this.state = VirageJobState.FINISHED;
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import com.fr2501.util.StringUtils;
 import com.fr2501.virage.jobs.VirageAnalyzeJob;
 import com.fr2501.virage.jobs.VirageExitJob;
 import com.fr2501.virage.jobs.VirageGenerateJob;
+import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageParseJob;
 
 // TODO Document
@@ -40,7 +41,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		System.out.println("Please input the absolute path to an EPL file.");
 		String path = this.scanner.nextLine();
 		
-		this.core.submit(new VirageParseJob(new File(path)));
+		this.core.submit(new VirageParseJob(this, new File(path)));
 		
 		while(true) {
 			System.out.println("Do you want to (g)enerate a composition or (a)nalyze one?");
@@ -50,7 +51,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 			} else if(arg.equals("a")) {
 				this.createAnalysisQuery();
 			} else if(arg.equals("exit")) {
-				this.core.submit(new VirageExitJob(0));
+				this.core.submit(new VirageExitJob(this, 0));
 				return;
 			} else {
 				System.out.println("Please try again.");
@@ -65,7 +66,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
-		this.core.submit(new VirageGenerateJob(properties));
+		this.core.submit(new VirageGenerateJob(this, properties));
 	}
 	
 	private void createAnalysisQuery() {
@@ -77,6 +78,12 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
-		this.core.submit(new VirageAnalyzeJob(composition, properties));
+		this.core.submit(new VirageAnalyzeJob(this, composition, properties));
+	}
+
+	@Override
+	public void notify(VirageJob job) {
+		// TODO Auto-generated method stub
+		System.out.println(job.toString());
 	}
 }

@@ -48,6 +48,7 @@ public class VirageSearchManager {
 		
 		for(int i=0; i<this.analyzers.size(); i++) {
 			SearchResult<Boolean> result = this.analyzers.get(i).analyzeComposition(composition, properties);
+			results.add(result);
 			logger.debug(result);
 		}
 		
@@ -65,6 +66,7 @@ public class VirageSearchManager {
 		
 		for(int i=0; i<this.analyzers.size(); i++) {
 			SearchResult<DecompositionTree> result = this.analyzers.get(i).generateComposition(properties);
+			results.add(result);
 			logger.debug(result);
 		}
 		

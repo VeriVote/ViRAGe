@@ -1,8 +1,11 @@
 package com.fr2501.virage.jobs;
 
 import java.io.File;
+import java.io.IOException;
 
+import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
+import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
 //TODO Document
@@ -11,18 +14,15 @@ public class VirageParseJob extends VirageExecutorJob<ExtendedPrologParser, Fram
 	
 	private File file;
 	
-	public VirageParseJob(File file) {
+	public VirageParseJob(VirageUserInterface issuer, File file) {
+		super(issuer);
+		
 		this.file = file;
 	}
 	
 	@Override
-	public void execute() {
-		try {
-			this.framework = this.executor.parseFramework(this.file);
-			this.state = VirageJobState.FINISHED;
-		} catch (Exception e) {
-			this.state = VirageJobState.FAILED;
-		}
+	public void concreteExecute() throws IOException, MalformedEPLFileException {
+		this.framework = this.executor.parseFramework(this.file);
 	}
 
 	@Override
