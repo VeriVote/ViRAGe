@@ -1,4 +1,4 @@
-package com.fr2501.virage.core;
+package com.fr2501.virage.jobs;
 
 import com.fr2501.virage.types.FrameworkRepresentation;
 

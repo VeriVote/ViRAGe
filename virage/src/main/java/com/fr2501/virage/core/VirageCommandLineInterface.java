@@ -8,6 +8,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.StringUtils;
+import com.fr2501.virage.jobs.VirageAnalyzeJob;
+import com.fr2501.virage.jobs.VirageExitJob;
+import com.fr2501.virage.jobs.VirageGenerateJob;
 
 // TODO Document
 public class VirageCommandLineInterface implements VirageUserInterface {

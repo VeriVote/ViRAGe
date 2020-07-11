@@ -1,23 +1,26 @@
-package com.fr2501.virage.core;
+package com.fr2501.virage.jobs;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fr2501.virage.core.VirageJobState;
+import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
-// TODO: Document
-public class VirageGenerateJob extends VirageExecutorJobWithFramework<VirageSearchManager, List<SearchResult<DecompositionTree>>> {
+public class VirageAnalyzeJob extends VirageExecutorJobWithFramework<VirageSearchManager, List<SearchResult<Boolean>>> {
 	private List<String> propertyStrings;
 	private List<Property> properties;
+	private DecompositionTree tree;
 	
-	private List<SearchResult<DecompositionTree>> result;
+	private List<SearchResult<Boolean>> result;
 	
-	public VirageGenerateJob(List<String> properties) {
+	public VirageAnalyzeJob(String tree, List<String> properties) {
+		this.tree = new DecompositionTree(tree);
 		this.propertyStrings = properties;
 	}
-
+	
 	@Override
 	public void execute() {
 		this.properties = new LinkedList<Property>();
@@ -26,13 +29,13 @@ public class VirageGenerateJob extends VirageExecutorJobWithFramework<VirageSear
 			this.properties.add(this.framework.getProperty(s));
 		}
 		
-		this.result = this.executor.generateComposition(properties);
+		this.result = this.executor.analyzeComposition(tree, properties);
 		
 		this.state = VirageJobState.FINISHED;
 	}
 
 	@Override
-	public List<SearchResult<DecompositionTree>> getResult() {
+	public List<SearchResult<Boolean>> getResult() {
 		return this.result;
 	}
 }

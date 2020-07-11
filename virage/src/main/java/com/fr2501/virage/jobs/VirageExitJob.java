@@ -1,4 +1,4 @@
-package com.fr2501.virage.core;
+package com.fr2501.virage.jobs;
 
 // TODO Document
 public class VirageExitJob extends VirageSystemJob {

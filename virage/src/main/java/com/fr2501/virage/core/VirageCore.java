@@ -17,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
+import com.fr2501.virage.jobs.VirageExecutorJobWithFramework;
+import com.fr2501.virage.jobs.VirageSystemJob;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.FrameworkRepresentation;

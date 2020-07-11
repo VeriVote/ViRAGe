@@ -1,4 +1,4 @@
-package com.fr2501.virage.core;
+package com.fr2501.virage.jobs;
 
 public enum VirageJobType {
 	PARSE_EPL,

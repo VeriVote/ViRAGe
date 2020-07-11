@@ -2,6 +2,7 @@ package com.fr2501.virage.core;
 
 import java.io.File;
 
+import com.fr2501.virage.jobs.VirageExecutorJob;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
