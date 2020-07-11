@@ -12,6 +12,7 @@ import com.fr2501.virage.jobs.VirageAnalyzeJob;
 import com.fr2501.virage.jobs.VirageExitJob;
 import com.fr2501.virage.jobs.VirageGenerateJob;
 import com.fr2501.virage.jobs.VirageJob;
+import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.jobs.VirageParseJob;
 
 // TODO Document
@@ -41,7 +42,16 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		System.out.println("Please input the absolute path to an EPL file.");
 		String path = this.scanner.nextLine();
 		
-		this.core.submit(new VirageParseJob(this, new File(path)));
+		VirageParseJob parseJob = new VirageParseJob(this, new File(path));
+		this.core.submit(parseJob);
+		while(parseJob.getState() != VirageJobState.FINISHED) {
+			if(parseJob.getState() == VirageJobState.FAILED) {
+				System.out.println("Please input the absolute path to an EPL file.");
+				path = this.scanner.nextLine();
+				parseJob = new VirageParseJob(this, new File(path));
+				this.core.submit(parseJob);
+			}
+		}
 		
 		while(true) {
 			System.out.println("Do you want to (g)enerate a composition or (a)nalyze one?");

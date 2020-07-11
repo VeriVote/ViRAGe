@@ -29,7 +29,11 @@ public abstract class VirageExecutorJob<S,T> extends VirageJob {
 	public String toString() {
 		String res = super.toString();
 		
-		res += "Result: " + this.getResult().toString();
+		String resultString = "null";
+		if(this.getResult() != null) {
+			resultString = this.getResult().toString();
+		}
+		res += "Result: " + resultString;
 		
 		return res;
 	}
