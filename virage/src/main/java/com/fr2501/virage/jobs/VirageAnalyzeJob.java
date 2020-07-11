@@ -3,7 +3,6 @@ package com.fr2501.virage.jobs;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.fr2501.virage.core.VirageJobState;
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;

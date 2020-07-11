@@ -11,6 +11,7 @@ import com.fr2501.util.StringUtils;
 import com.fr2501.virage.jobs.VirageAnalyzeJob;
 import com.fr2501.virage.jobs.VirageExitJob;
 import com.fr2501.virage.jobs.VirageGenerateJob;
+import com.fr2501.virage.jobs.VirageParseJob;
 
 // TODO Document
 public class VirageCommandLineInterface implements VirageUserInterface {

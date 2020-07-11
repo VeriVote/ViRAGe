@@ -1,4 +1,4 @@
-package com.fr2501.virage.core;
+package com.fr2501.virage.jobs;
 
 // TODO: Document
 public abstract class VirageJob {
