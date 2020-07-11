@@ -1,9 +1,7 @@
 package com.fr2501.virage;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import com.fr2501.virage.prolog.ExtendedPrologStrings;
 import com.fr2501.virage.types.*;

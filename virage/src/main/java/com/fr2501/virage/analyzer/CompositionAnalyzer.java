@@ -1,7 +1,6 @@
 package com.fr2501.virage.analyzer;
 
 import java.util.List;
-import java.util.Set;
 
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;

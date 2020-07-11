@@ -1,10 +1,8 @@
 package com.fr2501.virage.core;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.fr2501.virage.prolog.ExtendedPrologParser;
-import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
 //TODO Document

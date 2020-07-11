@@ -1,14 +1,8 @@
 package com.fr2501.virage.core;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Scanner;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +22,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		
 		this.scanner = new Scanner(System.in);
 		this.core = core;
-		
+	}
+	
+	public void launch() {
 		this.thread = new Thread(this, "vcli");
 		this.thread.start();
 	}

@@ -128,12 +128,13 @@ public class VirageCore implements Runnable {
     private void init(String[] args) throws ParseException {
     	this.parseCommandLine(args);
     	
-    	// Init UserInterface
+    	// Initialise UserInterface
     	if(cl.hasOption("ui")) {
     		String value = cl.getOptionValue("ui");
     		
     		VirageUserInterfaceFactory factory = new VirageUserInterfaceFactory();
     		this.ui = factory.getUI(value, this);
+    		this.ui.launch();
     	}
     	
     	this.extendedPrologParser = new SimpleExtendedPrologParser();
