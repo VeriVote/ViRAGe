@@ -1,6 +1,6 @@
 package com.fr2501.virage.analyzer;
 
-import java.util.Set;
+import java.util.List;
 
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
@@ -24,12 +24,12 @@ public interface CompositionAnalyzer {
 	 * @param properties the property set
 	 * @return a {@link SearchResult} containing the result
 	 */
-	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, Set<Property> properties);
+	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, List<Property> properties);
 	
 	/**
 	 * Tries to derive a new composition satisfying the specified property set.
 	 * @param properties the property set
 	 * @return a {@link SearchResult} containing the result
 	 */
-	public SearchResult<DecompositionTree> generateComposition(Set<Property> properties);
+	public SearchResult<DecompositionTree> generateComposition(List<Property> properties);
 }

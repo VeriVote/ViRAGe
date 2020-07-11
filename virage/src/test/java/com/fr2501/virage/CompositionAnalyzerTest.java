@@ -4,8 +4,8 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,18 +32,18 @@ public abstract class CompositionAnalyzerTest {
 	protected TestDataGenerator generator;
 	protected FrameworkRepresentation framework;
 	
-	protected abstract CompositionAnalyzer createInstance();
+	protected abstract CompositionAnalyzer createInstance() throws IOException;
 	
 	@Before
 	public void setup() throws IOException, MalformedEPLFileException {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-		this.framework = parser.parseFramework(new File(FRAMEWORK_PATH), "votingRuleFramework");
+		this.framework = parser.parseFramework(new File(FRAMEWORK_PATH));
 		
 		this.generator = new TestDataGenerator(framework);
 	}
 	
 	@Test
-	public void testSequentialMajorityComparison() throws ValueNotPresentException {
+	public void testSequentialMajorityComparison() throws ValueNotPresentException, IOException {
 		logger.info("testSequentialMajorityComparison()");
 		String smc = "sequential_composition(" + 
 						"loop_composition(" + 
@@ -64,7 +64,7 @@ public abstract class CompositionAnalyzerTest {
 		CompositionAnalyzer analyzer = this.createInstance();
 		analyzer.setTimeout(10000);
 		
-		Set<Property> properties = new HashSet<Property>();
+		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("monotone"));
 		
 		SearchResult<Boolean> result = analyzer.analyzeComposition(smcTree, properties);
@@ -96,7 +96,7 @@ public abstract class CompositionAnalyzerTest {
 		for(int i=0; i<RUNS; i++) {
 			int amount = (int) (5 * Math.random()) + 1;
 			
-			Set<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
+			List<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
 			
 			logger.debug("Query: " + StringUtils.printCollection(properties));
 			
@@ -135,7 +135,7 @@ public abstract class CompositionAnalyzerTest {
 	// The SimplePrologCompositionAnalyzer is considered to be correct and
 	// is thus used as a baseline for all other implementations of CompositionAnalyzer.
 	@Test
-	public void testAccordanceWithSPCA() throws ValueNotPresentException {
+	public void testAccordanceWithSPCA() throws ValueNotPresentException, IOException {
 		logger.info("testAccordanceWithSCPA()");
 		SimplePrologCompositionAnalyzer spca = new SimplePrologCompositionAnalyzer(this.framework);
 		CompositionAnalyzer self = this.createInstance();
@@ -158,9 +158,9 @@ public abstract class CompositionAnalyzerTest {
 		int trustedFailure = 0;
 		
 		for(int i=0; i<RUNS; i++) {
-			int amount = (int) (5 * Math.random()) + 1;
+			int amount = (int) (10 * Math.random()) + 1;
 			
-			Set<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
+			List<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
 			
 			logger.debug("Query: " + StringUtils.printCollection(properties));
 			

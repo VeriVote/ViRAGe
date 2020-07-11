@@ -1,5 +1,7 @@
 package com.fr2501.virage.analyzer;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,9 +26,10 @@ public class AdmissionGuardGenerator {
 	
 	/**
 	 * Generates the file containing the admission guards
-	 * @param path the file to be written to
+	 * @throws IOException but should actually not
+	 * @return the file
 	 */
-	public void createAdmissionGuardFile(String path) {
+	public File createAdmissionGuardFile() throws IOException {
 		List<CompositionRule> newRules = this.generateAdmissionGuards();
 		
 		// Looks weird, but otherwise CompositionRule.toString() would have to output Prolog source.
@@ -35,8 +38,13 @@ public class AdmissionGuardGenerator {
 			newClauses.add(rule.getClause());
 		}
 		
+		File file = File.createTempFile("admission_guards", ".pl");
+		file.deleteOnExit();
+		
 		SimpleFileWriter writer = new SimpleFileWriter();
-		writer.writeCollectionToFile(path, newClauses);
+		writer.writeCollectionToFile(file.getAbsolutePath(), newClauses);
+		
+		return file;
 	}
 	
 	private List<CompositionRule> generateAdmissionGuards() {

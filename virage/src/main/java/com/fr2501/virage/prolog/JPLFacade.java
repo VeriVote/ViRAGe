@@ -153,7 +153,7 @@ public class JPLFacade {
 	
 	/**
 	 * A query containing variables, using default timeout.
-	 * @par)am queryString the query
+	 * @param queryString the query
 	 * @return a SearchResult representing the result of the query
 	 */
 	public SearchResult<Map<String,String>> iterativeDeepeningQuery(String queryString) {

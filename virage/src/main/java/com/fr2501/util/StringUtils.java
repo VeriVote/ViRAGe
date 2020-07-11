@@ -1,6 +1,8 @@
 package com.fr2501.util;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -51,5 +53,24 @@ public class StringUtils {
 	        return false; 
 	    }
 	    return pattern.matcher(strNum).matches();
+	}
+	
+	/**
+	 * Separates a String along a given separator, preserves ordering
+	 * 
+	 * @param separator the separator
+	 * @param string the string to be separated
+	 * @return a list of the separated strings
+	 */
+	public static List<String> separate(String separator, String string) {
+		string = StringUtils.removeWhitespace(string);
+		String[] substrings = string.split(separator);
+		
+		List<String> res = new LinkedList<String>();
+		for(String substring: substrings) {
+			res.add(substring);
+		}
+		
+		return res;
 	}
 }

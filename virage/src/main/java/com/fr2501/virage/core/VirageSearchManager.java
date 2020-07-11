@@ -37,33 +37,37 @@ public class VirageSearchManager {
 	}
 	
 	/**
-	 * Calls {@link CompositionAnalyzer#analyzeComposition(DecompositionTree, Set)} on all its analyzers
+	 * Calls {@link CompositionAnalyzer#analyzeComposition} on all its analyzers
 	 * @param composition the decomposition tree
 	 * @param properties the desired property set
 	 * @return a list of results, ordered in the same way as the analyzers
 	 */
-	public List<SearchResult<Boolean>> analyzeComposition(DecompositionTree composition, Set<Property> properties) {
+	public List<SearchResult<Boolean>> analyzeComposition(DecompositionTree composition, List<Property> properties) {
 		// TODO Parallelize.
 		List<SearchResult<Boolean>> results = new LinkedList<SearchResult<Boolean>>();
 		
 		for(int i=0; i<this.analyzers.size(); i++) {
-			results.add(this.analyzers.get(i).analyzeComposition(composition, properties));
+			SearchResult<Boolean> result = this.analyzers.get(i).analyzeComposition(composition, properties);
+			results.add(result);
+			logger.debug(result);
 		}
 		
 		return results;
 	}
 	
 	/**
-	 * Calls {@link CompositionAnalyzer#generateComposition(Set)} on all its analyzers
+	 * Calls {@link CompositionAnalyzer#generateComposition} on all its analyzers
 	 * @param properties the desired property set
 	 * @return a list of results, ordered in the same way as the analyzers
 	 */
-	public List<SearchResult<DecompositionTree>> generateComposition(Set<Property> properties) {
+	public List<SearchResult<DecompositionTree>> generateComposition(List<Property> properties) {
 		// TODO Parallelize.
 		List<SearchResult<DecompositionTree>> results = new LinkedList<SearchResult<DecompositionTree>>();
 		
 		for(int i=0; i<this.analyzers.size(); i++) {
-			results.add(this.analyzers.get(i).generateComposition(properties));
+			SearchResult<DecompositionTree> result = this.analyzers.get(i).generateComposition(properties);
+			results.add(result);
+			logger.debug(result);
 		}
 		
 		return results;

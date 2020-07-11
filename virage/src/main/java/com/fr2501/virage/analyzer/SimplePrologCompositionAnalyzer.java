@@ -1,9 +1,9 @@
 package com.fr2501.virage.analyzer;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,8 +31,9 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	/**
 	 * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
 	 * @param framework the framework
+	 * @throws IOException but should actually not
 	 */
-	public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) {
+	public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) throws IOException {
 		logger.info("Initialising SimplePrologCompositionAnalyzer.");
 		this.framework = framework;
 		
@@ -40,7 +41,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 		this.consultKnowledgeBase();
 	}
 	
-	protected void consultKnowledgeBase() {
+	protected void consultKnowledgeBase() throws IOException {
 		this.facade.consultFile(this.framework.getAbsolutePath());
 	}
 	
@@ -50,7 +51,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	}
 	
 	@Override
-	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, Set<Property> properties) {		
+	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, List<Property> properties) {		
 		for(Property property: properties) {
 			if(property.getArity() != 1) {
 				throw new IllegalArgumentException();
@@ -69,7 +70,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	}
 
 	@Override
-	public SearchResult<DecompositionTree> generateComposition(Set<Property> properties) {
+	public SearchResult<DecompositionTree> generateComposition(List<Property> properties) {
 		for(Property property: properties) {
 			if(property.getArity() != 1) {
 				throw new IllegalArgumentException();
