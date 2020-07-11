@@ -1,8 +1,6 @@
 package com.fr2501.virage.jobs;
 
-import java.time.Duration;
 import java.time.Instant;
-import java.time.Period;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import com.fr2501.virage.core.VirageUserInterface;
 
 // TODO: Document
-public abstract class VirageJob {
+public abstract class VirageJob<T> {
 	private static final Logger logger = LogManager.getLogger(VirageJob.class);
 	private VirageUserInterface issuer;
 	
@@ -54,6 +52,8 @@ public abstract class VirageJob {
 		return true;
 	}
 	
+	public abstract T getResult();
+	
 	public VirageJobState getState() {
 		return this.state;
 	}
@@ -74,8 +74,8 @@ public abstract class VirageJob {
 		res += "ID: " + this.id + "\n";
 		
 		res += "Issued: " + Instant.ofEpochMilli(time_issued).toString() + "\n";
-		res += "Started: " + Instant.ofEpochMilli(time_issued).toString() + "\n";
-		res += "Finished: " + Instant.ofEpochMilli(time_issued).toString() + "\n";
+		res += "Started: " + Instant.ofEpochMilli(time_started).toString() + "\n";
+		res += "Finished: " + Instant.ofEpochMilli(time_finished).toString() + "\n";
 		res += "-----\n";
 		res += "State: " + this.state + "\n";
 	

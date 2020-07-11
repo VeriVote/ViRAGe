@@ -45,13 +45,13 @@ public class VirageCore implements Runnable {
 	
 	private FrameworkRepresentation framework = null;
 	
-	private BlockingQueue<VirageJob> jobs;
+	private BlockingQueue<VirageJob<?>> jobs;
 
     public VirageCore(String[] args) throws ParseException, InterruptedException, IOException {
         logger.info("Initialising VirageCore.");
         
         this.args = args;
-        this.jobs = new LinkedBlockingQueue<VirageJob>();
+        this.jobs = new LinkedBlockingQueue<VirageJob<?>>();
     }
     
     public void run() {
@@ -66,7 +66,7 @@ public class VirageCore implements Runnable {
         	if(!this.jobs.isEmpty()) {
         		logger.debug("VirageJob found.");
         		
-        		VirageJob job;
+        		VirageJob<?> job;
 				try {
 					job = this.jobs.take();
 	        		job.execute();
@@ -80,7 +80,7 @@ public class VirageCore implements Runnable {
         }
     }
     
-    public void submit(VirageJob job) {
+    public void submit(VirageJob<?> job) {
     	if(job.isReadyToExecute()) {        			
     		this.jobs.add(job);
 		} else {
@@ -88,7 +88,7 @@ public class VirageCore implements Runnable {
 		}
     }
     
-    public void submit(VirageSystemJob job) {
+    public void submit(VirageSystemJob<?> job) {
     	job.execute();
     }
     
@@ -100,7 +100,7 @@ public class VirageCore implements Runnable {
     		
         	while(!this.jobs.isEmpty()) {
 				try {
-					VirageJob pendingJob = this.jobs.take();
+					VirageJob<?> pendingJob = this.jobs.take();
 					pendingJob.setState(VirageJobState.FAILED);
 				} catch (InterruptedException e) {
 					logger.error("An error occured.", e);
@@ -126,7 +126,7 @@ public class VirageCore implements Runnable {
     		job.attachExecutor(this.searchManager);
     		job.addFramework(this.framework);
     		
-        	this.submit((VirageJob) job);
+        	this.submit((VirageJob<?>) job);
     	}
     }
     

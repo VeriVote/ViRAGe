@@ -92,7 +92,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 	}
 
 	@Override
-	public void notify(VirageJob job) {
+	public void notify(VirageJob<?> job) {
 		// TODO Auto-generated method stub
 		System.out.println(job.toString());
 	}
