@@ -2,7 +2,11 @@ package com.fr2501.virage.jobs;
 
 import com.fr2501.virage.core.VirageUserInterface;
 
-// TODO Document
+/**
+ * 
+ * A {@link VirageJob} used to terminate the system-
+ *
+ */
 public class VirageExitJob extends VirageSystemJob<Void> {
 	private int statusCode;
 	

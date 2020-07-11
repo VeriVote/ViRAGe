@@ -8,7 +8,11 @@ import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
-//TODO Document
+/**
+ * 
+ * A {@link VirageJob} used to parse an extended Prolog file.
+ *
+ */
 public class VirageParseJob extends VirageExecutorJob<ExtendedPrologParser, FrameworkRepresentation> {
 	private FrameworkRepresentation framework;
 	

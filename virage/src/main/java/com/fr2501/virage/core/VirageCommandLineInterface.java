@@ -15,7 +15,11 @@ import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.jobs.VirageParseJob;
 
-// TODO Document
+/**
+ * 
+ * A simple command line interface for ViRAGe
+ *
+ */
 public class VirageCommandLineInterface implements VirageUserInterface {
 	private static final Logger logger = LogManager.getLogger(VirageCommandLineInterface.class);
 	private Scanner scanner;
@@ -30,6 +34,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		this.core = core;
 	}
 	
+	/**
+	 * Similar to run(), but creates its own new thread.
+	 */
 	public void launch() {
 		this.thread = new Thread(this, "vcli");
 		this.thread.start();
@@ -70,6 +77,11 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		}
 	}
 	
+	@Override
+	public void notify(VirageJob<?> job) {
+		System.out.println(job.toString());
+	}
+	
 	private void createGenerationQuery() {
 		System.out.println("Please input the desired properties (separated by ',').");
 		String propertyString = this.scanner.nextLine();
@@ -89,11 +101,5 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
 		this.core.submit(new VirageAnalyzeJob(this, composition, properties));
-	}
-
-	@Override
-	public void notify(VirageJob<?> job) {
-		// TODO Auto-generated method stub
-		System.out.println(job.toString());
 	}
 }

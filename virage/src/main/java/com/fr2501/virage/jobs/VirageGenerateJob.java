@@ -9,7 +9,11 @@ import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
-// TODO: Document
+/**
+ * 
+ * A @link VirageJob} used for generating compositions
+ *
+ */
 public class VirageGenerateJob extends VirageExecutorJobWithFramework<VirageSearchManager, List<SearchResult<DecompositionTree>>> {
 	private List<String> propertyStrings;
 	private List<Property> properties;

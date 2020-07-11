@@ -27,7 +27,7 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
 	/**
 	 * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
 	 * @param framework the framework
-	 * @throws IOException 
+	 * @throws IOException but should actually not
 	 */
 	public AdmissionCheckPrologCompositionAnalyzer(FrameworkRepresentation framework) throws IOException {
 		super(framework);

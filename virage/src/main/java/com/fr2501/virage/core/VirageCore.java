@@ -32,6 +32,7 @@ import com.fr2501.virage.types.FrameworkRepresentation;
  *
  */
 
+// This is required due to Commons CLI still recommending the deprecated way of building Options.
 @SuppressWarnings("deprecation")
 public class VirageCore implements Runnable {
 	private final static Logger logger = LogManager.getLogger(VirageCore.class.getName());
@@ -54,6 +55,10 @@ public class VirageCore implements Runnable {
         this.jobs = new LinkedBlockingQueue<VirageJob<?>>();
     }
     
+    /**
+     * Once started, this method keeps looking for new jobs and executes available ones.
+     * <b> Does not return! </b>
+     */
     public void run() {
         try {
 			this.init(this.args);
@@ -80,6 +85,10 @@ public class VirageCore implements Runnable {
         }
     }
     
+    /**
+     * Adds a job to the queue, after ensuring its executability.
+     * @param job the job
+     */
     public void submit(VirageJob<?> job) {
     	if(job.isReadyToExecute()) {        			
     		this.jobs.add(job);

@@ -7,7 +7,13 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.core.VirageUserInterface;
 
-// TODO: Document
+/**
+ * 
+ * Wrapper class for all tasks to be completed by {@link com.fr2501.virage.core.VirageCore}.
+ * Require a {@link VirageUserInterface} as listener.
+ *
+ * @param <T> the result type
+ */
 public abstract class VirageJob<T> {
 	private static final Logger logger = LogManager.getLogger(VirageJob.class);
 	private VirageUserInterface issuer;
@@ -32,6 +38,10 @@ public abstract class VirageJob<T> {
 		this.state = VirageJobState.PENDING;
 	}
 	
+	/**
+	 * Runs the job and notifies its issuer on termination.
+	 * Should only be ran after checking isReadyToExecute(), otherwise behaviour is undefined.
+	 */
 	public void execute() {
 		this.setState(VirageJobState.RUNNING);
 		
@@ -46,8 +56,17 @@ public abstract class VirageJob<T> {
 		this.issuer.notify(this);
 	}
 	
+	/**
+	 * The actual implementation of the job's functionality
+	 * 
+	 * @throws Exception which will be caught by the {@link com.fr2501.virage.core.VirageCore} object
+	 */
 	protected abstract void concreteExecute() throws Exception;
 	
+	/**
+	 * Checks whether all requirements for a job are met
+	 * @return true if the job can be run, false otherwise
+	 */
 	public boolean isReadyToExecute() {
 		return true;
 	}
@@ -58,6 +77,10 @@ public abstract class VirageJob<T> {
 		return this.state;
 	}
 	
+	/**
+	 * Sets the current state, also updates the timestamps if applicable.
+	 * @param state the new state
+	 */
 	public void setState(VirageJobState state) {
 		if(state == VirageJobState.RUNNING) {
 			this.time_started = System.currentTimeMillis();

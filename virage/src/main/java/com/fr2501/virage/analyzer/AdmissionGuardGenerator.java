@@ -26,8 +26,8 @@ public class AdmissionGuardGenerator {
 	
 	/**
 	 * Generates the file containing the admission guards
-	 * @param path the file to be written to
-	 * @throws IOException 
+	 * @throws IOException but should actually not
+	 * @return the file
 	 */
 	public File createAdmissionGuardFile() throws IOException {
 		List<CompositionRule> newRules = this.generateAdmissionGuards();

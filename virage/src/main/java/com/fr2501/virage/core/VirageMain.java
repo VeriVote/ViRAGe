@@ -3,6 +3,11 @@ package com.fr2501.virage.core;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * 
+ * The main entry point
+ *
+ */
 public class VirageMain {
 	private final static Logger logger = LogManager.getLogger(VirageMain.class);
 	

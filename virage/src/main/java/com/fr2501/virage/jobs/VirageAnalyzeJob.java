@@ -9,6 +9,11 @@ import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
+/**
+ * 
+ * A {@link VirageJob} used to analyze a composition.
+ *
+ */
 public class VirageAnalyzeJob extends VirageExecutorJobWithFramework<VirageSearchManager, List<SearchResult<Boolean>>> {
 	private List<String> propertyStrings;
 	private List<Property> properties;

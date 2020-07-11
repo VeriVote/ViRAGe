@@ -37,7 +37,7 @@ public class VirageSearchManager {
 	}
 	
 	/**
-	 * Calls {@link CompositionAnalyzer#analyzeComposition(DecompositionTree, Set)} on all its analyzers
+	 * Calls {@link CompositionAnalyzer#analyzeComposition} on all its analyzers
 	 * @param composition the decomposition tree
 	 * @param properties the desired property set
 	 * @return a list of results, ordered in the same way as the analyzers
@@ -56,7 +56,7 @@ public class VirageSearchManager {
 	}
 	
 	/**
-	 * Calls {@link CompositionAnalyzer#generateComposition(Set)} on all its analyzers
+	 * Calls {@link CompositionAnalyzer#generateComposition} on all its analyzers
 	 * @param properties the desired property set
 	 * @return a list of results, ordered in the same way as the analyzers
 	 */

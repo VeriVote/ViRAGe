@@ -31,7 +31,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	/**
 	 * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
 	 * @param framework the framework
-	 * @throws IOException 
+	 * @throws IOException but should actually not
 	 */
 	public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) throws IOException {
 		logger.info("Initialising SimplePrologCompositionAnalyzer.");
