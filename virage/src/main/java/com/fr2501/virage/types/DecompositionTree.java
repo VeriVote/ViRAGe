@@ -105,7 +105,9 @@ public class DecompositionTree {
 		if(this.arity == 0) {
 			return this.label;
 		} else {
-			return this.label += "(" + StringUtils.printCollection(children) + ")";
+			String res = this.label;
+			res += "(" + StringUtils.printCollection(children) + ")";
+			return res;
 		}
 	}
 

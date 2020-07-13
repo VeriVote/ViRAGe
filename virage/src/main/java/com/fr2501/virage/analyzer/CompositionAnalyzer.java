@@ -2,6 +2,7 @@ package com.fr2501.virage.analyzer;
 
 import java.util.List;
 
+import com.fr2501.virage.prolog.PrologProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
@@ -32,4 +33,14 @@ public interface CompositionAnalyzer {
 	 * @return a {@link SearchResult} containing the result
 	 */
 	public SearchResult<DecompositionTree> generateComposition(List<Property> properties);
+	
+	/**
+	 * Derives the Prolog proof for a given claim.
+	 * <b>May only be called on already proven claims!</b>
+	 * @param composition the composition to be used
+	 * @param properties the properties that shall be proven to be satisfied by the composition
+	 * @return a list of {@link PrologProof}s, ordered the same way as the properties
+	 * @throws IllegalArgumentException if no proof can be generated (i.e. asked to prove a non-provable claim)
+	 */
+	public List<PrologProof> proveClaims(DecompositionTree composition, List<Property> properties) throws IllegalArgumentException;
 }

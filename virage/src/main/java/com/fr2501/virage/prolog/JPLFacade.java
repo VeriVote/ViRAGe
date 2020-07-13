@@ -37,12 +37,16 @@ public class JPLFacade {
 		this.timeout = timeout;
 	}
 	
+	public long getTimeout() {
+		return this.timeout;
+	}
+	
 	/**
 	 * Consult a file so it becomes available within the JPL engine.
 	 * @param path path to the file
 	 */
 	public void consultFile(String path) {
-		Query q = new Query("consult", new Term[] {new Atom(path)});
+		Query q = new Query("ensure_loaded", new Term[] {new Atom(path)});
 		q.hasSolution();
 	}
 	
@@ -107,13 +111,14 @@ public class JPLFacade {
 	public SearchResult<Boolean> factQuery(String queryString, long timeout) {
 		long endTime = System.currentTimeMillis() + timeout;
 		
-		String unusedVariable = this.findUnusedVariable(queryString);
+		String unusedVariable = findUnusedVariable(queryString);
 		
 		int maxDepth=0;
 		while(System.currentTimeMillis() < endTime) {
 			logger.debug("Current maxDepth: " + maxDepth);
 			long remainingTime = endTime -System.currentTimeMillis();
 			String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + "," + unusedVariable + ")";
+			
 			
 			Map<String, String> result = new HashMap<String, String>();
 			
@@ -169,7 +174,7 @@ public class JPLFacade {
 	public SearchResult<Map<String, String>> iterativeDeepeningQuery(String queryString, long timeout) {
 		long endTime = System.currentTimeMillis() + timeout;
 		
-		String unusedVariable = this.findUnusedVariable(queryString);
+		String unusedVariable = findUnusedVariable(queryString);
 		
 		int maxDepth=0;
 		while(System.currentTimeMillis() < endTime) {
@@ -213,13 +218,20 @@ public class JPLFacade {
 		return new SearchResult<Map<String, String>>(QueryState.TIMEOUT, null);
 	}
 	
-	private String findUnusedVariable(String queryString) {
-		// Feels a bit hacky, but it works.
-		String unusedVariable = "X";
-		while(queryString.contains(unusedVariable)) {
-			unusedVariable += unusedVariable;
-		}
+	/**
+	 * Returns a new Prolog variable not yet occuring in the query
+	 * @param queryString the query
+	 * @return an unused variable
+	 */
+	public static String findUnusedVariable(String queryString) {
+		String x = "X";
 		
-		return unusedVariable;
+		for(int i=1; true; i++) {
+			String unusedVariable = x + i;
+			
+			if(!queryString.contains(unusedVariable)) {
+				return unusedVariable;
+			}
+		}
 	}
 }

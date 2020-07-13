@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.JPLFacade;
+import com.fr2501.virage.prolog.PrologProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
@@ -43,6 +44,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	
 	protected void consultKnowledgeBase() throws IOException {
 		this.facade.consultFile(this.framework.getAbsolutePath());
+		this.facade.consultFile("src/main/resources/meta_interpreter.pl");
 	}
 	
 	@Override
@@ -105,5 +107,51 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 			return new SearchResult<DecompositionTree>(result.getState(), null);
 		}
 	}
-
+	
+	@Override
+	public List<PrologProof> proveClaims(DecompositionTree composition, List<Property> properties) {
+		List<PrologProof> res = new LinkedList<PrologProof>();
+		
+		for(Property property: properties) {
+			if(property.getArity() != 1) {
+				throw new IllegalArgumentException();
+			}
+		}
+		
+		String votingRule = composition.toString();
+		
+		for(Property property: properties) {
+			// This is fine as it's the only variable.
+			String proofVariable = "P";
+			String query = "prove((" + property.getInstantiatedString(votingRule) + ")," + proofVariable + ")";
+			
+			logger.debug(query);
+			
+			// Disabling timeout as these queries are typically fast
+			long oldTimeout = this.facade.getTimeout();
+			this.facade.setTimeout(Long.MAX_VALUE/2);
+			SearchResult<Map<String,String>> result = this.facade.iterativeDeepeningQuery(query);
+			this.facade.setTimeout(oldTimeout);
+			
+			if(result.hasValue()) {
+				try {
+					Map<String,String> map = result.getValue();
+					
+					if(map.containsKey(proofVariable)) {
+						logger.debug(map.get(proofVariable));
+						
+						res.add(PrologProof.createProofFromString(map.get(proofVariable)));
+					} else {
+						throw new IllegalArgumentException();
+					}
+				} catch (ValueNotPresentException e) {
+					throw new IllegalArgumentException();
+				}
+			} else {
+				throw new IllegalArgumentException();
+			}
+		}
+		
+		return res;
+	}
 }
