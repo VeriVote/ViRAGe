@@ -143,13 +143,15 @@ public class VirageCore implements Runnable {
     	this.parseCommandLine(args);
     	
     	// Initialise UserInterface
+    	VirageUserInterfaceFactory factory = new VirageUserInterfaceFactory();
     	if(cl.hasOption("ui")) {
     		String value = cl.getOptionValue("ui");
     		
-    		VirageUserInterfaceFactory factory = new VirageUserInterfaceFactory();
     		this.ui = factory.getUI(value, this);
-    		this.ui.launch();
+    	} else {
+    		this.ui = factory.getUI("none", this);
     	}
+    	this.ui.launch();
     	
     	this.extendedPrologParser = new SimpleExtendedPrologParser();
     	this.searchManager = new VirageSearchManager();
