@@ -160,7 +160,7 @@ public class VirageCore implements Runnable {
 	    	this.searchManager.addAnalyzer(new SimplePrologCompositionAnalyzer(framework));
 	    	this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
     	} catch (Exception e) {
-    		logger.error("Initialising CompositionAnalyzers failed.");
+    		logger.error("Initialising CompositionAnalyzers failed.", e);
     	}
     }
     

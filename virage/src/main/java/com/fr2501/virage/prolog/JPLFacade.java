@@ -1,8 +1,12 @@
 package com.fr2501.virage.prolog;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpl7.Atom;
@@ -48,6 +52,19 @@ public class JPLFacade {
 	public void consultFile(String path) {
 		Query q = new Query("ensure_loaded", new Term[] {new Atom(path)});
 		q.hasSolution();
+	}
+	
+	public void consultFile(URL url) {
+		try {
+			File dest = File.createTempFile("meta_interpreter", ".pl");
+			dest.deleteOnExit();
+			FileUtils.copyURLToFile(url, dest);
+			logger.debug(dest.getAbsolutePath());
+			this.consultFile(dest.getAbsolutePath());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**

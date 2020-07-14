@@ -8,6 +8,7 @@ import com.fr2501.virage.jobs.VirageJob;
  *
  */
 public interface VirageUserInterface extends Runnable {
+	// TODO: Document
 	public void launch();
 	
 	public void notify(VirageJob<?> job);

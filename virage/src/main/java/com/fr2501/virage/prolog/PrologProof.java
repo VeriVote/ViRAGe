@@ -76,7 +76,7 @@ public class PrologProof {
 			currentLevel++;
 			
 			if(closesBranch[i]) {
-				// This is a weird special case I don't fully understand
+				// TODO This is a weird special case I don't fully understand
 				if(!lastOfLevel[i]) {
 					closed[i] = true;
 					currentLevel--;

@@ -42,7 +42,7 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
 		File admissionGuards = generator.createAdmissionGuardFile();
 		this.facade.consultFile(admissionGuards.getAbsolutePath());
 		
-		this.facade.consultFile("src/main/resources/meta_interpreter.pl");
+		this.facade.consultFile(this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
 	}
 
 	@Override
