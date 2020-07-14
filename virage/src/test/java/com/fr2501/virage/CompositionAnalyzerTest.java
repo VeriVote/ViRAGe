@@ -259,4 +259,25 @@ public abstract class CompositionAnalyzerTest {
 			logger.debug("\tSuccesses: " + selfSuccess);
 		}
 	}
+	
+	@Test
+	public void testSimpleProofs() throws IOException {
+		List<Property> properties = new LinkedList<Property>();
+		properties.add(this.framework.getProperty("monotone"));
+		
+		String votingRule = "sequential_composition(pass_module(1),elect_module)";
+		
+		CompositionAnalyzer analyzer = this.createInstance();
+		
+		List<PrologProof> proof = analyzer.proveClaims(DecompositionTree.parseString(votingRule), properties);
+		String reference = "monotone(sequential_composition(pass_module(1),elect_module)),\n" + 
+				"	defer_lift_invariant(pass_module(1))\n" + 
+				"	non_electing(pass_module(1))\n" + 
+				"	defers(pass_module(1),1)\n" + 
+				"	electing(elect_module)\n";
+		
+		assertTrue(proof.get(0).toString().equals(reference));
+		
+		logger.debug(proof.get(0).toString());
+	}
 }
