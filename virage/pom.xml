@@ -17,6 +17,16 @@
 		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
 
+	<repositories>
+		<!-- JitPack used for getting Maven packages from GitHub -->
+		<repository>
+			<id>jitpack.io</id>
+			<name>JitPack Repository</name>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -39,6 +49,12 @@
 			<groupId>jpl</groupId>
 			<artifactId>jpl</artifactId>
 			<version>7.4.0</version>
+		</dependency>
+		<!--  JPL bidirectional Prolog-Java: https://github.com/SWI-Prolog/packages-jpl  -->
+		<dependency>
+			<groupId>com.github.SWI-Prolog</groupId>
+			<artifactId>packages-jpl</artifactId>
+			<version>V8.3.2</version>	<!-- version 7.6.1 of JPL -->
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
 		<dependency>
