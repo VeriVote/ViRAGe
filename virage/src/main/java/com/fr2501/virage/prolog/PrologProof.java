@@ -20,8 +20,6 @@ public class PrologProof {
 	private String goal;
 	private List<PrologProof> subgoals;
 	
-	private String string;
-	
 	private PrologProof(String goal) {
 		this(goal, new LinkedList<PrologProof>());
 	}
@@ -122,26 +120,12 @@ public class PrologProof {
 			}
 		}
 		
-		String stringRepresentation = "";
-		for(int i=0; i<subgoals.length; i++) {
-			for(int j=0; j<levels[i]; j++) {
-				stringRepresentation += "\t";
-			}
-			
-			stringRepresentation += subgoals[i] + "\n";
-		}
-		
 		PrologProof res = proofs[0];
-		res.setString(stringRepresentation);
 		return res;
 	}
 	
 	private void addSubgoal(PrologProof subgoal) {
 		this.subgoals.add(subgoal);
-	}
-	
-	private void setString(String string) {
-		this.string = string;
 	}
 	
 	public String getGoal() {
@@ -154,6 +138,22 @@ public class PrologProof {
 	
 	@Override
 	public String toString() {
-		return this.string;
+		return this.toString(0);
+	}
+	
+	private String toString(int n) {
+		String res = "";
+		
+		for(int i=0; i<n; i++) {
+			res += "\t";
+		}
+		
+		res += this.goal;
+		
+		for(PrologProof subgoal: this.subgoals) {
+			res += "\n" + subgoal.toString(n+1);
+		}
+		
+		return res;
 	}
 }

@@ -108,7 +108,7 @@ public abstract class CompositionAnalyzerTest {
 				"			non_electing(drop_module(2))\n" + 
 				"			conservative(max_aggregator)\n" + 
 				"	defers(loop_composition(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)),1)\n" + 
-				"	electing(elect_module)\n";
+				"	electing(elect_module)";
 		
 		assertTrue(proof.get(0).toString().equals(reference));
 	}
@@ -274,7 +274,7 @@ public abstract class CompositionAnalyzerTest {
 				"	defer_lift_invariant(pass_module(1))\n" + 
 				"	non_electing(pass_module(1))\n" + 
 				"	defers(pass_module(1),1)\n" + 
-				"	electing(elect_module)\n";
+				"	electing(elect_module)";
 		
 		assertTrue(proof.get(0).toString().equals(reference));
 		
