@@ -21,6 +21,7 @@ import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.PrologProof;
 import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
+import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
@@ -79,38 +80,6 @@ public abstract class CompositionAnalyzerTest {
 		
 		assertTrue(result.hasValue());
 		assertTrue(result.getValue());
-		
-		List<PrologProof> proof = analyzer.proveClaims(smcTree, properties);
-		
-		String reference = "monotone(sequential_composition(loop_composition(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)),elect_module)),\n" + 
-				"	defer_lift_invariant(loop_composition(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)))\n" + 
-				"		defer_lift_invariant(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator)),\n" + 
-				"			disjoint_compatible(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2))\n" + 
-				"				disjoint_compatible(pass_module(2),drop_module(2))\n" + 
-				"					disjoint_compatible(drop_module(2),pass_module(2))\n" + 
-				"			defer_lift_invariant(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1)))),\n" + 
-				"				defer_lift_invariant(pass_module(2))\n" + 
-				"				defer_lift_invariant(sequential_composition(downgrade(plurality_module),pass_module(1))),\n" + 
-				"					defer_invariant_monotone(downgrade(plurality_module))\n" + 
-				"						invariant_monotone(plurality_module)\n" + 
-				"					non_electing(pass_module(1))\n" + 
-				"					defers(pass_module(1),1)\n" + 
-				"					defer_monotone(pass_module(1))\n" + 
-				"						defer_lift_invariant(pass_module(1))\n" + 
-				"			defer_lift_invariant(drop_module(2))\n" + 
-				"	non_electing(loop_composition(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)))\n" + 
-				"		non_electing(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator)),\n" + 
-				"			non_electing(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1)))),\n" + 
-				"				non_electing(pass_module(2))\n" + 
-				"				non_electing(sequential_composition(downgrade(plurality_module),pass_module(1))),\n" + 
-				"					non_electing(downgrade(plurality_module))\n" + 
-				"					non_electing(pass_module(1))\n" + 
-				"			non_electing(drop_module(2))\n" + 
-				"			conservative(max_aggregator)\n" + 
-				"	defers(loop_composition(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)),1)\n" + 
-				"	electing(elect_module)";
-		
-		assertTrue(proof.get(0).toString().equals(reference));
 	}
 	
 	@Test
@@ -269,7 +238,7 @@ public abstract class CompositionAnalyzerTest {
 		
 		CompositionAnalyzer analyzer = this.createInstance();
 		
-		List<PrologProof> proof = analyzer.proveClaims(DecompositionTree.parseString(votingRule), properties);
+		List<CompositionProof> proof = analyzer.proveClaims(DecompositionTree.parseString(votingRule), properties);
 		String reference = "monotone(sequential_composition(pass_module(1),elect_module)),\n" + 
 				"	defer_lift_invariant(pass_module(1))\n" + 
 				"	non_electing(pass_module(1))\n" + 
