@@ -1,6 +1,7 @@
 package com.fr2501.virage.analyzer;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,13 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.JPLFacade;
+import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.PrologProof;
+import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.IsabelleProof;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 import com.fr2501.virage.types.ValueNotPresentException;
@@ -109,8 +114,8 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	}
 	
 	@Override
-	public List<PrologProof> proveClaims(DecompositionTree composition, List<Property> properties) {
-		List<PrologProof> res = new LinkedList<PrologProof>();
+	public List<CompositionProof> proveClaims(DecompositionTree composition, List<Property> properties) {
+		List<PrologProof> proofs = new LinkedList<PrologProof>();
 		
 		for(Property property: properties) {
 			if(property.getArity() != 1) {
@@ -140,7 +145,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 					if(map.containsKey(proofVariable)) {
 						logger.debug(map.get(proofVariable));
 						
-						res.add(PrologProof.createProofFromString(map.get(proofVariable)));
+						proofs.add(PrologProof.createProofFromString(map.get(proofVariable)));
 					} else {
 						throw new IllegalArgumentException();
 					}
@@ -152,6 +157,67 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 			}
 		}
 		
+		List<CompositionProof> res = new LinkedList<CompositionProof>();
+		for(PrologProof proof: proofs) {
+			res.add(this.findCompositionRules(proof));
+		}
+		
 		return res;
 	}
+	
+	private CompositionProof findCompositionRules(PrologProof prologProof) {
+		List<CompositionProof> subgoals = new LinkedList<CompositionProof>();
+		
+		for(PrologProof prologSubgoal: prologProof.getSubgoals()) {
+			subgoals.add(this.findCompositionRules(prologSubgoal));
+		}
+		
+		CompositionRule rule = this.findMatchingCompositionRule(prologProof);
+		
+		return new CompositionProof(prologProof.getGoal(), subgoals, rule);
+	}
+	
+	private CompositionRule findMatchingCompositionRule(PrologProof proof) {
+		for(CompositionRule rule: this.framework.getCompositionRules()) {
+			String generic = rule.getSuccedent().toString();
+			String specific = proof.getGoal();
+			
+			if(!this.facade.subsumesTerm(generic, specific)) {
+				// "Heads" don't match, no need to look at subgoals.
+				continue;	
+			}
+			
+			Map<String,String> replacements = this.facade.unifiable(generic, specific);
+			
+			// Check subgoals.
+			if(proof.getSubgoals().size() != rule.getAntecedents().size()) {
+				// Number of arguments does not match.
+				continue;
+			}
+			
+			boolean rightRule = true;
+			for(int i=0; i<proof.getSubgoals().size(); i++) {
+				generic = rule.getAntecedents().get(i).toString();
+				specific = proof.getSubgoals().get(i).getGoal();
+				
+				// Manual "unification"
+				// TODO: Variable names are not prefix free.
+				for(String key: replacements.keySet()) {
+					specific = specific.replace(key, replacements.get(key));
+				}
+				
+				if(!this.facade.subsumesTerm(generic, specific)) {
+					// A subgoal does not match, wrong rule.
+					rightRule = false;
+					break;
+				}
+			}
+			
+			if(rightRule) {
+				return rule;
+			}
+		}
+		
+		throw new IllegalArgumentException();
+	}	
 }

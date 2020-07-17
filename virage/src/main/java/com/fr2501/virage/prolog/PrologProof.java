@@ -43,7 +43,7 @@ public class PrologProof {
 		boolean[] closesBranch = new boolean[subgoals.length];
 		
 		for(int i=0; i<subgoals.length; i++) {
-			if(i<subgoals.length -1) {
+			if(i<subgoals.length-1) {
 				lastOfLevel[i+1] = !subgoals[i].contains(MORE_GOALS_ON_LEVEL);
 			}
 			// Handle special cases
@@ -54,14 +54,25 @@ public class PrologProof {
 			// A bit of sanitation
 			subgoals[i] = subgoals[i].replace(MORE_GOALS_ON_LEVEL, "");
 			subgoals[i] = StringUtils.removeWhitespace(subgoals[i]);
-			// Remove useless bracket pair
-			subgoals[i] = subgoals[i].substring(1,subgoals[i].length()-1);
 			
 			closesBranch[i] = subgoals[i].contains(BRANCH_CLOSE);
 			if(closesBranch[i]) {
 				// Remove "true" and following brackets, they have served their purpose.
 				String regex = SEPARATOR + BRANCH_CLOSE + ".*";
 				subgoals[i] = subgoals[i].replaceAll(regex, "");
+			}
+			
+			// More sanitation
+			if(subgoals[i].startsWith("(")) {
+				subgoals[i] = subgoals[i].substring(1,subgoals[i].length());
+			}
+			
+			if(subgoals[i].endsWith(",(")) {
+				subgoals[i] = subgoals[i].substring(0,subgoals[i].length()-2);
+			}
+			
+			if(subgoals[i].endsWith(",")) {
+				subgoals[i] = subgoals[i].substring(0,subgoals[i].length()-1);
 			}
 		}
 		

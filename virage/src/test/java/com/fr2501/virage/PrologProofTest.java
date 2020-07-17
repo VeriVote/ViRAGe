@@ -34,15 +34,15 @@ public class PrologProofTest {
 				+ "al_composition(pass_module(2), sequential_composition(downgrade(plurality_module), pass_module(1))), drop_module(2), max_"
 				+ "aggregator), defer_eq_condition(1)), 1), true), \nsubgoal(electing(elect_module), true)))))";
 		
-		String reference = "monotone(sequential_composition(loop_composition(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)),elect_module)),\n" + 
+		String reference = "monotone(sequential_composition(loop_composition(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)),elect_module))\n" + 
 				"	defer_lift_invariant(loop_composition(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)))\n" + 
-				"		defer_lift_invariant(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator)),\n" + 
+				"		defer_lift_invariant(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator))\n" + 
 				"			disjoint_compatible(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2))\n" + 
 				"				disjoint_compatible(pass_module(2),drop_module(2))\n" + 
 				"					disjoint_compatible(drop_module(2),pass_module(2))\n" + 
-				"			defer_lift_invariant(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1)))),\n" + 
+				"			defer_lift_invariant(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))))\n" + 
 				"				defer_lift_invariant(pass_module(2))\n" + 
-				"				defer_lift_invariant(sequential_composition(downgrade(plurality_module),pass_module(1))),\n" + 
+				"				defer_lift_invariant(sequential_composition(downgrade(plurality_module),pass_module(1)))\n" + 
 				"					defer_invariant_monotone(downgrade(plurality_module))\n" + 
 				"						invariant_monotone(plurality_module)\n" + 
 				"					non_electing(pass_module(1))\n" + 
@@ -51,10 +51,10 @@ public class PrologProofTest {
 				"						defer_lift_invariant(pass_module(1))\n" + 
 				"			defer_lift_invariant(drop_module(2))\n" + 
 				"	non_electing(loop_composition(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)))\n" + 
-				"		non_electing(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator)),\n" + 
-				"			non_electing(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1)))),\n" + 
+				"		non_electing(parallel_composition(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator))\n" + 
+				"			non_electing(sequential_composition(pass_module(2),sequential_composition(downgrade(plurality_module),pass_module(1))))\n" + 
 				"				non_electing(pass_module(2))\n" + 
-				"				non_electing(sequential_composition(downgrade(plurality_module),pass_module(1))),\n" + 
+				"				non_electing(sequential_composition(downgrade(plurality_module),pass_module(1)))\n" + 
 				"					non_electing(downgrade(plurality_module))\n" + 
 				"					non_electing(pass_module(1))\n" + 
 				"			non_electing(drop_module(2))\n" + 

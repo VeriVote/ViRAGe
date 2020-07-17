@@ -9,7 +9,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.prolog.PrologProof;
+import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.IsabelleProof;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
@@ -57,12 +59,12 @@ public class VirageSearchManager {
 	}
 	
 	// TODO: Document
-	public List<List<PrologProof>> proveClaims(DecompositionTree composition, List<Property> properties) {
+	public List<List<CompositionProof>> proveClaims(DecompositionTree composition, List<Property> properties) {
 		// TODO Parallelize.
-		List<List<PrologProof>> results = new LinkedList<List<PrologProof>>();
+		List<List<CompositionProof>> results = new LinkedList<List<CompositionProof>>();
 		
 		for(int i=0; i<this.analyzers.size(); i++) {
-			List<PrologProof>result = this.analyzers.get(i).proveClaims(composition, properties);
+			List<CompositionProof> result = this.analyzers.get(i).proveClaims(composition, properties);
 			results.add(result);
 			logger.debug(result);
 		}

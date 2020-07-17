@@ -239,14 +239,13 @@ public abstract class CompositionAnalyzerTest {
 		CompositionAnalyzer analyzer = this.createInstance();
 		
 		List<CompositionProof> proof = analyzer.proveClaims(DecompositionTree.parseString(votingRule), properties);
-		String reference = "monotone(sequential_composition(pass_module(1),elect_module)),\n" + 
-				"	defer_lift_invariant(pass_module(1))\n" + 
-				"	non_electing(pass_module(1))\n" + 
-				"	defers(pass_module(1),1)\n" + 
-				"	electing(elect_module)";
-		
-		assertTrue(proof.get(0).toString().equals(reference));
+		String reference = "monotone(sequential_composition(pass_module(1),elect_module)) by monotone_sequence\n" + 
+				"	defer_lift_invariant(pass_module(1)) by pass_module_defer_lift_invariant\n" + 
+				"	non_electing(pass_module(1)) by pass_module_non_electing\n" + 
+				"	defers(pass_module(1),1) by pass_1_module_defers_1\n" + 
+				"	electing(elect_module) by elect_module_electing";
 		
 		logger.debug(proof.get(0).toString());
+		assertTrue(proof.get(0).toString().equals(reference));
 	}
 }

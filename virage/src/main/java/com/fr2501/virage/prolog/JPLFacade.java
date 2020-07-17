@@ -17,6 +17,7 @@ import org.jpl7.Term;
 
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.types.SearchResult;
+import com.fr2501.virage.types.ValueNotPresentException;
 
 /**
  * 
@@ -56,6 +57,7 @@ public class JPLFacade {
 	
 	public void consultFile(URL url) {
 		try {
+			// TODO: This name is not useful here, make more generic
 			File dest = File.createTempFile("meta_interpreter", ".pl");
 			dest.deleteOnExit();
 			FileUtils.copyURLToFile(url, dest);
@@ -74,6 +76,7 @@ public class JPLFacade {
 	 * @param timeout the timeout
 	 * @return a {@link Map} containing the result. If no solution
 	 * is found within timeout, an empty Map is returned.
+	 * If no solution exists, return null.
 	 * @throws PrologException if query is malformed.
 	 */
 	public Map<String, String> simpleQueryWithTimeout(String queryString, long timeout) throws PrologException {
@@ -97,6 +100,7 @@ public class JPLFacade {
 
 				return result;
 			} else {
+				// No solution exists
 				return null;
 			}
 		} catch(PrologException e) {
@@ -173,6 +177,17 @@ public class JPLFacade {
 		return new SearchResult<Boolean>(QueryState.TIMEOUT, null);
 	}
 	
+	// TODO: Document
+	public SearchResult<Map<String,String>> iterativeDeepeningQueryWithoutTimeout(String queryString) {
+		long oldTimeout = this.timeout;
+		this.timeout = Long.MAX_VALUE/2;
+		
+		SearchResult<Map<String,String>> res = this.iterativeDeepeningQuery(queryString);
+		
+		this.timeout = oldTimeout;
+		return res;
+	}
+	
 	/**
 	 * A query containing variables, using default timeout.
 	 * @param queryString the query
@@ -236,7 +251,63 @@ public class JPLFacade {
 	}
 	
 	/**
-	 * Returns a new Prolog variable not yet occuring in the query
+	 * Checks, whether a term is a specialization of another term.
+	 * Semantically similar to subsumes_term\2 in SWI-Prolog
+	 * @param generic the generic term
+	 * @param specific the more specific term
+	 * @return true if specific is a specification of generic, false otherwise.
+	 */
+	public boolean subsumesTerm(String generic, String specific) {
+		String query = "subsumes_term(" + generic + "," + specific + ")";
+		
+		SearchResult<Boolean> result = this.factQuery(query);
+		if(result.hasValue()) {
+			try {
+				return result.getValue();
+			} catch (ValueNotPresentException e) {
+				// This should never happen.
+				e.printStackTrace();
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Semantically similar to unifiable\3 in SWI-Prolog.
+	 * @param a first term
+	 * @param b second term
+	 * @return a map containing the replacements
+	 * @throws IllegalArgumentException if a and b are not unifiable
+	 */
+	public Map<String, String> unifiable(String a, String b) {
+		if(!(this.subsumesTerm(a, b) || this.subsumesTerm(b, a))) {
+			logger.error("'" + a + "' and '" + b + "' are not unifiable.");
+			throw new IllegalArgumentException();
+		}
+		
+		String query = "unifiable(" + a + "," + b;
+		
+		String unusedVariable = JPLFacade.findUnusedVariable(query);
+		query += "," + unusedVariable + ")";
+		
+		SearchResult<Map<String, String>> result = this.iterativeDeepeningQueryWithoutTimeout(query);
+		
+		try {
+			Map<String,String> resultMap = result.getValue();
+			
+			if(!resultMap.containsKey(unusedVariable)) {
+				throw new IllegalArgumentException();
+			}
+			
+			return parseReplacementMap(unusedVariable, resultMap);
+		} catch (ValueNotPresentException e) {
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	/**
+	 * Returns a new Prolog variable not yet occurring in the query
 	 * @param queryString the query
 	 * @return an unused variable
 	 */
@@ -250,5 +321,45 @@ public class JPLFacade {
 				return unusedVariable;
 			}
 		}
+	}
+	
+	// TODO: Document
+	public static Map<String,String> parseReplacementMap(String variable, Map<String,String> map) {
+		Map<String,String> result = new HashMap<String,String>();
+		
+		// Map contains only the the variable containing the replacements but
+		// no other variables, no replacements necessary.
+		if(map.keySet().size() == 1) {
+			return result;
+		}
+		
+		// Look like this: '[|]'('='(_108, 1), '[]')
+		// _NUMBER is an alias for a variable.
+		String replacementString = map.get(variable);
+		replacementString = replacementString.substring(9,replacementString.length()-7);
+		replacementString = StringUtils.removeWhitespace(replacementString);
+		
+		String[] replacements;
+		if(replacementString.contains("\\),")) {
+			replacements = replacementString.split("\\),");
+		} else {
+			replacements = new String[1];
+			// Remove the last bracket so the formats of both options match
+			replacements[0] = replacementString.substring(0,replacementString.length()-1);
+		}
+
+		for(String replacement: replacements) {
+			replacement = replacement.substring(1,replacement.length());
+			String[] values = replacement.split(",");
+			
+			for(String var: map.keySet()) {
+				if(map.get(var).equals(values[0])) {
+					result.put(var, values[1]);
+					break;
+				}
+			}
+		}
+		
+		return result;
 	}
 }

@@ -6,16 +6,17 @@ import java.util.List;
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.prolog.PrologProof;
+import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
-public class VirageProveJob extends VirageExecutorJobWithFramework<VirageSearchManager, List<List<PrologProof>>> {
+public class VirageProveJob extends VirageExecutorJobWithFramework<VirageSearchManager, List<List<CompositionProof>>> {
 	private List<String> propertyStrings;
 	private List<Property> properties;
 	private DecompositionTree tree;
 	
-	private List<List<PrologProof>> result;
+	private List<List<CompositionProof>> result;
 	
 	public VirageProveJob(VirageUserInterface issuer, String tree, List<String> properties) {
 		super(issuer);
@@ -36,7 +37,7 @@ public class VirageProveJob extends VirageExecutorJobWithFramework<VirageSearchM
 	}
 
 	@Override
-	public List<List<PrologProof>> getResult() {
+	public List<List<CompositionProof>> getResult() {
 		return this.result;
 	}
 }
