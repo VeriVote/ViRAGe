@@ -59,4 +59,22 @@ public class SimpleFileReader {
 		
 		return res;
 	}
+	
+	/**
+	 * Reads the specified file.
+	 * 
+	 * @param file the file to be read.
+	 * @return a String representing the contents of that file.
+	 * @throws IOException if reading the file is not possible.
+	 */
+	public String readFile(File file) throws IOException {
+		List<String> list = this.readFileByLine(file);
+		
+		String res = "";
+		for(String s: list) {
+			res += s + "\n";
+		}
+		
+		return res;
+	}
 }
