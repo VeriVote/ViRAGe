@@ -56,15 +56,8 @@ public class IsabelleTheoryGeneratorTest {
 	}
 	
 	@Test
-	public void simpleProof() {
-		IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator();
-		
-		generator.generateTheoryFile("", "", new LinkedList<CompositionProof>());
-	}
-	
-	@Test
 	public void SMCProof() {
-		IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator();
+		IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator(this.framework, "src/test/resources/theories/");
 		
 		generator.generateTheoryFile("", SMC, this.smcProofs);
 	}

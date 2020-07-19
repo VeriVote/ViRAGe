@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
 // TODO: Document
@@ -27,9 +28,12 @@ public class IsabelleTheoryGenerator {
 	private static String THEORY_TEMPLATE = "";
 	private static int theoryCounter = 0;
 	
+	private FrameworkRepresentation framework;
+	private Set<String> functionsAndDefinitions;
+	
 	private IsabelleProofGenerator generator;
 	
-	public IsabelleTheoryGenerator() {
+	public IsabelleTheoryGenerator(FrameworkRepresentation framework, String theoryPath) {
 		if(THEORY_TEMPLATE.equals("")) {
 			SimpleFileReader reader = new SimpleFileReader();
 			
@@ -43,7 +47,17 @@ public class IsabelleTheoryGenerator {
 			}
 		}
 		
+		this.framework = framework;
 		this.generator = new IsabelleProofGenerator();
+		
+		IsabelleTheoryParser parser = new IsabelleTheoryParser();
+		
+		try {
+			this.functionsAndDefinitions = parser.getAllFunctionsAndDefinitions(theoryPath);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void generateTheoryFile(String path, String composition, List<CompositionProof> proofs) {
@@ -97,26 +111,29 @@ public class IsabelleTheoryGenerator {
 		return res;
 	}
 	
+	// This method tries, along with other things, to match Prolog predicates
+	// to Isabelle entities. It is case-insensitive, so no two Isabelle entities
+	// may share the same name with different capitalization.
 	private String translatePrologToIsabelle(String prologString) {
 		String res = prologString.replace(",", ")(");
 		res = res.replace("(", " (");
 		
-		// Constants have to be upper case for Isabelle/HOL.
-		// Due to current formatting, these are always preceded
-		// by an opening bracket (except for the first one)
-		res = res.substring(0,1).toUpperCase() + res.substring(1,res.length());
-		
-		Pattern pattern = Pattern.compile("\\([a-z]");
+		Pattern pattern = Pattern.compile("[a-zA-Z_]+");
 		Matcher matcher = pattern.matcher(res);
 	
 		while(matcher.find()) {
 			System.out.println(res.substring(matcher.start(), matcher.end()));
+			String match = res.substring(matcher.start(), matcher.end());
+			String replacement = match;
 			
-			res = res.substring(0,matcher.start()) +
-					res.substring(matcher.start(),matcher.end()).toUpperCase() +
-					res.substring(matcher.end(),res.length());
-			
-			System.out.println(res);
+			for(String string: this.functionsAndDefinitions) {
+				if(string.equalsIgnoreCase(match)) {
+					replacement = string;
+					break;
+				}
+			}
+
+			res = res.replace(match, replacement);
 		}
 		
 		return res;
