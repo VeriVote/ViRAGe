@@ -37,9 +37,9 @@
 %
 % === compositional_structure
 % downgrade(electoral_module)
-% sequential_composition(electoral_module, electoral_module)
-% parallel_composition(electoral_module, electoral_module, aggregator)
-% loop_composition(electoral_module, termination_condition)
+% seq_comp(electoral_module, electoral_module)
+% parallel_comp(electoral_module, electoral_module, aggregator)
+% loop_comp(electoral_module, termination_condition)
 %
 % === property
 % monotone(electoral_module)
@@ -48,7 +48,7 @@
 % non_blocking(electoral_module)
 % electing(electoral_module)
 % non_electing(electoral_module)
-% defers(electoral_module, natural_number)
+% defers(natural_number, electoral_module)
 % rejects(electoral_module, natural_number)
 % eliminates(electoral_module, natural_number)
 % elects(electoral_module, natural_number)
@@ -71,36 +71,36 @@
 % === composition_rule
 % = blacks_rule.thy
 % definition
-black(sequential_composition(condorcet_nonelecting, borda(_))).
+black(seq_comp(condorcet_nonelecting, borda(_))).
 
 % = borda_module.thy
 % definition
-borda(sequential_composition(elim_module(max,borda_score),elect_module)).
+borda(seq_comp(elim_module(max,borda_score),elect_module)).
 
 % = classic_nanson.thy
 % definition
-classic_nanson(sequential_composition(loop_composition(elim_module(leq_avg, borda_score), defer_eq_condition(1)), elect_module)).
+classic_nanson(seq_comp(loop_comp(elim_module(leq_avg, borda_score), defer_eq_condition(1)), elect_module)).
 
 % = copeland.thy
 % definition
-copeland(sequential_composition(elim_module(max,copeland_score),elect_module)).
+copeland(seq_comp(elim_module(max,copeland_score),elect_module)).
 
 % = minimax.thy
 % definition
-minimax(sequential_composition(elim_module(max,minimax_score),elect_module)).
+minimax(seq_comp(elim_module(max,minimax_score),elect_module)).
 
 % = nanson_baldwin.thy
 % definition
-nanson_baldwin(sequential_composition(loop_composition(elim_module(min,borda_score),defer_eq_condition(1)),elect_module)).
+nanson_baldwin(seq_comp(loop_comp(elim_module(min,borda_score),defer_eq_condition(1)),elect_module)).
 
 % = schwartz_rule.thy
 % definition
-schwartz(sequential_composition(loop_composition(elim_module(less_avg,borda_score),defer_eq_condition(1)),elect_module)).
+schwartz(seq_comp(loop_comp(elim_module(less_avg,borda_score),defer_eq_condition(1)),elect_module)).
 
 % = electoral_modules.thy
 % definition
 defer_deciding(X) :-
-	defers(X,1),
+	defers(1,X),
 	non_electing(X).
 
 % = condorcet_consistency.thy
@@ -123,11 +123,11 @@ condorcet_consistent(X) :-
 	minimax(X).
 % = voting_rule_constructors.thy
 % m_defer_cc_implies_elector_m_cc
-condorcet_consistent(sequential_composition(X,elect_module)) :-
+condorcet_consistent(seq_comp(X,elect_module)) :-
 	defer_condorcet_consistent(X).
 % = voting_rule_constructors.thy
 % cr_eval_implies_elect_max_elim_is_cc
-condorcet_consistent(sequential_composition(elim_module(max,F),elect_module)) :-
+condorcet_consistent(seq_comp(elim_module(max,F),elect_module)) :-
 	condorcet_rating(F).
 
 % = elim_module.thy
@@ -141,13 +141,13 @@ condorcet_rating(minimax_score).
 
 % = sequential_composition.thy 
 % monotone_sequence
-monotone(sequential_composition(X,Y)) :-
+monotone(seq_comp(X,Y)) :-
 	defer_lift_invariant(X),
 	non_electing(X),
-	defers(X,1),
+	defers(1,X),
 	electing(Y).
 
-% = electoral_module.thy 
+% = electoral_modules.thy 
 % strict_def_monotone_implies_def_monotone
 defer_monotone(X) :- defer_lift_invariant(X).
 
@@ -162,25 +162,25 @@ defer_lift_invariant(pass_module(_)).
 defer_lift_invariant(drop_module(_)).
 % = sequential_composition.thy 
 % defer_lift_invariant_seq
-defer_lift_invariant(sequential_composition(X,Y)) :-
+defer_lift_invariant(seq_comp(X,Y)) :-
 	defer_lift_invariant(X),
 	defer_lift_invariant(Y).
 % = sequential_composition.thy 
 % defer_invariant_monotone_to_defer_lift_invariant
-defer_lift_invariant(sequential_composition(X,Y)) :-
+defer_lift_invariant(seq_comp(X,Y)) :-
 	defer_invariant_monotone(X),
 	non_electing(Y),
-	defers(Y,1),
+	defers(1,Y),
 	defer_monotone(Y).
 % = parallel_composition.thy 
 % defer_lift_invariant_par
-defer_lift_invariant(parallel_composition(X,Y,max_aggregator)) :-
+defer_lift_invariant(parallel_comp(X,Y,max_aggregator)) :-
 	disjoint_compatible(X,Y),
 	defer_lift_invariant(X),
 	defer_lift_invariant(Y).
 % = loop_composition.thy 
 % loop_comp_preserves_defer_lift_invariant
-defer_lift_invariant(loop_composition(X,_)) :-
+defer_lift_invariant(loop_comp(X,_)) :-
 	defer_lift_invariant(X).
 
 % = pass_module.thy
@@ -191,7 +191,7 @@ non_blocking(pass_module(_)).
 non_blocking(downgrade(X)) :- electing(X).
 % = sequential_composition.thy 
 % seq_comp_preserves_non_blocking
-non_blocking(sequential_composition(X,Y)) :-
+non_blocking(seq_comp(X,Y)) :-
 	non_blocking(X),
 	non_blocking(Y). 
 % = electoral_modules.thy
@@ -207,8 +207,8 @@ electing(elect_module).
 electing(plurality_module).
 % = sequential_composition.thy
 % seq_electing
-electing(sequential_composition(X,Y)) :-
-	defers(X,1),
+electing(seq_comp(X,Y)) :-
+	defers(1,X),
 	electing(Y).
 
 % = defer_module.thy 
@@ -228,38 +228,38 @@ non_electing(drop_module(_)).
 non_electing(elim_module(_,_)).
 % = sequential_composition.thy
 % seq_comp_preserves_non_electing
-non_electing(sequential_composition(X,Y)) :-
+non_electing(seq_comp(X,Y)) :-
 	non_electing(X),
 	non_electing(Y).
 % = parallel_composition.thy 
 % conservative_agg_comp_preserves_non_electing
-non_electing(parallel_composition(X,Y,A)) :-
+non_electing(parallel_comp(X,Y,A)) :-
 	non_electing(X),
 	non_electing(Y),
 	conservative(A).
 % = loop_composition.thy 
 % loop_preserves_non_electing
-non_electing(loop_composition(X,_)) :-
+non_electing(loop_comp(X,_)) :-
 	non_electing(X).
 
 % = pass_module.thy 
 % pass_1_module_defers_1
-defers(pass_module(1), 1).
+defers(1, pass_module(1)).
 % = pass_module.thy 
 % pass_2_module_defers_2
-defers(pass_module(2), 2).
+defers(2, pass_module(2)).
 % = unproven
 % pass_N_module_defers_N
-defers(pass_module(N), N).
+defers(N, pass_module(N)).
 % = sequential_composition.thy 
 % seq_comp_defers_1
-defers(sequential_composition(X,Y), 1) :-
+defers(seq_comp(X,Y), 1) :-
 	non_blocking(X),
 	non_electing(X),
-	defers(Y,1).
-% = unproven
+	defers(1,Y).
+% = iterative_elimination_number_of_survivors_for_eliminates
 % loop_defer_eq_N_defers_N
-defers(loop_composition(_, defer_eq_condition(N)),N).
+defers(N, loop_comp(_, defer_eq_condition(N))).
 	
 % = drop_module.thy 
 % drop_2_module_rejects_2
@@ -270,8 +270,8 @@ rejects(drop_module(N), N).
 
 % = parallel_composition.thy 
 % eliminates_1_par
-eliminates(parallel_composition(X,Y,max_aggregator),1) :-
-	defers(X,1),
+eliminates(parallel_comp(X,Y,max_aggregator),1) :-
+	defers(1,X),
 	non_electing(X),
 	rejects(Y,2),
 	disjoint_compatible(X,Y).
@@ -280,7 +280,7 @@ eliminates(parallel_composition(X,Y,max_aggregator),1) :-
 % disjoint_compatible_seq
 %% The '_' might be wrong, keep that in mind.
 %% Potential solution: Add predicate 'electoral_module'.
-disjoint_compatible(sequential_composition(X,_),Z) :-
+disjoint_compatible(seq_comp(X,_),Z) :-
 	disjoint_compatible(X,Z).
 % = parallel_composition.thy
 % drop_pass_compatible

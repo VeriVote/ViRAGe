@@ -48,12 +48,12 @@ public abstract class CompositionAnalyzerTest {
 	@Test
 	public void testSequentialMajorityComparison() throws ValueNotPresentException, IOException {
 		logger.info("testSequentialMajorityComparison()");
-		String smc = "sequential_composition(" + 
-						"loop_composition(" + 
-							"parallel_composition(" + 
-								"sequential_composition(" + 
+		String smc = "seq_comp(" + 
+						"loop_comp(" + 
+							"parallel_comp(" + 
+								"seq_comp(" + 
 									"pass_module(2)," + 
-									"sequential_composition(" + 
+									"seq_comp(" + 
 										"downgrade(" + 
 											"plurality_module)," + 
 										"pass_module(1)))," + 
@@ -234,15 +234,15 @@ public abstract class CompositionAnalyzerTest {
 		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("monotone"));
 		
-		String votingRule = "sequential_composition(pass_module(1),elect_module)";
+		String votingRule = "seq_comp(pass_module(1),elect_module)";
 		
 		CompositionAnalyzer analyzer = this.createInstance();
 		
 		List<CompositionProof> proof = analyzer.proveClaims(DecompositionTree.parseString(votingRule), properties);
-		String reference = "monotone(sequential_composition(pass_module(1),elect_module)) by monotone_sequence\n" + 
+		String reference = "monotone(seq_comp(pass_module(1),elect_module)) by monotone_sequence\n" + 
 				"	defer_lift_invariant(pass_module(1)) by pass_module_defer_lift_invariant\n" + 
 				"	non_electing(pass_module(1)) by pass_module_non_electing\n" + 
-				"	defers(pass_module(1),1) by pass_1_module_defers_1\n" + 
+				"	defers(1,pass_module(1)) by pass_1_module_defers_1\n" + 
 				"	electing(elect_module) by elect_module_electing";
 		
 		logger.debug(proof.get(0).toString());

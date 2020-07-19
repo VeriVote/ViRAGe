@@ -25,12 +25,12 @@ import com.fr2501.virage.types.SearchResult;
 
 public class IsabelleTheoryGeneratorTest {
 	private static final String PATH = "src/test/resources/framework.pl";
-	private static final String SMC = 	"sequential_composition(" + 
-											"loop_composition(" + 
-											"parallel_composition(" + 
-												"sequential_composition(" + 
+	private static final String SMC = 	"seq_comp(" + 
+											"loop_comp(" + 
+											"parallel_comp(" + 
+												"seq_comp(" + 
 													"pass_module(2)," + 
-													"sequential_composition(" + 
+													"seq_comp(" + 
 														"downgrade(" + 
 															"plurality_module)," + 
 														"pass_module(1)))," + 
