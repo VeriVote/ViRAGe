@@ -6,11 +6,6 @@ begin
 definition $MODULE_NAME :: "'a Electoral_module" where
 	"$MODULE_NAME  \<equiv> $MODULE_DEF"
 
-theorem $MODULE_NAME_sound:
-	assumes order: "linear_order x"
-	shows "electoral_module ($MODULE_NAME)"
-	by (simp add: $MODULE_NAME_def order)
-
 $PROOFS
 
 end

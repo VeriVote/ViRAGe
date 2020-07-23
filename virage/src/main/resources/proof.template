@@ -1,5 +1,4 @@
 theorem $THEOREM_NAME
-	assumes order: "linear_order x"
 	shows "$GOAL"
 proof -
 $PROOF_STEPS
