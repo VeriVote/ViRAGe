@@ -3,8 +3,8 @@ imports $IMPORTS
 
 begin
 
-definition $MODULE_NAME :: "'a rel \<Rightarrow> 'a Electoral_module" where
-	"$MODULE_NAME x \<equiv> $MODULE_DEF"
+definition $MODULE_NAME :: "'a Electoral_module" where
+	"$MODULE_NAME  \<equiv> $MODULE_DEF"
 
 theorem $MODULE_NAME_sound:
 	assumes order: "linear_order x"

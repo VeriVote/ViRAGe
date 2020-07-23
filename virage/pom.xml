@@ -44,12 +44,6 @@
 			<artifactId>log4j-core</artifactId>
 			<version>2.13.3</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/jpl/jpl -->
-		<dependency>
-			<groupId>jpl</groupId>
-			<artifactId>jpl</artifactId>
-			<version>7.4.0</version>
-		</dependency>
 		<!--  JPL bidirectional Prolog-Java: https://github.com/SWI-Prolog/packages-jpl  -->
 		<dependency>
 			<groupId>com.github.SWI-Prolog</groupId>

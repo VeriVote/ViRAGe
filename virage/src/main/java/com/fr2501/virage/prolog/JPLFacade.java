@@ -51,7 +51,7 @@ public class JPLFacade {
 	 * @param path path to the file
 	 */
 	public void consultFile(String path) {
-		Query q = new Query("ensure_loaded", new Term[] {new Atom(path)});
+		Query q = new Query("consult", new Term[] {new Atom(path)});
 		q.hasSolution();
 	}
 	
@@ -323,6 +323,10 @@ public class JPLFacade {
 		}
 	}
 	
+	// Careful! On July, 20th 2020, SWI-Prolog rolled out an update that
+	// broke this method due to JPL changing the way it prints Prolog lists.
+	// This might happen again in the future. Look at the format of replacementString
+	// and adjust accordingly if that ever happens again.
 	// TODO: Document
 	public static Map<String,String> parseReplacementMap(String variable, Map<String,String> map) {
 		Map<String,String> result = new HashMap<String,String>();
@@ -333,10 +337,10 @@ public class JPLFacade {
 			return result;
 		}
 		
-		// Look like this: '[|]'('='(_108, 1), '[]')
+		// Look like this: ['='(_108, 1)]
 		// _NUMBER is an alias for a variable.
 		String replacementString = map.get(variable);
-		replacementString = replacementString.substring(9,replacementString.length()-7);
+		replacementString = replacementString.substring(5,replacementString.length()-2);
 		replacementString = StringUtils.removeWhitespace(replacementString);
 		
 		String[] replacements;

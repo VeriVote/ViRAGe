@@ -27,13 +27,11 @@ public class IsabelleTheoryGenerator {
 	
 	private static String THEORY_TEMPLATE = "";
 	private static int theoryCounter = 0;
-	
-	private FrameworkRepresentation framework;
 	private Set<String> functionsAndDefinitions;
 	
 	private IsabelleProofGenerator generator;
 	
-	public IsabelleTheoryGenerator(FrameworkRepresentation framework, String theoryPath) {
+	public IsabelleTheoryGenerator(String theoryPath) {
 		if(THEORY_TEMPLATE.equals("")) {
 			SimpleFileReader reader = new SimpleFileReader();
 			
@@ -47,9 +45,6 @@ public class IsabelleTheoryGenerator {
 			}
 		}
 		
-		this.framework = framework;
-		this.generator = new IsabelleProofGenerator();
-		
 		IsabelleTheoryParser parser = new IsabelleTheoryParser();
 		
 		try {
@@ -58,6 +53,8 @@ public class IsabelleTheoryGenerator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		this.generator = new IsabelleProofGenerator(this.functionsAndDefinitions);
 	}
 	
 	public void generateTheoryFile(String path, String composition, List<CompositionProof> proofs) {
@@ -65,11 +62,11 @@ public class IsabelleTheoryGenerator {
 		String moduleName = MODULE_NAME + "_" + theoryCounter;
 		
 		String imports = this.findImports(proofs);
-		String moduleDef = this.translatePrologToIsabelle(composition);
+		String moduleDef = IsabelleUtils.translatePrologToIsabelle(this.functionsAndDefinitions, composition);
 		
 		String proofsString = "";
 		for(CompositionProof proof: proofs) {
-			proofsString += this.generator.generateIsabelleProof(proof) + "\n\n";
+			proofsString += this.generator.generateIsabelleProof(proof, moduleName) + "\n\n";
 		}
 		
 		String fileContents = this.replaceVariables(theoryName, imports, moduleName, moduleDef, proofsString);
@@ -106,34 +103,6 @@ public class IsabelleTheoryGenerator {
 					+ "(*  proven within Isabelle/HOL. Check Isabelle *)\n"
 					+ "(*     error messages for more information.    *)\n"
 					+ "(* * * * * * * * * * * * * * * * * * * * * * * *)";
-		}
-		
-		return res;
-	}
-	
-	// This method tries, along with other things, to match Prolog predicates
-	// to Isabelle entities. It is case-insensitive, so no two Isabelle entities
-	// may share the same name with different capitalization.
-	private String translatePrologToIsabelle(String prologString) {
-		String res = prologString.replace(",", ")(");
-		res = res.replace("(", " (");
-		
-		Pattern pattern = Pattern.compile("[a-zA-Z_]+");
-		Matcher matcher = pattern.matcher(res);
-	
-		while(matcher.find()) {
-			System.out.println(res.substring(matcher.start(), matcher.end()));
-			String match = res.substring(matcher.start(), matcher.end());
-			String replacement = match;
-			
-			for(String string: this.functionsAndDefinitions) {
-				if(string.equalsIgnoreCase(match)) {
-					replacement = string;
-					break;
-				}
-			}
-
-			res = res.replace(match, replacement);
 		}
 		
 		return res;

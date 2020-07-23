@@ -57,7 +57,7 @@ public class IsabelleTheoryGeneratorTest {
 	
 	@Test
 	public void SMCProof() {
-		IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator(this.framework, "src/test/resources/theories/");
+		IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator("src/test/resources/theories/");
 		
 		generator.generateTheoryFile("", SMC, this.smcProofs);
 	}

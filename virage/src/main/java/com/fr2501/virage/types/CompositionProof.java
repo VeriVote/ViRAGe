@@ -12,6 +12,7 @@ public class CompositionProof {
 	private String goal;
 	private List<CompositionProof> subgoals;
 	private CompositionRule rule;
+	private String id = "";
 	
 	public CompositionProof(String goal, List<CompositionProof> subgoals, CompositionRule rule) {
 		this.goal = goal;
@@ -23,6 +24,42 @@ public class CompositionProof {
 		this.goal = goal;
 		this.subgoals = new LinkedList<CompositionProof>();
 		this.rule = rule;
+	}
+	
+	public String getGoal() {
+		return this.goal;
+	}
+	
+	public List<CompositionProof> getSubgoals() {
+		return this.subgoals;
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public void setId(String id) {
+		this.id = id;
+		
+		for(int i=0; i<this.subgoals.size(); i++) {
+			this.subgoals.get(i).setId(id + i);
+		}
+	}
+	
+	public String getRuleName() {
+		return this.rule.getName();
+	}
+	
+	public List<CompositionProof> getAllStepsDepthFirst() {
+		List<CompositionProof> res = new LinkedList<CompositionProof>();
+		
+		for(CompositionProof subgoal: this.subgoals) {
+			res.addAll(subgoal.getAllStepsDepthFirst());
+		}
+		
+		res.add(this);
+		
+		return res;
 	}
 	
 	public Set<CompositionRule> getAllCompositionRules() {
@@ -58,6 +95,8 @@ public class CompositionProof {
 		for(int i=0; i<n; i++) {
 			res += "\t";
 		}
+		
+		res += this.id + ": ";
 		
 		res += this.goal + " by " + this.rule.getName();
 		

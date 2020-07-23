@@ -1,0 +1,2 @@
+have $GOAL_ID: "$GOAL"
+	using order $SUBGOAL_IDS $RULE by $SOLVER
