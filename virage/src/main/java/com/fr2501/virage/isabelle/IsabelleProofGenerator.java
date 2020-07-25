@@ -19,7 +19,9 @@ public class IsabelleProofGenerator {
 	private IsabelleProofStepGenerator generator;
 	private Set<String> functionsAndDefinitions;
 	
-	public IsabelleProofGenerator(Set<String> functionsAndDefinitions) {
+	private IsabelleTheoryGenerator parent;
+	
+	public IsabelleProofGenerator(IsabelleTheoryGenerator parent, Set<String> functionsAndDefinitions) {
 		if(PROOF_TEMPLATE.equals("")) {
 			SimpleFileReader reader = new SimpleFileReader();
 			
@@ -34,7 +36,12 @@ public class IsabelleProofGenerator {
 		}
 		
 		this.functionsAndDefinitions = functionsAndDefinitions;
-		this.generator = new IsabelleProofStepGenerator(this.functionsAndDefinitions);
+		this.generator = new IsabelleProofStepGenerator(this, this.functionsAndDefinitions);
+		this.parent = parent;
+	}
+	
+	public IsabelleTheoryGenerator getParent() {
+		return this.parent;
 	}
 	
 	public String generateIsabelleProof(CompositionProof proof) {
@@ -45,7 +52,7 @@ public class IsabelleProofGenerator {
 		String property = splits[0];
 		
 		String theoremName = IsabelleTheoryGenerator.VAR_MODULE_NAME + "_" + property + ":";
-		String goal = property + " (" + IsabelleTheoryGenerator.VAR_MODULE_NAME + ")";
+		String goal = property + " (" + IsabelleTheoryGenerator.VAR_MODULE_NAME + " " + IsabelleTheoryGenerator.VAR_MODULE_PARAMETERS + ")";
 		
 		String proofSteps = "";
 		for(CompositionProof subgoal: proof.getAllStepsDepthFirst()) {

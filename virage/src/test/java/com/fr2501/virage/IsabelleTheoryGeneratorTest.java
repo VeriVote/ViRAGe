@@ -39,27 +39,59 @@ public class IsabelleTheoryGeneratorTest {
 											"defer_eq_condition(1))," + 
 										"elect_module)";
 	private FrameworkRepresentation framework;
-	private List<CompositionProof> smcProofs;
+	private CompositionAnalyzer analyzer;
 	
 	@Before
 	public void init() throws IOException, MalformedEPLFileException {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		this.framework = parser.parseFramework(new File(PATH));
 		
-		CompositionAnalyzer analyzer = new SimplePrologCompositionAnalyzer(this.framework);
-		
+		this.analyzer = new SimplePrologCompositionAnalyzer(this.framework);
+	}
+	
+	@Test
+	public void testSMCProof() throws IOException, MalformedEPLFileException {
 		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("electoral_module"));
 		properties.add(this.framework.getProperty("monotone"));
 		properties.add(this.framework.getProperty("electing"));
 		
-		this.smcProofs = analyzer.proveClaims(new DecompositionTree(SMC), properties);
+		proveClaims(properties, SMC);
 	}
 	
 	@Test
-	public void SMCProof() {
-		IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator("src/test/resources/theories/");
+	public void testVerySimpleProof() {
+		List<Property> properties = new LinkedList<Property>();
+		properties.add(this.framework.getProperty("electoral_module"));
+		properties.add(this.framework.getProperty("electing"));
 		
-		generator.generateTheoryFile("", SMC, this.smcProofs);
+		proveClaims(properties, "elect_module");
+	}
+	
+	@Test
+	public void testSimpleProof() {
+		List<Property> properties = new LinkedList<Property>();
+		properties.add(this.framework.getProperty("electoral_module"));
+		properties.add(this.framework.getProperty("electing"));
+		properties.add(this.framework.getProperty("monotone"));
+		
+		proveClaims(properties, "seq_comp(pass_module(1,_),elect_module)");
+	}
+	
+	@Test
+	public void testCondorcetProof() {
+		List<Property> properties = new LinkedList<Property>();
+		properties.add(this.framework.getProperty("electoral_module"));
+		properties.add(this.framework.getProperty("condorcet_consistent"));
+		
+		proveClaims(properties, "seq_comp(elim_module(max,_,copeland_score), elect_module)");
+	}
+	
+	protected void proveClaims(List<Property> properties, String composition) {
+		List<CompositionProof> proofs = analyzer.proveClaims(new DecompositionTree(composition), properties);
+
+		IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator("src/test/resources/theories/", this.framework);
+			
+		generator.generateTheoryFile("", composition, proofs);
 	}
 }

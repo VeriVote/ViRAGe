@@ -90,6 +90,9 @@ electoral_module(pass_module(_,_)).
 % = drop_module.thy
 % drop_module_sound
 electoral_module(drop_module(_,_)).
+% = elim_module.thy
+% elim_module_sound
+electoral_module(elim_module(_,_,_)).
 % = downgrade.thy
 % downgrade_sound
 electoral_module(downgrade(X)) :-
@@ -116,27 +119,27 @@ black(seq_comp(condorcet_nonelecting, borda(_))).
 
 % = borda_module.thy
 % definition
-borda(seq_comp(elim_module(max,borda_score),elect_module)).
+borda(seq_comp(elim_module(max,_,borda_score),elect_module)).
 
 % = classic_nanson.thy
 % definition
-classic_nanson(seq_comp(loop_comp(elim_module(leq_avg, borda_score), defer_eq_condition(1)), elect_module)).
+classic_nanson(seq_comp(loop_comp(elim_module(leq_avg,_,borda_score), defer_eq_condition(1)), elect_module)).
 
 % = copeland.thy
 % definition
-copeland(seq_comp(elim_module(max,copeland_score),elect_module)).
+copeland(seq_comp(elim_module(max,_,copeland_score),elect_module)).
 
 % = minimax.thy
 % definition
-minimax(seq_comp(elim_module(max,minimax_score),elect_module)).
+minimax(seq_comp(elim_module(max,_,minimax_score),elect_module)).
 
 % = nanson_baldwin.thy
 % definition
-nanson_baldwin(seq_comp(loop_comp(elim_module(min,borda_score),defer_eq_condition(1)),elect_module)).
+nanson_baldwin(seq_comp(loop_comp(elim_module(min,_,borda_score),defer_eq_condition(1)),elect_module)).
 
 % = schwartz_rule.thy
 % definition
-schwartz(seq_comp(loop_comp(elim_module(less_avg,borda_score),defer_eq_condition(1)),elect_module)).
+schwartz(seq_comp(loop_comp(elim_module(less_avg,_,borda_score),defer_eq_condition(1)),elect_module)).
 
 % = electoral_modules.thy
 % definition
@@ -151,7 +154,7 @@ defer_condorcet_consistent(X) :-
 	defer_deciding(X).
 % = elim_module.thy
 % cr_eval_implies_max_elim_is_def_cc
-defer_condorcet_consistent(elim_module(max,F)) :-
+defer_condorcet_consistent(elim_module(max,_,F)) :-
 	condorcet_rating(F).
 
 % = copeland.thy
@@ -168,12 +171,12 @@ condorcet_consistent(seq_comp(X,elect_module)) :-
 	defer_condorcet_consistent(X).
 % = voting_rule_constructors.thy
 % cr_eval_implies_elect_max_elim_is_cc
-condorcet_consistent(seq_comp(elim_module(max,F),elect_module)) :-
+condorcet_consistent(seq_comp(elim_module(max,_,F),elect_module)) :-
 	condorcet_rating(F).
 
 % = elim_module.thy
 % cr_eval_implies_max_elim_is_ccomp
-condorcet_compatible(elim_module(max,F)) :-
+condorcet_compatible(elim_module(max,_,F)) :-
 	condorcet_rating(F).
 
 % = minimax.thy
@@ -266,7 +269,7 @@ non_electing(pass_module(_,_)).
 non_electing(drop_module(_,_)).
 % = elim_module.thy
 % elim_module_nonelecting
-non_electing(elim_module(_,_)).
+non_electing(elim_module(_,_,_)).
 % = sequential_composition.thy
 % seq_comp_preserves_non_electing
 non_electing(seq_comp(X,Y)) :-

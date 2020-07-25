@@ -12,4 +12,7 @@ public interface PrologParser {
 	 * @return a {@link PrologClause} object representing that clause
 	 */
 	public PrologClause parseSingleClause(String clause);
+	
+	// TODO: Document
+	public PrologPredicate parsePredicate(String predicate);
 }

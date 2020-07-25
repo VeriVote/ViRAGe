@@ -41,6 +41,10 @@ public class PrologPredicate {
 	public String getName() {
 		return this.name;
 	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public List<PrologPredicate> getParameters() {
 		return this.parameters;
@@ -52,6 +56,11 @@ public class PrologPredicate {
 	
 	public int getDepth() {
 		return this.depth;
+	}
+	
+	// TODO Document
+	public boolean isVariable() {
+		return this.name.matches("[A-Z_][a-zA-Z_0-9]*");
 	}
 	
 	@Override

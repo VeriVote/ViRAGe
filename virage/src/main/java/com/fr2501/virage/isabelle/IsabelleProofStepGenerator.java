@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.Set;
 
 import com.fr2501.util.SimpleFileReader;
+import com.fr2501.virage.prolog.PrologParser;
+import com.fr2501.virage.prolog.PrologPredicate;
+import com.fr2501.virage.prolog.SimplePrologParser;
 import com.fr2501.virage.types.CompositionProof;
 
 // TODO: Document
@@ -18,8 +21,11 @@ public class IsabelleProofStepGenerator {
 	private static String VAR_SOLVER = "$SOLVER";
 	
 	private Set<String> functionsAndDefinitions;
+	private PrologParser parser;
+	private IsabelleProofGenerator parent;
 	
-	public IsabelleProofStepGenerator(Set<String> functionsAndDefinitions) {
+	
+	public IsabelleProofStepGenerator(IsabelleProofGenerator parent, Set<String> functionsAndDefinitions) {
 		if(PROOF_STEP_TEMPLATE.equals("")) {
 			SimpleFileReader reader = new SimpleFileReader();
 			
@@ -34,11 +40,16 @@ public class IsabelleProofStepGenerator {
 		}
 		
 		this.functionsAndDefinitions = functionsAndDefinitions;
+		this.parser = new SimplePrologParser();
+		this.parent = parent;
 	}
 	
 	public String generateIsabelleProofStep(CompositionProof step) {
 		String goalId = step.getId();
-		String goal = IsabelleUtils.translatePrologToIsabelle(this.functionsAndDefinitions, step.getGoal());
+		
+		PrologPredicate predicate = this.parser.parsePredicate(step.getGoal());
+		this.parent.getParent().replacePrologVariables(predicate);
+		String goal = IsabelleUtils.translatePrologToIsabelle(this.functionsAndDefinitions, predicate.toString());
 		
 		String subgoalIds = "";
 		for(CompositionProof subgoal: step.getSubgoals()) {
