@@ -18,7 +18,7 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 public class IsabelleTheoryGenerator {
 	private static final String VAR_THEORY_NAME = "$THEORY_NAME";
 	private static final String VAR_IMPORTS = "$IMPORTS";
-	private static final String VAR_MODULE_NAME = "$MODULE_NAME";
+	protected static final String VAR_MODULE_NAME = "$MODULE_NAME";
 	private static final String VAR_MODULE_DEF = "$MODULE_DEF";
 	private static final String VAR_PROOFS = "$PROOFS";
 	
@@ -66,7 +66,7 @@ public class IsabelleTheoryGenerator {
 		
 		String proofsString = "";
 		for(CompositionProof proof: proofs) {
-			proofsString += this.generator.generateIsabelleProof(proof, moduleName) + "\n\n";
+			proofsString += this.generator.generateIsabelleProof(proof) + "\n\n";
 		}
 		
 		String fileContents = this.replaceVariables(theoryName, imports, moduleName, moduleDef, proofsString);
@@ -114,9 +114,10 @@ public class IsabelleTheoryGenerator {
 		
 		res = res.replace(VAR_THEORY_NAME, theoryName);
 		res = res.replace(VAR_IMPORTS, imports);
-		res = res.replace(VAR_MODULE_NAME, moduleName);
 		res = res.replace(VAR_MODULE_DEF, moduleDef);
 		res = res.replace(VAR_PROOFS, proofs);
+		
+		res = res.replace(VAR_MODULE_NAME, moduleName);
 		
 		return res;
 	}

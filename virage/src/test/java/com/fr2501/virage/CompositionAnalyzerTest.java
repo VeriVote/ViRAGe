@@ -52,12 +52,12 @@ public abstract class CompositionAnalyzerTest {
 						"loop_comp(" + 
 							"parallel_comp(" + 
 								"seq_comp(" + 
-									"pass_module(2)," + 
+									"pass_module(2,_)," + 
 									"seq_comp(" + 
 										"downgrade(" + 
 											"plurality_module)," + 
-										"pass_module(1)))," + 
-								"drop_module(2)," + 
+										"pass_module(1,_)))," + 
+								"drop_module(2,_)," + 
 								"max_aggregator)," + 
 							"defer_eq_condition(1))," + 
 						"elect_module)";
@@ -234,18 +234,22 @@ public abstract class CompositionAnalyzerTest {
 		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("monotone"));
 		
-		String votingRule = "seq_comp(pass_module(1),elect_module)";
+		String votingRule = "seq_comp(pass_module(1,_),elect_module)";
 		
 		CompositionAnalyzer analyzer = this.createInstance();
 		
 		List<CompositionProof> proof = analyzer.proveClaims(DecompositionTree.parseString(votingRule), properties);
-		String reference = "monotone(seq_comp(pass_module(1),elect_module)) by monotone_sequence\n" + 
-				"	defer_lift_invariant(pass_module(1)) by pass_module_defer_lift_invariant\n" + 
-				"	non_electing(pass_module(1)) by pass_module_non_electing\n" + 
-				"	defers(1,pass_module(1)) by pass_1_module_defers_1\n" + 
-				"	electing(elect_module) by elect_module_electing";
 		
-		logger.debug(proof.get(0).toString());
-		assertTrue(proof.get(0).toString().equals(reference));
+		// Prolog variable names are not always the same.
+		String proofString = proof.get(0).toString().replaceAll(",_[0-9]+", ",_1");
+		
+		String reference = ": monotone(seq_comp(pass_module(1,_1),elect_module)) by monotone_sequence\n" + 
+				"	: defer_lift_invariant(pass_module(1,_1)) by pass_module_defer_lift_invariant\n" + 
+				"	: non_electing(pass_module(1,_1)) by pass_module_non_electing\n" + 
+				"	: defers(1,pass_module(1,_1)) by pass_1_module_defers_1\n" + 
+				"	: electing(elect_module) by elect_module_electing";
+		
+		logger.debug(proofString);
+		assertTrue(proofString.equals(reference));
 	}
 }

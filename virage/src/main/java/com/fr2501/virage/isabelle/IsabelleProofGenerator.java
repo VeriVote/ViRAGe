@@ -15,7 +15,6 @@ public class IsabelleProofGenerator {
 	private static String VAR_GOAL = "$GOAL";
 	private static String VAR_PROOF_STEPS = "$PROOF_STEPS";
 	private static String VAR_SUBGOAL_IDS = "$SUBGOAL_IDS";
-	private static String VAR_MODULE_NAME = "$MODULE_NAME";
 	
 	private IsabelleProofStepGenerator generator;
 	private Set<String> functionsAndDefinitions;
@@ -38,15 +37,15 @@ public class IsabelleProofGenerator {
 		this.generator = new IsabelleProofStepGenerator(this.functionsAndDefinitions);
 	}
 	
-	public String generateIsabelleProof(CompositionProof proof, String moduleName) {
+	public String generateIsabelleProof(CompositionProof proof) {
 		proof.setId("0");
 		
 		// A bit hacky
 		String[] splits = proof.getGoal().split("\\(");
 		String property = splits[0];
 		
-		String theoremName = moduleName + "_" + property + ":";
-		String goal = property + " (" + moduleName + ")";
+		String theoremName = IsabelleTheoryGenerator.VAR_MODULE_NAME + "_" + property + ":";
+		String goal = property + " (" + IsabelleTheoryGenerator.VAR_MODULE_NAME + ")";
 		
 		String proofSteps = "";
 		for(CompositionProof subgoal: proof.getAllStepsDepthFirst()) {
@@ -55,18 +54,17 @@ public class IsabelleProofGenerator {
 		
 		String subgoalIds = "0";
 		
-		return this.replaceVariables(theoremName, goal, proofSteps, subgoalIds, moduleName);
+		return this.replaceVariables(theoremName, goal, proofSteps, subgoalIds);
 	}
 	
 	private String replaceVariables(String theoremName, String goal, 
-			String proofSteps, String subgoalIds, String moduleName) {
+			String proofSteps, String subgoalIds) {
 		String res = PROOF_TEMPLATE;
 		
 		res = res.replace(VAR_THEOREM_NAME, theoremName);
 		res = res.replace(VAR_GOAL, goal);
 		res = res.replace(VAR_PROOF_STEPS, proofSteps);
 		res = res.replace(VAR_SUBGOAL_IDS, subgoalIds);
-		res = res.replace(VAR_MODULE_NAME, moduleName);
 		
 		return res;
 	}

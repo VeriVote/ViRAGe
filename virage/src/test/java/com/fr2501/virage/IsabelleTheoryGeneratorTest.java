@@ -29,12 +29,12 @@ public class IsabelleTheoryGeneratorTest {
 											"loop_comp(" + 
 											"parallel_comp(" + 
 												"seq_comp(" + 
-													"pass_module(2)," + 
+													"pass_module(2,_)," + 
 													"seq_comp(" + 
 														"downgrade(" + 
 															"plurality_module)," + 
-														"pass_module(1)))," + 
-												"drop_module(2)," + 
+														"pass_module(1,_)))," + 
+												"drop_module(2,_)," + 
 												"max_aggregator)," + 
 											"defer_eq_condition(1))," + 
 										"elect_module)";
@@ -49,6 +49,7 @@ public class IsabelleTheoryGeneratorTest {
 		CompositionAnalyzer analyzer = new SimplePrologCompositionAnalyzer(this.framework);
 		
 		List<Property> properties = new LinkedList<Property>();
+		properties.add(this.framework.getProperty("electoral_module"));
 		properties.add(this.framework.getProperty("monotone"));
 		properties.add(this.framework.getProperty("electing"));
 		

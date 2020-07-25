@@ -1,2 +1,2 @@
 have $GOAL_ID: "$GOAL"
-	using $SUBGOAL_IDS $RULE by $SOLVER
+	using assms $SUBGOAL_IDS $RULE by $SOLVER
