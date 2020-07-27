@@ -2,10 +2,12 @@ package com.fr2501.virage.isabelle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.FrameworkRepresentation;
 
 //TODO: Document
 public class IsabelleProofGenerator {
@@ -17,11 +19,14 @@ public class IsabelleProofGenerator {
 	private static String VAR_SUBGOAL_IDS = "$SUBGOAL_IDS";
 	
 	private IsabelleProofStepGenerator generator;
-	private Set<String> functionsAndDefinitions;
+	private Map<String, String> functionsAndDefinitions;
+	
+	private FrameworkRepresentation framework;
 	
 	private IsabelleTheoryGenerator parent;
 	
-	public IsabelleProofGenerator(IsabelleTheoryGenerator parent, Set<String> functionsAndDefinitions) {
+	public IsabelleProofGenerator(FrameworkRepresentation framework,
+			IsabelleTheoryGenerator parent, Map<String, String> functionsAndDefinitions) {
 		if(PROOF_TEMPLATE.equals("")) {
 			SimpleFileReader reader = new SimpleFileReader();
 			
@@ -35,8 +40,9 @@ public class IsabelleProofGenerator {
 			}
 		}
 		
+		this.framework = framework;
 		this.functionsAndDefinitions = functionsAndDefinitions;
-		this.generator = new IsabelleProofStepGenerator(this, this.functionsAndDefinitions);
+		this.generator = new IsabelleProofStepGenerator(this.framework, this, this.functionsAndDefinitions);
 		this.parent = parent;
 	}
 	

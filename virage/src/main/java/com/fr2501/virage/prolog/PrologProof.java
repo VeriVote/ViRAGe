@@ -85,7 +85,9 @@ public class PrologProof {
 			currentLevel++;
 			
 			if(closesBranch[i]) {
-				// TODO This is a weird special case I don't fully understand
+				// This happens when a statement is the last of its branch,
+				// but not its level. Close the corresponding branch and 
+				// move up one level to continue with the next one.
 				if(!lastOfLevel[i]) {
 					closed[i] = true;
 					currentLevel--;

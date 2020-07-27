@@ -2,13 +2,17 @@ package com.fr2501.virage.isabelle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
+import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.Property;
 
 // TODO: Document
 public class IsabelleProofStepGenerator {
@@ -20,12 +24,15 @@ public class IsabelleProofStepGenerator {
 	private static String VAR_RULE = "$RULE";
 	private static String VAR_SOLVER = "$SOLVER";
 	
-	private Set<String> functionsAndDefinitions;
+	private Map<String, String> functionsAndDefinitions;
 	private PrologParser parser;
 	private IsabelleProofGenerator parent;
 	
+	private FrameworkRepresentation framework;
 	
-	public IsabelleProofStepGenerator(IsabelleProofGenerator parent, Set<String> functionsAndDefinitions) {
+	
+	public IsabelleProofStepGenerator(FrameworkRepresentation framework,
+			IsabelleProofGenerator parent, Map<String, String> functionsAndDefinitions) {
 		if(PROOF_STEP_TEMPLATE.equals("")) {
 			SimpleFileReader reader = new SimpleFileReader();
 			
@@ -39,6 +46,7 @@ public class IsabelleProofStepGenerator {
 			}
 		}
 		
+		this.framework = framework;
 		this.functionsAndDefinitions = functionsAndDefinitions;
 		this.parser = new SimplePrologParser();
 		this.parent = parent;
@@ -49,7 +57,15 @@ public class IsabelleProofStepGenerator {
 		
 		PrologPredicate predicate = this.parser.parsePredicate(step.getGoal());
 		this.parent.getParent().replacePrologVariables(predicate);
-		String goal = IsabelleUtils.translatePrologToIsabelle(this.functionsAndDefinitions, predicate.toString());
+		Map<String, Set<String>> goalMap = IsabelleUtils.translatePrologToIsabelle(this.functionsAndDefinitions, predicate.toString());
+		
+		if(goalMap.keySet().size() != 1) {
+			throw new IllegalArgumentException();
+		}
+		String goal = "";
+		for(String string: goalMap.keySet()) {
+			goal = string;
+		}
 		
 		String subgoalIds = "";
 		for(CompositionProof subgoal: step.getSubgoals()) {
@@ -58,7 +74,11 @@ public class IsabelleProofStepGenerator {
 		
 		String rule = step.getRuleName();
 		
-		String solver = "simp";
+		// TODO: Find heuristics to decide which method to use at what point.
+		// 'force' looks quite promising, especially since goals are relatively "simple",
+		// so it still returns reasonably quickly and closes (almost) everything.
+		// PaMpeR?
+		String solver = "force";
 		
 		return this.replaceVariables(goalId, goal, subgoalIds, rule, solver);
 	}

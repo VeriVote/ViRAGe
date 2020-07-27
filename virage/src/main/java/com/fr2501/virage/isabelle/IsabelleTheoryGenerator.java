@@ -42,7 +42,7 @@ public class IsabelleTheoryGenerator {
 	
 	private static String THEORY_TEMPLATE = "";
 	private static int theoryCounter = 0;
-	private Set<String> functionsAndDefinitions;
+	private Map<String, String> functionsAndDefinitions;
 	private FrameworkRepresentation framework;
 	
 	private IsabelleProofGenerator generator;
@@ -73,9 +73,9 @@ public class IsabelleTheoryGenerator {
 			e.printStackTrace();
 		}
 		
-		this.generator = new IsabelleProofGenerator(this, this.functionsAndDefinitions);
-		this.parser = new SimplePrologParser();
 		this.framework = framework;
+		this.generator = new IsabelleProofGenerator(this.framework, this, this.functionsAndDefinitions);
+		this.parser = new SimplePrologParser();
 		this.typedVariables = new HashMap<String, String>();
 	}
 	
@@ -98,8 +98,30 @@ public class IsabelleTheoryGenerator {
 			assumptions = ASSUMES + " " + "\"" + LINEAR_ORDER + " " + this.typedVariables.get(REL) + "\"";
 		}
 		
-		String imports = this.findImports(proofs);
-		String moduleDef = IsabelleUtils.translatePrologToIsabelle(this.functionsAndDefinitions, proofPredicate);
+		String imports = this.findImportsFromCompositionRules(proofs);
+		
+		Map<String, Set<String>> moduleDefMap = IsabelleUtils.translatePrologToIsabelle(this.functionsAndDefinitions, proofPredicate);
+		if(moduleDefMap.keySet().size() != 1) {
+			throw new IllegalArgumentException();
+		}
+		
+		// There will be only one iteration, but it is a bit tedious to extract
+		// single elements from sets.
+		String moduleDef = "";
+		for(String string: moduleDefMap.keySet()) {
+			moduleDef = string;
+			
+			// Additional imports might have occured, which are only relevant
+			// for the definition of the module, but not used within the proofs.
+			// Add those.
+			for(String importString: moduleDefMap.get(string)) {
+				String importStringWithoutSuffix = importString.replace(".thy", "");
+				
+				if(!imports.contains(importStringWithoutSuffix)) {
+					imports += " " + importStringWithoutSuffix + " ";
+				}
+			}
+		}
 		
 		String proofsString = "";
 		for(CompositionProof proof: proofs) {
@@ -130,7 +152,7 @@ public class IsabelleTheoryGenerator {
 		}
 	}
 	
-	private String findImports(List<CompositionProof> proofs) {
+	private String findImportsFromCompositionRules(List<CompositionProof> proofs) {
 		String res = "";
 		
 		Set<String> origins = new HashSet<String>();
@@ -181,6 +203,7 @@ public class IsabelleTheoryGenerator {
 		res = res.replace(VAR_MODULE_PARAMETERS, moduleParameters);
 		res = res.replace(VAR_ASSUMPTIONS, assumptions);
 		
+		System.out.println(res);
 		return res;
 	}
 }

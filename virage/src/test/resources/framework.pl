@@ -51,9 +51,9 @@
 % electing(electoral_module)
 % non_electing(electoral_module)
 % defers(nat, electoral_module)
-% rejects(electoral_module, nat)
-% eliminates(electoral_module, nat)
-% elects(electoral_module, nat)
+% rejects(nat,electoral_module)
+% eliminates(nat,electoral_module)
+% elects(nat,electoral_module)
 % independent_of(electoral_module, set, alternative)
 % disjoint_compatible(electoral_module, electoral_module)
 % invariant_monotone(electoral_module)
@@ -297,27 +297,29 @@ defers(2, pass_module(2,_)).
 defers(N, pass_module(N,_)).
 % = sequential_composition.thy 
 % seq_comp_defers_1
-defers(seq_comp(X,Y), 1) :-
+defers(1,seq_comp(X,Y)) :-
 	non_blocking(X),
 	non_electing(X),
 	defers(1,Y).
 % = loop_composition.thy
 % iterative_elimination_number_of_survivors_for_eliminates
-defers(N, loop_comp(_, defer_eq_condition(N))).
+defers(N, loop_comp(X, defer_eq_condition(N))) :-
+	non_electing(X),
+	eliminates(1,X).
 	
 % = drop_module.thy 
 % drop_2_module_rejects_2
-rejects(drop_module(2,_), 2).
+rejects(2, drop_module(2,_)).
 % = unproven
 % drop_N_module_rejects_N
-rejects(drop_module(N,_), N).
+rejects(N, drop_module(N,_)).
 
 % = parallel_composition.thy 
 % eliminates_1_par
-eliminates(parallel_comp(X,Y,max_aggregator),1) :-
+eliminates(1,parallel_comp(X,Y,max_aggregator)) :-
 	defers(1,X),
 	non_electing(X),
-	rejects(Y,2),
+	rejects(2,Y),
 	disjoint_compatible(X,Y).
 
 % = sequential_composition.thy 
