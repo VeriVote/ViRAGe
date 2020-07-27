@@ -42,7 +42,7 @@ public class AdmissionGuardGenerator {
 		file.deleteOnExit();
 		
 		SimpleFileWriter writer = new SimpleFileWriter();
-		writer.writeCollectionToFile(file.getAbsolutePath(), newClauses);
+		writer.writeToFile(file.getAbsolutePath(), newClauses);
 		
 		return file;
 	}

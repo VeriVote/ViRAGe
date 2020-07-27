@@ -21,13 +21,29 @@ public class SimpleFileWriter {
 	 * @param path the file to be written to
 	 * @param collection the collection
 	 */
-	public void writeCollectionToFile(String path, Collection<?> collection) {
+	public void writeToFile(String path, Collection<?> collection) {
 		try {
 			this.writer = new FileWriter(path);
 			
 			for(Object o: collection) {
 				writer.write(o.toString() + "\n");
 			}
+		} catch (IOException e) {
+			logger.error("Writing to " + path + " was impossible.");
+		} finally {
+			try {
+				this.writer.close();
+			} catch (IOException e) {
+				logger.warn("Closing the FileWriter was impossible.");
+			}
+		}
+	}
+	
+	// TODO: Document
+	public void writeToFile(String path, String contents) {
+		try {
+			this.writer = new FileWriter(path);
+			this.writer.write(contents);
 		} catch (IOException e) {
 			logger.error("Writing to " + path + " was impossible.");
 		} finally {

@@ -9,8 +9,11 @@ import java.util.regex.Pattern;
 
 import com.fr2501.virage.prolog.PrologPredicate;
 
-// TODO
+// TODO Document
 public class IsabelleUtils {
+	public static final String EXCEPTION = "Exception";
+	public static final String FILE_EXTENSION = "thy";
+	
 	// This method tries, along with other things, to match Prolog predicates
 	// to Isabelle entities. It is case-insensitive, so no two Isabelle entities
 	// may share the same name with different capitalization.

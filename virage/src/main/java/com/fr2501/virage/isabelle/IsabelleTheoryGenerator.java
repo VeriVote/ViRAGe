@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fr2501.util.SimpleFileReader;
+import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
@@ -79,7 +80,7 @@ public class IsabelleTheoryGenerator {
 		this.typedVariables = new HashMap<String, String>();
 	}
 	
-	public void generateTheoryFile(String path, String composition, List<CompositionProof> proofs) {
+	public String generateTheoryFile(String path, String composition, List<CompositionProof> proofs) {
 		String theoryName = THEORY_NAME + "_" + theoryCounter;
 		String moduleName = MODULE_NAME + "_" + theoryCounter;
 		
@@ -130,6 +131,12 @@ public class IsabelleTheoryGenerator {
 		
 		String fileContents = this.replaceVariables(theoryName, imports, moduleParamTypes,
 				moduleName, moduleParameters, moduleDef, assumptions, proofsString);
+		
+		SimpleFileWriter writer = new SimpleFileWriter();
+		String actualPath = path + File.separator + theoryName + ".thy";
+		writer.writeToFile(actualPath, fileContents);
+		
+		return actualPath;
 	}
 	
 	protected void replacePrologVariables(PrologPredicate predicate) {
