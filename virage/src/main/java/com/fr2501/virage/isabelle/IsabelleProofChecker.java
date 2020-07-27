@@ -41,9 +41,11 @@ public class IsabelleProofChecker {
 		logger.debug(outputString);
 		
 		if(outputString.contains(IsabelleUtils.EXCEPTION)) {
+			logger.info("Verification failed. You might be able to fix the errors manually within Isabelle.");
 			return false;
 		}
 
+		logger.info("Verification successful.");
 		return true;
 	}
 }

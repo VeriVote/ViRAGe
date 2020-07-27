@@ -1,5 +1,7 @@
 package com.fr2501.virage;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -91,7 +93,16 @@ public class IsabelleTheoryGeneratorTest {
 		List<CompositionProof> proofs = analyzer.proveClaims(new DecompositionTree(composition), properties);
 
 		IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator("src/test/resources/theories/", this.framework);
+		
+		try {
+			File file = File.createTempFile("tmp", ".thy");
+			file.deleteOnExit();
 			
-		generator.generateTheoryFile("", composition, proofs);
+			generator.generateTheoryFile(file.getAbsolutePath(), composition, proofs);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail();
+		}
 	}
 }
