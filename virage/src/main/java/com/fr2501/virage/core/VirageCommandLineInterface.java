@@ -11,6 +11,7 @@ import com.fr2501.util.StringUtils;
 import com.fr2501.virage.jobs.VirageAnalyzeJob;
 import com.fr2501.virage.jobs.VirageExitJob;
 import com.fr2501.virage.jobs.VirageGenerateJob;
+import com.fr2501.virage.jobs.VirageIsabelleJob;
 import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.jobs.VirageParseJob;
@@ -62,21 +63,30 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		}
 		
 		while(true) {
-			System.out.println("Do you want to (g)enerate a composition, (a)nalyze one or (p)rove a claim?");
+			System.out.println("Do you want to (g)enerate a composition, (a)nalyze one, (p)rove a claim"
+					+ " or generate (I)sabelle code?");
 			String arg = this.scanner.nextLine();
+			
+			VirageJob<?> job = null;
+			
 			if(arg.equals("g")) {
-				this.createGenerationQuery();
+				job = this.createGenerationQuery();
 			} else if(arg.equals("a")) {
-				this.createAnalysisQuery();
+				job = this.createAnalysisQuery();
 			} else if(arg.equals("p")) {
-				this.createProofQuery();
+				job = this.createProofQuery();
+			} else if(arg.equals("I")) {
+				job = this.createIsabelleQuery();
 			} else if(arg.equals("exit")) {
-				this.core.submit(new VirageExitJob(this, 0));
+				job = new VirageExitJob(this, 0);
+				this.core.submit(job);
 				return;
 			} else {
 				System.out.println("Please try again.");
 				continue;
 			}
+			
+			this.core.submit(job);
 		}
 	}
 	
@@ -85,16 +95,18 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		System.out.println(job.toString());
 	}
 	
-	private void createGenerationQuery() {
+	private VirageGenerateJob createGenerationQuery() {
 		System.out.println("Please input the desired properties (separated by ',').");
 		String propertyString = this.scanner.nextLine();
 
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
-		this.core.submit(new VirageGenerateJob(this, properties));
+		VirageGenerateJob res = new VirageGenerateJob(this, properties);
+		this.core.submit(res);
+		return res;
 	}
 	
-	private void createAnalysisQuery() {
+	private VirageAnalyzeJob createAnalysisQuery() {
 		System.out.println("Please input a composition (in Prolog format).");
 		String composition = this.scanner.nextLine();
 		
@@ -103,10 +115,12 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
-		this.core.submit(new VirageAnalyzeJob(this, composition, properties));
+		VirageAnalyzeJob res = new VirageAnalyzeJob(this, composition, properties);
+		this.core.submit(res);
+		return res;
 	}
 	
-	private void createProofQuery() {
+	private VirageProveJob createProofQuery() {
 		System.out.println("Please input a composition (in Prolog format).");
 		String composition = this.scanner.nextLine();
 		
@@ -115,6 +129,23 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
-		this.core.submit(new VirageProveJob(this, composition, properties));
+		VirageProveJob res = new VirageProveJob(this, composition, properties);
+		this.core.submit(res);
+		return res;
+	}
+	
+	private VirageIsabelleJob createIsabelleQuery() {
+		System.out.println("Please input the absoulte path to an Isabelle theory folder.");
+		String theoryPathString = this.scanner.nextLine();
+		
+		System.out.println("Please input a composition (in Prolog format).");
+		String composition = this.scanner.nextLine();
+		
+		System.out.println("Please input the desired properties (separated by ',').");
+		String propertyString = this.scanner.nextLine();
+
+		List<String> properties = StringUtils.separate(",", propertyString);
+		
+		return null;
 	}
 }

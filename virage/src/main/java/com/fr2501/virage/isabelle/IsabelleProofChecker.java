@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 
 // TODO: Document
 public class IsabelleProofChecker {
+	long timeout = 60000;
+	
 	private static final Logger logger = LogManager.getLogger(IsabelleProofChecker.class);
 	
 	private Runtime runtime;
@@ -26,10 +29,18 @@ public class IsabelleProofChecker {
 		
 		logger.info("Starting to verify " + theory + ". This might take some time.");
 		Process verificationProcess = runtime.exec("isabelle process -T" + theory);
-		int status = verificationProcess.waitFor();
+		boolean finished = verificationProcess.waitFor(timeout, TimeUnit.MILLISECONDS);
 		
+		if(!finished) {
+			logger.info("Verification timed out. You might be able to decrease the required computation time by "
+					+ "changing some of the proof methods manually within Isabelle.");
+			return false;
+		}
+		
+		int status = verificationProcess.exitValue();
 		if(status != 0) {
-			// TODO: Something went wrong.
+			logger.info("Verification failed. You might be able to fix the errors manually within Isabelle.");
+			return false;
 		}
 		
 		InputStream output = verificationProcess.getInputStream();

@@ -76,9 +76,10 @@ public class IsabelleProofStepGenerator {
 		
 		// TODO: Find heuristics to decide which method to use at what point.
 		// 'force' looks quite promising, especially since goals are relatively "simple",
-		// so it still returns reasonably quickly and closes (almost) everything.
+		// so it still returns reasonably quickly most of the time and closes (almost) everything.
+		// Problem: If it is not successful, query takes forever.
 		// PaMpeR?
-		String solver = "force";
+		String solver = "simp";
 		
 		return this.replaceVariables(goalId, goal, subgoalIds, rule, solver);
 	}

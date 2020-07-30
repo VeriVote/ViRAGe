@@ -17,7 +17,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
+import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.jobs.VirageExecutorJobWithFramework;
+import com.fr2501.virage.jobs.VirageIsabelleJob;
 import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.jobs.VirageParseJob;
@@ -43,6 +45,7 @@ public class VirageCore implements Runnable {
 	
 	private ExtendedPrologParser extendedPrologParser = null;
 	private VirageSearchManager searchManager = null;
+	private IsabelleTheoryGenerator generator = null;
 	
 	private FrameworkRepresentation framework = null;
 	
@@ -137,6 +140,10 @@ public class VirageCore implements Runnable {
     		
         	this.submit((VirageJob<?>) job);
     	}
+    }
+    
+    public void submit(VirageIsabelleJob job) {
+    	// TODO
     }
     
     private void init(String[] args) throws ParseException {

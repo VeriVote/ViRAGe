@@ -72,6 +72,19 @@ public class IsabelleProofCheckerTest {
 		assertTrue(checker.verifyTheoryFile(this.filePath));
 	}
 	
+	@Test
+	public void SMCTest() throws IOException, InterruptedException {
+		List<Property> properties = new LinkedList<Property>();
+		properties.add(this.framework.getProperty("electoral_module"));
+		properties.add(this.framework.getProperty("electing"));
+		properties.add(this.framework.getProperty("monotone"));
+		
+		proveClaims(properties, SMC);
+		
+		IsabelleProofChecker checker = new IsabelleProofChecker();
+		checker.verifyTheoryFile(this.filePath);
+	}
+	
 	protected void proveClaims(List<Property> properties, String composition) {
 		List<CompositionProof> proofs = analyzer.proveClaims(new DecompositionTree(composition), properties);
 			
