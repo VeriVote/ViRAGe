@@ -68,7 +68,7 @@ public abstract class VirageJob<T> {
 	
 	public abstract T getResult();
 	
-	public VirageJobState getState() {
+	public synchronized VirageJobState getState() {
 		return this.state;
 	}
 	
@@ -84,6 +84,18 @@ public abstract class VirageJob<T> {
 		}
 		
 		this.state = state;
+	}
+	
+	// TODO Document
+	public void waitFor() {
+		while(true) {
+			boolean finished = false;
+			synchronized(this) {
+				finished = (this.state != VirageJobState.PENDING && this.getState() != VirageJobState.RUNNING);
+			}
+			
+			if(finished) return;
+		}
 	}
 	
 	@Override

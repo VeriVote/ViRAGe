@@ -1,6 +1,7 @@
 package com.fr2501.virage.core;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,6 +17,7 @@ import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.jobs.VirageParseJob;
 import com.fr2501.virage.jobs.VirageProveJob;
+import com.fr2501.virage.types.CompositionProof;
 
 /**
  * 
@@ -126,7 +128,11 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		
 		System.out.println("Please input the desired properties (separated by ',').");
 		String propertyString = this.scanner.nextLine();
-
+		
+		return this.createProofQuery(composition, propertyString);
+	}
+	
+	private VirageProveJob createProofQuery(String composition, String propertyString) {
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
 		VirageProveJob res = new VirageProveJob(this, composition, properties);
@@ -135,17 +141,29 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 	}
 	
 	private VirageIsabelleJob createIsabelleQuery() {
-		System.out.println("Please input the absoulte path to an Isabelle theory folder.");
-		String theoryPathString = this.scanner.nextLine();
-		
 		System.out.println("Please input a composition (in Prolog format).");
 		String composition = this.scanner.nextLine();
 		
 		System.out.println("Please input the desired properties (separated by ',').");
 		String propertyString = this.scanner.nextLine();
-
-		List<String> properties = StringUtils.separate(",", propertyString);
 		
-		return null;
+		VirageProveJob proveJob = this.createProofQuery(composition, propertyString);
+		proveJob.waitFor();
+		
+		if(proveJob.getState() == VirageJobState.FAILED) {
+			throw new IllegalArgumentException();
+		}
+		
+		List<List<CompositionProof>> proofLists = proveJob.getResult();
+		List<CompositionProof> bestProof = new LinkedList<CompositionProof>();
+		for(List<CompositionProof> proof: proofLists) {
+			if(proof.size() > bestProof.size()) {
+				bestProof = proof;
+			}
+		}
+		
+		VirageIsabelleJob res = new VirageIsabelleJob(this, composition, bestProof);
+		this.core.submit(res);
+		return res;
 	}
 }

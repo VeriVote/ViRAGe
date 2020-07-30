@@ -56,6 +56,18 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 		FrameworkRepresentation framework = new FrameworkRepresentation(path);
 		ParserState state = ParserState.STARTING;
 		
+		if(representation.get(0).contains(ExtendedPrologStrings.THEORY_PATH_PREFIX)) {
+			String line = representation.get(0);
+			line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
+			line = line.replace(ExtendedPrologStrings.COMMENT, "");
+			line = StringUtils.removeWhitespace(line);
+			
+			framework.setTheoryPath(line);
+			representation.remove(0);
+		} else {
+			framework.setTheoryPath(ExtendedPrologStrings.UNDEFINED);
+		}
+		
 		List<String> compositionTypeSection = new LinkedList<String>();
 		List<String> composableModuleSection = new LinkedList<String>();
 		List<String> compositionalStructureSection = new LinkedList<String>();
