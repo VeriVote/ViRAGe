@@ -18,12 +18,7 @@ import org.apache.logging.log4j.Logger;
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
-import com.fr2501.virage.jobs.VirageExecutorJobWithFramework;
-import com.fr2501.virage.jobs.VirageIsabelleJob;
 import com.fr2501.virage.jobs.VirageJob;
-import com.fr2501.virage.jobs.VirageJobState;
-import com.fr2501.virage.jobs.VirageParseJob;
-import com.fr2501.virage.jobs.VirageSystemJob;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.FrameworkRepresentation;
@@ -46,7 +41,6 @@ public class VirageCore implements Runnable {
 	private ExtendedPrologParser extendedPrologParser = null;
 	private VirageSearchManager searchManager = null;
 	private IsabelleTheoryGenerator generator = null;
-	
 	private FrameworkRepresentation framework = null;
 	
 	private BlockingQueue<VirageJob<?>> jobs;
@@ -56,6 +50,27 @@ public class VirageCore implements Runnable {
         
         this.args = args;
         this.jobs = new LinkedBlockingQueue<VirageJob<?>>();
+    }
+    
+    public ExtendedPrologParser getExtendedPrologParser() {
+    	return this.extendedPrologParser;
+    }
+    
+    public VirageSearchManager getSearchManager() {
+    	return this.searchManager;
+    }
+    
+    public IsabelleTheoryGenerator getIsabelleTheoryGenerator() {
+    	return this.generator;
+    }
+    
+    public FrameworkRepresentation getFrameworkRepresentation() {
+    	return this.framework;
+    }
+    
+    public void setFrameworkRepresentation(FrameworkRepresentation framework) {
+    	this.framework = framework;
+    	this.initAnalyzers();
     }
     
     /**
@@ -77,7 +92,7 @@ public class VirageCore implements Runnable {
         		VirageJob<?> job;
 				try {
 					job = this.jobs.take();
-	        		job.execute();
+	        		job.execute(this);
 				} catch (InterruptedException e) {
 					logger.error("An error occured.", e);
 					return;
@@ -93,57 +108,7 @@ public class VirageCore implements Runnable {
      * @param job the job
      */
     public void submit(VirageJob<?> job) {
-    	if(job.isReadyToExecute()) {        			
-    		this.jobs.add(job);
-		} else {
-			job.setState(VirageJobState.FAILED);
-		}
-    }
-    
-    public void submit(VirageSystemJob<?> job) {
-    	job.execute();
-    }
-    
-    public void submit(VirageParseJob job) {
-    	if(this.extendedPrologParser == null) {
-    		job.setState(VirageJobState.FAILED);
-    	} else {
-    		job.attachExecutor(this.extendedPrologParser);
-    		
-        	while(!this.jobs.isEmpty()) {
-				try {
-					VirageJob<?> pendingJob = this.jobs.take();
-					pendingJob.setState(VirageJobState.FAILED);
-				} catch (InterruptedException e) {
-					logger.error("An error occured.", e);
-				}
-        		
-        	}
-        	
-        	job.execute();
-        	
-        	if(job.getState() == VirageJobState.FINISHED) {
-        		this.framework = job.getResult();
-        		this.initAnalyzers();
-        	} else {
-        		logger.error("An error occured.");
-        	}
-    	}
-    }
-    
-    public void submit(VirageExecutorJobWithFramework<VirageSearchManager,?> job) {
-    	if(this.searchManager == null || this.framework == null) {
-    		job.setState(VirageJobState.FAILED);
-    	} else {
-    		job.attachExecutor(this.searchManager);
-    		job.addFramework(this.framework);
-    		
-        	this.submit((VirageJob<?>) job);
-    	}
-    }
-    
-    public void submit(VirageIsabelleJob job) {
-    	// TODO
+    	this.jobs.add(job);
     }
     
     private void init(String[] args) throws ParseException {

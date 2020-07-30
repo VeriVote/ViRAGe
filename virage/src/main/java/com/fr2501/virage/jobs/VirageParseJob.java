@@ -10,11 +10,13 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 
 /**
  * 
- * A {@link VirageJob} used to parse an extended Prolog file.
+ * A {@link VirageJob} used to parse an (E)PL file and pass it to its executing core.
  *
  */
-public class VirageParseJob extends VirageExecutorJob<ExtendedPrologParser, FrameworkRepresentation> {
+public class VirageParseJob extends VirageJobWithoutExplicitResult {
 	private FrameworkRepresentation framework;
+	
+	private ExtendedPrologParser parser;
 	
 	private File file;
 	
@@ -26,11 +28,14 @@ public class VirageParseJob extends VirageExecutorJob<ExtendedPrologParser, Fram
 	
 	@Override
 	public void concreteExecute() throws IOException, MalformedEPLFileException {
-		this.framework = this.executor.parseFramework(this.file);
+		this.parser = this.executingCore.getExtendedPrologParser();
+		
+		this.executingCore.setFrameworkRepresentation(this.parser.parseFramework(this.file));
+		
 	}
 
 	@Override
-	public FrameworkRepresentation getResult() {
-		return this.framework;
+	public Void getResult() {
+		throw new UnsupportedOperationException();
 	}
 }

@@ -3,7 +3,7 @@ package com.fr2501.virage.jobs;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 
-public class VirageIsabelleJob extends VirageExecutorJob<IsabelleTheoryGenerator, Void> {
+public class VirageIsabelleJob extends VirageJobWithoutExplicitResult {
 
 	public VirageIsabelleJob(VirageUserInterface issuer) {
 		super(issuer);
@@ -14,10 +14,4 @@ public class VirageIsabelleJob extends VirageExecutorJob<IsabelleTheoryGenerator
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public Void getResult() {
-		throw new UnsupportedOperationException();
-	}
-
 }

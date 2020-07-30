@@ -6,6 +6,7 @@ import java.util.List;
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
@@ -14,12 +15,13 @@ import com.fr2501.virage.types.SearchResult;
  * A {@link VirageJob} used to analyze a composition.
  *
  */
-public class VirageAnalyzeJob extends VirageExecutorJobWithFramework<VirageSearchManager, List<SearchResult<Boolean>>> {
+public class VirageAnalyzeJob extends VirageJobWithExplicitResult<List<SearchResult<Boolean>>> {
 	private List<String> propertyStrings;
 	private List<Property> properties;
 	private DecompositionTree tree;
 	
-	private List<SearchResult<Boolean>> result;
+	private FrameworkRepresentation framework;
+	private VirageSearchManager manager;
 	
 	public VirageAnalyzeJob(VirageUserInterface issuer, String tree, List<String> properties) {
 		super(issuer);
@@ -30,13 +32,16 @@ public class VirageAnalyzeJob extends VirageExecutorJobWithFramework<VirageSearc
 	
 	@Override
 	public void concreteExecute() {
+		this.framework = this.executingCore.getFrameworkRepresentation();
+		this.manager = this.executingCore.getSearchManager();
+		
 		this.properties = new LinkedList<Property>();
 		
 		for(String s: this.propertyStrings) {
 			this.properties.add(this.framework.getProperty(s));
 		}
 		
-		this.result = this.executor.analyzeComposition(tree, properties);
+		this.result = this.manager.analyzeComposition(tree, properties);
 	}
 
 	@Override
