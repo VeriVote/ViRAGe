@@ -85,6 +85,7 @@ public class IsabelleTheoryGenerator {
 	public String generateTheoryFile(String path, String composition, List<CompositionProof> proofs) {
 		String theoryName = THEORY_NAME + "_" + theoryCounter;
 		String moduleName = MODULE_NAME + "_" + theoryCounter;
+		theoryCounter++;
 		
 		PrologPredicate proofPredicate = this.parser.parsePredicate(composition);
 		this.replacePrologVariables(proofPredicate);

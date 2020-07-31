@@ -89,6 +89,10 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 			}
 			
 			this.core.submit(job);
+			// VirageCore is intended to work on jobs asynchronously
+			// and that is perfectly possible. It just does not make
+			// too much sense when using a CLI, so it is disabled.
+			job.waitFor();
 		}
 	}
 	
@@ -104,7 +108,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
 		VirageGenerateJob res = new VirageGenerateJob(this, properties);
-		this.core.submit(res);
 		return res;
 	}
 	
@@ -118,7 +121,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
 		VirageAnalyzeJob res = new VirageAnalyzeJob(this, composition, properties);
-		this.core.submit(res);
 		return res;
 	}
 	
@@ -136,7 +138,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		List<String> properties = StringUtils.separate(",", propertyString);
 		
 		VirageProveJob res = new VirageProveJob(this, composition, properties);
-		this.core.submit(res);
 		return res;
 	}
 	
@@ -148,6 +149,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		String propertyString = this.scanner.nextLine();
 		
 		VirageProveJob proveJob = this.createProofQuery(composition, propertyString);
+		this.core.submit(proveJob);
 		proveJob.waitFor();
 		
 		if(proveJob.getState() == VirageJobState.FAILED) {
@@ -163,7 +165,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		}
 		
 		VirageIsabelleJob res = new VirageIsabelleJob(this, composition, bestProof);
-		this.core.submit(res);
 		return res;
 	}
 }
