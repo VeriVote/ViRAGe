@@ -82,7 +82,7 @@ public class IsabelleTheoryGenerator {
 	
 	// If path points to a file, this file will be overwritten and the name will most probably
 	// not correspond to the theory inside, so Isabelle won't be able to verify it.
-	public String generateTheoryFile(String path, String composition, List<CompositionProof> proofs) {
+	public File generateTheoryFile(String path, String composition, List<CompositionProof> proofs) {
 		String theoryName = THEORY_NAME + "_" + theoryCounter;
 		String moduleName = MODULE_NAME + "_" + theoryCounter;
 		theoryCounter++;
@@ -144,7 +144,7 @@ public class IsabelleTheoryGenerator {
 		}
 		writer.writeToFile(actualPath, fileContents);
 		
-		return actualPath;
+		return new File(actualPath);
 	}
 	
 	protected void replacePrologVariables(PrologPredicate predicate) {

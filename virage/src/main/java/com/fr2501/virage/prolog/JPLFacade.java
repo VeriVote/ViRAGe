@@ -29,6 +29,8 @@ public class JPLFacade {
 	private static final long DEFAULT_TIMEOUT = 10000;
 	private long timeout;
 	
+	private static int fileCounter = 0;
+	
 	public JPLFacade() {
 		this(JPLFacade.DEFAULT_TIMEOUT);
 	}
@@ -57,8 +59,8 @@ public class JPLFacade {
 	
 	public void consultFile(URL url) {
 		try {
-			// TODO: This name is not useful here, make more generic
-			File dest = File.createTempFile("meta_interpreter", ".pl");
+			File dest = File.createTempFile("tmp_file_" + fileCounter, ".pl");
+			fileCounter++;
 			dest.deleteOnExit();
 			FileUtils.copyURLToFile(url, dest);
 			logger.debug(dest.getAbsolutePath());

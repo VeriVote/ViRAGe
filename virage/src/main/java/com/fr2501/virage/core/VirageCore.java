@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
+import com.fr2501.virage.isabelle.IsabelleProofChecker;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
@@ -41,6 +42,7 @@ public class VirageCore implements Runnable {
 	private ExtendedPrologParser extendedPrologParser = null;
 	private VirageSearchManager searchManager = null;
 	private IsabelleTheoryGenerator generator = null;
+	private IsabelleProofChecker checker = null;
 	private FrameworkRepresentation framework = null;
 	
 	private BlockingQueue<VirageJob<?>> jobs;
@@ -62,6 +64,10 @@ public class VirageCore implements Runnable {
     
     public IsabelleTheoryGenerator getIsabelleTheoryGenerator() {
     	return this.generator;
+    }
+    
+    public IsabelleProofChecker getIsabelleProofChecker() {
+    	return this.checker;
     }
     
     public FrameworkRepresentation getFrameworkRepresentation() {
@@ -134,6 +140,7 @@ public class VirageCore implements Runnable {
 	    	this.searchManager.addAnalyzer(new SimplePrologCompositionAnalyzer(framework));
 	    	this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
 	    	this.generator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
+	    	this.checker = new IsabelleProofChecker();
     	} catch (Exception e) {
     		logger.error("Initialising CompositionAnalyzers failed.", e);
     	}

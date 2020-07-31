@@ -42,7 +42,7 @@ public class IsabelleProofCheckerTest {
 	private CompositionAnalyzer analyzer;
 	private IsabelleTheoryGenerator generator;
 	
-	private String filePath;
+	private File file;
 	
 	@Before
 	public void init() throws IOException, MalformedEPLFileException {
@@ -69,7 +69,7 @@ public class IsabelleProofCheckerTest {
 		proveClaims(properties, "elect_module");
 		
 		IsabelleProofChecker checker = new IsabelleProofChecker();
-		assertTrue(checker.verifyTheoryFile(this.filePath));
+		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
 	}
 	
 	@Test
@@ -82,12 +82,12 @@ public class IsabelleProofCheckerTest {
 		proveClaims(properties, SMC);
 		
 		IsabelleProofChecker checker = new IsabelleProofChecker();
-		checker.verifyTheoryFile(this.filePath);
+		checker.verifyTheoryFile(this.file.getAbsolutePath());
 	}
 	
 	protected void proveClaims(List<Property> properties, String composition) {
 		List<CompositionProof> proofs = analyzer.proveClaims(new DecompositionTree(composition), properties);
 			
-		this.filePath = generator.generateTheoryFile(THEORY_PATH, composition, proofs);
+		this.file = generator.generateTheoryFile(THEORY_PATH, composition, proofs);
 	}
 }

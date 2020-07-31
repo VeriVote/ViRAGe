@@ -12,7 +12,8 @@ import com.fr2501.util.StringUtils;
 import com.fr2501.virage.jobs.VirageAnalyzeJob;
 import com.fr2501.virage.jobs.VirageExitJob;
 import com.fr2501.virage.jobs.VirageGenerateJob;
-import com.fr2501.virage.jobs.VirageIsabelleJob;
+import com.fr2501.virage.jobs.VirageIsabelleGenerateJob;
+import com.fr2501.virage.jobs.VirageIsabelleVerifyJob;
 import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.jobs.VirageParseJob;
@@ -141,12 +142,25 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		return res;
 	}
 	
-	private VirageIsabelleJob createIsabelleQuery() {
+	private VirageJob<?> createIsabelleQuery() {
 		System.out.println("Please input a composition (in Prolog format).");
 		String composition = this.scanner.nextLine();
 		
 		System.out.println("Please input the desired properties (separated by ',').");
 		String propertyString = this.scanner.nextLine();
+		
+		boolean verify = true;
+		while(true) {
+			System.out.println("Shall the resulting theory file be verified automatially? [(y)es/(n)o]");
+			String verifyString = this.scanner.nextLine();
+			
+			if(verifyString.equals("y")) {
+				break;
+			} else if(verifyString.equals("n")) {
+				verify = false;
+				break;
+			}
+		}
 		
 		VirageProveJob proveJob = this.createProofQuery(composition, propertyString);
 		this.core.submit(proveJob);
@@ -164,7 +178,14 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 			}
 		}
 		
-		VirageIsabelleJob res = new VirageIsabelleJob(this, composition, bestProof);
-		return res;
+		VirageIsabelleGenerateJob generateJob = new VirageIsabelleGenerateJob(this, composition, bestProof);
+		if(!verify) {
+			return generateJob;
+		}
+		this.core.submit(generateJob);
+		generateJob.waitFor();
+		
+		VirageIsabelleVerifyJob verifyJob = new VirageIsabelleVerifyJob(this, generateJob.getResult());
+		return verifyJob;
 	}
 }
