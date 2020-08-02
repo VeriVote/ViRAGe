@@ -201,9 +201,8 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 				specific = proof.getSubgoals().get(i).getGoal();
 				
 				// Manual "unification"
-				// TODO: Variable names are not prefix free.
 				for(String key: replacements.keySet()) {
-					specific = specific.replace(key, replacements.get(key));
+					specific = specific.replaceAll("\b" + key + "\b", replacements.get(key));
 				}
 				
 				if(!this.facade.subsumesTerm(generic, specific)) {

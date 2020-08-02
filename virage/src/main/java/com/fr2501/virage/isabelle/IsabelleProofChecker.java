@@ -1,25 +1,49 @@
 package com.fr2501.virage.isabelle;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
-import java.util.concurrent.TimeUnit;
+import java.io.OutputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
 // TODO: Document
 public class IsabelleProofChecker {
+	private static IsabelleProofChecker instance = null;
+	private static final String SERVER_NAME = "virage_isabelle_server";
+	
 	long timeout = 60000;
 	
 	private static final Logger logger = LogManager.getLogger(IsabelleProofChecker.class);
 	
 	private Runtime runtime;
+	private Process server;
+	private Process client;
+	private IsabelleClientObserver observer;
+	private OutputStream clientInput;
+	String sessionId;
 	
-	public IsabelleProofChecker() {
+	boolean finished = false;
+	IsabelleEvent lastEvent;
+	
+	private IsabelleProofChecker() {
 		this.runtime = Runtime.getRuntime();
+		
+		try {
+			this.initServer();
+			this.initClient();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static IsabelleProofChecker getInstance() {
+		if(instance == null) {
+			instance = new IsabelleProofChecker();
+		}
+		
+		return instance;
 	}
 	
 	public boolean verifyTheoryFile(String theory) throws IOException, InterruptedException {
@@ -28,35 +52,64 @@ public class IsabelleProofChecker {
 		}
 		
 		logger.info("Starting to verify " + theory + ". This might take some time.");
-		Process verificationProcess = runtime.exec("isabelle process -T" + theory);
-		boolean finished = verificationProcess.waitFor(timeout, TimeUnit.MILLISECONDS);
+		String command = "use_theories {\"session_id\": \"" + this.sessionId + "\", " +
+				"\"theories\": [\"" + theory + "\"]}";  
+		this.sendCommandAndWaitForTermiantion(command);
 		
-		if(!finished) {
-			logger.info("Verification timed out. You might be able to decrease the required computation time by "
-					+ "changing some of the proof methods manually within Isabelle.");
-			return false;
-		}
-		
-		int status = verificationProcess.exitValue();
-		if(status != 0) {
+		String result = this.lastEvent.getValue("ok");
+		if(result.equals("true")) {
+			logger.info("Verification successful.");
+			return true;
+		} else {
 			logger.info("Verification failed. You might be able to fix the errors manually within Isabelle.");
 			return false;
 		}
+	}
+	
+	public void destroy() {
+		this.client.destroy();
+		this.server.destroy();
+	}
+	
+	private void sendCommandAndWaitForTermiantion(String command) throws IOException {
+		this.clientInput.write((command + "\n").getBytes());
+		this.clientInput.flush();
 		
-		InputStream output = verificationProcess.getInputStream();
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(output, writer, Charset.defaultCharset());
+		this.waitForFinish();
+	}
+	
+	private void initServer() throws IOException {
+		this.server = this.runtime.exec("isabelle server -n " + SERVER_NAME);
+		// TODO: Check success?
+	}
+	
+	private void initClient() throws IOException {
+		this.client = this.runtime.exec("isabelle client -n " + SERVER_NAME);
+		this.clientInput = this.client.getOutputStream();
 		
-		String outputString = writer.toString();
+		this.observer = new IsabelleClientObserver(this, this.client);
 		
-		logger.debug(outputString);
-		
-		if(outputString.contains(IsabelleUtils.EXCEPTION)) {
-			logger.info("Verification failed. You might be able to fix the errors manually within Isabelle.");
-			return false;
-		}
+		this.sendCommandAndWaitForTermiantion("session_start {\"session\": \"HOL\"}");
+		this.sessionId = this.lastEvent.getValue("session_id");
+	}
+	
+	private void waitForFinish() {
+		while(!this.getFinished());
+		this.finished = false;
+	}
+	
+	private synchronized boolean getFinished() {
+		return this.finished;
+	}
+	
+	public synchronized void setFinished(boolean finished) {
+		this.finished = finished;
+	}
 
-		logger.info("Verification successful.");
-		return true;
+	
+	public void notify(IsabelleEvent evt) {
+		logger.debug(evt.toString());
+		this.lastEvent = evt;
+		evt.applyEffects(this);
 	}
 }

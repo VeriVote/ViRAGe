@@ -14,6 +14,11 @@ public class IsabelleUtils {
 	public static final String EXCEPTION = "Exception";
 	public static final String FILE_EXTENSION = "thy";
 	
+	public static final String SUCCESS_STRING = "OK ";
+	
+	// TODO: Add all types
+	public static final String[] SIMPLE_TYPES = {"nat"};
+	
 	// This method tries, along with other things, to match Prolog predicates
 	// to Isabelle entities. It is case-insensitive, so no two Isabelle entities
 	// may share the same name with different capitalization.
@@ -51,13 +56,21 @@ public class IsabelleUtils {
 		return translatePrologToIsabelle(functionsAndDefinitions, predicate.toString());
 	}
 	
+	public static boolean isSimpleType(String type) {
+		for(String standardType: SIMPLE_TYPES) {
+			if(standardType.equals(type)) return true;
+		}
+		
+		return false;
+	}
+	
 	public static String getUnusedVariable(String statement) {
 		String unused = "x";
 		
 		if(!statement.contains(unused)) return unused;
 		
 		for(int i=1; true; i++) {
-			if(!statement.contains(unused + i)) return unused;
+			if(!statement.contains(unused + i)) return unused+i;
 		}
 	}
 }

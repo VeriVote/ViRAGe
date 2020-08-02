@@ -2,8 +2,10 @@ package com.fr2501.virage.isabelle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,13 +91,45 @@ public class IsabelleTheoryGenerator {
 		
 		PrologPredicate proofPredicate = this.parser.parsePredicate(composition);
 		this.replacePrologVariables(proofPredicate);
-		String moduleParamTypes = "";
 		String moduleParameters = "";
+		
+		// This looks tedious, but is required to ensure correct 
+		// ordering of variables in definition.
+		// This assumes that variable names are given in the correct order,
+		// ascending alphabetically. This might seem arbitrary, but is ensured
+		// by the way IsabelleUtils.findUnusedVariables works.
+		List<String> moduleParametersList = new LinkedList<String>();
 		for (String type: this.typedVariables.keySet()) {
-			moduleParamTypes += TYPE + type + RIGHT_ARROW;
-			moduleParameters += " " + this.typedVariables.get(type);
+			moduleParametersList.add(this.typedVariables.get(type));
 		}
 		
+		Collections.sort(moduleParametersList);
+		for(String param: moduleParametersList) {
+			moduleParameters += " " + param;
+		}
+		
+		List<String> moduleParamTypesList = new LinkedList<String>();
+		for(int i=0; i<moduleParametersList.size(); i++) {
+			for(String type: this.typedVariables.keySet()) {
+				if(this.typedVariables.get(type).equals(moduleParametersList.get(i))) {
+					String moduleParamType = "";
+					// Simple types like nat don't require an "'a".
+					if(!IsabelleUtils.isSimpleType(type)) {
+						moduleParamType = TYPE;
+					}
+					
+					moduleParamType += type + RIGHT_ARROW;
+					moduleParamTypesList.add(i, moduleParamType);
+				}
+			}
+		}
+			
+		String moduleParamTypes = "";
+		for(String type: moduleParamTypesList) {
+			moduleParamTypes += type;
+		}
+		// -----
+			
 		String assumptions = ASSUMES + " \"" + TRUE + "\"";
 		// TODO: This is terribly ugly, but it's the best I can do for now.
 		if(this.typedVariables.keySet().contains(REL)) {

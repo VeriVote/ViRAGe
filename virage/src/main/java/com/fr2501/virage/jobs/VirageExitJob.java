@@ -18,6 +18,6 @@ public class VirageExitJob extends VirageJobWithoutExplicitResult {
 	
 	@Override
 	public void concreteExecute() {
-		System.exit(this.statusCode);
+		this.executingCore.destroy(this.statusCode);
 	}	
 }

@@ -44,7 +44,7 @@
 			<artifactId>log4j-core</artifactId>
 			<version>2.13.3</version>
 		</dependency>
-		<!--  JPL bidirectional Prolog-Java: https://github.com/SWI-Prolog/packages-jpl  -->
+		<!-- JPL bidirectional Prolog-Java: https://github.com/SWI-Prolog/packages-jpl -->
 		<dependency>
 			<groupId>com.github.SWI-Prolog</groupId>
 			<artifactId>packages-jpl</artifactId>
@@ -60,6 +60,11 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.9.8</version>
 		</dependency>
 	</dependencies>
 

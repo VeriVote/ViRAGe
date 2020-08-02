@@ -79,6 +79,12 @@ public class VirageCore implements Runnable {
     	this.initAnalyzers();
     }
     
+    public void destroy(int statusCode) {
+    	this.checker.destroy();
+    	
+    	System.exit(statusCode);
+    }
+    
     /**
      * Once started, this method keeps looking for new jobs and executes available ones.
      * <b> Does not return! </b>
@@ -140,7 +146,7 @@ public class VirageCore implements Runnable {
 	    	this.searchManager.addAnalyzer(new SimplePrologCompositionAnalyzer(framework));
 	    	this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
 	    	this.generator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
-	    	this.checker = new IsabelleProofChecker();
+	    	this.checker = IsabelleProofChecker.getInstance();
     	} catch (Exception e) {
     		logger.error("Initialising CompositionAnalyzers failed.", e);
     	}

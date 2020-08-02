@@ -55,7 +55,7 @@ public class IsabelleProofCheckerTest {
 	
 	@Test
 	public void simpleTest() throws IOException, InterruptedException {
-		IsabelleProofChecker checker = new IsabelleProofChecker();
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
 		
 		assertTrue(checker.verifyTheoryFile("Main"));
 	}
@@ -68,7 +68,10 @@ public class IsabelleProofCheckerTest {
 		
 		proveClaims(properties, "elect_module");
 		
-		IsabelleProofChecker checker = new IsabelleProofChecker();
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
+		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
+		
+		// Should work twice in a row, second one much faster.
 		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
 	}
 	
@@ -81,7 +84,7 @@ public class IsabelleProofCheckerTest {
 		
 		proveClaims(properties, SMC);
 		
-		IsabelleProofChecker checker = new IsabelleProofChecker();
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
 		checker.verifyTheoryFile(this.file.getAbsolutePath());
 	}
 	
