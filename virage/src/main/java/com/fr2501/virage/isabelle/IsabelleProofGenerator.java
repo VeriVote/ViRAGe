@@ -2,8 +2,13 @@ package com.fr2501.virage.isabelle;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.io.IOUtils;
 
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.virage.types.CompositionProof;
@@ -28,16 +33,15 @@ public class IsabelleProofGenerator {
 	public IsabelleProofGenerator(FrameworkRepresentation framework,
 			IsabelleTheoryGenerator parent, Map<String, String> functionsAndDefinitions) {
 		if(PROOF_TEMPLATE.equals("")) {
-			SimpleFileReader reader = new SimpleFileReader();
-			
-			String theoryTemplate = this.getClass().getClassLoader().getResource("proof.template").getFile();
-			
+			InputStream proofTemplateStream = this.getClass().getClassLoader().getResourceAsStream("proof.template");
+			StringWriter writer = new StringWriter();
 			try {
-				PROOF_TEMPLATE = reader.readFile(new File(theoryTemplate));
+				IOUtils.copy(proofTemplateStream, writer, StandardCharsets.UTF_8);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			PROOF_TEMPLATE = writer.toString();
 		}
 		
 		this.framework = framework;

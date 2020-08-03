@@ -58,9 +58,12 @@ public class IsabelleProofCheckerTest {
 		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
 		
 		assertTrue(checker.verifyTheoryFile("Main"));
+		
+		checker.destroy();
 	}
 	
-	@Test
+	// Takes long, not performed by default.
+	// @Test
 	public void simpleFrameworkTest() throws IOException, InterruptedException {
 		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("electoral_module"));
@@ -73,9 +76,12 @@ public class IsabelleProofCheckerTest {
 		
 		// Should work twice in a row, second one much faster.
 		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
+		
+		checker.destroy();
 	}
 	
-	@Test
+	// Takes long, not performed by default.
+	// @Test
 	public void SMCTest() throws IOException, InterruptedException {
 		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("electoral_module"));
@@ -86,6 +92,8 @@ public class IsabelleProofCheckerTest {
 		
 		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
 		checker.verifyTheoryFile(this.file.getAbsolutePath());
+		
+		checker.destroy();
 	}
 	
 	protected void proveClaims(List<Property> properties, String composition) {

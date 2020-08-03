@@ -2,6 +2,9 @@ package com.fr2501.virage.isabelle;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.io.IOUtils;
 
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
@@ -55,16 +60,15 @@ public class IsabelleTheoryGenerator {
 	
 	public IsabelleTheoryGenerator(String theoryPath, FrameworkRepresentation framework) {
 		if(THEORY_TEMPLATE.equals("")) {
-			SimpleFileReader reader = new SimpleFileReader();
-			
-			String theoryTemplate = this.getClass().getClassLoader().getResource("theory.template").getFile();
-			
+			InputStream theoryTemplateStream = this.getClass().getClassLoader().getResourceAsStream("theory.template");
+			StringWriter writer = new StringWriter();
 			try {
-				THEORY_TEMPLATE = reader.readFile(new File(theoryTemplate));
+				IOUtils.copy(theoryTemplateStream, writer, StandardCharsets.UTF_8);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			THEORY_TEMPLATE = writer.toString();
 		}
 
 		IsabelleTheoryParser parser = new IsabelleTheoryParser();

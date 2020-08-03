@@ -1,6 +1,8 @@
 package com.fr2501.virage.isabelle;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import org.apache.logging.log4j.LogManager;
@@ -80,7 +82,11 @@ public class IsabelleProofChecker {
 	
 	private void initServer() throws IOException {
 		this.server = this.runtime.exec("isabelle server -n " + SERVER_NAME);
-		// TODO: Check success?
+		
+		// The server will send a message when startup is finished.
+		// Contents are irrelevant, just wait for it to appear.
+		BufferedReader reader = new BufferedReader(new InputStreamReader(this.server.getInputStream()));
+		while(!reader.ready());
 	}
 	
 	private void initClient() throws IOException {
