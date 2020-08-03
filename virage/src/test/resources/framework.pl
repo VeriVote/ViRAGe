@@ -1,4 +1,4 @@
-% ==== /home/fabian/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/theories/
+% ==== ../src/test/resources/theories/
 % === component_type
 % == aggregator
 % max_aggregator
