@@ -1,4 +1,4 @@
-% ==== ../src/test/resources/theories/
+% ==== ../virage/src/test/resources/theories/
 % === component_type
 % == aggregator
 % max_aggregator

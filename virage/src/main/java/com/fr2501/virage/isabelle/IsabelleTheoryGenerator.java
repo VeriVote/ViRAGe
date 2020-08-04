@@ -175,14 +175,22 @@ public class IsabelleTheoryGenerator {
 		
 		SimpleFileWriter writer = new SimpleFileWriter();
 		
-		String actualPath = path;
-		// If the path points to a folder, create a new file.
-		if(!path.contains(".thy")) {
-			actualPath = path + File.separator + theoryName + ".thy";
+		try {
+			File file = new File(path).getCanonicalFile();
+			
+			// If the path points to a folder, create a new file.
+			if(file.isDirectory()) {
+				path = path + theoryName + ".thy";
+			}
+			writer.writeToFile(path, fileContents);
+			
+			return new File(path).getCanonicalFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		writer.writeToFile(actualPath, fileContents);
 		
-		return new File(actualPath);
+		return null;
 	}
 	
 	protected void replacePrologVariables(PrologPredicate predicate) {

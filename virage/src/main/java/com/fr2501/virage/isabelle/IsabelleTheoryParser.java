@@ -19,7 +19,7 @@ public class IsabelleTheoryParser {
 	public Map<String, String> getAllFunctionsAndDefinitions(String path) throws IOException {
 		Map<String, String> res = new HashMap<String, String>();
 		
-		File folder = new File(path);
+		File folder = new File(path).getCanonicalFile();
 		
 		if(!folder.isDirectory()) {
 			throw new IllegalArgumentException();
