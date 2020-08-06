@@ -1,6 +1,5 @@
 package com.fr2501.virage.isabelle;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -9,18 +8,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import com.fr2501.util.SimpleFileReader;
 import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
-import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.CompositionProof;
-import com.fr2501.virage.types.FrameworkRepresentation;
-import com.fr2501.virage.types.Property;
 
 // TODO: Document
 public class IsabelleProofStepGenerator {
+	private static final Logger logger = LogManager.getLogger(IsabelleProofStepGenerator.class);
 	private static String PROOF_STEP_TEMPLATE = "";
 	
 	private static String VAR_GOAL_ID = "$GOAL_ID";
@@ -31,26 +29,22 @@ public class IsabelleProofStepGenerator {
 	
 	private Map<String, String> functionsAndDefinitions;
 	private PrologParser parser;
-	private IsabelleProofGenerator parent;
+	private IsabelleProofGenerator parent;	
 	
-	private FrameworkRepresentation framework;
-	
-	
-	public IsabelleProofStepGenerator(FrameworkRepresentation framework,
-			IsabelleProofGenerator parent, Map<String, String> functionsAndDefinitions) {
+	public IsabelleProofStepGenerator(IsabelleProofGenerator parent,
+			Map<String, String> functionsAndDefinitions) {
 		if(PROOF_STEP_TEMPLATE.equals("")) {
 			InputStream proofStepTemplateStream = this.getClass().getClassLoader().getResourceAsStream("proof_step.template");
 			StringWriter writer = new StringWriter();
 			try {
 				IOUtils.copy(proofStepTemplateStream, writer, StandardCharsets.UTF_8);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				logger.error("Something went wrong.", e);
 				e.printStackTrace();
 			}
 			PROOF_STEP_TEMPLATE = writer.toString();
 		}
 		
-		this.framework = framework;
 		this.functionsAndDefinitions = functionsAndDefinitions;
 		this.parser = new SimplePrologParser();
 		this.parent = parent;

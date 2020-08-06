@@ -1,6 +1,5 @@
 package com.fr2501.virage.types;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;

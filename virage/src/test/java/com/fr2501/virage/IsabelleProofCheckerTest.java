@@ -74,7 +74,7 @@ public class IsabelleProofCheckerTest {
 	@Test
 	public void testRandomPropertySets() throws Exception {
 		logger.info("testRandomPropertySets()");
-		final int RUNS = 100;
+		final int RUNS = 3;
 		final int TIMEOUT = 10;
 		
 		int success = 0;

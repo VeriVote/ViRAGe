@@ -4,15 +4,14 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
@@ -23,9 +22,10 @@ import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
-import com.fr2501.virage.types.SearchResult;
 
 public class IsabelleTheoryGeneratorTest {
+	private static final Logger logger = LogManager.getLogger(IsabelleTheoryGeneratorTest.class);
+	
 	private static final String PATH = "src/test/resources/framework.pl";
 	private static final String SMC = 	"seq_comp(" + 
 											"loop_comp(" + 
@@ -100,8 +100,7 @@ public class IsabelleTheoryGeneratorTest {
 			
 			generator.generateTheoryFile(file.getAbsolutePath(), composition, proofs);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Something went wrong.", e);
 			fail();
 		}
 	}

@@ -1,21 +1,20 @@
 package com.fr2501.virage.isabelle;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import com.fr2501.util.SimpleFileReader;
 import com.fr2501.virage.types.CompositionProof;
-import com.fr2501.virage.types.FrameworkRepresentation;
 
 //TODO: Document
 public class IsabelleProofGenerator {
+	private static final Logger logger = LogManager.getLogger(IsabelleProofGenerator.class);
 	private static String PROOF_TEMPLATE = "";
 	
 	private static String VAR_THEOREM_NAME = "$THEOREM_NAME";
@@ -26,27 +25,24 @@ public class IsabelleProofGenerator {
 	private IsabelleProofStepGenerator generator;
 	private Map<String, String> functionsAndDefinitions;
 	
-	private FrameworkRepresentation framework;
-	
 	private IsabelleTheoryGenerator parent;
 	
-	public IsabelleProofGenerator(FrameworkRepresentation framework,
-			IsabelleTheoryGenerator parent, Map<String, String> functionsAndDefinitions) {
+	public IsabelleProofGenerator(IsabelleTheoryGenerator parent, 
+			Map<String, String> functionsAndDefinitions) {
 		if(PROOF_TEMPLATE.equals("")) {
 			InputStream proofTemplateStream = this.getClass().getClassLoader().getResourceAsStream("proof.template");
 			StringWriter writer = new StringWriter();
 			try {
 				IOUtils.copy(proofTemplateStream, writer, StandardCharsets.UTF_8);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				logger.error("Something went wrong.", e);
 				e.printStackTrace();
 			}
 			PROOF_TEMPLATE = writer.toString();
 		}
 		
-		this.framework = framework;
 		this.functionsAndDefinitions = functionsAndDefinitions;
-		this.generator = new IsabelleProofStepGenerator(this.framework, this, this.functionsAndDefinitions);
+		this.generator = new IsabelleProofStepGenerator(this, this.functionsAndDefinitions);
 		this.parent = parent;
 	}
 	

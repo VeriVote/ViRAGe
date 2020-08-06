@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.fr2501.virage.prolog.PrologProof;
-
 // TODO Document
 public class CompositionProof {
 	private String goal;

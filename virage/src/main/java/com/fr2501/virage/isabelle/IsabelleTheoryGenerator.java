@@ -14,8 +14,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.PrologParser;
@@ -28,6 +29,8 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 
 // TODO: Document
 public class IsabelleTheoryGenerator {
+	private static final Logger logger = LogManager.getLogger(IsabelleTheoryGenerator.class);
+	
 	private static final String VAR_THEORY_NAME = "$THEORY_NAME";
 	private static final String VAR_IMPORTS = "$IMPORTS";
 	private static final String VAR_MODULE_PARAM_TYPES = "$MODULE_PARAM_TYPES";
@@ -65,8 +68,7 @@ public class IsabelleTheoryGenerator {
 			try {
 				IOUtils.copy(theoryTemplateStream, writer, StandardCharsets.UTF_8);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Something went wrong.", e);
 			}
 			THEORY_TEMPLATE = writer.toString();
 		}
@@ -76,12 +78,11 @@ public class IsabelleTheoryGenerator {
 		try {
 			this.functionsAndDefinitions = parser.getAllFunctionsAndDefinitions(theoryPath);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Something went wrong.", e);
 		}
 		
 		this.framework = framework;
-		this.generator = new IsabelleProofGenerator(this.framework, this, this.functionsAndDefinitions);
+		this.generator = new IsabelleProofGenerator(this, this.functionsAndDefinitions);
 		this.parser = new SimplePrologParser();
 		this.typedVariables = new HashMap<String, String>();
 	}
@@ -186,8 +187,7 @@ public class IsabelleTheoryGenerator {
 			
 			return new File(path).getCanonicalFile();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Something went wrong.", e);
 		}
 		
 		return null;
@@ -197,8 +197,6 @@ public class IsabelleTheoryGenerator {
 		for(int i=0; i<predicate.getParameters().size(); i++) {
 			PrologPredicate child = predicate.getParameters().get(i);
 			if(child.isVariable()) {
-				System.out.println(child.getName());
-				
 				Component component = framework.getComponent(predicate.getName());
 				ComponentType childType = component.getParameters().get(i);
 				
@@ -263,8 +261,7 @@ public class IsabelleTheoryGenerator {
 		res = res.replace(VAR_MODULE_NAME, moduleName);
 		res = res.replace(VAR_MODULE_PARAMETERS, moduleParameters);
 		res = res.replace(VAR_ASSUMPTIONS, assumptions);
-		
-		System.out.println(res);
+
 		return res;
 	}
 }

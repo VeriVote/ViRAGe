@@ -1,7 +1,6 @@
 package com.fr2501.virage.analyzer;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -11,13 +10,11 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.JPLFacade;
-import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.PrologProof;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
-import com.fr2501.virage.types.IsabelleProof;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 import com.fr2501.virage.types.ValueNotPresentException;

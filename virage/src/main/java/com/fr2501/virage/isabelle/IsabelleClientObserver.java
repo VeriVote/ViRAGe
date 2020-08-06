@@ -3,8 +3,6 @@ package com.fr2501.virage.isabelle;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +17,7 @@ public class IsabelleClientObserver implements Runnable {
 	private BufferedReader stdoutReader;
 	private BufferedReader stderrReader;
 	
-	public IsabelleClientObserver(IsabelleProofChecker listener, Process isabelleClient) {
+	private IsabelleClientObserver(IsabelleProofChecker listener, Process isabelleClient) {
 		this.listener = listener;
 		this.isabelleClient = isabelleClient;
 		this.factory = new IsabelleEventFactory();
@@ -29,6 +27,10 @@ public class IsabelleClientObserver implements Runnable {
 		
 		Thread thread = new Thread(this, "isa_obs");
 		thread.start();
+	}
+	
+	public static void start(IsabelleProofChecker listener, Process isabelleClient) {
+		new IsabelleClientObserver(listener, isabelleClient);
 	}
 
 	@Override
@@ -44,7 +46,7 @@ public class IsabelleClientObserver implements Runnable {
 					logger.error(this.stderrReader.readLine());
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				logger.error("Something went wrong.", e);
 				e.printStackTrace();
 			}
 		}

@@ -66,8 +66,7 @@ public class JPLFacade {
 			logger.debug(dest.getAbsolutePath());
 			this.consultFile(dest.getAbsolutePath());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Something went wrong.", e);
 		}
 	}
 	

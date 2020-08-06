@@ -2,16 +2,13 @@ package com.fr2501.virage.core;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
-import com.fr2501.virage.prolog.PrologProof;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
-import com.fr2501.virage.types.IsabelleProof;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 

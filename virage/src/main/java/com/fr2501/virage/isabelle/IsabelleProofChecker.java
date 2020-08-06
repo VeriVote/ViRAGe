@@ -21,7 +21,6 @@ public class IsabelleProofChecker {
 	private Runtime runtime;
 	private Process server;
 	private Process client;
-	private IsabelleClientObserver observer;
 	private OutputStream clientInput;
 	String sessionId;
 	
@@ -35,7 +34,7 @@ public class IsabelleProofChecker {
 			this.initServer();
 			this.initClient();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			logger.error("Something went wrong.", e);
 			e.printStackTrace();
 		}
 	}
@@ -95,7 +94,7 @@ public class IsabelleProofChecker {
 		this.client = this.runtime.exec("isabelle client -n " + SERVER_NAME);
 		this.clientInput = this.client.getOutputStream();
 		
-		this.observer = new IsabelleClientObserver(this, this.client);
+		IsabelleClientObserver.start(this, this.client);
 		
 		this.sendCommandAndWaitForTermiantion("session_start {\"session\": \"HOL\"}");
 		this.sessionId = this.lastEvent.getValue("session_id");

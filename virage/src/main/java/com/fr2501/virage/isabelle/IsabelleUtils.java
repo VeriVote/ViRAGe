@@ -17,7 +17,7 @@ public class IsabelleUtils {
 	public static final String SUCCESS_STRING = "OK ";
 	
 	// TODO: Add all types
-	public static final String[] SIMPLE_TYPES = {"nat"};
+	public static final String[] SIMPLE_TYPES = {"nat, bool"};
 	
 	// This method tries, along with other things, to match Prolog predicates
 	// to Isabelle entities. It is case-insensitive, so no two Isabelle entities
@@ -32,7 +32,6 @@ public class IsabelleUtils {
 		Matcher matcher = pattern.matcher(res);
 	
 		while(matcher.find()) {
-			System.out.println(res.substring(matcher.start(), matcher.end()));
 			String match = res.substring(matcher.start(), matcher.end());
 			String replacement = match;
 			

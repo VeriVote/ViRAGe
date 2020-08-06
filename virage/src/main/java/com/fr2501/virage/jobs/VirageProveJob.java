@@ -5,12 +5,10 @@ import java.util.List;
 
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
-import com.fr2501.virage.prolog.PrologProof;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
-import com.fr2501.virage.types.SearchResult;
 
 public class VirageProveJob extends VirageJobWithExplicitResult<List<List<CompositionProof>>> {
 	private List<String> propertyStrings;

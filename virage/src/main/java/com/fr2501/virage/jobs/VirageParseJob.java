@@ -6,7 +6,6 @@ import java.io.IOException;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
-import com.fr2501.virage.types.FrameworkRepresentation;
 
 /**
  * 
@@ -14,8 +13,6 @@ import com.fr2501.virage.types.FrameworkRepresentation;
  *
  */
 public class VirageParseJob extends VirageJobWithoutExplicitResult {
-	private FrameworkRepresentation framework;
-	
 	private ExtendedPrologParser parser;
 	
 	private File file;
