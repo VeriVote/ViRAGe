@@ -178,7 +178,11 @@ public class JPLFacade {
 		return new SearchResult<Boolean>(QueryState.TIMEOUT, null);
 	}
 	
-	// TODO: Document
+	/**
+	 * A query containing variables, disables timeout for this query and resets it afterwards.
+	 * @param queryString the query
+	 * @return a SearchResult representing the result of the query
+	 */
 	public SearchResult<Map<String,String>> iterativeDeepeningQueryWithoutTimeout(String queryString) {
 		long oldTimeout = this.timeout;
 		this.timeout = Long.MAX_VALUE/2;
@@ -301,7 +305,18 @@ public class JPLFacade {
 				throw new IllegalArgumentException();
 			}
 			
-			return parseReplacementMap(unusedVariable, resultMap);
+			Map<String,String> replacementMap = parseReplacementMap(unusedVariable, resultMap);
+			
+			Map<String,String> res = new HashMap<String,String>();
+			for(String replacement: replacementMap.keySet()) {
+				for(String originalVariable: resultMap.keySet()) {
+					if(resultMap.get(originalVariable).equals(replacement)) {
+						res.put(originalVariable, replacementMap.get(replacement));
+					}
+				}
+			}
+			
+			return res;
 		} catch (ValueNotPresentException e) {
 			throw new IllegalArgumentException();
 		}
@@ -328,41 +343,51 @@ public class JPLFacade {
 	// broke this method due to JPL changing the way it prints Prolog lists.
 	// This might happen again in the future. Look at the format of replacementString
 	// and adjust accordingly if that ever happens again.
-	// TODO: Document
+	/**
+	 * Finds out the values Prolog variables need to be replaced with for unification
+	 * @param variable the variable containing the list of replacement
+	 * @param map a map containing the internal identifiers Prolog used for the variables
+	 * @return a map containing the replacements
+	 */
 	public static Map<String,String> parseReplacementMap(String variable, Map<String,String> map) {
 		Map<String,String> result = new HashMap<String,String>();
-		
-		// Map contains only the the variable containing the replacements but
-		// no other variables, no replacements necessary.
-		if(map.keySet().size() == 1) {
-			return result;
-		}
 		
 		// Look like this: ['='(_108, 1)]
 		// _NUMBER is an alias for a variable.
 		String replacementString = map.get(variable);
-		replacementString = replacementString.substring(5,replacementString.length()-2);
 		replacementString = StringUtils.removeWhitespace(replacementString);
+		replacementString = replacementString.substring(1,replacementString.length()-1);
 		
-		String[] replacements;
-		if(replacementString.contains("\\),")) {
-			replacements = replacementString.split("\\),");
-		} else {
-			replacements = new String[1];
-			// Remove the last bracket so the formats of both options match
-			replacements[0] = replacementString.substring(0,replacementString.length()-1);
+		if(replacementString.equals("")) {
+			// List of replacements is empty.
+			return result;
 		}
+		
+		String[] replacements = replacementString.split("\\'=\\'");
 
-		for(String replacement: replacements) {
-			replacement = replacement.substring(1,replacement.length());
-			String[] values = replacement.split(",");
+		// replacements[0] is always empty, as the String starts with the splitting regex.
+		for(int i=1; i<replacements.length; i++) {
+			String replacement = replacements[i];
 			
-			for(String var: map.keySet()) {
-				if(map.get(var).equals(values[0])) {
-					result.put(var, values[1]);
-					break;
-				}
+			if(replacement.endsWith(",")) {
+				// Remove trailing comma, if it exists.
+				replacement = replacement.substring(0,replacement.length()-1);
 			}
+			
+			// Remove bracket pair.
+			replacement = replacement.substring(1,replacement.length()-1);
+			
+			String[] splits = replacement.split(",");
+			
+			String key = splits[0];
+		
+			// The value might contain more commas and might thus have been split into several parts.
+			String value = splits[1];
+			for(int j=2; j<splits.length; j++) {
+				value += "," + splits[j];
+			}
+			
+			result.put(key, value);
 		}
 		
 		return result;

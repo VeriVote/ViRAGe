@@ -1,9 +1,12 @@
 package com.fr2501.virage.analyzer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -199,7 +202,24 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 				
 				// Manual "unification"
 				for(String key: replacements.keySet()) {
-					specific = specific.replaceAll("\b" + key + "\b", replacements.get(key));
+					// Some regex magic has to be done here. A variable consists of [A-Za-z0-9_] = [\\w]
+					// characters. Boundaries should not be replaced and finding out whether they are
+					// commas, spaces, brackets or anything else seemed even more tedious than this.
+					// Careful: Naively replacing all occurrences of a variable name is not a 
+					// valid solution, as they are not prefix free, e.g. replacing X by c in "a(X,X1)" 
+					// would yield "a(c,c1"). 
+					Pattern pattern = Pattern.compile("[^\\w_]" + key + "[^\\w_]");
+					Matcher matcher = pattern.matcher(generic);
+					
+					while(matcher.find()) {
+						String start = generic.substring(0, matcher.start() + 1);
+						String middle = replacements.get(key);
+						String end = generic.substring(matcher.end() - 1,generic.length());
+						
+						generic = start + middle + end;
+						
+						matcher = pattern.matcher(generic);
+					}
 				}
 				
 				if(!this.facade.subsumesTerm(generic, specific)) {
