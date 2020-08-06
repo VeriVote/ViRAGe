@@ -71,6 +71,8 @@ public class IsabelleProofChecker {
 	public void destroy() {
 		this.client.destroy();
 		this.server.destroy();
+		
+		instance = null;
 	}
 	
 	private void sendCommandAndWaitForTermiantion(String command) throws IOException {

@@ -180,7 +180,7 @@ public class IsabelleTheoryGenerator {
 			
 			// If the path points to a folder, create a new file.
 			if(file.isDirectory()) {
-				path = path + theoryName + ".thy";
+				path = path + File.separator + theoryName + ".thy";
 			}
 			writer.writeToFile(path, fileContents);
 			
