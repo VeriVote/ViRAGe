@@ -86,7 +86,7 @@ public class IsabelleTheoryGeneratorTest {
 		properties.add(this.framework.getProperty("electoral_module"));
 		properties.add(this.framework.getProperty("condorcet_consistent"));
 		
-		proveClaims(properties, "seq_comp(elim_module(max,_,copeland_score), elect_module)");
+		proveClaims(properties, "seq_comp(elimination_module(copeland_score,max,less), elect_module)");
 	}
 	
 	protected void proveClaims(List<Property> properties, String composition) {

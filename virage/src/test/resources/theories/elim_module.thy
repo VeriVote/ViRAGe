@@ -234,3 +234,7 @@ next
     then show ?thesis by (metis (mono_tags, lifting) Diff_iff condorcet_winner_in_def cr_eval_implies_max_elim_is_def_cc_helper1 rating singletonI winner)
   qed
 qed
+
+
+
+end
