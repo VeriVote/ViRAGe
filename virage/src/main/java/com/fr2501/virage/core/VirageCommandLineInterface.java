@@ -16,6 +16,7 @@ import com.fr2501.virage.jobs.VirageIsabelleGenerateJob;
 import com.fr2501.virage.jobs.VirageIsabelleVerifyJob;
 import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
+import com.fr2501.virage.jobs.VirageDummyJob;
 import com.fr2501.virage.jobs.VirageParseJob;
 import com.fr2501.virage.jobs.VirageProveJob;
 import com.fr2501.virage.types.CompositionProof;
@@ -167,7 +168,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		proveJob.waitFor();
 		
 		if(proveJob.getState() == VirageJobState.FAILED) {
-			throw new IllegalArgumentException();
+			logger.warn("Proving the given claims failed.");
+			return new VirageDummyJob(this);
 		}
 		
 		List<List<CompositionProof>> proofLists = proveJob.getResult();

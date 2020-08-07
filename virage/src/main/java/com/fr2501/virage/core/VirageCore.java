@@ -105,9 +105,8 @@ public class VirageCore implements Runnable {
 				try {
 					job = this.jobs.take();
 	        		job.execute(this);
-				} catch (InterruptedException e) {
+				} catch (Exception e) {
 					logger.error("An error occured.", e);
-					return;
 				}
         	} else {
         		// No jobs, busy waiting
