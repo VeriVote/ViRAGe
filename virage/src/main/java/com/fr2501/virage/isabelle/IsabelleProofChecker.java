@@ -1,12 +1,19 @@
 package com.fr2501.virage.isabelle;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.fr2501.util.SimpleFileReader;
+import com.fr2501.util.SimpleFileWriter;
 
 
 /**
@@ -80,14 +87,36 @@ public class IsabelleProofChecker {
 		logger.info("Starting to verify " + theory + ". This might take some time.");
 		String command = "use_theories {\"session_id\": \"" + this.sessionId + "\", " +
 				"\"theories\": [\"" + theory + "\"]}";  
-		this.sendCommandAndWaitForTermiantion(command);
+		this.sendCommandAndWaitForTermination(command);
 		
 		String result = this.lastEvent.getValue("ok");
 		if(result.equals("true")) {
 			logger.info("Verification successful.");
 			return true;
 		} else {
-			logger.info("Verification failed. You might be able to fix the errors manually within Isabelle.");
+			logger.info("Verification failed. Attempting to solve automatically by employing different solvers.");
+			String errors = this.lastEvent.getValue("errors");
+			
+			command = "purge_theories {\"session_id\": \"" + this.sessionId + "\", " +
+					"\"theories\": [\"" + theory + "\"]}";  
+			this.sendCommandAndWaitForOk(command);
+			
+			Pattern pattern = Pattern.compile("line=[0-9]+");
+			Matcher matcher = pattern.matcher(errors);
+			
+			if(matcher.find()) {
+				String line = errors.substring(matcher.start(), matcher.end());
+				// Isabelle starts counting at 1.
+				int lineNum = Integer.parseInt(line.split("=")[1]) - 1;
+			
+				if(this.replaceSolver(theory, lineNum)) {
+					// The content of the file has changed, and this can
+					// only happen IsabelleUtils.SOLVERS.length times,
+					// so the recursive call is fine.
+					return this.verifyTheoryFile(theory);
+				}
+			}
+			
 			return false;
 		}
 	}
@@ -106,17 +135,33 @@ public class IsabelleProofChecker {
 	 * Applies the effects of a given event.
 	 * @param evt the event
 	 */
-	public void notify(IsabelleEvent evt) {
+	public synchronized void notify(IsabelleEvent evt) {
 		logger.debug(evt.toString());
 		this.lastEvent = evt;
 		evt.applyEffects(this);
 	}
 	
-	private void sendCommandAndWaitForTermiantion(String command) throws IOException {
+	private synchronized IsabelleEvent getLastEvent() {
+		return this.lastEvent;
+	}
+	
+	private void sendCommandAndWaitForTermination(String command) throws IOException {
 		this.clientInput.write((command + "\n").getBytes());
 		this.clientInput.flush();
 		
 		this.waitForFinish();
+	}
+	
+	private void sendCommandAndWaitForOk(String command) throws IOException {
+		this.clientInput.write((command + "\n").getBytes());
+		this.clientInput.flush();
+		
+		// TODO: There is probably a better solution for this.
+		while(!(this.getLastEvent() instanceof IsabelleOkEvent)) {
+			
+		}
+		
+		this.lastEvent = new IsabelleMiscEvent();
 	}
 	
 	private void initServer() throws IOException {
@@ -134,7 +179,7 @@ public class IsabelleProofChecker {
 		
 		IsabelleClientObserver.start(this, this.client);
 		
-		this.sendCommandAndWaitForTermiantion("session_start {\"session\": \"HOL\"}");
+		this.sendCommandAndWaitForTermination("session_start {\"session\": \"HOL\"}");
 		this.sessionId = this.lastEvent.getValue("session_id");
 	}
 	
@@ -142,4 +187,43 @@ public class IsabelleProofChecker {
 		while(!this.getFinished());
 		this.finished = false;
 	}
+	
+	// TODO: This feature would be really nice to have, but even purging and reusing theories
+	// does not make Isabelle actually reload them, so this is infeasible for now.
+	private boolean replaceSolver(String theoryPath, int lineNum) {
+		return false;
+		
+		/*SimpleFileReader reader = new SimpleFileReader();
+		SimpleFileWriter writer = new SimpleFileWriter();
+		
+		String filePath = theoryPath + IsabelleUtils.FILE_EXTENSION;
+		
+		try {
+			List<String> lines = reader.readFileByLine(new File(filePath));
+			
+			String line = lines.get(lineNum);
+			
+			for(int i=0; i<IsabelleUtils.SOLVERS.length-1; i++) {
+				if(line.contains(IsabelleUtils.SOLVERS[i])) {
+					line = line.replace(IsabelleUtils.SOLVERS[i], IsabelleUtils.SOLVERS[i+1]);
+					
+					lines.set(lineNum, line);
+					
+					String result = "";
+					for(String s: lines) {
+						result += s + "\n";
+					}
+					
+					writer.writeToFile(filePath, result);
+					
+					return true;
+				}
+			}
+
+			return false;			
+		} catch (IOException e) {
+			// TODO: Auto-generated catch block
+			return false;
+		}
+	}*/
 }

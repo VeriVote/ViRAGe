@@ -35,6 +35,10 @@ public class IsabelleUtils {
 	 */
 	public static final String[] SIMPLE_TYPES = {"nat, bool"};
 	
+	/**
+	 * Isabelle solvers
+	 */
+	public static final String[] SOLVERS = {"simp", "blast", "metis", "fastforce"};
 
 	
 	/**

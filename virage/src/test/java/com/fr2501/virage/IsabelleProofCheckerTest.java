@@ -62,7 +62,7 @@ public class IsabelleProofCheckerTest {
 		this.generator = new IsabelleTheoryGenerator(THEORY_PATH, this.framework);
 	}
 	
-	@Test
+	//@Test
 	public void simpleTest() throws IOException, InterruptedException {
 		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
 		
@@ -71,7 +71,7 @@ public class IsabelleProofCheckerTest {
 		checker.destroy();
 	}
 	
-	@Test
+	//@Test
 	public void testRandomPropertySets() throws Exception {
 		logger.info("testRandomPropertySets()");
 		final int RUNS = 3;
@@ -150,17 +150,22 @@ public class IsabelleProofCheckerTest {
 	}
 	
 	// Takes long, not performed by default.
-	// @Test
+	@Test
 	public void SMCTest() throws IOException, InterruptedException {
 		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("electoral_module"));
-		properties.add(this.framework.getProperty("electing"));
-		properties.add(this.framework.getProperty("monotone"));
+		//properties.add(this.framework.getProperty("electing"));
+		//properties.add(this.framework.getProperty("monotone"));
 		
-		proveClaims(properties, SMC);
+		proveClaims(properties, "parallel_comp(elect_module,elect_module,max_aggregator)");
 		
 		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
-		checker.verifyTheoryFile(this.file.getAbsolutePath());
+		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
+		
+		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
+		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
+		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
+		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
 		
 		checker.destroy();
 	}

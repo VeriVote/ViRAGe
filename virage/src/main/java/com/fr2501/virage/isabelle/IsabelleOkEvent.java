@@ -13,5 +13,4 @@ public class IsabelleOkEvent extends IsabelleEvent {
 	public IsabelleOkEvent(Map<String, String> parameters) {
 		super(parameters);
 	}
-
 }
