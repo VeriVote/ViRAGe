@@ -27,7 +27,12 @@ import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
-// TODO: Document
+/**
+ * 
+ * Generates a complete Isabelle theory file containing a module definition and 
+ * (possibly) several proofs.
+ *
+ */
 public class IsabelleTheoryGenerator {
 	private static final Logger logger = LogManager.getLogger(IsabelleTheoryGenerator.class);
 	
@@ -87,8 +92,16 @@ public class IsabelleTheoryGenerator {
 		this.typedVariables = new HashMap<String, String>();
 	}
 	
-	// If path points to a file, this file will be overwritten and the name will most probably
-	// not correspond to the theory inside, so Isabelle won't be able to verify it.
+	/**
+	 * This method takes a Set of {@link CompositionProof} objects and a composition,
+	 * translates this information to Isabelle syntax and writes its result to a file.
+	 * @param path a path to the folder to which the result shall be written. 
+	 * If path points to a file, this file will be overwritten and the name will most probably
+	 * not correspond to the theory inside, so Isabelle won't be able to verify it.
+	 * @param composition the composition
+	 * @param proofs proofs for all the claimed properties
+	 * @return the {@link File} containing the results
+	 */
 	public File generateTheoryFile(String path, String composition, List<CompositionProof> proofs) {
 		String theoryName = THEORY_NAME + "_" + theoryCounter;
 		String moduleName = MODULE_NAME + "_" + theoryCounter;
@@ -193,6 +206,10 @@ public class IsabelleTheoryGenerator {
 		return null;
 	}
 	
+	/**
+	 * Replaces variable symbols used by Prolog with those used by Isabelle
+	 * @param predicate the Prolog predicate 
+	 */
 	protected void replacePrologVariables(PrologPredicate predicate) {
 		for(int i=0; i<predicate.getParameters().size(); i++) {
 			PrologPredicate child = predicate.getParameters().get(i);

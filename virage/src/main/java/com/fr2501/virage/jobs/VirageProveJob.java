@@ -10,6 +10,11 @@ import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 
+/**
+ * 
+ * A {@link VirageJob} used to prove claims about properties of compositions.
+ *
+ */
 public class VirageProveJob extends VirageJobWithExplicitResult<List<List<CompositionProof>>> {
 	private List<String> propertyStrings;
 	private List<Property> properties;

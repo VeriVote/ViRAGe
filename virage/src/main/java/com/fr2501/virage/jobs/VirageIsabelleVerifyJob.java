@@ -5,6 +5,11 @@ import java.io.File;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
 
+/**
+ * 
+ * A {@link VirageJob} that invokes Isabelle to automatically attempt proof verification.
+ *
+ */
 public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Boolean> {
 	private IsabelleProofChecker checker;
 	

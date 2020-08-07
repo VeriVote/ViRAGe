@@ -16,7 +16,11 @@ import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
 import com.fr2501.virage.types.CompositionProof;
 
-// TODO: Document
+/**
+ * 
+ * This class is meant to translate single proof steps into Isabelle syntax.
+ *
+ */
 public class IsabelleProofStepGenerator {
 	private static final Logger logger = LogManager.getLogger(IsabelleProofStepGenerator.class);
 	private static String PROOF_STEP_TEMPLATE = "";
@@ -50,6 +54,11 @@ public class IsabelleProofStepGenerator {
 		this.parent = parent;
 	}
 	
+	/**
+	 * Translates a single {@link CompositionProof} step to Isabelle syntax.
+	 * @param step the proof step
+	 * @return a String representing the step in Isabelle syntax
+	 */
 	public String generateIsabelleProofStep(CompositionProof step) {
 		String goalId = step.getId();
 		

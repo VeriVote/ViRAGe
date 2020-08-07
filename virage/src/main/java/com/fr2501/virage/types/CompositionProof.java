@@ -5,7 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-// TODO Document
+/**
+ * 
+ * A class representing a proof using a {@link CompositionRule} for each subgoal,
+ * thus making the reasoning of the proof transparent.
+ *
+ */
 public class CompositionProof {
 	private String goal;
 	private List<CompositionProof> subgoals;

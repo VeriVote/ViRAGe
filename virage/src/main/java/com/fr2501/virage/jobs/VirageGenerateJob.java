@@ -12,7 +12,7 @@ import com.fr2501.virage.types.SearchResult;
 
 /**
  * 
- * A @link VirageJob} used for generating compositions
+ * A {@link VirageJob} used for generating compositions
  *
  */
 public class VirageGenerateJob extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {

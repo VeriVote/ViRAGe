@@ -13,6 +13,10 @@ public interface PrologParser {
 	 */
 	public PrologClause parseSingleClause(String clause);
 	
-	// TODO: Document
+	/**
+	 * Parses a single Prolog predicate
+	 * @param predicate the predicate to be parsed
+	 * @return a {@link PrologPredicate} object representing that predicate
+	 */
 	public PrologPredicate parsePredicate(String predicate);
 }

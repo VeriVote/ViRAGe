@@ -7,7 +7,11 @@ import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.types.CompositionProof;
 
-// TODO: Document
+/**
+ * 
+ * A {@link VirageJob} used to generate Isabelle code.
+ *
+ */
 public class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult<File> {
 	private String composition;
 	private List<CompositionProof> proofs;

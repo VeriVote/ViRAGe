@@ -8,7 +8,13 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.StringUtils;
 
-// TODO: Document
+/**
+ * 
+ * Using the meta interpreter in src/java/main/resources, this class is able
+ * to make the Prolog search process more transparent, exposing goals and subgoals
+ * for every proof step.
+ *
+ */
 public class PrologProof {
 	private final static Logger logger = LogManager.getLogger(PrologProof.class);
 	
@@ -29,6 +35,11 @@ public class PrologProof {
 		this.subgoals = subgoals;
 	}
 	
+	/**
+	 * Translates a String given by the meta interpreter to a PrologProof object
+	 * @param string the string
+	 * @return the PrologProof object
+	 */
 	public static PrologProof createProofFromString(String string) {
 		logger.debug(string);
 		

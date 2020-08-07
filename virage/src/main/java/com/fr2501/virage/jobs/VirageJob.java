@@ -43,6 +43,7 @@ public abstract class VirageJob<T> {
 	/**
 	 * Runs the job and notifies its issuer on termination.
 	 * Should only be ran after checking isReadyToExecute(), otherwise behaviour is undefined.
+	 * @param core the executing core
 	 */
 	public void execute(VirageCore core) {
 		this.executingCore = core;
@@ -86,7 +87,9 @@ public abstract class VirageJob<T> {
 		this.state = state;
 	}
 	
-	// TODO Document
+	/**
+	 * Halts execution until this is finished ({@link VirageJobState#FINISHED} or {@link VirageJobState#FAILED})
+	 */
 	public void waitFor() {
 		while(true) {
 			boolean finished = false;

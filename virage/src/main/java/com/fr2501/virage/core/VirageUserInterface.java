@@ -8,8 +8,14 @@ import com.fr2501.virage.jobs.VirageJob;
  *
  */
 public interface VirageUserInterface extends Runnable {
-	// TODO: Document
+	/**
+	 * Similar to run(), but invokes its own {@link Thread} object and starts it.
+	 */
 	public void launch();
 	
+	/**
+	 * Used by {@link VirageJob} objects to notify the interface of changes in their state.
+	 * @param job the notifying job
+	 */
 	public void notify(VirageJob<?> job);
 }

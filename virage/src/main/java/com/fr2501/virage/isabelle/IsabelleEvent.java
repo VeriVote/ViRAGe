@@ -2,6 +2,11 @@ package com.fr2501.virage.isabelle;
 
 import java.util.Map;
 
+/**
+ * 
+ * A class to represent the events raised by the Isabelle CLI.
+ *
+ */
 public abstract class IsabelleEvent {
 	private Map<String, String> parameters;
 	
@@ -13,6 +18,11 @@ public abstract class IsabelleEvent {
 		return this.parameters.get(key);
 	}
 	
+	/**
+	 * Applies the effects of this event to its observer.
+	 * 
+	 * @param observer The {@link IsabelleProofChecker} observing the event
+	 */
 	public void applyEffects(IsabelleProofChecker observer) {
 		// default: no-op
 	}

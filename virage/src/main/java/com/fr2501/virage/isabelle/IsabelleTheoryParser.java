@@ -8,12 +8,23 @@ import java.util.Map;
 
 import com.fr2501.util.SimpleFileReader;
 
-// TODO: Document
+/**
+ * 
+ * Very simple parser for Isabelle theories, nowhere near complete.
+ *
+ */
 public class IsabelleTheoryParser {
 	private static final String DEFINITION = "definition";
 	private static final String FUNCTION = "fun";
 	private static final String ISABELLE_EXTENSION = ".thy";
 	
+	/**
+	 * Extracts all functions and definitions from a folder of Isabelle theories and
+	 * maps them to the file they originate from.
+	 * @param path the path
+	 * @return a map containing all functions and definitions and their corresponding files
+	 * @throws IOException if file system interaction fails
+	 */
 	public Map<String, String> getAllFunctionsAndDefinitions(String path) throws IOException {
 		Map<String, String> res = new HashMap<String, String>();
 		

@@ -7,6 +7,11 @@ import java.io.InputStreamReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * 
+ * Observes an Isabelle client process and creates {@link IsabelleEvent}s if necessary. 
+ *
+ */
 public class IsabelleClientObserver implements Runnable {
 	private static final Logger logger = LogManager.getLogger(IsabelleClientObserver.class);
 	private IsabelleProofChecker listener;
@@ -29,6 +34,13 @@ public class IsabelleClientObserver implements Runnable {
 		thread.start();
 	}
 	
+	/**
+	 * Starts a new IsabelleClientObserver. This is done because the object reference is not really
+	 * required within the calling application code.
+	 * 
+	 * @param listener the {@link IsabelleProofChecker} to be notified on events
+	 * @param isabelleClient the Isabelle client process to be watched
+	 */
 	public static void start(IsabelleProofChecker listener, Process isabelleClient) {
 		new IsabelleClientObserver(listener, isabelleClient);
 	}

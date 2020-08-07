@@ -55,7 +55,12 @@ public class VirageSearchManager {
 		return results;
 	}
 	
-	// TODO: Document
+	/**
+	 * Calls {@link CompositionAnalyzer#proveClaims} on all its analyzers
+	 * @param composition the decomposition tree
+	 * @param properties the proposed property set
+	 * @return a list of results, ordered in the same way as the analyzers
+	 */
 	public List<List<CompositionProof>> proveClaims(DecompositionTree composition, List<Property> properties) {
 		// TODO Parallelize.
 		List<List<CompositionProof>> results = new LinkedList<List<CompositionProof>>();

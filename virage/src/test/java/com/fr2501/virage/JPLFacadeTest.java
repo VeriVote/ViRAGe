@@ -58,4 +58,26 @@ public class JPLFacadeTest {
 		booleanResult = result.getValue();
 		assertTrue(booleanResult);
 	}
+	
+	@Test
+	public void testUnification() {
+		JPLFacade facade = new JPLFacade(1000);
+		
+		String generic = "f(X)";
+		String specific = "f(a)";
+		
+		Map<String,String> map = facade.unifiable(generic, specific);
+		
+		assertTrue(map.keySet().size() == 1);
+		assertTrue(map.get("X").equals("a"));
+		
+		String first = "g(X,f(c))";
+		String second = "g(d,Y)";
+		
+		map = facade.unifiable(first, second);
+		
+		assertTrue(map.keySet().size() == 2);
+		assertTrue(map.get("X").equals("d"));
+		assertTrue(map.get("Y").equals("f(c)"));
+	}
 }

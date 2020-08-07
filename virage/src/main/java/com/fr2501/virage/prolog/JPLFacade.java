@@ -286,11 +286,6 @@ public class JPLFacade {
 	 * @throws IllegalArgumentException if a and b are not unifiable
 	 */
 	public Map<String, String> unifiable(String a, String b) {
-		if(!(this.subsumesTerm(a, b) || this.subsumesTerm(b, a))) {
-			logger.error("'" + a + "' and '" + b + "' are not unifiable.");
-			throw new IllegalArgumentException();
-		}
-		
 		String query = "unifiable(" + a + "," + b;
 		
 		String unusedVariable = JPLFacade.findUnusedVariable(query);

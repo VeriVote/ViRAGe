@@ -58,7 +58,10 @@ public class PrologPredicate {
 		return this.depth;
 	}
 	
-	// TODO Document
+	/**
+	 * Checks whether a PrologPredicate is a variable
+	 * @return true if this is a variable, false otherwise
+	 */
 	public boolean isVariable() {
 		return this.name.matches("[A-Z_][a-zA-Z_0-9]*");
 	}

@@ -8,6 +8,11 @@ import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * 
+ * A factory for Isabelle events, parses the Strings given by the Isabelle CLI.
+ *
+ */
 public class IsabelleEventFactory {
 	private static final String OK_STRING = "OK";
 	private static final String ERROR_STRING = "ERROR";
@@ -20,6 +25,11 @@ public class IsabelleEventFactory {
 		this.mapper = new ObjectMapper();
 	}
 	
+	/**
+	 * Creates an {@link IsabelleEvent} representing the event described within the given String.
+	 * @param s the String given by the Isabelle client CLI
+	 * @return the corresponding event
+	 */
 	public IsabelleEvent createEvent(String s) {
 		Map<String, String> parameters = this.extractParameters(s);
 		

@@ -39,7 +39,11 @@ public class SimpleFileWriter {
 		}
 	}
 	
-	// TODO: Document
+	/**
+	 * Writes String to file.
+	 * @param path the file to be written to
+	 * @param contents the String to be written to the file
+	 */
 	public void writeToFile(String path, String contents) {
 		try {
 			this.writer = new FileWriter(path);

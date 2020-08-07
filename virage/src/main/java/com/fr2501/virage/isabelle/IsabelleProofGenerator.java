@@ -12,7 +12,11 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.types.CompositionProof;
 
-//TODO: Document
+/**
+ * 
+ * This class is meant to translate a single {@link CompositionProof} to Isabelle syntax.
+ *
+ */
 public class IsabelleProofGenerator {
 	private static final Logger logger = LogManager.getLogger(IsabelleProofGenerator.class);
 	private static String PROOF_TEMPLATE = "";
@@ -46,10 +50,20 @@ public class IsabelleProofGenerator {
 		this.parent = parent;
 	}
 	
+	/**
+	 * Every IsabelleProofGenerator is attached to an {@link IsabelleTheoryGenerator},
+	 * this method returns it.
+	 * @return the parent
+	 */
 	public IsabelleTheoryGenerator getParent() {
 		return this.parent;
 	}
 	
+	/**
+	 * Translates a {@link CompositionProof} into Isabelle syntax
+	 * @param proof the proof
+	 * @return a String representing the proof, readable by Isabelle
+	 */
 	public String generateIsabelleProof(CompositionProof proof) {
 		proof.setId("0");
 		

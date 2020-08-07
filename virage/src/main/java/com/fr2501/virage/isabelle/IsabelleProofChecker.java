@@ -9,12 +9,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-// TODO: Document
+/**
+ * 
+ * This class connects ViRAGe to Isabelle and automatically invokes
+ * the Isabelle processes required to attempt automatic proof verification.
+ * It is meant to be a singleton, as every instance would spawn new processes.
+ *
+ */
 public class IsabelleProofChecker {
 	private static IsabelleProofChecker instance = null;
 	private static final String SERVER_NAME = "virage_isabelle_server";
-	
-	long timeout = 60000;
 	
 	private static final Logger logger = LogManager.getLogger(IsabelleProofChecker.class);
 	
@@ -22,7 +26,7 @@ public class IsabelleProofChecker {
 	private Process server;
 	private Process client;
 	private OutputStream clientInput;
-	String sessionId;
+	private String sessionId;
 	
 	boolean finished = false;
 	IsabelleEvent lastEvent;
@@ -39,6 +43,19 @@ public class IsabelleProofChecker {
 		}
 	}
 	
+	private synchronized boolean getFinished() {
+		return this.finished;
+	}
+	
+	public synchronized void setFinished(boolean finished) {
+		this.finished = finished;
+	}
+	
+	/**
+	 * Creates singleton instance, if necessary, and returns it.
+	 * 
+	 * @return the instance
+	 */
 	public static IsabelleProofChecker getInstance() {
 		if(instance == null) {
 			instance = new IsabelleProofChecker();
@@ -47,6 +64,14 @@ public class IsabelleProofChecker {
 		return instance;
 	}
 	
+	/**
+	 * Attempts to automatically verify the given Isabelle theory
+	 * @param theory qualifying name for (or path to) an Isabelle theory file
+	 * @return true if verification succeeds, false otherwise
+	 * 
+	 * @throws IOException if file system interaction fails
+	 * @throws InterruptedException if execution is interrupted by the OS
+	 */
 	public boolean verifyTheoryFile(String theory) throws IOException, InterruptedException {
 		if(theory.endsWith(".thy")) {
 			theory = theory.substring(0,theory.length() - ".thy".length());
@@ -67,11 +92,24 @@ public class IsabelleProofChecker {
 		}
 	}
 	
+	/**
+	 * Destroys the current instance and its associated Isabelle processes
+	 */
 	public void destroy() {
 		this.client.destroy();
 		this.server.destroy();
 		
 		instance = null;
+	}
+	
+	/**
+	 * Applies the effects of a given event.
+	 * @param evt the event
+	 */
+	public void notify(IsabelleEvent evt) {
+		logger.debug(evt.toString());
+		this.lastEvent = evt;
+		evt.applyEffects(this);
 	}
 	
 	private void sendCommandAndWaitForTermiantion(String command) throws IOException {
@@ -103,20 +141,5 @@ public class IsabelleProofChecker {
 	private void waitForFinish() {
 		while(!this.getFinished());
 		this.finished = false;
-	}
-	
-	private synchronized boolean getFinished() {
-		return this.finished;
-	}
-	
-	public synchronized void setFinished(boolean finished) {
-		this.finished = finished;
-	}
-
-	
-	public void notify(IsabelleEvent evt) {
-		logger.debug(evt.toString());
-		this.lastEvent = evt;
-		evt.applyEffects(this);
 	}
 }
