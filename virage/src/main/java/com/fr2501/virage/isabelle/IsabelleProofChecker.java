@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fr2501.util.Pair;
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
 
@@ -72,33 +73,38 @@ public class IsabelleProofChecker {
 	}
 	
 	/**
-	 * Attempts to automatically verify the given Isabelle theory
-	 * @param theory qualifying name for (or path to) an Isabelle theory file
-	 * @return true if verification succeeds, false otherwise
+	 * Attempts to automatically verify the given Isabelle theory. Might move the theory to a new file
+	 * in the process because Isabelle purge_theories does not actually lead to reloading if the theory
+	 * is used again and in the same file (might be a bug?).
+	 * 
+	 * @param path to an Isabelle theory file
+	 * @return (true, newFile) if verification succeeds, (false, null) otherwise
 	 * 
 	 * @throws IOException if file system interaction fails
 	 * @throws InterruptedException if execution is interrupted by the OS
 	 */
-	public boolean verifyTheoryFile(String theory) throws IOException, InterruptedException {
-		if(theory.endsWith(".thy")) {
-			theory = theory.substring(0,theory.length() - ".thy".length());
+	public Pair<Boolean,File> verifyTheoryFile(File theory) throws IOException, InterruptedException {
+		String theoryPath = theory.getCanonicalPath();
+		
+		if(theoryPath.endsWith(".thy")) {
+			theoryPath = theoryPath.substring(0,theoryPath.length() - ".thy".length());
 		}
 		
 		logger.info("Starting to verify " + theory + ". This might take some time.");
 		String command = "use_theories {\"session_id\": \"" + this.sessionId + "\", " +
-				"\"theories\": [\"" + theory + "\"]}";  
+				"\"theories\": [\"" + theoryPath + "\"]}";  
 		this.sendCommandAndWaitForTermination(command);
 		
 		String result = this.lastEvent.getValue("ok");
 		if(result.equals("true")) {
 			logger.info("Verification successful.");
-			return true;
+			return new Pair<Boolean,File>(true,theory);
 		} else {
 			logger.info("Verification failed. Attempting to solve automatically by employing different solvers.");
 			String errors = this.lastEvent.getValue("errors");
 			
 			command = "purge_theories {\"session_id\": \"" + this.sessionId + "\", " +
-					"\"theories\": [\"" + theory + "\"]}";  
+					"\"theories\": [\"" + theoryPath + "\"]}";  
 			this.sendCommandAndWaitForOk(command);
 			
 			Pattern pattern = Pattern.compile("line=[0-9]+");
@@ -108,16 +114,17 @@ public class IsabelleProofChecker {
 				String line = errors.substring(matcher.start(), matcher.end());
 				// Isabelle starts counting at 1.
 				int lineNum = Integer.parseInt(line.split("=")[1]) - 1;
-			
-				if(this.replaceSolver(theory, lineNum)) {
+		
+				File newFile = this.replaceSolver(theory, lineNum);
+				if(newFile != null) {
 					// The content of the file has changed, and this can
 					// only happen IsabelleUtils.SOLVERS.length times,
 					// so the recursive call is fine.
-					return this.verifyTheoryFile(theory);
+					return this.verifyTheoryFile(newFile);
 				}
 			}
 			
-			return false;
+			return new Pair<Boolean,File>(false, null);
 		}
 	}
 	
@@ -188,18 +195,38 @@ public class IsabelleProofChecker {
 		this.finished = false;
 	}
 	
-	// TODO: This feature would be really nice to have, but even purging and reusing theories
-	// does not make Isabelle actually reload them, so this is infeasible for now.
-	private boolean replaceSolver(String theoryPath, int lineNum) {
-		return false;
+	// This is the simplest, and probably slowest, solution to the problem that some composition
+	// rules can only be solved by certain solvers, essentially brute-forcing it.
+	// Claim: If a proof method solves a step using a certain composition rule *once*, it will
+	// solve *all* steps using only that rule. TODO: Investigate that.
+	private File replaceSolver(File theory, int lineNum) {
+		//return false;
 		
-		/*SimpleFileReader reader = new SimpleFileReader();
+		SimpleFileReader reader = new SimpleFileReader();
 		SimpleFileWriter writer = new SimpleFileWriter();
 		
-		String filePath = theoryPath + IsabelleUtils.FILE_EXTENSION;
-		
 		try {
-			List<String> lines = reader.readFileByLine(new File(filePath));
+			List<String> lines = reader.readFileByLine(theory);
+			String theoryPath = theory.getCanonicalPath();
+			
+			Pattern pattern = Pattern.compile("_v[0-9]+\\.thy");
+			Matcher matcher = pattern.matcher(theoryPath);
+			
+			int fileVersion = 1;
+			String theoryPathWithoutSuffix = theoryPath.substring(0,theoryPath.length() - 4);
+			if(matcher.find()) {
+				String fileVersionString = theoryPath.substring(matcher.start()+2, matcher.end()-4);
+				fileVersion = Integer.parseInt(fileVersionString) + 1;
+				
+				theoryPathWithoutSuffix = theoryPathWithoutSuffix.substring(0,matcher.start());
+			}
+			
+			
+			String theoryName = theory.getName().substring(0,theory.getName().length()-4);
+			String newTheoryPath = theoryPathWithoutSuffix + "_v" + fileVersion + ".thy";
+			
+			String[] splits = newTheoryPath.split(File.separator);
+			String newTheoryName = splits[splits.length-1].substring(0,splits[splits.length-1].length()-4);
 			
 			String line = lines.get(lineNum);
 			
@@ -211,19 +238,24 @@ public class IsabelleProofChecker {
 					
 					String result = "";
 					for(String s: lines) {
+						if(s.contains(theoryName)) {
+							s = s.replace(theoryName, newTheoryName);
+						}
+						
 						result += s + "\n";
 					}
 					
-					writer.writeToFile(filePath, result);
+					theory.delete();
+					writer.writeToFile(newTheoryPath, result);
 					
-					return true;
+					return new File(newTheoryPath);
 				}
 			}
 
-			return false;			
+			return null;			
 		} catch (IOException e) {
 			// TODO: Auto-generated catch block
-			return false;
+			return null;
 		}
-	}*/
+	}
 }

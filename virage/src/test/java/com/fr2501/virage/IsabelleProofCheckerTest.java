@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fr2501.util.Pair;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
@@ -63,15 +64,6 @@ public class IsabelleProofCheckerTest {
 	}
 	
 	//@Test
-	public void simpleTest() throws IOException, InterruptedException {
-		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
-		
-		assertTrue(checker.verifyTheoryFile("Main"));
-		
-		checker.destroy();
-	}
-	
-	//@Test
 	public void testRandomPropertySets() throws Exception {
 		logger.info("testRandomPropertySets()");
 		final int RUNS = 3;
@@ -103,7 +95,7 @@ public class IsabelleProofCheckerTest {
 				
 				proveClaims(properties, result.getValue().toString());
 				
-				checker.verifyTheoryFile(this.file.getAbsolutePath());
+				checker.verifyTheoryFile(this.file);
 			} else {
 				if(result.getState() == QueryState.TIMEOUT) {
 					timeout++;
@@ -132,7 +124,7 @@ public class IsabelleProofCheckerTest {
 	}
 	
 	// Takes long, not performed by default.
-	// @Test
+	@Test
 	public void simpleFrameworkTest() throws IOException, InterruptedException {
 		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("electoral_module"));
@@ -141,17 +133,19 @@ public class IsabelleProofCheckerTest {
 		proveClaims(properties, "elect_module");
 		
 		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
-		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
+		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
+		assertTrue(result.getFirstValue());
+		this.file = result.getSecondValue();
 		
 		// Should work twice in a row, second one much faster.
-		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
+		assertTrue(checker.verifyTheoryFile(this.file).getFirstValue());
 		
 		checker.destroy();
 	}
 	
 	// Takes long, not performed by default.
 	@Test
-	public void SMCTest() throws IOException, InterruptedException {
+	public void worksWithBlastButNotWithSimpTest() throws IOException, InterruptedException {
 		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("electoral_module"));
 		//properties.add(this.framework.getProperty("electing"));
@@ -160,13 +154,33 @@ public class IsabelleProofCheckerTest {
 		proveClaims(properties, "parallel_comp(elect_module,elect_module,max_aggregator)");
 		
 		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
-		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
+		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
+		assertTrue(result.getFirstValue());
+		this.file = result.getSecondValue();
 		
-		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
-		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
-		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
-		assertTrue(checker.verifyTheoryFile(this.file.getAbsolutePath()));
+		// Should work twice in a row, second one much faster.
+		assertTrue(checker.verifyTheoryFile(this.file).getFirstValue());
+			
+		checker.destroy();
+	}
+	
+	@Test
+	public void SMCTest() throws IOException, InterruptedException {
+		List<Property> properties = new LinkedList<Property>();
+		properties.add(this.framework.getProperty("electoral_module"));
+		properties.add(this.framework.getProperty("electing"));
+		properties.add(this.framework.getProperty("monotone"));
 		
+		proveClaims(properties, SMC);
+		
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
+		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
+		assertTrue(result.getFirstValue());
+		this.file = result.getSecondValue();
+		
+		// Should work twice in a row, second one much faster.
+		assertTrue(checker.verifyTheoryFile(this.file).getFirstValue());
+			
 		checker.destroy();
 	}
 	
