@@ -1,31 +1,30 @@
+% ==== ../virage/src/test/resources/theories/
 % === component_type
 % == aggregator
 % max_aggregator
-% == natural_number
+% == nat
+% max
+% min
+% avg
 % == termination_condition
-% defer_eq_condition(natural_number)
+% defer_eq_condition(nat)
 % == alternative
 % == set
+% == rel
 % == eval_func
 % borda_score
 % copeland_score
 % minimax_score
 % == comparator
 % less
-% max
 % leq
-% min
-% avg
-% less_avg
-% leq_avg
 %
 % === composable_module - electoral_module
 % defer_module
 % elect_module
-% pass_module(natural_number)
-% drop_module(natural_number)
-%% threshold value is omitted here.
-% elim_module(eval_func,comparator)
+% pass_module(nat, rel)
+% drop_module(nat, rel)
+% elimination_module(eval_func, nat, comparator)
 % plurality_module
 % blacks_rule
 % borda_module
@@ -37,21 +36,23 @@
 %
 % === compositional_structure
 % downgrade(electoral_module)
-% sequential_composition(electoral_module, electoral_module)
-% parallel_composition(electoral_module, electoral_module, aggregator)
-% loop_composition(electoral_module, termination_condition)
+% seq_comp(electoral_module, electoral_module)
+% parallel_comp(electoral_module, electoral_module, aggregator)
+% loop_comp(electoral_module, termination_condition)
 %
 % === property
+% aggregator(aggregator)
+% electoral_module(electoral_module)
 % monotone(electoral_module)
 % defer_monotone(electoral_module)
 % defer_lift_invariant(electoral_module)
 % non_blocking(electoral_module)
 % electing(electoral_module)
 % non_electing(electoral_module)
-% defers(electoral_module, natural_number)
-% rejects(electoral_module, natural_number)
-% eliminates(electoral_module, natural_number)
-% elects(electoral_module, natural_number)
+% defers(nat, electoral_module)
+% rejects(nat,electoral_module)
+% eliminates(nat,electoral_module)
+% elects(nat,electoral_module)
 % independent_of(electoral_module, set, alternative)
 % disjoint_compatible(electoral_module, electoral_module)
 % invariant_monotone(electoral_module)
@@ -69,38 +70,52 @@
 %% homogeneous(electoral_module)
 %
 % === composition_rule
-% = blacks_rule.thy
-% definition
-black(sequential_composition(condorcet_nonelecting, borda(_))).
+% = max_aggregator.thy
+% max_aggregator_sound
+aggregator(max_aggregator).
 
-% = borda_module.thy
-% definition
-borda(sequential_composition(elim_module(max,borda_score),elect_module)).
-
-% = classic_nanson.thy
-% definition
-classic_nanson(sequential_composition(loop_composition(elim_module(leq_avg, borda_score), defer_eq_condition(1)), elect_module)).
-
-% = copeland.thy
-% definition
-copeland(sequential_composition(elim_module(max,copeland_score),elect_module)).
-
-% = minimax.thy
-% definition
-minimax(sequential_composition(elim_module(max,minimax_score),elect_module)).
-
-% = nanson_baldwin.thy
-% definition
-nanson_baldwin(sequential_composition(loop_composition(elim_module(min,borda_score),defer_eq_condition(1)),elect_module)).
-
-% = schwartz_rule.thy
-% definition
-schwartz(sequential_composition(loop_composition(elim_module(less_avg,borda_score),defer_eq_condition(1)),elect_module)).
+% = defer_module.thy
+% defer_module_sound
+electoral_module(defer_module).
+% = elect_module.thy
+% elect_module_sound
+electoral_module(elect_module).
+% = plurality_module.thy
+% plurality_module_sound
+electoral_module(plurality_module).
+% = pass_module.thy
+% pass_module_sound
+electoral_module(pass_module(_,_)).
+% = drop_module.thy
+% drop_module_sound
+electoral_module(drop_module(_,_)).
+% = elim_module.thy
+% elim_module_sound
+electoral_module(elimination_module(_,_,_)).
+% = downgrade.thy
+% downgrade_sound
+electoral_module(downgrade(X)) :-
+	electoral_module(X).
+% = sequential_composition.thy
+% seq_creates_modules
+electoral_module(seq_comp(X,Y)) :-
+	electoral_module(X),
+	electoral_module(Y).
+% = loop_composition.thy
+% loop_comp_creates_modules
+electoral_module(loop_comp(X,_)) :-
+	electoral_module(X).
+% = parallel_composition.thy
+% par_creates_modules
+electoral_module(parallel_comp(X,Y,A)) :-
+	electoral_module(X),
+	electoral_module(Y),
+	aggregator(A).
 
 % = electoral_modules.thy
 % definition
 defer_deciding(X) :-
-	defers(X,1),
+	defers(1,X),
 	non_electing(X).
 
 % = condorcet_consistency.thy
@@ -110,30 +125,28 @@ defer_condorcet_consistent(X) :-
 	defer_deciding(X).
 % = elim_module.thy
 % cr_eval_implies_max_elim_is_def_cc
-defer_condorcet_consistent(elim_module(max,F)) :-
-	condorcet_rating(F).
+defer_condorcet_consistent(elimination_module(E,_,max)) :-
+	condorcet_rating(E).
 
 % = copeland.thy
 % copeland_module_is_cc
-condorcet_consistent(X) :-
-	copeland(X).
+condorcet_consistent(seq_comp(elimination_module(copeland_score,max,less),elect_module)).
 % = minimax.thy
 % minimax_module_is_cc
-condorcet_consistent(X) :-
-	minimax(X).
+condorcet_consistent(seq_comp(elimination_module(minimax_score,max,less),elect_module)).
 % = voting_rule_constructors.thy
 % m_defer_cc_implies_elector_m_cc
-condorcet_consistent(sequential_composition(X,elect_module)) :-
+condorcet_consistent(seq_comp(X,elect_module)) :-
 	defer_condorcet_consistent(X).
 % = voting_rule_constructors.thy
 % cr_eval_implies_elect_max_elim_is_cc
-condorcet_consistent(sequential_composition(elim_module(max,F),elect_module)) :-
-	condorcet_rating(F).
+condorcet_consistent(seq_comp(elimination_module(E,_,max),elect_module)) :-
+	condorcet_rating(E).
 
 % = elim_module.thy
 % cr_eval_implies_max_elim_is_ccomp
-condorcet_compatible(elim_module(max,F)) :-
-	condorcet_rating(F).
+condorcet_compatible(elimination_module(E,_,max)) :-
+	condorcet_rating(E).
 
 % = minimax.thy
 % minimax_score_is_condorcet_rating
@@ -141,13 +154,13 @@ condorcet_rating(minimax_score).
 
 % = sequential_composition.thy 
 % monotone_sequence
-monotone(sequential_composition(X,Y)) :-
+monotone(seq_comp(X,Y)) :-
 	defer_lift_invariant(X),
 	non_electing(X),
-	defers(X,1),
+	defers(1,X),
 	electing(Y).
 
-% = electoral_module.thy 
+% = electoral_modules.thy 
 % strict_def_monotone_implies_def_monotone
 defer_monotone(X) :- defer_lift_invariant(X).
 
@@ -156,42 +169,42 @@ defer_monotone(X) :- defer_lift_invariant(X).
 defer_lift_invariant(defer_module).
 % = pass_module.thy
 % pass_module_defer_lift_invariant
-defer_lift_invariant(pass_module(_)).
+defer_lift_invariant(pass_module(_,_)).
 % = drop_module.thy 
 % drop_module_defer_lift_invariant
-defer_lift_invariant(drop_module(_)).
+defer_lift_invariant(drop_module(_,_)).
 % = sequential_composition.thy 
 % defer_lift_invariant_seq
-defer_lift_invariant(sequential_composition(X,Y)) :-
+defer_lift_invariant(seq_comp(X,Y)) :-
 	defer_lift_invariant(X),
 	defer_lift_invariant(Y).
 % = sequential_composition.thy 
 % defer_invariant_monotone_to_defer_lift_invariant
-defer_lift_invariant(sequential_composition(X,Y)) :-
+defer_lift_invariant(seq_comp(X,Y)) :-
 	defer_invariant_monotone(X),
 	non_electing(Y),
-	defers(Y,1),
+	defers(1,Y),
 	defer_monotone(Y).
 % = parallel_composition.thy 
 % defer_lift_invariant_par
-defer_lift_invariant(parallel_composition(X,Y,max_aggregator)) :-
+defer_lift_invariant(parallel_comp(X,Y,max_aggregator)) :-
 	disjoint_compatible(X,Y),
 	defer_lift_invariant(X),
 	defer_lift_invariant(Y).
 % = loop_composition.thy 
 % loop_comp_preserves_defer_lift_invariant
-defer_lift_invariant(loop_composition(X,_)) :-
+defer_lift_invariant(loop_comp(X,_)) :-
 	defer_lift_invariant(X).
 
 % = pass_module.thy
 % pass_module_non_blocking
-non_blocking(pass_module(_)).
+non_blocking(pass_module(_,_)).
 % = downgrade.thy
 % blocking_downgrade
 non_blocking(downgrade(X)) :- electing(X).
 % = sequential_composition.thy 
 % seq_comp_preserves_non_blocking
-non_blocking(sequential_composition(X,Y)) :-
+non_blocking(seq_comp(X,Y)) :-
 	non_blocking(X),
 	non_blocking(Y). 
 % = electoral_modules.thy
@@ -207,8 +220,8 @@ electing(elect_module).
 electing(plurality_module).
 % = sequential_composition.thy
 % seq_electing
-electing(sequential_composition(X,Y)) :-
-	defers(X,1),
+electing(seq_comp(X,Y)) :-
+	defers(1,X),
 	electing(Y).
 
 % = defer_module.thy 
@@ -219,72 +232,73 @@ non_electing(defer_module).
 non_electing(downgrade(_)).
 % = pass_module.thy 
 % pass_module_non_electing
-non_electing(pass_module(_)).
+non_electing(pass_module(_,_)).
 % = drop_module.thy
 % drop_module_non_electing
-non_electing(drop_module(_)).
+non_electing(drop_module(_,_)).
 % = elim_module.thy
 % elim_module_nonelecting
-non_electing(elim_module(_,_)).
+non_electing(elimination_module(_,_,_)).
 % = sequential_composition.thy
 % seq_comp_preserves_non_electing
-non_electing(sequential_composition(X,Y)) :-
+non_electing(seq_comp(X,Y)) :-
 	non_electing(X),
 	non_electing(Y).
 % = parallel_composition.thy 
 % conservative_agg_comp_preserves_non_electing
-non_electing(parallel_composition(X,Y,A)) :-
+non_electing(parallel_comp(X,Y,A)) :-
 	non_electing(X),
 	non_electing(Y),
 	conservative(A).
 % = loop_composition.thy 
 % loop_preserves_non_electing
-non_electing(loop_composition(X,_)) :-
+non_electing(loop_comp(X,_)) :-
 	non_electing(X).
 
 % = pass_module.thy 
 % pass_1_module_defers_1
-defers(pass_module(1), 1).
+defers(1, pass_module(1,_)).
 % = pass_module.thy 
 % pass_2_module_defers_2
-defers(pass_module(2), 2).
+defers(2, pass_module(2,_)).
 % = unproven
 % pass_N_module_defers_N
-defers(pass_module(N), N).
+defers(N, pass_module(N,_)).
 % = sequential_composition.thy 
 % seq_comp_defers_1
-defers(sequential_composition(X,Y), 1) :-
+defers(1,seq_comp(X,Y)) :-
 	non_blocking(X),
 	non_electing(X),
-	defers(Y,1).
-% = unproven
-% loop_defer_eq_N_defers_N
-defers(loop_composition(_, defer_eq_condition(N)),N).
+	defers(1,Y).
+% = loop_composition.thy
+% iterative_elimination_number_of_survivors_for_eliminates
+defers(N, loop_comp(X, defer_eq_condition(N))) :-
+	non_electing(X),
+	eliminates(1,X).
 	
 % = drop_module.thy 
 % drop_2_module_rejects_2
-rejects(drop_module(2), 2).
+rejects(2, drop_module(2,_)).
 % = unproven
 % drop_N_module_rejects_N
-rejects(drop_module(N), N).
+rejects(N, drop_module(N,_)).
 
 % = parallel_composition.thy 
 % eliminates_1_par
-eliminates(parallel_composition(X,Y,max_aggregator),1) :-
-	defers(X,1),
+eliminates(1,parallel_comp(X,Y,max_aggregator)) :-
+	defers(1,X),
 	non_electing(X),
-	rejects(Y,2),
+	rejects(2,Y),
 	disjoint_compatible(X,Y).
 
 % = sequential_composition.thy 
 % disjoint_compatible_seq
 %% The '_' might be wrong, keep that in mind.
-%% Potential solution: Add predicate 'electoral_module'.
-disjoint_compatible(sequential_composition(X,_),Z) :-
+disjoint_compatible(seq_comp(X,_),Z) :-
 	disjoint_compatible(X,Z).
 % = parallel_composition.thy
 % drop_pass_compatible
-disjoint_compatible(drop_module(N), pass_module(N)).
+disjoint_compatible(drop_module(N,R), pass_module(N,R)).
 % = electoral_modules.thy 
 % disjoint_compatible_commutative
 disjoint_compatible(X,Y) :-

@@ -26,7 +26,7 @@ public class SimplePrologParser implements PrologParser {
 			throw new IllegalArgumentException();
 		}
 		
-		PrologPredicate succedent = this.breakdownPredicate(cedents[0]);
+		PrologPredicate succedent = this.parsePredicate(cedents[0]);
 		if(cedents.length == 1) {
 			return new PrologClause(succedent);
 		}
@@ -46,7 +46,8 @@ public class SimplePrologParser implements PrologParser {
 		return res;
 	}
 
-	private PrologPredicate breakdownPredicate(String string) {
+	@Override
+	public PrologPredicate parsePredicate(String string) {
 		if(string.equals("")) throw new IllegalArgumentException();
 		String name = "";
 		List<PrologPredicate> parameters = new LinkedList<PrologPredicate>();
@@ -70,7 +71,7 @@ public class SimplePrologParser implements PrologParser {
 					name += current;
 				} else if(level == 1) {
 					if(current == ',') {
-						parameters.add(this.breakdownPredicate(currentPredicate));
+						parameters.add(this.parsePredicate(currentPredicate));
 						currentPredicate = "";
 						continue;
 					}
@@ -83,7 +84,7 @@ public class SimplePrologParser implements PrologParser {
 		}
 		
 		if(!currentPredicate.equals("")) {
-			parameters.add(this.breakdownPredicate(currentPredicate));
+			parameters.add(this.parsePredicate(currentPredicate));
 		}
 		
 		if(level != 0) {
@@ -117,7 +118,7 @@ public class SimplePrologParser implements PrologParser {
 						currentPredicate += current;
 					}
 					
-					res.add((this.breakdownPredicate(currentPredicate)));
+					res.add((this.parsePredicate(currentPredicate)));
 					currentPredicate = "";
 					continue;
 				}

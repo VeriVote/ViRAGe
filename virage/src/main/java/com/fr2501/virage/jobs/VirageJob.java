@@ -5,6 +5,7 @@ import java.time.Instant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fr2501.virage.core.VirageCore;
 import com.fr2501.virage.core.VirageUserInterface;
 
 /**
@@ -18,6 +19,7 @@ public abstract class VirageJob<T> {
 	private static final Logger logger = LogManager.getLogger(VirageJob.class);
 	private VirageUserInterface issuer;
 	
+	protected VirageCore executingCore;
 	protected VirageJobState state;
 	
 	private static long next_id = 0;
@@ -41,8 +43,10 @@ public abstract class VirageJob<T> {
 	/**
 	 * Runs the job and notifies its issuer on termination.
 	 * Should only be ran after checking isReadyToExecute(), otherwise behaviour is undefined.
+	 * @param core the executing core
 	 */
-	public void execute() {
+	public void execute(VirageCore core) {
+		this.executingCore = core;
 		this.setState(VirageJobState.RUNNING);
 		
 		try {
@@ -63,17 +67,9 @@ public abstract class VirageJob<T> {
 	 */
 	protected abstract void concreteExecute() throws Exception;
 	
-	/**
-	 * Checks whether all requirements for a job are met
-	 * @return true if the job can be run, false otherwise
-	 */
-	public boolean isReadyToExecute() {
-		return true;
-	}
-	
 	public abstract T getResult();
 	
-	public VirageJobState getState() {
+	public synchronized VirageJobState getState() {
 		return this.state;
 	}
 	
@@ -89,6 +85,20 @@ public abstract class VirageJob<T> {
 		}
 		
 		this.state = state;
+	}
+	
+	/**
+	 * Halts execution until this is finished ({@link VirageJobState#FINISHED} or {@link VirageJobState#FAILED})
+	 */
+	public void waitFor() {
+		while(true) {
+			boolean finished = false;
+			synchronized(this) {
+				finished = (this.state != VirageJobState.PENDING && this.getState() != VirageJobState.RUNNING);
+			}
+			
+			if(finished) return;
+		}
 	}
 	
 	@Override

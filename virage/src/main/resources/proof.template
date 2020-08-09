@@ -1,0 +1,8 @@
+theorem $THEOREM_NAME
+	$ASSUMPTIONS
+	shows "$GOAL"
+proof -
+$PROOF_STEPS
+show ?thesis
+	using $SUBGOAL_IDS by (simp add: $MODULE_NAME_def)
+qed

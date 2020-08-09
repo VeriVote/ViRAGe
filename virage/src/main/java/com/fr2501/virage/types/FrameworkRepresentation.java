@@ -19,6 +19,7 @@ public class FrameworkRepresentation {
 	private Logger logger = LogManager.getLogger(FrameworkRepresentation.class);
 	
 	private String absolutePath;
+	private String theoryPath;
 	
 	private Set<ComponentType> componentTypes;
 	private Set<Component> components;
@@ -70,6 +71,14 @@ public class FrameworkRepresentation {
 	
 	public String getAlias() {
 		return this.composableModuleAlias;
+	}
+	
+	public void setTheoryPath(String theoryPath) {
+		this.theoryPath = theoryPath;
+	}
+	
+	public String getTheoryPath() {
+		return this.theoryPath;
 	}
 	
 	public void setAlias(String alias) {

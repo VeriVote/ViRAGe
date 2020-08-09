@@ -12,4 +12,11 @@ public interface PrologParser {
 	 * @return a {@link PrologClause} object representing that clause
 	 */
 	public PrologClause parseSingleClause(String clause);
+	
+	/**
+	 * Parses a single Prolog predicate
+	 * @param predicate the predicate to be parsed
+	 * @return a {@link PrologPredicate} object representing that predicate
+	 */
+	public PrologPredicate parsePredicate(String predicate);
 }

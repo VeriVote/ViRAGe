@@ -21,12 +21,14 @@ public class VirageMain {
 			VirageCore core = new VirageCore(args);
 			Thread coreThread = new Thread(core, "core");
 			coreThread.start();
+			
+			while(true);
 		} catch (Exception e) {
 			logger.fatal("An unrecoverable error has occured.", e);
 			logger.fatal("The program will now terminate.");
 		}
 		
         logger.info("--- Terminating " + _NAME + ".");
-		return;
+        System.exit(1);
 	}
 }

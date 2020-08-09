@@ -1,5 +1,6 @@
 package com.fr2501.virage;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -19,6 +20,7 @@ import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
+import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
@@ -45,16 +47,16 @@ public abstract class CompositionAnalyzerTest {
 	@Test
 	public void testSequentialMajorityComparison() throws ValueNotPresentException, IOException {
 		logger.info("testSequentialMajorityComparison()");
-		String smc = "sequential_composition(" + 
-						"loop_composition(" + 
-							"parallel_composition(" + 
-								"sequential_composition(" + 
-									"pass_module(2)," + 
-									"sequential_composition(" + 
+		String smc = "seq_comp(" + 
+						"loop_comp(" + 
+							"parallel_comp(" + 
+								"seq_comp(" + 
+									"pass_module(2,_)," + 
+									"seq_comp(" + 
 										"downgrade(" + 
 											"plurality_module)," + 
-										"pass_module(1)))," + 
-								"drop_module(2)," + 
+										"pass_module(1,_)))," + 
+								"drop_module(2,_)," + 
 								"max_aggregator)," + 
 							"defer_eq_condition(1))," + 
 						"elect_module)";
@@ -75,8 +77,8 @@ public abstract class CompositionAnalyzerTest {
 					+ "seems to be wrong.");
 		}
 		
-		assert(result.hasValue());
-		assert(result.getValue());
+		assertTrue(result.hasValue());
+		assertTrue(result.getValue());
 	}
 	
 	@Test
@@ -135,7 +137,7 @@ public abstract class CompositionAnalyzerTest {
 	// The SimplePrologCompositionAnalyzer is considered to be correct and
 	// is thus used as a baseline for all other implementations of CompositionAnalyzer.
 	@Test
-	public void testAccordanceWithSPCA() throws ValueNotPresentException, IOException {
+	public void testAccordanceWithSPCA() throws IOException {
 		logger.info("testAccordanceWithSCPA()");
 		SimplePrologCompositionAnalyzer spca = new SimplePrologCompositionAnalyzer(this.framework);
 		CompositionAnalyzer self = this.createInstance();
@@ -224,5 +226,29 @@ public abstract class CompositionAnalyzerTest {
 			logger.debug("\tFailures: " + selfFailure);
 			logger.debug("\tSuccesses: " + selfSuccess);
 		}
+	}
+	
+	@Test
+	public void testSimpleProofs() throws IOException {
+		List<Property> properties = new LinkedList<Property>();
+		properties.add(this.framework.getProperty("monotone"));
+		
+		String votingRule = "seq_comp(pass_module(1,_),elect_module)";
+		
+		CompositionAnalyzer analyzer = this.createInstance();
+		
+		List<CompositionProof> proof = analyzer.proveClaims(DecompositionTree.parseString(votingRule), properties);
+		
+		// Prolog variable names are not always the same.
+		String proofString = proof.get(0).toString().replaceAll(",_[0-9]+", ",_1");
+		
+		String reference = ": monotone(seq_comp(pass_module(1,_1),elect_module)) by monotone_sequence\n" + 
+				"	: defer_lift_invariant(pass_module(1,_1)) by pass_module_defer_lift_invariant\n" + 
+				"	: non_electing(pass_module(1,_1)) by pass_module_non_electing\n" + 
+				"	: defers(1,pass_module(1,_1)) by pass_1_module_defers_1\n" + 
+				"	: electing(elect_module) by elect_module_electing";
+		
+		logger.debug(proofString);
+		assertTrue(proofString.equals(reference));
 	}
 }

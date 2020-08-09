@@ -7,9 +7,8 @@ import com.fr2501.virage.core.VirageUserInterface;
  * A {@link VirageJob} used to terminate the system-
  *
  */
-public class VirageExitJob extends VirageSystemJob<Void> {
+public class VirageExitJob extends VirageJobWithoutExplicitResult {
 	private int statusCode;
-	
 	
 	public VirageExitJob(VirageUserInterface issuer, int statusCode) {
 		super(issuer);
@@ -18,12 +17,7 @@ public class VirageExitJob extends VirageSystemJob<Void> {
 	}
 	
 	@Override
-	public Void getResult() {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
 	public void concreteExecute() {
-		System.exit(this.statusCode);
+		this.executingCore.destroy(this.statusCode);
 	}	
 }

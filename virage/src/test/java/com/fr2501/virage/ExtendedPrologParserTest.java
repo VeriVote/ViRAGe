@@ -53,6 +53,7 @@ public class ExtendedPrologParserTest {
 		logger.info("loadFrameworkFile()");
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
-		parser.parseFramework(new File("src/test/resources/framework.pl"));
+		FrameworkRepresentation framework = parser.parseFramework(new File("src/test/resources/framework.pl"));
+		logger.debug(framework.toString());
 	}
 }
