@@ -137,7 +137,7 @@ public abstract class CompositionAnalyzerTest {
 	// The SimplePrologCompositionAnalyzer is considered to be correct and
 	// is thus used as a baseline for all other implementations of CompositionAnalyzer.
 	@Test
-	public void testAccordanceWithSPCA() throws ValueNotPresentException, IOException {
+	public void testAccordanceWithSPCA() throws IOException {
 		logger.info("testAccordanceWithSCPA()");
 		SimplePrologCompositionAnalyzer spca = new SimplePrologCompositionAnalyzer(this.framework);
 		CompositionAnalyzer self = this.createInstance();

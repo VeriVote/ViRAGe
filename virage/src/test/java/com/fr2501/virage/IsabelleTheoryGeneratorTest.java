@@ -53,7 +53,7 @@ public class IsabelleTheoryGeneratorTest {
 	}
 	
 	@Test
-	public void testSMCProof() throws IOException, MalformedEPLFileException {
+	public void testSMCProof() {
 		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("electoral_module"));
 		properties.add(this.framework.getProperty("monotone"));
