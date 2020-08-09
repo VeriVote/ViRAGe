@@ -171,7 +171,7 @@ public class IsabelleTheoryGenerator {
 			// for the definition of the module, but not used within the proofs.
 			// Add those.
 			for(String importString: moduleDefMap.get(string)) {
-				String importStringWithoutSuffix = importString.replace(".thy", "");
+				String importStringWithoutSuffix = importString.replace(IsabelleUtils.FILE_EXTENSION, "");
 				
 				if(!imports.contains(importStringWithoutSuffix)) {
 					imports += " " + importStringWithoutSuffix + " ";
@@ -194,7 +194,7 @@ public class IsabelleTheoryGenerator {
 			
 			// If the path points to a folder, create a new file.
 			if(file.isDirectory()) {
-				path = path + File.separator + theoryName + ".thy";
+				path = path + File.separator + theoryName + IsabelleUtils.FILE_EXTENSION;
 			}
 			writer.writeToFile(path, fileContents);
 			
@@ -239,9 +239,9 @@ public class IsabelleTheoryGenerator {
 		boolean usingUnprovenFacts = false;
 		Set<String> originStrings = new HashSet<String>();
 		for(String origin: origins) {
-			if(origin.contains(".thy")) {
+			if(origin.contains(IsabelleUtils.FILE_EXTENSION)) {
 				// Isabelle expects imports without suffix.
-				originStrings.add(origin.replace(".thy", ""));
+				originStrings.add(origin.replace(IsabelleUtils.FILE_EXTENSION, ""));
 			} else {
 				// Proof relies on unproven facts, add a comment explaining this.
 				usingUnprovenFacts = true;

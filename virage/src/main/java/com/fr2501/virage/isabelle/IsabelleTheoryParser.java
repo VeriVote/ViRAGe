@@ -16,7 +16,6 @@ import com.fr2501.util.SimpleFileReader;
 public class IsabelleTheoryParser {
 	private static final String DEFINITION = "definition";
 	private static final String FUNCTION = "fun";
-	private static final String ISABELLE_EXTENSION = ".thy";
 	
 	/**
 	 * Extracts all functions and definitions from a folder of Isabelle theories and
@@ -38,7 +37,7 @@ public class IsabelleTheoryParser {
 		
 		SimpleFileReader reader = new SimpleFileReader();
 		for(File file: files) {
-			if(!file.getAbsolutePath().endsWith(ISABELLE_EXTENSION)) {
+			if(!file.getAbsolutePath().endsWith(IsabelleUtils.FILE_EXTENSION)) {
 				continue;
 			}
 			

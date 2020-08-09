@@ -15,6 +15,7 @@ import org.junit.Test;
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
+import com.fr2501.virage.isabelle.IsabelleUtils;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
@@ -95,7 +96,7 @@ public class IsabelleTheoryGeneratorTest {
 		IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator("src/test/resources/theories/", this.framework);
 		
 		try {
-			File file = File.createTempFile("tmp", ".thy");
+			File file = File.createTempFile("tmp", IsabelleUtils.FILE_EXTENSION);
 			file.deleteOnExit();
 			
 			generator.generateTheoryFile(file.getAbsolutePath(), composition, proofs);

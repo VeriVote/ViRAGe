@@ -86,8 +86,8 @@ public class IsabelleProofChecker {
 	public Pair<Boolean,File> verifyTheoryFile(File theory) throws IOException, InterruptedException {
 		String theoryPath = theory.getCanonicalPath();
 		
-		if(theoryPath.endsWith(".thy")) {
-			theoryPath = theoryPath.substring(0,theoryPath.length() - ".thy".length());
+		if(theoryPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
+			theoryPath = theoryPath.substring(0,theoryPath.length() - IsabelleUtils.FILE_EXTENSION.length());
 		}
 		
 		logger.info("Starting to verify " + theory + ". This might take some time.");
@@ -198,7 +198,7 @@ public class IsabelleProofChecker {
 	// This is the simplest, and probably slowest, solution to the problem that some composition
 	// rules can only be solved by certain solvers, essentially brute-forcing it.
 	// Claim: If a proof method solves a step using a certain composition rule *once*, it will
-	// solve *all* steps using only that rule. TODO: Investigate that.
+	// solve *all* steps that only use this rule. TODO: Investigate that.
 	private File replaceSolver(File theory, int lineNum) {
 		//return false;
 		
@@ -209,7 +209,7 @@ public class IsabelleProofChecker {
 			List<String> lines = reader.readFileByLine(theory);
 			String theoryPath = theory.getCanonicalPath();
 			
-			Pattern pattern = Pattern.compile("_v[0-9]+\\.thy");
+			Pattern pattern = Pattern.compile("_v[0-9]+" + IsabelleUtils.FILE_EXTENSION);
 			Matcher matcher = pattern.matcher(theoryPath);
 			
 			int fileVersion = 1;
@@ -223,7 +223,7 @@ public class IsabelleProofChecker {
 			
 			
 			String theoryName = theory.getName().substring(0,theory.getName().length()-4);
-			String newTheoryPath = theoryPathWithoutSuffix + "_v" + fileVersion + ".thy";
+			String newTheoryPath = theoryPathWithoutSuffix + "_v" + fileVersion + IsabelleUtils.FILE_EXTENSION;
 			
 			String[] splits = newTheoryPath.split(File.separator);
 			String newTheoryName = splits[splits.length-1].substring(0,splits[splits.length-1].length()-4);
@@ -254,8 +254,7 @@ public class IsabelleProofChecker {
 
 			return null;			
 		} catch (IOException e) {
-			// TODO: Auto-generated catch block
-			return null;
+			throw new IllegalArgumentException();
 		}
 	}
 }
