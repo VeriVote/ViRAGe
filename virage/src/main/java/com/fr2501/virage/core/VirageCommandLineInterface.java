@@ -1,6 +1,7 @@
 package com.fr2501.virage.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -52,18 +53,38 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 	public void run() {
 		logger.info("Started VirageCommandLineInterface.");
 		
-		System.out.println("Please input the absolute path to an EPL file.");
+		String defaultPath = "./src/test/resources/framework.pl";
+		
+		System.out.println("Please input the path to an EPL file. (default: " +
+				defaultPath + ")");
 		String path = this.scanner.nextLine();
 		
-		VirageParseJob parseJob = new VirageParseJob(this, new File(path));
-		this.core.submit(parseJob);
-		while(parseJob.getState() != VirageJobState.FINISHED) {
-			if(parseJob.getState() == VirageJobState.FAILED) {
-				System.out.println("Please input the absolute path to an EPL file.");
-				path = this.scanner.nextLine();
-				parseJob = new VirageParseJob(this, new File(path));
-				this.core.submit(parseJob);
+		if(path.equals("")) {
+			path = defaultPath;
+		}
+		
+		VirageParseJob parseJob;
+		try {
+			parseJob = new VirageParseJob(this, (new File(path).getCanonicalFile()));
+			
+			this.core.submit(parseJob);
+			while(parseJob.getState() != VirageJobState.FINISHED) {
+				if(parseJob.getState() == VirageJobState.FAILED) {
+
+					System.out.println("Please input the path to an EPL file. (default: " +
+							defaultPath + ")");
+					path = this.scanner.nextLine();
+					
+					if(path.equals("")) {
+						path = defaultPath;
+					}
+					
+					parseJob = new VirageParseJob(this, new File(path));
+					this.core.submit(parseJob);
+				}
 			}
+		} catch (IOException e) {
+			logger.error("Something went wrong while accessing the file system.");
 		}
 		
 		while(true) {

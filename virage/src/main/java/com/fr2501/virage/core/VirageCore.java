@@ -1,6 +1,5 @@
 package com.fr2501.virage.core;
 
-import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -47,7 +46,7 @@ public class VirageCore implements Runnable {
 	
 	private BlockingQueue<VirageJob<?>> jobs;
 
-    public VirageCore(String[] args) throws ParseException, InterruptedException, IOException {
+    public VirageCore(String[] args) {
         logger.info("Initialising VirageCore.");
         
         this.args = args;

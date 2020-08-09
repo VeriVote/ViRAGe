@@ -121,6 +121,9 @@ public class IsabelleProofChecker {
 					// only happen IsabelleUtils.SOLVERS.length times,
 					// so the recursive call is fine.
 					return this.verifyTheoryFile(newFile);
+				} else {
+					logger.info("Automatic verification failed. "
+							+ "You might be able to fix the errors manually within Isabelle.");
 				}
 			}
 			
