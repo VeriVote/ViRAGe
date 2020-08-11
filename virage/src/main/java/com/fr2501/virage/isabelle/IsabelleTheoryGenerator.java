@@ -174,7 +174,7 @@ public class IsabelleTheoryGenerator {
 				String importStringWithoutSuffix = importString.replace(IsabelleUtils.FILE_EXTENSION, "");
 				
 				if(!imports.contains(importStringWithoutSuffix)) {
-					imports += " " + importStringWithoutSuffix + " ";
+					imports += " " + "Voting." + importStringWithoutSuffix + " ";
 				}
 			}
 		}
@@ -248,9 +248,9 @@ public class IsabelleTheoryGenerator {
 			}
 		}
 		
-		res = StringUtils.printCollection(originStrings);
-		// Isabelle expects imports to be space separated.
-		res = res.replace(",", " ");
+		for(String origin: originStrings) {
+			res += "Voting." + origin + " ";
+		}
 		
 		if(usingUnprovenFacts) {
 			res += "\n\n"

@@ -144,7 +144,7 @@ public class VirageCore implements Runnable {
 	    	this.searchManager.addAnalyzer(new SimplePrologCompositionAnalyzer(framework));
 	    	this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
 	    	this.generator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
-	    	this.checker = IsabelleProofChecker.getInstance();
+	    	this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
     	} catch (Exception e) {
     		logger.error("Initialising CompositionAnalyzers failed.", e);
     	}

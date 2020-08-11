@@ -77,7 +77,7 @@ public class IsabelleProofCheckerTest {
 		CompositionAnalyzer analyzer = new AdmissionCheckPrologCompositionAnalyzer(this.framework);
 		analyzer.setTimeout(TIMEOUT);
 		
-		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
 		
 		for(int i=0; i<RUNS; i++) {
 			int amount = (int) (5 * Math.random()) + 1;
@@ -132,7 +132,7 @@ public class IsabelleProofCheckerTest {
 		
 		proveClaims(properties, "elect_module");
 		
-		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
 		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
 		assertTrue(result.getFirstValue());
 		this.file = result.getSecondValue();
@@ -153,7 +153,7 @@ public class IsabelleProofCheckerTest {
 		
 		proveClaims(properties, "parallel_comp(elect_module,elect_module,max_aggregator)");
 		
-		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
 		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
 		assertTrue(result.getFirstValue());
 		this.file = result.getSecondValue();
@@ -173,7 +173,7 @@ public class IsabelleProofCheckerTest {
 		
 		proveClaims(properties, SMC);
 		
-		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
 		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
 		assertTrue(result.getFirstValue());
 		this.file = result.getSecondValue();

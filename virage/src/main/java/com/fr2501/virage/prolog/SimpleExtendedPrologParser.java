@@ -58,6 +58,14 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 		
 		if(representation.get(0).contains(ExtendedPrologStrings.THEORY_PATH_PREFIX)) {
 			String line = representation.get(0);
+			
+			if(line.contains(" - ")) {
+				String[] splits = line.split(" - ");
+				
+				line = splits[0];
+				framework.setSessionName(splits[1]);
+			}
+			
 			line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
 			line = line.replace(ExtendedPrologStrings.COMMENT, "");
 			line = StringUtils.removeWhitespace(line);
