@@ -15,34 +15,13 @@ public class IsabelleTest {
 	
 	@Test
 	public void checkIsabelleAvailability() {
-		String serverSetup = "isabelle server -n \"ViRAGe_test\"";
-		
 		try {
-			Process server = Runtime.getRuntime().exec(serverSetup);
-			
-			BufferedReader serverReader = new BufferedReader(
-					new InputStreamReader(server.getInputStream()));
-			
-			long startTime = System.currentTimeMillis();
-			long wait = 10000;
-			while(!serverReader.ready()) {
-				if(startTime + wait < System.currentTimeMillis()) {
-					logger.error("Isabelle could not be initialized. Make sure "
-							+ "Isabelle is installed and available as command "
-							+ "(e.g. by calling \"isabelle server\" via your preferred "
-							+ "terminal). If this does not work Isabelle is either "
-							+ "not installed or your system is unable to find the "
-							+ "corresponding executable. How to resolve the second case "
-							+ "depends heavily on your OS.");
-					fail();
-				}
-			}
-			
-			
-		} catch (IOException e) {
+			Process isabelle = Runtime.getRuntime().exec("isabelle");
+			isabelle.waitFor();
+		} catch (Exception e) {
 			logger.error("Isabelle could not be initialized. Make sure "
 					+ "Isabelle is installed and available as command "
-					+ "(e.g. by calling \"isabelle server\" via your preferred "
+					+ "(e.g. by calling \"isabelle\" via your preferred "
 					+ "terminal). If this does not work Isabelle is either "
 					+ "not installed or your system is unable to find the "
 					+ "corresponding executable. How to resolve the second case "

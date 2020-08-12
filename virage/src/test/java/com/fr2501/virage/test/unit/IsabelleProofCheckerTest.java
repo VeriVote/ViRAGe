@@ -187,6 +187,6 @@ public class IsabelleProofCheckerTest {
 	protected void proveClaims(List<Property> properties, String composition) {
 		List<CompositionProof> proofs = analyzer.proveClaims(new DecompositionTree(composition), properties);
 			
-		this.file = generator.generateTheoryFile(THEORY_PATH, composition, proofs);
+		this.file = generator.generateTheoryFile(composition, proofs);
 	}
 }

@@ -95,14 +95,6 @@ public class IsabelleTheoryGeneratorTest {
 
 		IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator("src/test/resources/theories/", this.framework);
 		
-		try {
-			File file = File.createTempFile("tmp", IsabelleUtils.FILE_EXTENSION);
-			file.deleteOnExit();
-			
-			generator.generateTheoryFile(file.getAbsolutePath(), composition, proofs);
-		} catch (IOException e) {
-			logger.error("Something went wrong.", e);
-			fail();
-		}
+		generator.generateTheoryFile(composition, proofs);
 	}
 }

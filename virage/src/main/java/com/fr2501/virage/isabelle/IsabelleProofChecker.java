@@ -42,17 +42,16 @@ public class IsabelleProofChecker {
 	boolean finished = false;
 	IsabelleEvent lastEvent;
 	
-	private IsabelleProofChecker(String sessionName, String theoryPath) throws InterruptedException {
+	private IsabelleProofChecker(String sessionName, String theoryPath) {
 		this.runtime = Runtime.getRuntime();
 		
 		try {
-			this.initServer();
-			this.initClient(sessionName, theoryPath);
-			
 			Process process = Runtime.getRuntime().exec("isabelle build -o quick_and_dirty -b -D `pwd`");
 			process.waitFor();
 			
-		} catch (IOException e) {
+			this.initServer();
+			this.initClient(sessionName, theoryPath);
+		} catch (Exception e) {
 			logger.error("Something went wrong.", e);
 			e.printStackTrace();
 		}
@@ -74,12 +73,7 @@ public class IsabelleProofChecker {
 	public static IsabelleProofChecker getInstance(String sessionName, String theoryPath) {
 		if(instance == null || !instance.sessionName.equals(sessionName)
 				|| !instance.theoryPath.equals(theoryPath)) {
-			try {
-				instance = new IsabelleProofChecker(sessionName, theoryPath);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			instance = new IsabelleProofChecker(sessionName, theoryPath);
 		}
 		
 		return instance;
