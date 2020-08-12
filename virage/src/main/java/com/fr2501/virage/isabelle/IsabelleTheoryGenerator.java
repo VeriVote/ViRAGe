@@ -197,13 +197,11 @@ public class IsabelleTheoryGenerator {
 		
 		SimpleFileWriter writer = new SimpleFileWriter();
 		
+		if(!outputPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
+			outputPath = outputPath + theoryName + IsabelleUtils.FILE_EXTENSION;
+		}
+		
 		try {
-			File file = new File(outputPath).getCanonicalFile();
-			
-			// If the path points to a folder, create a new file.
-			if(file.isDirectory()) {
-				outputPath = outputPath + File.separator + theoryName + IsabelleUtils.FILE_EXTENSION;
-			}
 			writer.writeToFile(outputPath, fileContents);
 			
 			return new File(outputPath).getCanonicalFile();

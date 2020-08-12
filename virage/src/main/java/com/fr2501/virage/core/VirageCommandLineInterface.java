@@ -171,7 +171,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		System.out.println("Please input the desired properties (separated by ',').");
 		String propertyString = this.scanner.nextLine();
 		
-		String defaultPath = " ../virage/target/generated-sources";
+		String defaultPath = "./target/generated-sources/";
 		System.out.println("Please specify a directory for the generated theory file. (default: " + defaultPath + ")");
 		String outputPath = this.scanner.nextLine();
 		if(outputPath.equals("")) {
