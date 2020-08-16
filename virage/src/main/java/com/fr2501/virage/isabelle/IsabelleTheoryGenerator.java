@@ -22,7 +22,6 @@ import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
-import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.FrameworkRepresentation;

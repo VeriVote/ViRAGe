@@ -46,7 +46,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 		this.consultKnowledgeBase();
 	}
 	
-	protected void consultKnowledgeBase() throws IOException {
+	protected void consultKnowledgeBase() {
 		this.facade.consultFile(this.framework.getAbsolutePath());
 		this.facade.consultFile(this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
 	}
