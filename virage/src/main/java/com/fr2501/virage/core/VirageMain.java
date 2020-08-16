@@ -12,7 +12,7 @@ public class VirageMain {
 	private final static Logger logger = LogManager.getLogger(VirageMain.class);
 	
 	private final static String _NAME = "ViRAGe";
-	private final static String _VERSION = "0.0.1";
+	private final static String _VERSION = "0.1.0";
 	
 	public static void main(String[] args) {
 		logger.info("--- " + _NAME + " version " + _VERSION);

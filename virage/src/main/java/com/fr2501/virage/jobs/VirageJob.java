@@ -94,7 +94,7 @@ public abstract class VirageJob<T> {
 		while(true) {
 			boolean finished = false;
 			synchronized(this) {
-				finished = (this.state != VirageJobState.PENDING && this.getState() != VirageJobState.RUNNING);
+				finished = (this.getState() != VirageJobState.PENDING && this.getState() != VirageJobState.RUNNING);
 			}
 			
 			if(finished) return;

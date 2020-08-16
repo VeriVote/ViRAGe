@@ -20,6 +20,7 @@ public class FrameworkRepresentation {
 	
 	private String absolutePath;
 	private String theoryPath;
+	private String sessionName;
 	
 	private Set<ComponentType> componentTypes;
 	private Set<Component> components;
@@ -79,6 +80,14 @@ public class FrameworkRepresentation {
 	
 	public String getTheoryPath() {
 		return this.theoryPath;
+	}
+	
+	public void setSessionName(String sessionName) {
+		this.sessionName = sessionName;
+	}
+	
+	public String getSessionName() {
+		return this.sessionName;
 	}
 	
 	public void setAlias(String alias) {

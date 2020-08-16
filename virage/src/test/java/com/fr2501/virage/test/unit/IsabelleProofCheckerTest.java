@@ -1,4 +1,4 @@
-package com.fr2501.virage;
+package com.fr2501.virage.test.unit;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -77,7 +77,7 @@ public class IsabelleProofCheckerTest {
 		CompositionAnalyzer analyzer = new AdmissionCheckPrologCompositionAnalyzer(this.framework);
 		analyzer.setTimeout(TIMEOUT);
 		
-		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
 		
 		for(int i=0; i<RUNS; i++) {
 			int amount = (int) (5 * Math.random()) + 1;
@@ -132,7 +132,7 @@ public class IsabelleProofCheckerTest {
 		
 		proveClaims(properties, "elect_module");
 		
-		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
 		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
 		assertTrue(result.getFirstValue());
 		this.file = result.getSecondValue();
@@ -153,7 +153,7 @@ public class IsabelleProofCheckerTest {
 		
 		proveClaims(properties, "parallel_comp(elect_module,elect_module,max_aggregator)");
 		
-		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
 		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
 		assertTrue(result.getFirstValue());
 		this.file = result.getSecondValue();
@@ -173,7 +173,7 @@ public class IsabelleProofCheckerTest {
 		
 		proveClaims(properties, SMC);
 		
-		IsabelleProofChecker checker = IsabelleProofChecker.getInstance();
+		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
 		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
 		assertTrue(result.getFirstValue());
 		this.file = result.getSecondValue();
@@ -187,6 +187,6 @@ public class IsabelleProofCheckerTest {
 	protected void proveClaims(List<Property> properties, String composition) {
 		List<CompositionProof> proofs = analyzer.proveClaims(new DecompositionTree(composition), properties);
 			
-		this.file = generator.generateTheoryFile(THEORY_PATH, composition, proofs);
+		this.file = generator.generateTheoryFile(composition, proofs);
 	}
 }

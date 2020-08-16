@@ -34,18 +34,24 @@ public class IsabelleProofChecker {
 	private Process server;
 	private Process client;
 	private OutputStream clientInput;
+	
 	private String sessionId;
+	private String sessionName;
+	private String theoryPath;
 	
 	boolean finished = false;
 	IsabelleEvent lastEvent;
 	
-	private IsabelleProofChecker() {
+	private IsabelleProofChecker(String sessionName, String theoryPath) {
 		this.runtime = Runtime.getRuntime();
 		
 		try {
+			Process process = Runtime.getRuntime().exec("isabelle build -o quick_and_dirty -b -D `pwd`");
+			process.waitFor();
+			
 			this.initServer();
-			this.initClient();
-		} catch (IOException e) {
+			this.initClient(sessionName, theoryPath);
+		} catch (Exception e) {
 			logger.error("Something went wrong.", e);
 			e.printStackTrace();
 		}
@@ -64,9 +70,10 @@ public class IsabelleProofChecker {
 	 * 
 	 * @return the instance
 	 */
-	public static IsabelleProofChecker getInstance() {
-		if(instance == null) {
-			instance = new IsabelleProofChecker();
+	public static IsabelleProofChecker getInstance(String sessionName, String theoryPath) {
+		if(instance == null || !instance.sessionName.equals(sessionName)
+				|| !instance.theoryPath.equals(theoryPath)) {
+			instance = new IsabelleProofChecker(sessionName, theoryPath);
 		}
 		
 		return instance;
@@ -183,13 +190,14 @@ public class IsabelleProofChecker {
 		while(!reader.ready());
 	}
 	
-	private void initClient() throws IOException {
+	private void initClient(String sessionName, String theoryPath) throws IOException {
 		this.client = this.runtime.exec("isabelle client -n " + SERVER_NAME);
 		this.clientInput = this.client.getOutputStream();
 		
 		IsabelleClientObserver.start(this, this.client);
 		
-		this.sendCommandAndWaitForTermination("session_start {\"session\": \"HOL\"}");
+		this.sendCommandAndWaitForTermination("session_start {\"session\":\"" + sessionName + "\","
+				+ "\"dirs\": [\"" + theoryPath + "\"]}");
 		this.sessionId = this.lastEvent.getValue("session_id");
 	}
 	

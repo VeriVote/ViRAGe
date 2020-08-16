@@ -23,4 +23,21 @@ public class Pair<S,T> {
 	public T getSecondValue() {
 		return this.secondValue;
 	}
+	
+	@Override
+	public String toString() {
+		String first = "null";
+		String second = "null";
+		
+		if(this.firstValue != null) {
+			first = this.firstValue.toString();
+		}
+		
+		if(this.secondValue != null) {
+			second = this.secondValue.toString();
+		}
+		
+		return "(" + first + ", " + second + ")";
+		
+	}
 }

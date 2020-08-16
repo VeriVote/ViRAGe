@@ -36,13 +36,19 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
 	}
 	
 	@Override
-	protected void consultKnowledgeBase() throws IOException {
+	protected void consultKnowledgeBase() {
 		AdmissionGuardGenerator generator = new AdmissionGuardGenerator(this.framework);
 		
-		File admissionGuards = generator.createAdmissionGuardFile();
-		this.facade.consultFile(admissionGuards.getAbsolutePath());
-		
-		this.facade.consultFile(this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
+		File admissionGuards;
+		try {
+			admissionGuards = generator.createAdmissionGuardFile();
+			
+			this.facade.consultFile(admissionGuards.getAbsolutePath());
+			
+			this.facade.consultFile(this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
+		} catch (IOException e) {
+			logger.error("An error occured.", e);
+		}
 	}
 
 	@Override

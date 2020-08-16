@@ -22,10 +22,10 @@ import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
-import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.Parameterized;
 
 /**
  * 
@@ -49,6 +49,8 @@ public class IsabelleTheoryGenerator {
 	private static final String MODULE_NAME = "Generated_module";
 	private static final String RIGHT_ARROW = " => ";
 	private static final String TYPE = "'a ";
+	
+	private static final String DEFAULT_PATH = "../virage/target/generated-sources";
 	
 	// TODO Find better solution
 	private static final String ASSUMES = "assumes";
@@ -92,6 +94,10 @@ public class IsabelleTheoryGenerator {
 		this.typedVariables = new HashMap<String, String>();
 	}
 	
+	public File generateTheoryFile(String composition, List<CompositionProof> proofs) {
+		return this.generateTheoryFile(composition, proofs, DEFAULT_PATH);
+	}
+	
 	/**
 	 * This method takes a Set of {@link CompositionProof} objects and a composition,
 	 * translates this information to Isabelle syntax and writes its result to a file.
@@ -102,7 +108,10 @@ public class IsabelleTheoryGenerator {
 	 * @param proofs proofs for all the claimed properties
 	 * @return the {@link File} containing the results
 	 */
-	public File generateTheoryFile(String path, String composition, List<CompositionProof> proofs) {
+	public File generateTheoryFile(String composition, 
+			List<CompositionProof> proofs, String outputPath) {
+		composition = StringUtils.removeWhitespace(composition);
+		
 		String theoryName = THEORY_NAME + "_" + theoryCounter;
 		String moduleName = MODULE_NAME + "_" + theoryCounter;
 		theoryCounter++;
@@ -174,7 +183,7 @@ public class IsabelleTheoryGenerator {
 				String importStringWithoutSuffix = importString.replace(IsabelleUtils.FILE_EXTENSION, "");
 				
 				if(!imports.contains(importStringWithoutSuffix)) {
-					imports += " " + importStringWithoutSuffix + " ";
+					imports += " " + "Voting." + importStringWithoutSuffix + " ";
 				}
 			}
 		}
@@ -189,16 +198,14 @@ public class IsabelleTheoryGenerator {
 		
 		SimpleFileWriter writer = new SimpleFileWriter();
 		
+		if(!outputPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
+			outputPath = outputPath + theoryName + IsabelleUtils.FILE_EXTENSION;
+		}
+		
 		try {
-			File file = new File(path).getCanonicalFile();
+			writer.writeToFile(outputPath, fileContents);
 			
-			// If the path points to a folder, create a new file.
-			if(file.isDirectory()) {
-				path = path + File.separator + theoryName + IsabelleUtils.FILE_EXTENSION;
-			}
-			writer.writeToFile(path, fileContents);
-			
-			return new File(path).getCanonicalFile();
+			return new File(outputPath).getCanonicalFile();
 		} catch (IOException e) {
 			logger.error("Something went wrong.", e);
 		}
@@ -213,15 +220,21 @@ public class IsabelleTheoryGenerator {
 	protected void replacePrologVariables(PrologPredicate predicate) {
 		for(int i=0; i<predicate.getParameters().size(); i++) {
 			PrologPredicate child = predicate.getParameters().get(i);
+			
 			if(child.isVariable()) {
-				Component component = framework.getComponent(predicate.getName());
+				Parameterized component = framework.getComponent(predicate.getName());
+				
+				if(component == null) {
+					component = framework.getCompositionalStructure(predicate.getName());
+				}
+				
 				ComponentType childType = component.getParameters().get(i);
 				
 				if(!this.typedVariables.containsKey(childType.getName())) {
 					this.typedVariables.put(childType.getName(), IsabelleUtils.getUnusedVariable(predicate.toString()));
 				} 
 				
-				child.setName(this.typedVariables.get(childType.getName()));
+				child.setName(this.typedVariables.get(childType.getName())); 
 			}
 			
 			this.replacePrologVariables(child);
@@ -248,9 +261,9 @@ public class IsabelleTheoryGenerator {
 			}
 		}
 		
-		res = StringUtils.printCollection(originStrings);
-		// Isabelle expects imports to be space separated.
-		res = res.replace(",", " ");
+		for(String origin: originStrings) {
+			res += "Voting." + origin + " ";
+		}
 		
 		if(usingUnprovenFacts) {
 			res += "\n\n"

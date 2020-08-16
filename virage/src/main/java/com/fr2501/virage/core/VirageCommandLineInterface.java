@@ -171,6 +171,14 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		System.out.println("Please input the desired properties (separated by ',').");
 		String propertyString = this.scanner.nextLine();
 		
+		String defaultPath = "./target/generated-sources/";
+		System.out.println("Please specify a directory for the generated theory file. (default: " + defaultPath + ")");
+		String outputPath = this.scanner.nextLine();
+		if(outputPath.equals("")) {
+			outputPath = defaultPath;
+		}
+		
+		
 		boolean verify = true;
 		while(true) {
 			System.out.println("Shall the resulting theory file be verified automatially? [(y)es/(n)o]");
@@ -201,7 +209,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 			}
 		}
 		
-		VirageIsabelleGenerateJob generateJob = new VirageIsabelleGenerateJob(this, composition, bestProof);
+		VirageIsabelleGenerateJob generateJob = new VirageIsabelleGenerateJob(this, composition, bestProof, outputPath);
 		if(!verify) {
 			return generateJob;
 		}

@@ -1,21 +1,16 @@
-package com.fr2501.virage;
-
-import static org.junit.Assert.fail;
+package com.fr2501.virage.test.unit;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
-import com.fr2501.virage.isabelle.IsabelleUtils;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
@@ -25,8 +20,6 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 
 public class IsabelleTheoryGeneratorTest {
-	private static final Logger logger = LogManager.getLogger(IsabelleTheoryGeneratorTest.class);
-	
 	private static final String PATH = "src/test/resources/framework.pl";
 	private static final String SMC = 	"seq_comp(" + 
 											"loop_comp(" + 
@@ -95,14 +88,6 @@ public class IsabelleTheoryGeneratorTest {
 
 		IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator("src/test/resources/theories/", this.framework);
 		
-		try {
-			File file = File.createTempFile("tmp", IsabelleUtils.FILE_EXTENSION);
-			file.deleteOnExit();
-			
-			generator.generateTheoryFile(file.getAbsolutePath(), composition, proofs);
-		} catch (IOException e) {
-			logger.error("Something went wrong.", e);
-			fail();
-		}
+		generator.generateTheoryFile(composition, proofs);
 	}
 }

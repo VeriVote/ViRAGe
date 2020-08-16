@@ -1,5 +1,6 @@
 package com.fr2501.util;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
@@ -23,7 +24,7 @@ public class SimpleFileWriter {
 	 */
 	public void writeToFile(String path, Collection<?> collection) {
 		try {
-			this.writer = new FileWriter(path);
+			this.writer = new FileWriter(new File(path).getCanonicalFile());
 			
 			for(Object o: collection) {
 				writer.write(o.toString() + "\n");
@@ -46,7 +47,9 @@ public class SimpleFileWriter {
 	 */
 	public void writeToFile(String path, String contents) {
 		try {
-			this.writer = new FileWriter(path);
+			File file = new File(path).getCanonicalFile();
+			
+			this.writer = new FileWriter(file);
 			this.writer.write(contents);
 		} catch (IOException e) {
 			logger.error("Writing to " + path + " was impossible.");

@@ -1,4 +1,4 @@
-package com.fr2501.virage;
+package com.fr2501.virage.test.unit;
 
 import static org.junit.Assert.assertTrue;
 
