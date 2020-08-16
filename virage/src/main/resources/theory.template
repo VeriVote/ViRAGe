@@ -1,0 +1,11 @@
+theory $THEORY_NAME
+imports $IMPORTS
+
+begin
+
+definition $MODULE_NAME :: "$MODULE_PARAM_TYPES 'a Electoral_module" where
+	"$MODULE_NAME $MODULE_PARAMETERS \<equiv> $MODULE_DEF"
+
+$PROOFS
+
+end
