@@ -111,6 +111,8 @@ public class IsabelleTheoryGenerator {
 	 */
 	public File generateTheoryFile(String composition, 
 			List<CompositionProof> proofs, String outputPath) {
+		composition = StringUtils.removeWhitespace(composition);
+		
 		String theoryName = THEORY_NAME + "_" + theoryCounter;
 		String moduleName = MODULE_NAME + "_" + theoryCounter;
 		theoryCounter++;
