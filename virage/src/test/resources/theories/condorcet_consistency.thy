@@ -9,12 +9,29 @@ begin
 
 abbreviation prefer_count where "prefer_count p x y \<equiv> card{i::nat. i < size p \<and> smaller y (p!i) x}"
 
+fun prefer_count_code :: "'a Profile \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> nat" where
+  "prefer_count_code Nil x y = 0" |
+  "prefer_count_code (p#ps) x y = (if smaller y p x then 1 else 0) + prefer_count_code ps x y"
+
+export_code prefer_count_code in Haskell
+
 definition wins :: "'a \<Rightarrow> 'a Profile \<Rightarrow> 'a \<Rightarrow> bool" where
   "wins x p y \<equiv> prefer_count p x y > prefer_count p y x"
+
+definition wins_code :: "'a \<Rightarrow> 'a Profile \<Rightarrow> 'a \<Rightarrow> bool" where
+  "wins_code x p y \<equiv> prefer_count_code p x y > prefer_count_code p y x"
+
+export_code wins_code in Haskell
 
 definition condorcet_winner_in :: "'a set \<Rightarrow> 'a Profile \<Rightarrow> 'a \<Rightarrow> bool" where
   "condorcet_winner_in A p w \<equiv> finite_profile A p \<and>  w \<in> A \<and>
   (\<forall>x \<in> A - {w} . wins w p x)"
+
+definition condorcet_winner_in_code :: "'a set \<Rightarrow> 'a Profile \<Rightarrow> 'a \<Rightarrow> bool" where
+  "condorcet_winner_in_code A p w \<equiv> finite_profile A p \<and>  w \<in> A \<and>
+  (\<forall>x \<in> A - {w} . wins_code w p x)"
+
+export_code condorcet_winner_in_code in Haskell
 
 definition condorcet_consistent :: "'a Electoral_module \<Rightarrow> bool" where
 "condorcet_consistent m \<equiv> electoral_module m \<and> (
