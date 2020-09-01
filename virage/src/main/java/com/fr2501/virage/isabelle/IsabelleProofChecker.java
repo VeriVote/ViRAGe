@@ -46,7 +46,8 @@ public class IsabelleProofChecker {
 		this.runtime = Runtime.getRuntime();
 		
 		try {
-			Process process = Runtime.getRuntime().exec("isabelle build -o quick_and_dirty -b -D `pwd` -o timeout=300");
+			// TODO: Remove quick_and_dirty as soon as possible (or make optional?)
+			Process process = Runtime.getRuntime().exec("isabelle build -o quick_and_dirty -b -D `pwd`");
 			process.waitFor();
 			
 			this.initServer();
