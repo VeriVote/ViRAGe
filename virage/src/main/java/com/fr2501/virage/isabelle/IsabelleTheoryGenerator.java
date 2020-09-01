@@ -199,6 +199,9 @@ public class IsabelleTheoryGenerator {
 		SimpleFileWriter writer = new SimpleFileWriter();
 		
 		if(!outputPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
+			if(!outputPath.endsWith(File.separator)) {
+				outputPath = outputPath + File.separator;
+			}
 			outputPath = outputPath + theoryName + IsabelleUtils.FILE_EXTENSION;
 		}
 		
