@@ -1,12 +1,18 @@
 package com.fr2501.virage.isabelle;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.fr2501.util.SimpleFileReader;
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.PrologPredicate;
 
 /**
@@ -19,6 +25,7 @@ public class IsabelleUtils {
 	 * String used by Isabelle to mark Exceptions in its commands
 	 */
 	public static final String EXCEPTION = "Exception";
+	
 	/**
 	 * File extension for Isabelle theory files.
 	 */
@@ -40,6 +47,10 @@ public class IsabelleUtils {
 	 */
 	public static final String[] SOLVERS = {"simp", "blast", "metis", "fastforce"};
 
+	/**
+	 * String used by Isabelle to denote the line stating imported theories
+	 */
+	public static final String IMPORTS = "imports";
 	
 	/**
 	 * This method tries, along with other things, to match Prolog predicates
