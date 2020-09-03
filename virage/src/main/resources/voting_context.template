@@ -1,0 +1,85 @@
+import scala.util.chaining.scalaUtilChainingOps
+import scala.language.postfixOps
+
+import scala.io.Source
+
+class Bounded[A](entities: List[A]) extends Enum.`enum`[A] {
+
+  val `Enum.enum`: List[A] = entities
+
+  val `Enum.enum_all`: (A => Boolean) => Boolean = (p => entities.forall(p))
+
+  val `Enum.enum_ex`: (A => Boolean) => Boolean = (p => entities.exists(p))
+}
+
+class Equality[A] extends HOL.equal[A] {
+  val `HOL.equal` = (a: A, b: A) => (a == b)
+}
+
+object VotingContext {
+  def readBallotsFromFile(file: String): (List[String], List[Set.seta[(String,String)]]) = {
+    var ballots: List[List[String]] = Nil
+    
+    var candidates: List[String] = Nil
+
+    for(line <- Source.fromFile(file).getLines()) {
+      val strings: Array[String] = line split ';'
+      
+      val stringList = List(strings.toList)
+      if(candidates == Nil) candidates = strings.toList
+      
+      ballots = ballots ::: stringList
+    }
+    
+    (candidates, transformProfileToRelations[String](ballots))
+  }
+  
+  def transformProfileToRelations[A](profile: List[List[A]]): List[Set.seta[(A,A)]] = profile match {
+    case Nil => Nil
+    case p :: ps =>
+      val list = List(Set.seta[(A,A)](buildLinearOrder(p)))
+      list ::: transformProfileToRelations(ps)
+  }
+  
+  def buildLinearOrder[A](ballot: List[A]): List[(A,A)] = ballot match {
+    case Nil => Nil
+    case x :: xs => 
+      var newList = List((x,x))
+      for (next <- xs) {
+        newList = (x,next) :: newList
+      }
+    
+      newList ::: buildLinearOrder(xs)
+  }
+  
+  def prettyPrint(result: (Set.set[String], (Set.set[String], Set.set[String]))): Unit = {
+    val elected = result._1
+    val rejected = result._2._1
+    val deferred = result._2._2
+    
+    print("elected: "); println(elected)
+    print("deferred: "); println(deferred)
+    print("rejected: "); println(rejected)
+  }
+}
+
+object Main {
+  def main(args: Array[String]): Unit = {
+    val (candidates, ballots) = VotingContext.readBallotsFromFile(args(0))
+
+    println("Reading finished.")
+    
+    implicit val bounded = new Bounded[String](candidates) 
+    implicit val eq = new Equality[String]    
+
+    val t1 = System.nanoTime
+
+    val result = $THEORY_NAME.$MODULE_NAME[String](Set.seta[String](candidates), ballots)
+
+    val duration = (System.nanoTime - t1) / 1e9d
+
+    VotingContext.prettyPrint(result)
+    println("time in seconds: " + duration)
+  }
+}
+

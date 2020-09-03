@@ -1,7 +1,10 @@
 package com.fr2501.virage.isabelle;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +23,12 @@ public class IsabelleCodeGenerator {
 	private final SimpleFileReader reader;
 	
 	private final String exportTemplate;
+	private final String rootTemplate;
+	private final String votingContextTemplate;
 	private static final String MODULE_NAME_VAR = "$MODULE_NAME";
 	private static final String LANGUAGE_VAR = "$LANGUAGE";
+	private static final String SESSION_NAME_VAR = "$SESSION_NAME";
+	private static final String THEORY_NAME_VAR = "$THEORY_NAME";
 	
 	public IsabelleCodeGenerator(FrameworkRepresentation framework) throws IOException {
 		this.framework = framework;
@@ -30,9 +37,34 @@ public class IsabelleCodeGenerator {
 		this.parser = new IsabelleTheoryParser();
 		
 		this.exportTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("export_code.template").getFile()));
+		this.rootTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("root.template").getFile()));
+		this.votingContextTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("voting_context.template").getFile()));
 	}
 	
-	public File generateCode(File theory, String language) throws IOException {
+	public File generateScalaCode(File theory) throws IOException, InterruptedException {
+		String moduleName = this.prepareTheoryFile(theory, "Scala");
+		
+		String theoryName = theory.getName().substring(0,
+				theory.getName().length() - (IsabelleUtils.FILE_EXTENSION.length()));
+		
+		String sessionName = this.buildSessionRoot(theoryName, theory);
+		
+		File codeFile = this.invokeIsabelleCodeGeneration(theory, sessionName, theoryName);
+		
+		File votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile.getParentFile());
+		
+		Runtime rt = Runtime.getRuntime();
+		Process process = rt.exec("scalac " + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath()
+										+ " -d " + moduleName + ".jar");
+		process.waitFor();
+		
+		byte[] array = process.getErrorStream().readAllBytes();
+		String s = new String(array);
+		
+		return new File(codeFile.getParent() + moduleName + ".jar");
+	}
+	
+	private String prepareTheoryFile(File theory, String language) throws IOException {
 		String originalName = "";
 		String newName = "";
 		
@@ -70,6 +102,58 @@ public class IsabelleCodeGenerator {
 		SimpleFileWriter writer = new SimpleFileWriter();
 		writer.writeToFile(theory.getCanonicalPath(), lines);
 		
-		return null;
+		return newName;
+	}
+	
+	private String buildSessionRoot(String theoryName, File theory) {
+		// Session names MUST be universally unique, as Isabelle seems to be incapable of 
+		// rebuilding single sessions without triggering full rebuilds.
+		// TODO: Is there a way to do it?
+		String sessionName = "ad_hoc_session_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+		
+		String result = this.rootTemplate.replace(SESSION_NAME_VAR, sessionName).replace(THEORY_NAME_VAR, theoryName);
+		SimpleFileWriter writer = new SimpleFileWriter();
+		writer.writeToFile(theory.getParent() + File.separator + "ROOT", result);
+		
+		return sessionName;
+	}
+	
+	private File invokeIsabelleCodeGeneration(File theory, String sessionName, String theoryName) throws IOException, InterruptedException {
+		String generatedPath = theory.getParent();
+		String theoryPath = new File(this.framework.getTheoryPath()).getCanonicalPath();
+		
+		String isabelleCommand = "isabelle build -e -D " + generatedPath + " -D " + theoryPath + 
+				" -o quick_and_dirty -b " + sessionName;
+		
+		Runtime rt = Runtime.getRuntime();
+		Process process = rt.exec(isabelleCommand);
+		process.waitFor();
+		
+		byte[] array = process.getErrorStream().readAllBytes();
+		String s = new String(array);
+		array = process.getInputStream().readAllBytes();
+		s = new String(array);
+		
+		String codePath = generatedPath + File.separator + "export" + File.separator + sessionName + "." + theoryName + File.separator + "code" + File.separator;
+		File codeDir = new File(codePath);
+		File[] generatedFiles = codeDir.listFiles();
+		
+		// Delete ROOT file, it has served its purpose
+		File root = new File(generatedPath + File.separator + "ROOT");
+		root.delete();
+		
+		// Isabelle puts everything into one file when generating Scala code
+		return generatedFiles[0];
+	}
+	
+	private File prepareVotingContext(String theoryName, String moduleName, File dir) throws IOException {
+		String result = this.votingContextTemplate.replace(THEORY_NAME_VAR, theoryName)
+				.replace(MODULE_NAME_VAR, moduleName);
+		String path = dir.getCanonicalPath() + File.separator + "votingContext.scala";
+		
+		SimpleFileWriter writer = new SimpleFileWriter();
+		writer.writeToFile(path, result);
+		
+		return new File(path);
 	}
 }

@@ -52,13 +52,13 @@ private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTe
 	}
 	
 	@Test
-	public void simpleTest() throws IOException {
+	public void simpleTest() throws IOException, InterruptedException {
 		IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 		
-		String electModule = "elect_module";
+		String module = "elect_module";
 	
-		File theory = this.generator.generateTheoryFile(electModule, new LinkedList<CompositionProof>());
+		File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
 		
-		codeGenerator.generateCode(theory, "Scala");
+		codeGenerator.generateScalaCode(theory);
 	}
 }

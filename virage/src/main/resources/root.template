@@ -1,0 +1,5 @@
+session $SESSION_NAME = Voting +
+  theories
+    $THEORY_NAME
+
+export_files "*:**"
