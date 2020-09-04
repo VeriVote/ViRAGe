@@ -8,6 +8,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fr2501.util.ProcessUtils;
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
@@ -15,6 +19,8 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 
 // TODO: Document
 public class IsabelleCodeGenerator {
+	private static final Logger logger = LogManager.getLogger(IsabelleCodeGenerator.class);
+	
 	private static final String CODE = "_code";
 	private static final String END = "end";
 	
@@ -53,13 +59,13 @@ public class IsabelleCodeGenerator {
 		
 		File votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile.getParentFile());
 		
-		Runtime rt = Runtime.getRuntime();
-		Process process = rt.exec("scalac " + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath()
-										+ " -d " + moduleName + ".jar");
-		process.waitFor();
-		
-		byte[] array = process.getErrorStream().readAllBytes();
-		String s = new String(array);
+		int status = ProcessUtils.runTerminatingProcessAndLogOutput(
+				"scalac " + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath()
+				+ " -d " + moduleName + ".jar");
+
+		if(status != 0) {
+			logger.error("Generated Scala code could not be compiled.");
+		}
 		
 		return new File(codeFile.getParent() + moduleName + ".jar");
 	}
@@ -125,14 +131,13 @@ public class IsabelleCodeGenerator {
 		String isabelleCommand = "isabelle build -e -D " + generatedPath + " -D " + theoryPath + 
 				" -o quick_and_dirty -b " + sessionName;
 		
-		Runtime rt = Runtime.getRuntime();
-		Process process = rt.exec(isabelleCommand);
-		process.waitFor();
+		int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
 		
-		byte[] array = process.getErrorStream().readAllBytes();
-		String s = new String(array);
-		array = process.getInputStream().readAllBytes();
-		s = new String(array);
+		if(status != 0) {
+			logger.error("Isabelle code generation failed.");
+			
+			return null;
+		}
 		
 		String codePath = generatedPath + File.separator + "export" + File.separator + sessionName + "." + theoryName + File.separator + "code" + File.separator;
 		File codeDir = new File(codePath);
