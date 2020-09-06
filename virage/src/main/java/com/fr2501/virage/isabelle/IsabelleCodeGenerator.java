@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import com.fr2501.util.ProcessUtils;
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
+import com.fr2501.virage.types.CompilationFailedException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
 // TODO: Document
@@ -35,6 +37,16 @@ public class IsabelleCodeGenerator {
 	private static final String LANGUAGE_VAR = "$LANGUAGE";
 	private static final String SESSION_NAME_VAR = "$SESSION_NAME";
 	private static final String THEORY_NAME_VAR = "$THEORY_NAME";
+	private static final String PARAM_VAR = "$PARAMS";
+	
+	// TODO: This feels too "hard-coded"
+	private static final String ENUM = "Enum";
+	private static final String ENUM_COMMENT = "ENUM";
+	private static final String EQUALITY = "HOL.equal";
+	private static final String EQUALITY_COMMENT = "EQUALITY";
+	private static final String RELATION = "(x: Set.set[(A, A)]):";
+	private static final String OPTION1_COMMENT = "OPTION1";
+	private static final String OPTION2_COMMENT = "OPTION2";
 	
 	public IsabelleCodeGenerator(FrameworkRepresentation framework) throws IOException {
 		this.framework = framework;
@@ -47,7 +59,7 @@ public class IsabelleCodeGenerator {
 		this.votingContextTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("voting_context.template").getFile()));
 	}
 	
-	public File generateScalaCode(File theory) throws IOException, InterruptedException {
+	public File generateScalaCode(File theory) throws IOException, InterruptedException, CompilationFailedException {
 		String moduleName = this.prepareTheoryFile(theory, "Scala");
 		
 		String theoryName = theory.getName().substring(0,
@@ -57,17 +69,33 @@ public class IsabelleCodeGenerator {
 		
 		File codeFile = this.invokeIsabelleCodeGeneration(theory, sessionName, theoryName);
 		
-		File votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile.getParentFile());
+		// First, try using implicit values only
+		File votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile, false);
+		
+		String jarPath = codeFile.getParent() + File.separator + moduleName + ".jar";
 		
 		int status = ProcessUtils.runTerminatingProcessAndLogOutput(
 				"scalac " + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath()
-				+ " -d " + moduleName + ".jar");
+				+ " -d " + jarPath);
 
 		if(status != 0) {
 			logger.error("Generated Scala code could not be compiled.");
+			
+			// Implicit values did not work, try setting them explicitly.
+			votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile, true);
+			
+			status = ProcessUtils.runTerminatingProcessAndLogOutput(
+					"scalac " + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath()
+					+ " -d " + jarPath);
+			
+			if(status != 0) {
+				throw new CompilationFailedException();
+			}
 		}
 		
-		return new File(codeFile.getParent() + moduleName + ".jar");
+		logger.info("Scala compilation was successful. The jar file can be found at " + jarPath);
+		
+		return new File(jarPath);
 	}
 	
 	private String prepareTheoryFile(File theory, String language) throws IOException {
@@ -151,9 +179,47 @@ public class IsabelleCodeGenerator {
 		return generatedFiles[0];
 	}
 	
-	private File prepareVotingContext(String theoryName, String moduleName, File dir) throws IOException {
+	private File prepareVotingContext(String theoryName, String moduleName, File moduleFile,
+			boolean setExplicitParameters) throws IOException {
+		File dir = moduleFile.getParentFile();
+		
+		SimpleFileReader reader = new SimpleFileReader();
+		String code = reader.readFile(moduleFile);
+		
 		String result = this.votingContextTemplate.replace(THEORY_NAME_VAR, theoryName)
 				.replace(MODULE_NAME_VAR, moduleName);
+		
+		boolean containsEnum = code.contains(ENUM);
+		boolean containsEquality = code.contains(EQUALITY);
+		boolean requiresRelation = code.contains(RELATION);
+		
+		List<String> parameters = new LinkedList<String>();
+		
+		// Enable the required optional parts of the votingContextTemplate
+		if(containsEnum) {
+			result = result.replace("/* " + ENUM_COMMENT, "").replace(ENUM_COMMENT + " */", "");
+			parameters.add("bounded");
+		}
+		
+		if(containsEquality) {
+			result = result.replace("/* " + EQUALITY_COMMENT, "").replace(EQUALITY_COMMENT + " */", "");
+			parameters.add("eq");
+		}
+		
+		if(requiresRelation) {
+			result = result.replace("/* " + OPTION2_COMMENT, "").replace(OPTION2_COMMENT + " */", "");
+		} else {
+			result = result.replace("/* " + OPTION1_COMMENT, "").replace(OPTION1_COMMENT + " */", "");
+		}
+		
+		String paramString = "";
+		// setExplicitParameters is required for now. Sometimes, Scala uses the implicit values,
+		// sometimes they have to be given explicitly, so we want to try both.
+		if(!parameters.isEmpty() && setExplicitParameters) {
+			paramString = "(" + StringUtils.printCollection(parameters) + ")";
+		}
+		result = result.replace(PARAM_VAR, paramString);
+		
 		String path = dir.getCanonicalPath() + File.separator + "votingContext.scala";
 		
 		SimpleFileWriter writer = new SimpleFileWriter();

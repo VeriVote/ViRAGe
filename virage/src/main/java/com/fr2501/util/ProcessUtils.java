@@ -9,6 +9,8 @@ public class ProcessUtils {
 	private static final Logger logger = LogManager.getLogger(ProcessUtils.class);
 	
 	public static int runTerminatingProcessAndLogOutput(String command) throws IOException, InterruptedException {
+		logger.info("Running command: " + command);
+		
 		Runtime rt = Runtime.getRuntime();
 		
 		Process p = rt.exec(command);

@@ -3,6 +3,7 @@ import scala.language.postfixOps
 
 import scala.io.Source
 
+/* ENUM
 class Bounded[A](entities: List[A]) extends Enum.`enum`[A] {
 
   val `Enum.enum`: List[A] = entities
@@ -10,11 +11,14 @@ class Bounded[A](entities: List[A]) extends Enum.`enum`[A] {
   val `Enum.enum_all`: (A => Boolean) => Boolean = (p => entities.forall(p))
 
   val `Enum.enum_ex`: (A => Boolean) => Boolean = (p => entities.exists(p))
-}
+} 
+ENUM */
 
+/* EQUALITY
 class Equality[A] extends HOL.equal[A] {
   val `HOL.equal` = (a: A, b: A) => (a == b)
 }
+EQUALITY */
 
 object VotingContext {
   def readBallotsFromFile(file: String): (List[String], List[Set.seta[(String,String)]]) = {
@@ -69,12 +73,24 @@ object Main {
 
     println("Reading finished.")
     
+    /* ENUM
     implicit val bounded = new Bounded[String](candidates) 
-    implicit val eq = new Equality[String]    
+    ENUM */
+    /* EQUALITY
+    implicit val eq = new Equality[String]
+    EQUALITY */
 
     val t1 = System.nanoTime
 
-    val result = $THEORY_NAME.$MODULE_NAME[String](Set.seta[String](candidates), ballots)
+    /* OPTION1
+    val module = $THEORY_NAME.$MODULE_NAME[String]$PARAMS(Set.seta[String](candidates))
+    OPTION1 */
+    /* OPTION2
+    val relation = $THEORY_NAME.$MODULE_NAME[String]$PARAMS(ballots(1))
+    val module = relation(Set.seta[String](candidates))
+    OPTION2 */
+
+    val result = module(ballots)
 
     val duration = (System.nanoTime - t1) / 1e9d
 

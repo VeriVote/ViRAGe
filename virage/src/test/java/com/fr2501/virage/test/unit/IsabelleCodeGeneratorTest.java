@@ -16,6 +16,7 @@ import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
+import com.fr2501.virage.types.CompilationFailedException;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
@@ -32,14 +33,13 @@ private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTe
 													"pass_module(2,_)," + 
 													"seq_comp(" + 
 														"downgrade(" + 
-															"plurality_module)," + 
+															"plurality_module_code)," + 
 														"pass_module(1,_)))," + 
 												"drop_module(2,_)," + 
 												"max_aggregator)," + 
 											"defer_eq_condition(1))," + 
 										"elect_module)";
 	private FrameworkRepresentation framework;
-	private CompositionAnalyzer analyzer;
 	private IsabelleTheoryGenerator generator;
 	
 	@Before
@@ -47,15 +47,36 @@ private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTe
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		this.framework = parser.parseFramework(new File(EPL_PATH));
 		
-		this.analyzer = new SimplePrologCompositionAnalyzer(this.framework);
 		this.generator = new IsabelleTheoryGenerator(THEORY_PATH, this.framework);
 	}
 	
 	@Test
-	public void simpleTest() throws IOException, InterruptedException {
+	public void electTest() throws IOException, InterruptedException, CompilationFailedException {
 		IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 		
 		String module = "elect_module";
+	
+		File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
+		
+		codeGenerator.generateScalaCode(theory);
+	}
+	
+	@Test
+	public void pluralityTest() throws IOException, InterruptedException, CompilationFailedException {
+		IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
+		
+		String module = "plurality_module_code";
+	
+		File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
+		
+		codeGenerator.generateScalaCode(theory);
+	}
+	
+	@Test
+	public void smcTest() throws IOException, InterruptedException, CompilationFailedException {
+		IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
+		
+		String module = SMC;
 	
 		File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
 		
