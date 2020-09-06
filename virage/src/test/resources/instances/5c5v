@@ -1,0 +1,5 @@
+Carol;Alice;Bob;Eve;Dan
+Alice;Bob;Eve;Dan;Carol
+Alice;Eve;Dan;Bob;Carol
+Dan;Carol;Eve;Bob;Alice
+Alice;Eve;Carol;Dan;Bob
