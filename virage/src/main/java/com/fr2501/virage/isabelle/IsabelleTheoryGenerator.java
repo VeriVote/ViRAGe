@@ -116,6 +116,8 @@ public class IsabelleTheoryGenerator {
 			List<CompositionProof> proofs, String outputPath) {
 		composition = StringUtils.removeWhitespace(composition);
 		
+		this.typedVariables = new HashMap<String,String>();
+		
 		String theoryName = THEORY_NAME + "_" + theoryCounter;
 		String moduleName = MODULE_NAME + "_" + theoryCounter;
 		theoryCounter++;
