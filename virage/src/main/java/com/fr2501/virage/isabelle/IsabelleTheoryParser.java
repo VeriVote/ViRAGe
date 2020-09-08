@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.StringUtils;
@@ -20,7 +18,6 @@ import com.fr2501.util.StringUtils;
 public class IsabelleTheoryParser {
 	private static final String DEFINITION = "definition";
 	private static final String FUNCTION = "fun";
-	private static final String EQUIV = "\\<equiv>";
 	
 	/**
 	 * Extracts all functions and definitions from a folder or a single file 
