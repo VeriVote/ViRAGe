@@ -16,7 +16,7 @@ import com.fr2501.virage.core.VirageUserInterface;
  * @param <T> the result type
  */
 public abstract class VirageJob<T> {
-	private static final Logger logger = LogManager.getLogger(VirageJob.class);
+	protected static final Logger logger = LogManager.getLogger(VirageJob.class);
 	private VirageUserInterface issuer;
 	
 	protected VirageCore executingCore;

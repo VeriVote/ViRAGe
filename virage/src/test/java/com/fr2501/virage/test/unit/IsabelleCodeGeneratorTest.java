@@ -20,6 +20,7 @@ import com.fr2501.virage.types.CompilationFailedException;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.IsabelleBuildFailedException;
 
 public class IsabelleCodeGeneratorTest {
 private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTest.class);
@@ -51,7 +52,7 @@ private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTe
 	}
 	
 	@Test
-	public void electTest() throws IOException, InterruptedException, CompilationFailedException {
+	public void electTest() throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
 		IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 		
 		String module = "elect_module";
@@ -62,7 +63,7 @@ private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTe
 	}
 	
 	@Test
-	public void dropTest() throws IOException, InterruptedException, CompilationFailedException {
+	public void dropTest() throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
 		IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 		
 		String module = "drop_module(1,_)";
@@ -71,7 +72,7 @@ private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTe
 	}
 	
 	@Test
-	public void pluralityTest() throws IOException, InterruptedException, CompilationFailedException {
+	public void pluralityTest() throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
 		IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 		
 		String module = "plurality_module";
@@ -82,7 +83,7 @@ private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTe
 	}
 	
 	@Test
-	public void smcTest() throws IOException, InterruptedException, CompilationFailedException {
+	public void smcTest() throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
 		IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 		
 		String module = SMC;

@@ -22,5 +22,4 @@ public class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<
 		
 		this.result = this.generator.generateScalaCode(this.composition);
 	}
-
 }

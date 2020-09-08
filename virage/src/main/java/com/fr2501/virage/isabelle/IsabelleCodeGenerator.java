@@ -20,6 +20,7 @@ import com.fr2501.util.StringUtils;
 import com.fr2501.virage.types.CompilationFailedException;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.IsabelleBuildFailedException;
 
 // TODO: Document
 public class IsabelleCodeGenerator {
@@ -67,13 +68,13 @@ public class IsabelleCodeGenerator {
 		this.votingContextTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("voting_context.template").getFile()));
 	}
 	
-	public File generateScalaCode(String composition) throws IOException, InterruptedException, CompilationFailedException {
+	public File generateScalaCode(String composition) throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
 		File theory = this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
 		
 		return this.generateScalaCode(theory);
 	}
 	
-	public File generateScalaCode(File theory) throws IOException, InterruptedException, CompilationFailedException {
+	public File generateScalaCode(File theory) throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
 		String moduleName = this.prepareTheoryFile(theory, "Scala");
 		
 		String theoryName = theory.getName().substring(0,
@@ -187,7 +188,7 @@ public class IsabelleCodeGenerator {
 		return sessionName;
 	}
 	
-	private File invokeIsabelleCodeGeneration(File theory, String sessionName, String theoryName) throws IOException, InterruptedException {
+	private File invokeIsabelleCodeGeneration(File theory, String sessionName, String theoryName) throws IOException, InterruptedException, IsabelleBuildFailedException {
 		String generatedPath = theory.getParent();
 		String theoryPath = new File(this.framework.getTheoryPath()).getCanonicalPath();
 		
@@ -199,7 +200,7 @@ public class IsabelleCodeGenerator {
 		if(status != 0) {
 			logger.error("Isabelle code generation failed.");
 			
-			return null;
+			throw new IsabelleBuildFailedException();
 		}
 		
 		String codePath = generatedPath + File.separator + "export" + File.separator + sessionName + "." + theoryName + File.separator + "code" + File.separator;
