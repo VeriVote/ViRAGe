@@ -1,13 +1,14 @@
 package com.fr2501.virage.isabelle;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +18,7 @@ import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.types.CompilationFailedException;
+import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
 // TODO: Document
@@ -27,6 +29,9 @@ public class IsabelleCodeGenerator {
 	private static final String END = "end";
 	
 	private final FrameworkRepresentation framework;
+	private Map<String,String> codeReplacements;
+	
+	private final IsabelleTheoryGenerator generator;
 	private final IsabelleTheoryParser parser;
 	private final SimpleFileReader reader;
 	
@@ -53,10 +58,19 @@ public class IsabelleCodeGenerator {
 		
 		this.reader = new SimpleFileReader();
 		this.parser = new IsabelleTheoryParser();
+		this.generator = new IsabelleTheoryGenerator(framework);
+		
+		this.initCodeReplacements();
 		
 		this.exportTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("export_code.template").getFile()));
 		this.rootTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("root.template").getFile()));
 		this.votingContextTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("voting_context.template").getFile()));
+	}
+	
+	public File generateScalaCode(String composition) throws IOException, InterruptedException, CompilationFailedException {
+		File theory = this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
+		
+		return this.generateScalaCode(theory);
 	}
 	
 	public File generateScalaCode(File theory) throws IOException, InterruptedException, CompilationFailedException {
@@ -98,6 +112,21 @@ public class IsabelleCodeGenerator {
 		return new File(jarPath);
 	}
 	
+	private void initCodeReplacements() throws IOException {
+		Map<String,String> replacements = new HashMap<String,String>();
+		Map<String,String> functionsAndDefinitions = this.parser.getAllFunctionsAndDefinitions(this.framework.getTheoryPath());
+		
+		Set<String> names = functionsAndDefinitions.keySet();
+		
+		for(String name: names) {
+			if(names.contains(name + CODE)) {
+				replacements.put(name, name + CODE);
+			}
+		}
+		
+		this.codeReplacements = replacements;
+	}
+	
 	private String prepareTheoryFile(File theory, String language) throws IOException {
 		String originalName = "";
 		String newName = "";
@@ -114,8 +143,14 @@ public class IsabelleCodeGenerator {
 		
 		String originalDefinition = this.parser.getDefinitionByName(originalName, theory);
 		
-		// TODO: Replace definitions with code-rewrites if necessary
 		String newDefinition = originalDefinition.replaceAll(originalName, newName);
+		
+		for(String old: this.codeReplacements.keySet()) {
+			// TODO: This is wrong if names are not prefix free. 
+			// This should be fixed if this solution stays permanently,
+			// but it is only meant as a temporary fix anyway.
+			newDefinition = newDefinition.replaceAll(old, this.codeReplacements.get(old));
+		}
 		
 		String exportCommand = this.exportTemplate.replace(MODULE_NAME_VAR, newName);
 		exportCommand = exportCommand.replace(LANGUAGE_VAR, language);

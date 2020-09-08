@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
+import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.jobs.VirageJob;
@@ -40,8 +41,9 @@ public class VirageCore implements Runnable {
 	
 	private ExtendedPrologParser extendedPrologParser = null;
 	private VirageSearchManager searchManager = null;
-	private IsabelleTheoryGenerator generator = null;
+	private IsabelleTheoryGenerator theoryGenerator = null;
 	private IsabelleProofChecker checker = null;
+	private IsabelleCodeGenerator codeGenerator = null;
 	private FrameworkRepresentation framework = null;
 	
 	private BlockingQueue<VirageJob<?>> jobs;
@@ -62,11 +64,15 @@ public class VirageCore implements Runnable {
     }
     
     public IsabelleTheoryGenerator getIsabelleTheoryGenerator() {
-    	return this.generator;
+    	return this.theoryGenerator;
     }
     
     public IsabelleProofChecker getIsabelleProofChecker() {
     	return this.checker;
+    }
+    
+    public IsabelleCodeGenerator getIsabelleCodeGenerator() {
+    	return this.codeGenerator;
     }
     
     public FrameworkRepresentation getFrameworkRepresentation() {
@@ -143,8 +149,9 @@ public class VirageCore implements Runnable {
     	try {
 	    	this.searchManager.addAnalyzer(new SimplePrologCompositionAnalyzer(framework));
 	    	this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
-	    	this.generator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
+	    	this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
 	    	this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
+	    	this.codeGenerator = new IsabelleCodeGenerator(this.framework);
     	} catch (Exception e) {
     		logger.error("Initialising CompositionAnalyzers failed.", e);
     	}

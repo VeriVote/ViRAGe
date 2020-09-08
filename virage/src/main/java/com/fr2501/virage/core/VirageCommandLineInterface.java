@@ -14,6 +14,7 @@ import com.fr2501.virage.jobs.VirageAnalyzeJob;
 import com.fr2501.virage.jobs.VirageExitJob;
 import com.fr2501.virage.jobs.VirageGenerateJob;
 import com.fr2501.virage.jobs.VirageIsabelleGenerateJob;
+import com.fr2501.virage.jobs.VirageIsabelleGenerateScalaJob;
 import com.fr2501.virage.jobs.VirageIsabelleVerifyJob;
 import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
@@ -88,8 +89,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		}
 		
 		while(true) {
-			System.out.println("Do you want to (g)enerate a composition, (a)nalyze one, (p)rove a claim"
-					+ " or generate (I)sabelle code?");
+			System.out.println("Do you want to (g)enerate a composition, (a)nalyze one, (p)rove a claim,\n"
+					+ "generate (I)sabelle code or generate (S)cala code?");
 			String arg = this.scanner.nextLine();
 			
 			VirageJob<?> job = null;
@@ -102,7 +103,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 				job = this.createProofQuery();
 			} else if(arg.equals("I")) {
 				job = this.createIsabelleQuery();
-			} else if(arg.equals("exit")) {
+			} else if(arg.equals("S")) {
+				job = this.createCodeGenerationQuery();
+			}else if(arg.equals("exit")) {
 				job = new VirageExitJob(this, 0);
 				this.core.submit(job);
 				return;
@@ -218,5 +221,13 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		
 		VirageIsabelleVerifyJob verifyJob = new VirageIsabelleVerifyJob(this, generateJob.getResult());
 		return verifyJob;
+	}
+	
+	private VirageIsabelleGenerateScalaJob createCodeGenerationQuery() {
+		System.out.println("Please input a composition (in Prolog format).");
+		String composition = this.scanner.nextLine();
+		
+		VirageIsabelleGenerateScalaJob res = new VirageIsabelleGenerateScalaJob(this, composition);
+		return res;
 	}
 }

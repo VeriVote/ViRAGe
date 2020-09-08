@@ -68,6 +68,10 @@ public class IsabelleTheoryGenerator {
 	
 	private Map<String, String> typedVariables;
 	
+	public IsabelleTheoryGenerator(FrameworkRepresentation framework) {
+		this(framework.getTheoryPath(), framework);
+	}
+	
 	public IsabelleTheoryGenerator(String theoryPath, FrameworkRepresentation framework) {
 		if(THEORY_TEMPLATE.equals("")) {
 			InputStream theoryTemplateStream = this.getClass().getClassLoader().getResourceAsStream("theory.template");

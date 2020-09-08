@@ -33,7 +33,7 @@ private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTe
 													"pass_module(2,_)," + 
 													"seq_comp(" + 
 														"downgrade(" + 
-															"plurality_module_code)," + 
+															"plurality_module)," + 
 														"pass_module(1,_)))," + 
 												"drop_module(2,_)," + 
 												"max_aggregator)," + 
@@ -62,10 +62,19 @@ private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTe
 	}
 	
 	@Test
+	public void dropTest() throws IOException, InterruptedException, CompilationFailedException {
+		IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
+		
+		String module = "drop_module(1,_)";
+		
+		codeGenerator.generateScalaCode(module);
+	}
+	
+	@Test
 	public void pluralityTest() throws IOException, InterruptedException, CompilationFailedException {
 		IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 		
-		String module = "plurality_module_code";
+		String module = "plurality_module";
 	
 		File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
 		
