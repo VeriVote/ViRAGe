@@ -22,7 +22,11 @@ import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
 
-// TODO: Document
+/**
+ * 
+ * This class is used to engage the Isabelle Code Generation process and produce Scala code.
+ *
+ */
 public class IsabelleCodeGenerator {
 	private static final Logger logger = LogManager.getLogger(IsabelleCodeGenerator.class);
 	
@@ -68,12 +72,34 @@ public class IsabelleCodeGenerator {
 		this.votingContextTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("voting_context.template").getFile()));
 	}
 	
+	/**
+	 * Creates an ad-hoc Isabelle session, invokes code generation, attempts to compile the result
+	 * and returns an executable jar file if possible.
+	 * 
+	 * @param composition the composition to be translated to Scala code
+	 * @return an executable Scala-jar file
+	 * @throws IOException if file system interaction goes wrong
+	 * @throws InterruptedException if processes are interrupted prematurely
+	 * @throws CompilationFailedException if Scala compilation fails
+	 * @throws IsabelleBuildFailedException if Isabelle code generation fails
+	 */
 	public File generateScalaCode(String composition) throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
 		File theory = this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
 		
 		return this.generateScalaCode(theory);
 	}
 	
+	/**
+	 * Creates an ad-hoc Isabelle session, invokes code generation, attempts to compile the result
+	 * and returns an executable jar file if possible.
+	 * 
+	 * @param theory the theory file, containing exactly one definition, on which code generation shall take place
+	 * @return an executable Scala-jar file if possible
+	 * @throws IOException if file system interaction goes wrong
+	 * @throws InterruptedException if processes are interrupted prematurely
+	 * @throws CompilationFailedException if Scala compilation fails
+	 * @throws IsabelleBuildFailedException if Isabelle code generation fails
+	 */
 	public File generateScalaCode(File theory) throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
 		String moduleName = this.prepareTheoryFile(theory, "Scala");
 		

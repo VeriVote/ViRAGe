@@ -8,6 +8,14 @@ import org.apache.logging.log4j.Logger;
 public class ProcessUtils {
 	private static final Logger logger = LogManager.getLogger(ProcessUtils.class);
 	
+	/**
+	 * Executes a terminating command and logs it outputs, stderr foing to logger.warn(), stdout to logger.info().
+	 * <b>Does not return if the command is non-terminating!</b>
+	 * @param command the command to be executed (as is, i.e. the String has to contain all parameters etc.)
+	 * @return the exit code (usually 0 on success, but depending on the command)
+	 * @throws IOException if reading the outputs fails
+	 * @throws InterruptedException if command execution is interrupted
+	 */
 	public static int runTerminatingProcessAndLogOutput(String command) throws IOException, InterruptedException {
 		logger.info("Running command: " + command);
 		

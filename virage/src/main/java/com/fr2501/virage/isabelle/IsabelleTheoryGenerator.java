@@ -105,11 +105,11 @@ public class IsabelleTheoryGenerator {
 	/**
 	 * This method takes a Set of {@link CompositionProof} objects and a composition,
 	 * translates this information to Isabelle syntax and writes its result to a file.
-	 * @param path a path to the folder to which the result shall be written. 
-	 * If path points to a file, this file will be overwritten and the name will most probably
-	 * not correspond to the theory inside, so Isabelle won't be able to verify it.
 	 * @param composition the composition
 	 * @param proofs proofs for all the claimed properties
+	 * @param outputPath a path to the folder to which the result shall be written. 
+	 * If path points to a file, this file will be overwritten and the name will most probably
+	 * not correspond to the theory inside, so Isabelle won't be able to verify it.
 	 * @return the {@link File} containing the results
 	 */
 	public File generateTheoryFile(String composition, 

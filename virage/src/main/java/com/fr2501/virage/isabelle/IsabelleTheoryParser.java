@@ -92,7 +92,13 @@ public class IsabelleTheoryParser {
 		return res;
 	}
 	
-	// TODO: Document
+	/**
+	 * Extracts a definition from an Isabelle file
+	 * @param name the name of the definition
+	 * @param theory the theory file
+	 * @return a String representing the definition
+	 * @throws IOException if file system interaction fails
+	 */
 	public String getDefinitionByName(String name, File theory) throws IOException {
 		SimpleFileReader reader = new SimpleFileReader();
 		

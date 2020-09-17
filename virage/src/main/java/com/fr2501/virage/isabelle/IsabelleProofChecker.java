@@ -68,8 +68,9 @@ public class IsabelleProofChecker {
 	
 	/**
 	 * Creates singleton instance, if necessary, and returns it.
-	 * 
-	 * @return the instance
+	 * @param sessionName a name for the session to be created
+	 * @param theoryPath the path to the theory folder
+	 * @return the instance 
 	 */
 	public static IsabelleProofChecker getInstance(String sessionName, String theoryPath) {
 		if(instance == null || !instance.sessionName.equals(sessionName)
@@ -85,7 +86,7 @@ public class IsabelleProofChecker {
 	 * in the process because Isabelle purge_theories does not actually lead to reloading if the theory
 	 * is used again and in the same file (might be a bug?).
 	 * 
-	 * @param path to an Isabelle theory file
+	 * @param theory an Isabelle theory file
 	 * @return (true, newFile) if verification succeeds, (false, null) otherwise
 	 * 
 	 * @throws IOException if file system interaction fails

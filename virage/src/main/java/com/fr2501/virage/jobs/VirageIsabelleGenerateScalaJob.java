@@ -5,6 +5,11 @@ import java.io.File;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 
+/**
+ * 
+ * A {@link VirageJob} used to invoke Isabelle code generation.
+ *
+ */
 public class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<File> {
 	private IsabelleCodeGenerator generator;
 	
