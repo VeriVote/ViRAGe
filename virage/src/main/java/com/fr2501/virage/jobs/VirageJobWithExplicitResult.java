@@ -22,7 +22,12 @@ public abstract class VirageJobWithExplicitResult<T> extends VirageJob<T> {
 	public String toString() {
 		String res = super.toString();
 		
-		res += "Result: " + this.result.toString() + "\n";
+		String resultString = "null";
+		if(this.result != null) {
+			resultString = this.result.toString();
+		}
+		
+		res += "Result: " + resultString + "\n";
 		
 		return res;
 	}

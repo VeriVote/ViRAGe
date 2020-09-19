@@ -9,8 +9,14 @@ begin
 fun Minimax_score :: "'a Eval_function" where
   "Minimax_score x A p = Min{prefer_count p x y |y . y \<in> A-{x}}"
 
+fun Minimax_score_code :: "'a Eval_function" where
+  "Minimax_score_code x A p = Min{prefer_count_code p x y |y . y \<in> A-{x}}"
+
 definition Minimax :: "'a Electoral_module" where
   "Minimax \<equiv> elector(MAX_Eliminator Minimax_score)"
+
+definition Minimax_code :: "'a Electoral_module" where
+  "Minimax_code \<equiv> elector(MAX_Eliminator Minimax_score_code)"
 
 (***************)
 (*** Lemmata ***)
@@ -120,7 +126,7 @@ qed
 corollary minimax_module_is_cc:
   shows "condorcet_consistent Minimax"
 proof -
-  have "\<not> defer_condorcet_consistent (\<lambda>A. MAX_Eliminator Minimax_score (A::'a set)) \<or> condorcet_consistent (Minimax::'a set \<Rightarrow> (_ \<times> _) set list \<Rightarrow> _ set \<times> _ set \<times> _ set)"
+  have "\<not> defer_condorcet_consistent (\<lambda>A. MAX_Eliminator Minimax_score (A::'a set)) \<or> condorcet_consistent (Minimax ::'a set \<Rightarrow> (_ \<times> _) set list \<Rightarrow> _ set \<times> _ set \<times> _ set)"
     by (simp add: Minimax_def m_defer_cc_implies_elector_m_cc)
   then show ?thesis
     using minimax_score_is_condorcet_rating cr_eval_implies_max_elim_is_def_cc by blast

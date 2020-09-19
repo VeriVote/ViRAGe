@@ -64,6 +64,8 @@ qed
 (***************************************)
 (*** Lemmas for Parallel Composition ***)
 (***************************************)
+declare [[ smt_timeout = 600 ]]
+
 
 lemma max_agg_eq_result:
   assumes module_m: "electoral_module m" and

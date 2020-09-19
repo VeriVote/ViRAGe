@@ -9,8 +9,16 @@ begin
 fun Copeland_score :: "'a Eval_function" where
   "Copeland_score x A p = card{y \<in> A . wins x p y} - card{y \<in> A . wins y p x} "
 
+fun Copeland_score_code :: "'a Eval_function" where
+  "Copeland_score_code x A p = card{y \<in> A . wins_code x p y} - card{y \<in> A . wins_code y p x} "
+
 definition Copeland :: "'a Electoral_module" where
   "Copeland \<equiv> elector(MAX_Eliminator Copeland_score)"
+
+definition Copeland_code :: "'a Electoral_module" where
+  "Copeland_code \<equiv> elector(MAX_Eliminator Copeland_score_code)"
+
+export_code Copeland_code in Haskell
 
 (***************)
 (*** Lemmata ***)
@@ -115,10 +123,10 @@ proof (unfold condorcet_rating_def, auto)
   qed
 qed
 
-corollary compeland_module_is_cc:
+corollary copeland_module_is_cc:
   shows "condorcet_consistent Copeland"
 proof -
-  have "\<not> defer_condorcet_consistent (\<lambda>A. MAX_Eliminator Copeland_score (A::'a set)) \<or> condorcet_consistent (Copeland::'a set \<Rightarrow> (_ \<times> _) set list \<Rightarrow> _ set \<times> _ set \<times> _ set)"
+  have "\<not> defer_condorcet_consistent (\<lambda>A. MAX_Eliminator Copeland_score (A::'a set)) \<or> condorcet_consistent (Copeland ::'a set \<Rightarrow> (_ \<times> _) set list \<Rightarrow> _ set \<times> _ set \<times> _ set)"
     by (simp add: Copeland_def m_defer_cc_implies_elector_m_cc)
   then show ?thesis
     using copeland_score_is_condorcet_rating cr_eval_implies_max_elim_is_def_cc by blast
