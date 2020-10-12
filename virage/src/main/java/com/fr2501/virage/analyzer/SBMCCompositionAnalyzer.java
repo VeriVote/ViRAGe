@@ -1,9 +1,18 @@
 package com.fr2501.virage.analyzer;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.fr2501.util.ThreadSignal;
+import com.fr2501.virage.prolog.QueryState;
+import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
@@ -39,7 +48,32 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 	}
 	
 	@Override
-	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, List<Property> properties) {
+	public List<SearchResult<BooleanWithUncertainty>> analyzeComposition(DecompositionTree composition, List<Property> properties) {
+		List<SearchResult<BooleanWithUncertainty>> res = new LinkedList<SearchResult<BooleanWithUncertainty>>();
+		
+		for(Property property: properties) {
+			List<Property> singleProp = new LinkedList<Property>();
+			singleProp.add(property);
+			
+			List<SearchResult<BooleanWithUncertainty>> superResults = super.analyzeComposition(composition, singleProp);
+			
+			// Single property, single result.
+			SearchResult<BooleanWithUncertainty> superResult = superResults.get(0);
+			
+			if(superResult.hasValue() && superResult.getValue() == BooleanWithUncertainty.TRUE) {
+				res.add(superResult);
+			} else {
+				res.add(this.runSBMCCheck(composition, property));
+			}
+			
+		}
+		
+		return res;
+	}
+	
+	private SearchResult<BooleanWithUncertainty> runSBMCCheck(DecompositionTree composition, Property property) {
+		final BlockingQueue<SearchResult<BooleanWithUncertainty>> queue = new LinkedBlockingQueue<SearchResult<BooleanWithUncertainty>>();
+		
 		// Make sure BEAST is started and ready.
 		GUIController tmpController = null;
 		while(tmpController == null) {
@@ -47,11 +81,11 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 		}
 		final GUIController controller = tmpController;
 		
-		final ThreadSignal signal = new ThreadSignal();
-		
 		Platform.runLater(new Runnable() {
 			@Override
-			public void run() {
+			public synchronized void run() {
+				SearchResult<BooleanWithUncertainty> res = new SearchResult<BooleanWithUncertainty>(QueryState.FAILED, null);
+				
 				ElectionDescription elecDesc = new ElectionDescription("tmp", new Preference(), new CandidateList());
 
 				String code = "unsigned int[C] voting(unsigned int amountVotes, unsigned int votes[amountVotes][C]) {\n\treturn votes[0];\n}";
@@ -60,11 +94,9 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 				elecDesc.setLockedPositions(0,lines[0].length(),code.length()-1);
 				elecDesc.setNotNew();
 				
-				System.out.println(String.join("\n", elecDesc.getComplexCode()));
-				
 				controller.getCodeArea().setNewElectionDescription(elecDesc);
 				
-				controller.getPostConditionsArea().replaceText("(1==1);");
+				controller.getPostConditionsArea().replaceText("(1==0);");
 				
 				for(ChildTreeItem child: controller.getProperties().get(0).getSubItems()) {
 					if(child instanceof CheckChildTreeItem) {
@@ -83,29 +115,47 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 					
 					List<Result> results = checker.checkPropertiesForDescription(elecDesc, properties, parameter);
 					
-					while(results == null) { /* no-op */ };
+					//while(results == null) { /* no-op */ };
 					
-					boolean allDone = false;
-					while(!allDone) {
-						allDone = true;
-						for(Result res: results) {
-							allDone = allDone && res.isFinished(); 
+					// There will always be exactly one result, so this is fine.
+					Result result = results.get(0);
+					
+					while(true) {
+						synchronized(result) {
+							if(result.isFinished()) {
+								break;
+							}
 						}
 					}
 					
-					System.out.println(results.toString());
-					signal.finish();
+					boolean success = result.isSuccess();
+					
+					if(success) {
+						res.setValue(BooleanWithUncertainty.MAYBE_NO_COUNTEREXAMPLE_FOUND);
+					} else {
+						res.setValue(BooleanWithUncertainty.FALSE);
+					}
+					
+					res.setState(QueryState.SUCCESS);
+					
+					try {
+						queue.put(res);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		});
-
-		signal.waitFor();
-		return null;
-	}
-
-	@Override
-	public SearchResult<DecompositionTree> generateComposition(List<Property> properties) {
-		// TODO Auto-generated method stub
+		
+		try {
+			return queue.take();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// TODO
 		return null;
 	}
 }

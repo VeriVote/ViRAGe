@@ -13,6 +13,10 @@ public class ThreadSignal {
 	}
 	
 	public void waitFor() {
-		while(!this.getFinished()) { /* no-op */ };
+		while(true) {
+			synchronized(this) {
+				if(this.getFinished()) return;
+			}
+		}
 	}
 }

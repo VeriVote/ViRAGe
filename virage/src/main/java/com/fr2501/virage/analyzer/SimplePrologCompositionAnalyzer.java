@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.JPLFacade;
 import com.fr2501.virage.prolog.PrologProof;
+import com.fr2501.virage.prolog.QueryState;
+import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.DecompositionTree;
@@ -57,7 +59,9 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 	}
 	
 	@Override
-	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, List<Property> properties) {		
+	public List<SearchResult<BooleanWithUncertainty>> analyzeComposition(DecompositionTree composition, List<Property> properties) {		
+		List<SearchResult<BooleanWithUncertainty>> result = new LinkedList<SearchResult<BooleanWithUncertainty>>();
+		
 		for(Property property: properties) {
 			if(property.getArity() != 1) {
 				throw new IllegalArgumentException();
@@ -66,13 +70,27 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 		
 		String votingRule = composition.toString();
 		
-		List<String> propertyStrings = new LinkedList<String>();
 		for(Property property: properties) {
-			propertyStrings.add(property.getInstantiatedString(votingRule));
+			String query = property.getInstantiatedString(votingRule);
+			SearchResult<Boolean> queryResult = this.facade.factQuery(query);
+			
+			SearchResult<BooleanWithUncertainty> searchResult;
+			if(queryResult.hasValue()) {
+				boolean original = queryResult.getValue();
+				
+				if(original) {
+					searchResult = new SearchResult<BooleanWithUncertainty>(QueryState.SUCCESS, BooleanWithUncertainty.TRUE);
+				} else {
+					searchResult = new SearchResult<BooleanWithUncertainty>(QueryState.SUCCESS, BooleanWithUncertainty.MAYBE);
+				}
+			} else {
+				searchResult = new SearchResult<BooleanWithUncertainty>(QueryState.FAILED, null);
+			}
+			
+			result.add(searchResult);
 		}
-		String query = StringUtils.printCollection(propertyStrings);
 		
-		return this.facade.factQuery(query);
+		return result;
 	}
 
 	@Override

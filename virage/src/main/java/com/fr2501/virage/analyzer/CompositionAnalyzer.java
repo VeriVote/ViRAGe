@@ -3,6 +3,7 @@ package com.fr2501.virage.analyzer;
 import java.util.List;
 
 import com.fr2501.virage.prolog.PrologProof;
+import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
@@ -24,9 +25,9 @@ public interface CompositionAnalyzer {
 	 * Checks whether a given composition satisfies the specified property set.
 	 * @param composition the composition
 	 * @param properties the property set
-	 * @return a {@link SearchResult} containing the result
+	 * @return a List of {@link SearchResult}s, ordered according to the properties.
 	 */
-	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, List<Property> properties);
+	public List<SearchResult<BooleanWithUncertainty>> analyzeComposition(DecompositionTree composition, List<Property> properties);
 	
 	/**
 	 * Tries to derive a new composition satisfying the specified property set.

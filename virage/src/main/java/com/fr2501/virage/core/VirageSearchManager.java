@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
+import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
@@ -42,12 +43,12 @@ public class VirageSearchManager {
 	 * @param properties the desired property set
 	 * @return a list of results, ordered in the same way as the analyzers
 	 */
-	public List<SearchResult<Boolean>> analyzeComposition(DecompositionTree composition, List<Property> properties) {
+	public List<List<SearchResult<BooleanWithUncertainty>>> analyzeComposition(DecompositionTree composition, List<Property> properties) {
 		// TODO Parallelize.
-		List<SearchResult<Boolean>> results = new LinkedList<SearchResult<Boolean>>();
+		List<List<SearchResult<BooleanWithUncertainty>>> results = new LinkedList<List<SearchResult<BooleanWithUncertainty>>>();
 		
 		for(int i=0; i<this.analyzers.size(); i++) {
-			SearchResult<Boolean> result = this.analyzers.get(i).analyzeComposition(composition, properties);
+			List<SearchResult<BooleanWithUncertainty>> result = this.analyzers.get(i).analyzeComposition(composition, properties);
 			results.add(result);
 			logger.debug(result);
 		}

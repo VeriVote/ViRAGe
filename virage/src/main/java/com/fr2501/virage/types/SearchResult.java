@@ -18,8 +18,12 @@ public class SearchResult<T> {
 		this.value = value;
 	}
 	
-	public QueryState getState() {
+	public synchronized QueryState getState() {
 		return this.state;
+	}
+	
+	public synchronized void setState(QueryState state) {
+		this.state = state;
 	}
 	
 	/**
@@ -31,6 +35,10 @@ public class SearchResult<T> {
 			throw new ValueNotPresentException();
 		}
 		return this.value;
+	}
+	
+	public void setValue(T value) {
+		this.value = value;
 	}
 	
 	/**
