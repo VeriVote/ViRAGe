@@ -1,10 +1,15 @@
 package com.fr2501.virage.analyzer;
 
+import java.awt.Toolkit;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.fr2501.util.ThreadSignal;
 import com.fr2501.virage.beast.ElectionDescriptionFactory;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
@@ -16,75 +21,97 @@ import edu.pse.beast.datatypes.electioncheckparameter.TimeOut;
 import edu.pse.beast.datatypes.electiondescription.ElectionDescription;
 import edu.pse.beast.datatypes.propertydescription.FormalPropertiesDescription;
 import edu.pse.beast.datatypes.propertydescription.PreAndPostConditionsDescription;
+import edu.pse.beast.datatypes.propertydescription.SymbolicVariableList;
 import edu.pse.beast.highlevel.BEASTCommunicator;
 import edu.pse.beast.highlevel.MainApplicationClass;
+import edu.pse.beast.highlevel.javafx.CheckChildTreeItem;
+import edu.pse.beast.highlevel.javafx.ChildTreeItem;
 import edu.pse.beast.highlevel.javafx.GUIController;
 import edu.pse.beast.highlevel.javafx.ParentTreeItem;
 import edu.pse.beast.highlevel.javafx.PublicParentTreeItem;
 import edu.pse.beast.propertychecker.PropertyChecker;
 import edu.pse.beast.propertychecker.Result;
+import edu.pse.beast.types.cbmctypes.inputplugins.Preference;
+import edu.pse.beast.types.cbmctypes.outputplugins.CandidateList;
+import javafx.application.Platform;
 
 public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnalyzer {
 	public SBMCCompositionAnalyzer(FrameworkRepresentation framework) throws IOException {
 		super(framework);
-	}
-	
-	@Override
-	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, List<Property> properties) {
-		PropertyChecker checker = new PropertyChecker("CBMC");
 		
 		final class BEASTMainRunner implements Runnable {
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				MainApplicationClass.main(new String[0]);
 			}	
 		}
 		
 		Thread beastThread = new Thread(new BEASTMainRunner());
 		beastThread.start();
-		
-		// TODO
-		String codeString = "";
-        ElectionDescription electionDesc = ElectionDescriptionFactory.getElectionDescriptionFromString(codeString);
-        
-        List<Integer> amountOfVoters = new LinkedList<Integer>();
-        List<Integer> amountOfCandidates = new LinkedList<Integer>();
-        List<Integer> amountOfSeats = new LinkedList<Integer>();
-        ElectionCheckParameter parameter = new ElectionCheckParameter(amountOfVoters, amountOfCandidates, 
-        		amountOfSeats, new TimeOut(TimeUnit.MILLISECONDS, DEFAULT_TIMEOUT), 1, "");
-		
-		for(Property property: properties) {
-			List<Property> singleProperty = new LinkedList<Property>();
-			singleProperty.add(property);
-			
-			SearchResult<Boolean> result = super.analyzeComposition(composition, singleProperty);
-			
-			if(!result.hasValue() || !result.getValue()) {
-				// No exact solution was found, try SBMC.
-		        List<ParentTreeItem> propertiesForSBMC = new LinkedList<ParentTreeItem>();
-		        
-		        // Build ParentTreeItem for the Property.
-		        // This seems to be really tedious, as it's essentially
-		        // generating useless UI elements just to be able to
-		        // call one of BEAST's functions, but I've not found
-		        // any other way.
-		        FormalPropertiesDescription preCondition = new FormalPropertiesDescription("");
-		        FormalPropertiesDescription postCondition = new FormalPropertiesDescription("");
-		        FormalPropertiesDescription boundedVars  = new FormalPropertiesDescription("");
-		        
-		        PreAndPostConditionsDescription desc = new PreAndPostConditionsDescription("", preCondition,
-		        		postCondition, boundedVars, null);
-		        ParentTreeItem propertyItem = new PublicParentTreeItem(desc);
-		        
-		        propertiesForSBMC.add(propertyItem);
-		        
-		        List<Result> sbmcResult = checker.checkPropertiesForDescription(electionDesc, propertiesForSBMC, parameter);
-			}
+	}
+	
+	@Override
+	public SearchResult<Boolean> analyzeComposition(DecompositionTree composition, List<Property> properties) {
+		// Make sure BEAST is started and ready.
+		GUIController tmpController = null;
+		while(tmpController == null) {
+			tmpController = GUIController.getController();
 		}
+		final GUIController controller = tmpController;
 		
-		BEASTCommunicator a = null;
+		final ThreadSignal signal = new ThreadSignal();
 		
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				ElectionDescription elecDesc = new ElectionDescription("tmp", new Preference(), new CandidateList());
+
+				String code = "unsigned int[C] voting(unsigned int amountVotes, unsigned int votes[amountVotes][C]) {\n\treturn votes[0];\n}";
+				String[] lines = code.split("\n");
+				elecDesc.setCode(code);
+				elecDesc.setLockedPositions(0,lines[0].length(),code.length()-1);
+				elecDesc.setNotNew();
+				
+				System.out.println(String.join("\n", elecDesc.getComplexCode()));
+				
+				controller.getCodeArea().setNewElectionDescription(elecDesc);
+				
+				controller.getPostConditionsArea().replaceText("(1==1);");
+				
+				for(ChildTreeItem child: controller.getProperties().get(0).getSubItems()) {
+					if(child instanceof CheckChildTreeItem) {
+						child.setSelected(true);
+					} else {
+						child.setSelected(false);
+					}
+				}
+				
+				elecDesc = controller.getElectionDescription();
+				List<ParentTreeItem> properties = controller.getProperties();
+				ElectionCheckParameter parameter = controller.getParameter();
+				
+				if(!BEASTCommunicator.checkForErrors(elecDesc, properties)) {
+					PropertyChecker checker = new PropertyChecker("CBMC");
+					
+					List<Result> results = checker.checkPropertiesForDescription(elecDesc, properties, parameter);
+					
+					while(results == null) { /* no-op */ };
+					
+					boolean allDone = false;
+					while(!allDone) {
+						allDone = true;
+						for(Result res: results) {
+							allDone = allDone && res.isFinished(); 
+						}
+					}
+					
+					System.out.println(results.toString());
+					signal.finish();
+				}
+			}
+		});
+
+		signal.waitFor();
 		return null;
 	}
 
