@@ -1,34 +1,22 @@
 package com.fr2501.virage.analyzer;
 
-import java.awt.Toolkit;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.fr2501.util.ThreadSignal;
-import com.fr2501.virage.beast.ElectionDescriptionFactory;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
 import edu.pse.beast.datatypes.electioncheckparameter.ElectionCheckParameter;
-import edu.pse.beast.datatypes.electioncheckparameter.TimeOut;
 import edu.pse.beast.datatypes.electiondescription.ElectionDescription;
-import edu.pse.beast.datatypes.propertydescription.FormalPropertiesDescription;
-import edu.pse.beast.datatypes.propertydescription.PreAndPostConditionsDescription;
-import edu.pse.beast.datatypes.propertydescription.SymbolicVariableList;
 import edu.pse.beast.highlevel.BEASTCommunicator;
 import edu.pse.beast.highlevel.MainApplicationClass;
 import edu.pse.beast.highlevel.javafx.CheckChildTreeItem;
 import edu.pse.beast.highlevel.javafx.ChildTreeItem;
 import edu.pse.beast.highlevel.javafx.GUIController;
 import edu.pse.beast.highlevel.javafx.ParentTreeItem;
-import edu.pse.beast.highlevel.javafx.PublicParentTreeItem;
 import edu.pse.beast.propertychecker.PropertyChecker;
 import edu.pse.beast.propertychecker.Result;
 import edu.pse.beast.types.cbmctypes.inputplugins.Preference;
