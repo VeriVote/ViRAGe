@@ -27,7 +27,7 @@ public class VirageAnalyzeJob extends VirageJobWithExplicitResult<List<List<Sear
 	public VirageAnalyzeJob(VirageUserInterface issuer, String tree, List<String> properties) {
 		super(issuer);
 		
-		this.tree = new DecompositionTree(tree);
+		this.tree = DecompositionTree.parseString(tree);
 		this.propertyStrings = properties;
 	}
 	

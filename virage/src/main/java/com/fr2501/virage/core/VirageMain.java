@@ -24,7 +24,7 @@ public class VirageMain {
 			
 			while(true);
 		} catch (Exception e) {
-			logger.fatal("An unrecoverable error has occured.", e);
+			logger.fatal("An unrecoverable error has occurred.", e);
 			logger.fatal("The program will now terminate.");
 		}
 		

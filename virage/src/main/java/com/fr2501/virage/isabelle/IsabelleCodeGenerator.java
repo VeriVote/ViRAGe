@@ -19,6 +19,7 @@ import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.types.CompilationFailedException;
 import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
 
@@ -72,6 +73,36 @@ public class IsabelleCodeGenerator {
 		this.votingContextTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("voting_context.template").getFile()));
 	}
 	
+	// TODO: DOC
+	public File generateCode(String composition, IsabelleCGLanguage language) throws IOException, InterruptedException, IsabelleBuildFailedException {
+		File theory = this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
+		
+		return this.generateCode(theory, language);
+	}
+	
+	public File generateCode(DecompositionTree composition, IsabelleCGLanguage language) throws IOException, InterruptedException, IsabelleBuildFailedException {
+		return this.generateCode(composition.toString(), language);
+	}
+	
+	public File generateCode(File theory, IsabelleCGLanguage language) throws IOException, InterruptedException, IsabelleBuildFailedException {
+		String moduleName = this.prepareTheoryFile(theory, language);
+		
+		String theoryName = theory.getName().substring(0,
+				theory.getName().length() - (IsabelleUtils.FILE_EXTENSION.length()));
+		
+		String sessionName = this.buildSessionRoot(theoryName, theory);
+		
+		try {
+			File codeFile = this.invokeIsabelleCodeGeneration(theory, sessionName, theoryName);
+			
+			return codeFile;
+		} catch (IsabelleBuildFailedException e) {
+			logger.error("Isabelle code generation failed for file " + theory.getCanonicalPath() + ".");
+			
+			throw e;
+		}
+	}
+	
 	/**
 	 * Creates an ad-hoc Isabelle session, invokes code generation, attempts to compile the result
 	 * and returns an executable jar file if possible.
@@ -83,10 +114,10 @@ public class IsabelleCodeGenerator {
 	 * @throws CompilationFailedException if Scala compilation fails
 	 * @throws IsabelleBuildFailedException if Isabelle code generation fails
 	 */
-	public File generateScalaCode(String composition) throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
+	public File generateScalaCodeAndCompile(String composition) throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
 		File theory = this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
 		
-		return this.generateScalaCode(theory);
+		return this.generateScalaCodeAndCompile(theory);
 	}
 	
 	/**
@@ -100,7 +131,7 @@ public class IsabelleCodeGenerator {
 	 * @throws CompilationFailedException if Scala compilation fails
 	 * @throws IsabelleBuildFailedException if Isabelle code generation fails
 	 */
-	public File generateScalaCode(File theory) throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
+	public File generateScalaCodeAndCompile(File theory) throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
 		String moduleName = this.prepareTheoryFile(theory, "Scala");
 		
 		String theoryName = theory.getName().substring(0,
@@ -152,6 +183,10 @@ public class IsabelleCodeGenerator {
 		}
 		
 		this.codeReplacements = replacements;
+	}
+	
+	private String prepareTheoryFile(File theory, IsabelleCGLanguage language) throws IOException {
+		return this.prepareTheoryFile(theory, language.toString());
 	}
 	
 	private String prepareTheoryFile(File theory, String language) throws IOException {
@@ -237,7 +272,7 @@ public class IsabelleCodeGenerator {
 		File root = new File(generatedPath + File.separator + "ROOT");
 		root.delete();
 		
-		// Isabelle puts everything into one file when generating Scala code
+		// Isabelle puts everything into one file when generating Scala and OCaml code
 		return generatedFiles[0];
 	}
 	

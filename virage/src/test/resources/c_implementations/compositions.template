@@ -1,0 +1,72 @@
+// seq_comp
+result seq_comp_$IDX(profile p) {
+	result r_1 = $MODULE_1;
+	p = limitProfile(r_1.deferred, p);
+	result r_2 = $MODULE_2;
+
+	result r;
+	r.elected = unify(r_1.elected, r_2.elected);
+	r.deferred = r_2.deferred;
+	r.rejected = unify(r_1.rejected, r_2.rejected);
+
+	return r;
+}
+// seq_comp
+
+// parallel_comp
+r_$INDEX_FINAL = $AGGREGATOR($MODULE_1_$INDEX_FINAL, $MODULE_2_$INDEX_FINAL);
+p = limitProfile(r_$INDEX_FINAL.deferred, p);
+// parallel_comp
+
+// loop_comp
+while($TERMINATION_CONDITION) {
+  r_$INDEX_FINAL = $MODULE_1_$FINAL_INDEX
+  p = limitProfile($r.deferred, p);
+}
+// loop_comp
+
+// downgrade
+$MODULE_INDEX
+r_$INDEX_FINAL.rejected = unify(r_$INDEX_FINAL.deferred, r_$INDEX_FINAL.rejected);
+r_$INDEX_FINAL.deferred = r_$INDEX_FINAL.elected;
+r_$INDEX_FINAL.elected = emptySet();
+// downgrade
+
+result seq_comp_$INDEX(profile p) {
+  result r_1 = $MODULE_1;
+  p = limitProfile(r_1.deferred, p);
+
+  result r_2 = $MODULE_2;
+
+  result r;
+  r.elected = unify(r_1.elected, r_2.elected);
+  r.deferred = r_2.deferred;
+  r.rejected = unify(r_1.rejected, r_2.rejected);
+  return r;
+}
+
+result parallel_comp_$INDEX(profile p) {
+  result r_1 = $MODULE_1;
+  result r_2 = $MODULE_2;
+
+  return $AGGREGATOR(r_1,r_2);
+}
+
+result loop_comp_$INDEX(profile p) {
+  result r_1;
+
+  do {
+    r_1 = $MODULE_1;
+    p = limitProfile(r_1.deferred, p);
+  } while (!TERMINATION_CONDITION)
+}
+
+result downgrade_INDEX(profile p) {
+  result r_1 = $MODULE_1;
+
+  result r;
+  r.elected = emptySet();
+  r.deferred = r_1.elected;
+  r.rejected = unify(r_1.deferred, r_1.rejected);
+  return r;
+}
