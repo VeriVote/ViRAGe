@@ -1,14 +1,17 @@
 #include "types.h"
-#include "set.h"
 
-result max_aggregator(profile p, result a, result b) {
-  set electedUnion = unify(a.elected, b.elected);
-  set deferredUnion = unify(a.deferred, b.deferred);
-  set rejectedUnion = unify(a.rejected, b.rejected);
+result max_aggregator(result a, result b) {
+  result new_result;
 
-  result res;
-  res.elected = electedUnion;
-  res.deferred = setMinus(deferredUnion, electedUnion);
-  res.rejected = setMinus(rejectedUnion, unify(electedUnion, deferredUnion));
-  return res;
+  for(int i=0; i<C; i++) {
+    if(a.values[i] == ELECTED || b.values[i] == ELECTED) {
+      new_result.values[i] = ELECTED;
+    } else if(a.values[i] == DEFERRED || b.values[i] == DEFERRED) {
+      new_result.values[i] = DEFERRED;
+    } else {
+      new_result.values[i] = REJECTED;
+    }
+  }
+
+  return new_result;
 }

@@ -1,40 +1,21 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "set.h"
 #include "types.h"
 
-rel limitTo(set a, rel r) {
-  int newSize = a.size;
-  int* newRel = malloc(newSize);
-  int next = 0;
-
-  for(int i=0; i<r.size; i++) {
-    if(contains(a,r.elements[i])) {
-      newRel[next] = r.elements[i];
-      next++;
+int find_index(profile p, int alternative) {
+  for(int i=0; i<C; i++) {
+    if(p.alternatives[i] == alternative) {
+      return i;
     }
   }
 
-  rel result;
-
-  result.elements = newRel;
-  result.size = newSize;
-
-  return result;
+  return -1;
 }
 
-profile limitProfile(set a, profile p) {
-  for(int i=0; i<p.voteCount; i++) {
-    p.votes[i] = limitTo(a, p.votes[i]);
+rel get_default_ordering(profile p) {
+  rel r;
+
+  for(int i=0; i<C; i++) {
+     r.elements[i] = p.votes[0][i];
   }
-  p.alternatives = a;
 
-  return p;
-}
-
-void printResult(result r) {
-  printf("elected: "); printSet(r.elected);
-  printf("rejected: "); printSet(r.rejected);
-  printf("deferred: "); printSet(r.deferred);
+  return r;
 }

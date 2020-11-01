@@ -1,0 +1,34 @@
+#include "types.h"
+#include "modules.h"
+#include "aggregators.h"
+#include "termination_conditions.h"
+
+$CONTENT
+
+int[C] voting(int[V][C] votes) {
+  profile p;
+  p.alternatives = votes[0];
+  p.votes = votes;
+
+  result r;
+  int values[C];
+  for(int i=0; i<C; i++) {
+    values[i] = DEFERRED;
+  }
+  r.values = values;
+
+  r = $ENTRY;
+
+  int res[C];
+  int nextSpot = 0;
+  for(int i=ELECTED, i>=REJECTED; i--) {
+    for(int j=0; j<C; j++) {
+      if(r.values[j] == i) {
+        res[nextSpot] = p.alternatives[j];
+        nextSpot++;
+      }
+    }
+  }
+
+  return res;
+}

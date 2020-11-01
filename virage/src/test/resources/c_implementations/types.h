@@ -1,28 +1,32 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include "set.h"
+#ifndef V
+#define V 3
+#endif
+
+#ifndef C
+#define C 3
+#endif
+
+#define ELECTED 2
+#define DEFERRED 1
+#define REJECTED 0
 
 typedef struct {
-  int size;
-  int* elements;
-} rel;
-
-typedef struct {
-  int voteCount;
-  set alternatives;
-  rel* votes;
+  int alternatives[C];
+  int votes[V][C];
 } profile;
 
 typedef struct {
-  set elected;
-  set rejected;
-  set deferred;
+  int elements[C];
+} rel;
+
+typedef struct {
+  int values[C];
 } result;
 
-rel limitTo(set a, rel r);
-profile limitProfile(set a, profile p);
-void printResult(result r);
+int find_index(profile p, int alternative);
+rel get_default_ordering(profile p);
 
-
-#endif // TYPES_H
+#endif
