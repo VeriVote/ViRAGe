@@ -5,30 +5,13 @@
 
 $CONTENT
 
-int[C] voting(int[V][C] votes) {
-  profile p;
-  p.alternatives = votes[0];
-  p.votes = votes;
-
+result voting_rule(profile p) {
   result r;
-  int values[C];
   for(int i=0; i<C; i++) {
-    values[i] = DEFERRED;
+    r.values[i] = DEFERRED;
   }
-  r.values = values;
 
   r = $ENTRY;
 
-  int res[C];
-  int nextSpot = 0;
-  for(int i=ELECTED, i>=REJECTED; i--) {
-    for(int j=0; j<C; j++) {
-      if(r.values[j] == i) {
-        res[nextSpot] = p.alternatives[j];
-        nextSpot++;
-      }
-    }
-  }
-
-  return res;
+  return r;
 }

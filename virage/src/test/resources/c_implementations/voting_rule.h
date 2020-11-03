@@ -1,6 +1,8 @@
-#ifndef VOTING_H
-#define VOTING_H
+#ifndef VOTING_RULE_H
+#define VOTING_RULE_H
 
-int[C] voting_rule(int votes[V][C]);
+#include "types.h"
+
+result voting_rule(profile p);
 
 #endif

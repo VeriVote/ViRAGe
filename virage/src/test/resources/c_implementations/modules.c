@@ -61,6 +61,8 @@ result plurality_module(profile p, result r) {
 
       if(r.values[idx] == DEFERRED) {
         wins[idx]++;
+
+        // bool flag
         break;
       }
     }

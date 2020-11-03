@@ -51,15 +51,16 @@ import javafx.application.Platform;
 public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnalyzer {
 	private Logger logger = LogManager.getLogger(SBMCCompositionAnalyzer.class);
 	
-	private String compositionsTemplate;
-	private String codeFileTemplate;
+	private final String compositionsTemplate;
+	private final String codeFileTemplate;
+	private final String electionDescriptionForBeast;
 	
 	public SBMCCompositionAnalyzer(FrameworkRepresentation framework) throws IOException {
 		super(framework);
 		
 		this.compositionsTemplate = (new SimpleFileReader()).readFile(new File("src/test/resources/c_implementations/compositions.template"));
 		this.codeFileTemplate = (new SimpleFileReader()).readFile(new File("src/test/resources/code_file.template"));
-
+		this.electionDescriptionForBeast = (new SimpleFileReader()).readFile(new File("src/test/resources/election_description.template"));
 		
 		final class BEASTMainRunner implements Runnable {
 			@Override
@@ -111,7 +112,7 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 		
 		String fileContents = this.codeFileTemplate.replace("$CONTENT", res.getFirstValue().getSecondValue());
 		fileContents = fileContents.replace("$ENTRY", res.getFirstValue().getFirstValue());
-		(new SimpleFileWriter()).writeToFile("/home/fabian/Documents/Studies/BEAST/beast/core/user_includes/voting.c", fileContents);
+		(new SimpleFileWriter()).writeToFile("/home/fabian/Documents/Studies/BEAST/beast/core/user_includes/voting_rule.c", fileContents);
 		
 		return null;
 	}
@@ -135,7 +136,7 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 					if(childType.getName().equals("nat")) {
 						head += "1";
 					} else if(childType.getName().equals("rel")) {
-						head += "get_default_ordering(profile p)";
+						head += "get_default_ordering(p)";
 					}
 				} else {
 					head += this.getCCodeFromComposition(child, ctr).getFirstValue().getFirstValue();
@@ -206,6 +207,8 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 		}
 		final GUIController controller = tmpController;
 		
+		final String elecDescCode = this.electionDescriptionForBeast;
+		
 		Platform.runLater(new Runnable() {
 			@Override
 			public synchronized void run() {
@@ -213,15 +216,26 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 				
 				ElectionDescription elecDesc = new ElectionDescription("tmp", new Preference(), new CandidateList());
 
-				String code = "unsigned int[C] voting(unsigned int amountVotes, unsigned int votes[amountVotes][C]) {\n\treturn votes[0];\n}";
-				String[] lines = code.split("\n");
-				elecDesc.setCode(code);
-				elecDesc.setLockedPositions(0,lines[0].length(),code.length()-1);
+				String[] lines = elecDescCode.split("\n");
+				
+				int offset = 0;
+				int lockedLine = 0;
+				for(int i=0; i<lines.length; i++) {
+					if(!lines[i].startsWith("unsigned int[C] voting")) {
+						offset += lines[i].length() + "\n".length();
+					} else {
+						lockedLine = i;
+						break;
+					}
+				}
+				
+				elecDesc.setCode(elecDescCode);
+				elecDesc.setLockedPositions(offset,offset+lines[lockedLine].length(),elecDescCode.length()-1);
 				elecDesc.setNotNew();
 				
 				controller.getCodeArea().setNewElectionDescription(elecDesc);
 				
-				controller.getPostConditionsArea().replaceText("(1==0);");
+				controller.getPostConditionsArea().replaceText("(1==1);");
 				
 				for(ChildTreeItem child: controller.getProperties().get(0).getSubItems()) {
 					if(child instanceof CheckChildTreeItem) {
