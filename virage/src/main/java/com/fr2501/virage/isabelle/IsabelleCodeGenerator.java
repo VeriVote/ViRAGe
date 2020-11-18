@@ -2,6 +2,9 @@ package com.fr2501.virage.isabelle;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,9 +44,9 @@ public class IsabelleCodeGenerator {
 	private final IsabelleTheoryParser parser;
 	private final SimpleFileReader reader;
 	
-	private final String exportTemplate;
-	private final String rootTemplate;
-	private final String votingContextTemplate;
+	private static String exportTemplate = "";
+	private static String rootTemplate = "";
+	private static String votingContextTemplate = "";
 	private static final String MODULE_NAME_VAR = "$MODULE_NAME";
 	private static final String LANGUAGE_VAR = "$LANGUAGE";
 	private static final String SESSION_NAME_VAR = "$SESSION_NAME";
@@ -67,9 +71,35 @@ public class IsabelleCodeGenerator {
 		
 		this.initCodeReplacements();
 		
-		this.exportTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("export_code.template").getFile()));
-		this.rootTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("root.template").getFile()));
-		this.votingContextTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("voting_context.template").getFile()));
+		if(exportTemplate.equals("")) {
+			StringWriter writer = new StringWriter();
+			
+			InputStream exportTemplateStream = this.getClass().getClassLoader().getResourceAsStream("export_code.template");
+			try {
+				IOUtils.copy(exportTemplateStream, writer, StandardCharsets.UTF_8);
+			} catch (IOException e) {
+				logger.error("Something went wrong.", e);
+			}
+			exportTemplate = writer.toString();
+			
+			writer = new StringWriter();
+			InputStream rootTemplateStream = this.getClass().getClassLoader().getResourceAsStream("root.template");
+			try {
+				IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
+			} catch (IOException e) {
+				logger.error("Something went wrong.", e);
+			}
+			rootTemplate = writer.toString();
+			
+			writer = new StringWriter();
+			InputStream votingContextTemplateStream = this.getClass().getClassLoader().getResourceAsStream("voting_context.template");
+			try {
+				IOUtils.copy(votingContextTemplateStream, writer, StandardCharsets.UTF_8);
+			} catch (IOException e) {
+				logger.error("Something went wrong.", e);
+			}
+			votingContextTemplate = writer.toString();
+		}
 	}
 	
 	/**
