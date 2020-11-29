@@ -83,7 +83,7 @@ public class IsabelleCodeGenerator {
 			exportTemplate = writer.toString();
 			
 			writer = new StringWriter();
-			InputStream rootTemplateStream = this.getClass().getClassLoader().getResourceAsStream("root.template");
+			InputStream rootTemplateStream = this.getClass().getClassLoader().getResourceAsStream("code_root.template");
 			try {
 				IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
 			} catch (IOException e) {

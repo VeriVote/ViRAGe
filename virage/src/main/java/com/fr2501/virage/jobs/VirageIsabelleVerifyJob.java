@@ -5,6 +5,7 @@ import java.io.File;
 import com.fr2501.util.Pair;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
+import com.fr2501.virage.types.FrameworkRepresentation;
 
 /**
  * 
@@ -26,7 +27,7 @@ public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Bo
 	protected void concreteExecute() throws Exception {
 		this.checker = this.executingCore.getIsabelleProofChecker();
 		
-		this.result = this.checker.verifyTheoryFile(this.file);
+		this.result = this.checker.verifyTheoryFile(this.file, this.executingCore.getFrameworkRepresentation());
 	}
 
 }
