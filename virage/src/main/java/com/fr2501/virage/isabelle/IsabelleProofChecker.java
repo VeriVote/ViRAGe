@@ -61,7 +61,7 @@ public class IsabelleProofChecker {
 		
 		try {
 			// TODO: Remove quick_and_dirty as soon as possible (or make optional?)
-			Process process = Runtime.getRuntime().exec("isabelle build -o quick_and_dirty -b -D `pwd`");
+			Process process = Runtime.getRuntime().exec("isabelle build -o quick_and_dirty -o browser_info -b -D `pwd`");
 			process.waitFor();
 			
 			this.initServer();
@@ -192,7 +192,7 @@ public class IsabelleProofChecker {
 		writer.writeToFile(texDoc, this.texTemplate);
 		
 		String isabelleCommand = "isabelle build -e -D " + generatedPath + " -D " + theoryPath + 
-				" -o quick_and_dirty -b " + adHocSessionName;
+				" -o quick_and_dirty -o browser_info -b " + adHocSessionName;
 		
 		int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
 		

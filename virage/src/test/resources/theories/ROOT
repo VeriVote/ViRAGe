@@ -2,7 +2,7 @@
 (*
  *  cd ..../theories
  *
- *  isabelle build -o quick_and_dirty -b -D `pwd`
+ *  isabelle build -o quick_and_dirty -o browser_info -b -D `pwd`
  *    # compule sessions in the ROOT file to prebuilt images
  *    # quick and dirty needed due to the "sorry" command somewhere
  *
@@ -14,6 +14,7 @@
 
 
 session Voting = HOL +
+  (* options [timeout = 1200, document = pdf, document_output = "output"] *)
   theories
     aggregators
     blacks_rule
@@ -45,3 +46,6 @@ session Voting = HOL +
     sequential_majority_comparison
     termination_conditions
     voting_rule_constructors
+  document_files
+    "root.tex"
+
