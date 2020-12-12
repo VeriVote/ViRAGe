@@ -95,7 +95,7 @@ public class IsabelleProofCheckerTest {
 				
 				proveClaims(properties, result.getValue().toString());
 				
-				checker.verifyTheoryFile(this.file);
+				checker.verifyTheoryFile(this.file, framework);
 			} else {
 				if(result.getState() == QueryState.TIMEOUT) {
 					timeout++;
@@ -133,12 +133,12 @@ public class IsabelleProofCheckerTest {
 		proveClaims(properties, "elect_module");
 		
 		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
-		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
+		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file, framework);
 		assertTrue(result.getFirstValue());
 		this.file = result.getSecondValue();
 		
 		// Should work twice in a row, second one much faster.
-		assertTrue(checker.verifyTheoryFile(this.file).getFirstValue());
+		assertTrue(checker.verifyTheoryFile(this.file, framework).getFirstValue());
 		
 		checker.destroy();
 	}
@@ -154,12 +154,12 @@ public class IsabelleProofCheckerTest {
 		proveClaims(properties, "parallel_comp(elect_module,elect_module,max_aggregator)");
 		
 		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
-		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
+		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file, framework);
 		assertTrue(result.getFirstValue());
 		this.file = result.getSecondValue();
 		
 		// Should work twice in a row, second one much faster.
-		assertTrue(checker.verifyTheoryFile(this.file).getFirstValue());
+		assertTrue(checker.verifyTheoryFile(this.file, framework).getFirstValue());
 			
 		checker.destroy();
 	}
@@ -174,12 +174,12 @@ public class IsabelleProofCheckerTest {
 		proveClaims(properties, SMC);
 		
 		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
-		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file);
+		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file, framework);
 		assertTrue(result.getFirstValue());
 		this.file = result.getSecondValue();
 		
 		// Should work twice in a row, second one much faster.
-		assertTrue(checker.verifyTheoryFile(this.file).getFirstValue());
+		assertTrue(checker.verifyTheoryFile(this.file, framework).getFirstValue());
 			
 		checker.destroy();
 	}
