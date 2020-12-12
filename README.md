@@ -54,7 +54,7 @@ Typing "exit" will terminate ViRAGe :-)
 
 ## Known Problems
 
-Error messages are often just logged Exceptions at this point. For somebody not familiar with ViRAGe's internals, this might be more confusing than helpful and will be changed in the future. (If any of the classes in the stack-trace is one of JPL's, that probably means that JPL is not set up correctly yet.)
+Error messages are often just logged Exceptions at this point. Forgit  somebody not familiar with ViRAGe's internals, this might be more confusing than helpful and will be changed in the future. (If any of the classes in the stack-trace is one of JPL's, that probably means that JPL is not set up correctly yet.)
 
 When invoking the Isabelle process on the "Voting" session (required for Code Generation and Automatic Verification) for the first time, this session has to be built. This might take a considerable amount of time and, on some machines, not work on the first try. In this case, navigating to ```../src/test/resources/theories/``` and calling ```isabelle build -o quick_and_dirty -o browser_info -b -D .``` might help. While the build process might not finish on first try due to SMT-timeouts, rerunning it a few times will usually work at some point, ViRAGe can then be restarted in the usual way. A better solution is very desirable, but not available yet.
 
