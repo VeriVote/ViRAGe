@@ -2,6 +2,9 @@ package com.fr2501.virage.isabelle;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,10 +71,33 @@ public class IsabelleCodeGenerator {
 		this.generator = new IsabelleTheoryGenerator(framework);
 		
 		this.initCodeReplacements();
+			
+		InputStream exportTemplateStream = this.getClass().getClassLoader().getResourceAsStream("export_code.template");
+		StringWriter writer = new StringWriter();
+		try {
+			IOUtils.copy(exportTemplateStream, writer, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			logger.error("Something went wrong.", e);
+		}
+		this.exportTemplate = writer.toString();
 		
-		this.exportTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("export_code.template").getFile()));
-		this.rootTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("root.template").getFile()));
-		this.votingContextTemplate = this.reader.readFile(new File(this.getClass().getClassLoader().getResource("voting_context.template").getFile()));
+		InputStream rootTemplateStream = this.getClass().getClassLoader().getResourceAsStream("root.template");
+		writer = new StringWriter();
+		try {
+			IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			logger.error("Something went wrong.", e);
+		}
+		this.rootTemplate = writer.toString();
+		
+		InputStream vcTemplateStream = this.getClass().getClassLoader().getResourceAsStream("voting_context.template");
+		writer = new StringWriter();
+		try {
+			IOUtils.copy(vcTemplateStream, writer, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			logger.error("Something went wrong.", e);
+		}
+		this.votingContextTemplate = writer.toString();
 	}
 	
 	// TODO: DOC
@@ -139,7 +166,9 @@ public class IsabelleCodeGenerator {
 		
 		String sessionName = this.buildSessionRoot(theoryName, theory);
 		
+		long start = System.currentTimeMillis();
 		File codeFile = this.invokeIsabelleCodeGeneration(theory, sessionName, theoryName);
+		System.out.println(System.currentTimeMillis() - start);
 		
 		// First, try using implicit values only
 		File votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile, false);
@@ -149,6 +178,8 @@ public class IsabelleCodeGenerator {
 		int status = ProcessUtils.runTerminatingProcessAndLogOutput(
 				"scalac " + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath()
 				+ " -d " + jarPath);
+		
+		System.out.println(System.currentTimeMillis() - start);
 
 		if(status != 0) {
 			logger.error("Generated Scala code could not be compiled.");

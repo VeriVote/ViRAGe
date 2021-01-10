@@ -73,7 +73,7 @@ public class IsabelleProofChecker {
 	 * @return the instance 
 	 */
 	public static IsabelleProofChecker getInstance(String sessionName, String theoryPath) {
-		if(instance == null || !instance.sessionName.equals(sessionName)
+		if(instance == null || instance.sessionName == null || !instance.sessionName.equals(sessionName)
 				|| !instance.theoryPath.equals(theoryPath)) {
 			instance = new IsabelleProofChecker(sessionName, theoryPath);
 		}
@@ -102,11 +102,15 @@ public class IsabelleProofChecker {
 		logger.info("Starting to verify " + theory + ". This might take some time.");
 		String command = "use_theories {\"session_id\": \"" + this.sessionId + "\", " +
 				"\"theories\": [\"" + theoryPath + "\"]}";  
+		long start = System.currentTimeMillis();
 		this.sendCommandAndWaitForTermination(command);
+		long elapsed = System.currentTimeMillis() - start;
+		System.out.println(elapsed);
 		
 		String result = this.lastEvent.getValue("ok");
 		if(result.equals("true")) {
 			logger.info("Verification successful.");
+			System.out.println(System.currentTimeMillis() - start);
 			return new Pair<Boolean,File>(true,theory);
 		} else {
 			logger.info("Verification failed. Attempting to solve automatically by employing different solvers.");

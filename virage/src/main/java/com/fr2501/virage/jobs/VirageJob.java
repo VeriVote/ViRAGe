@@ -109,6 +109,7 @@ public abstract class VirageJob<T> {
 		res += "Issued: " + Instant.ofEpochMilli(time_issued).toString() + "\n";
 		res += "Started: " + Instant.ofEpochMilli(time_started).toString() + "\n";
 		res += "Finished: " + Instant.ofEpochMilli(time_finished).toString() + "\n";
+		res += "Time elapsed: " + (time_finished - time_started) + " milliseconds \n";
 		res += "-----\n";
 		res += "State: " + this.state + "\n";
 	

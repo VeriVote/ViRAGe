@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <stdint.h>
+#include <assert.h>
 
 #include "types.h"
 
@@ -56,7 +58,8 @@ result plurality_module(profile p, result r) {
 
   for(int v=0; v<V; v++) {
     for(int c=0; c<C; c++) {
-      int current_alternative = p.votes[c][v];
+      int current_alternative = p.votes[v][c];
+
       int idx = find_index(p, current_alternative);
 
       if(r.values[idx] == DEFERRED) {

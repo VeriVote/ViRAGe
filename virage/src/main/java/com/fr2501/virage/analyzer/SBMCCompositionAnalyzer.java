@@ -62,7 +62,12 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 		this.codeFileTemplate = (new SimpleFileReader()).readFile(new File("src/test/resources/code_file.template"));
 		this.electionDescriptionForBeast = (new SimpleFileReader()).readFile(new File("src/test/resources/election_description.template"));
 		
-		final class BEASTMainRunner implements Runnable {
+		// FOR NOW: This is only possible via Eclipse. When executing the JAR on its own,
+		// JavaFX goes all over the place and tries to access a lot of non-existing folders
+		// within ViRAGe. This is terrible, but I don't know how to fix it. When BEAST
+		// offers a reasonable API at some point, a more robust solution might be implementable.
+		// TODO: Fix me
+		/* final class BEASTMainRunner implements Runnable {
 			@Override
 			public void run() {
 				MainApplicationClass.main(new String[0]);
@@ -70,7 +75,7 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 		}
 		
 		Thread beastThread = new Thread(new BEASTMainRunner());
-		beastThread.start();
+		beastThread.start(); */
 	}
 	
 	@Override
@@ -95,7 +100,12 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 					logger.error("Something went wrong while generating C code.", e);
 				}
 				
-				res.add(this.runSBMCCheck(composition, property));
+				// FOR NOW: This is only possible via Eclipse. When executing the JAR on its own,
+				// JavaFX goes all over the place and tries to access a lot of non-existing folders
+				// within ViRAGe. This is terrible, but I don't know how to fix it. When BEAST
+				// offers a reasonable API at some point, a more robust solution might be implementable.
+				// TODO: Fix me
+				// res.add(this.runSBMCCheck(composition, property));
 			}
 			
 		}
@@ -112,7 +122,7 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 		
 		String fileContents = this.codeFileTemplate.replace("$CONTENT", res.getFirstValue().getSecondValue());
 		fileContents = fileContents.replace("$ENTRY", res.getFirstValue().getFirstValue());
-		(new SimpleFileWriter()).writeToFile("/home/fabian/Documents/Studies/BEAST/beast/core/user_includes/voting_rule.c", fileContents);
+		(new SimpleFileWriter()).writeToFile("target/generated-sources/voting_rule.c", fileContents);
 		
 		return null;
 	}
@@ -235,7 +245,8 @@ public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnal
 				
 				controller.getCodeArea().setNewElectionDescription(elecDesc);
 				
-				controller.getPostConditionsArea().replaceText("(1==1);");
+				controller.getPostConditionsArea().replaceText("(VOTES2, VOTES3) <- SPLIT(PERM(VOTES1));");
+				controller.getPreConditionsArea().replaceText("NOTEMPTY(INTERSECT(ELECT2, ELECT3)) ==> ELECT1 == INTERSECT(ELECT2, ELECT3);");
 				
 				for(ChildTreeItem child: controller.getProperties().get(0).getSubItems()) {
 					if(child instanceof CheckChildTreeItem) {

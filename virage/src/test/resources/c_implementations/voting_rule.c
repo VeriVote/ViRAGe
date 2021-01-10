@@ -3,10 +3,12 @@
 #include "aggregators.h"
 #include "termination_conditions.h"
 
-
-
 // downgrade
 result downgrade_5(profile p, result r) {
+
+
+
+
 	r = plurality_module(p,r);
 	for(int i=0; i<C; i++) {
 		if(r.values[i] == ELECTED) {
@@ -24,6 +26,7 @@ result downgrade_5(profile p, result r) {
 result seq_comp_4(profile p, result r) {
 	r = downgrade_5(p,r);
 	r = pass_module(1,get_default_ordering(p),p,r);
+
 	return r;
 }
 // seq_comp
@@ -42,7 +45,7 @@ result parallel_comp_2(profile p, result r) {
 // parallel_comp
 // loop_comp
 result loop_comp_1(profile p, result r) {
-	while(defer_eq_condition(1,p,r)) {
+	while(!defer_eq_condition(1,p,r)) {
 	  r = parallel_comp_2(p,r);
 	}
 
@@ -54,34 +57,66 @@ result loop_comp_1(profile p, result r) {
 result seq_comp_0(profile p, result r) {
 	r = loop_comp_1(p,r);
 	r = elect_module(p,r);
+
 	return r;
 }
 // seq_comp
 
-int[C] voting_rule(int[V][C] votes) {
-  profile p;
-  p.alternatives = votes[0];
-  p.votes = votes;
+result borda(profile p, result r) {
+	int num_deferred = 0;
+	for(int i=0; i<C; i++) {
+		if(r.values[i] == DEFERRED) num_deferred++;
+	}
 
+	int values[C];
+	for(int i=0; i<C; i++) {
+		values[i] = 0;
+	}
+
+	for(int v=0; v<V; v++) {
+		int available_points = num_deferred-1;
+
+		for(int c=0; c<C; c++) {
+			int current_alternative = p.votes[v][c];
+
+			if(r.values[current_alternative] == DEFERRED) {
+				values[current_alternative] += available_points;
+				available_points--;
+			}
+
+			if(available_points == 0) break;
+		}
+	}
+
+	int max_value = 0;
+	for(int i=0; i<C; i++) {
+		if(values[i] > max_value) {
+			max_value = values[i];
+		}
+	}
+
+	for(int i=0; i<C; i++) {
+		if(r.values[i] == DEFERRED) {
+			if(values[i] == max_value) {
+				r.values[i] = ELECTED;
+			} else {
+			}
+		}
+	}
+
+	return r;
+}
+
+result voting_rule(profile p) {
   result r;
-  int values[C];
+
   for(int i=0; i<C; i++) {
-    values[i] = DEFERRED;
-  }
-  r.values = values;
-
-  r = seq_comp_0(p,r);
-
-  int res[C];
-  int nextSpot = 0;
-  for(int i=ELECTED, i>=REJECTED; i--) {
-    for(int j=0; j<C; j++) {
-      if(r.values[j] == i) {
-        res[nextSpot] = p.alternatives[j];
-        nextSpot++;
-      }
-    }
+    r.values[i] = DEFERRED;
   }
 
-  return res;
+  //r = seq_comp_0(p,r);
+	r = plurality_module(p,r);
+	//r = borda(p,r);
+
+  return r;
 }

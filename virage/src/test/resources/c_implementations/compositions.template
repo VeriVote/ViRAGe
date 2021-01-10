@@ -14,7 +14,7 @@ result parallel_comp_$IDX(profile p, result r) {
 
 // loop_comp
 result loop_comp_$IDX(profile p, result r) {
-	while($TERMINATION_CONDITION) {
+	while(!$TERMINATION_CONDITION) {
 	  r = $MODULE_1;
 	}
 

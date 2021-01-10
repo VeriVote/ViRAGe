@@ -15,13 +15,11 @@ unsigned int[C] voting(unsigned int votes[V][C]) {
     result r = voting_rule(p);
 
     unsigned int res[C];
-    int nextSpot = 0;
-    for(int i=ELECTED; i>=REJECTED; i--) {
-        for(int j=0; j<C; j++) {
-            if(r.values[j] == i) {
-                res[nextSpot] = p.alternatives[j];
-                nextSpot++;
-            }
+    for(int i=0; i<C; i++) {
+        if(r.values[i] == ELECTED) {
+            res[i] = 1;
+        } else {
+            res[i] = 0;
         }
     }
 

@@ -1,13 +1,15 @@
 #include "types.h"
 
 int find_index(profile p, int alternative) {
-  for(int i=0; i<C; i++) {
+  return alternative;
+
+  /*for(int i=0; i<C; i++) {
     if(p.alternatives[i] == alternative) {
       return i;
     }
   }
 
-  return -1;
+  return -1;*/
 }
 
 rel get_default_ordering(profile p) {

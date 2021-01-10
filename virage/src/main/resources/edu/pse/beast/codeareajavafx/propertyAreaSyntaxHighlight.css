@@ -1,0 +1,32 @@
+.operators {
+   -fx-fill: purple;
+   -fx-font-weight: bold;
+}
+.semicolon {
+   -fx-font-weight: bold;
+}
+.paren {
+   -fx-fill: rgb(255,128,0);
+   -fx-font-weight: bold;
+}
+.comparison {
+   -fx-fill: green ;
+   -fx-font-weight: bold;
+}
+.relation {
+   -fx-fill: teal;
+   -fx-font-weight: bold;
+}
+.macros {
+   -fx-fill: firebrick;
+   -fx-font-weight: bold;
+}
+
+.quantifiers {
+   -fx-fill: firebrick;
+   -fx-font-weight: bold;
+}
+
+.paragraph-box:has-caret {
+ -fx-background-color: #f2f9fc;
+}
