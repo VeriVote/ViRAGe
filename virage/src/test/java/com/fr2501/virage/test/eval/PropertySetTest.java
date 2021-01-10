@@ -37,7 +37,7 @@ public class PropertySetTest {
 		
 		TestDataGenerator generator = new TestDataGenerator(framework);
 		
-		long timeout = 10;
+		long timeout = 1;
 		
 		boolean performBase = false;
 		boolean performSPCA = false;
@@ -140,12 +140,12 @@ public class PropertySetTest {
 				
 				IsabelleTheoryGenerator theoryGen = new IsabelleTheoryGenerator(framework);
 				
-				List<CompositionProof> proofs = acca.proveClaims(res.getValue(), list);
+				/* List<CompositionProof> proofs = acca.proveClaims(res.getValue(), list);
 				
 				File file = theoryGen.generateTheoryFile(res.getValue().toString(), proofs);
 				if(!checker.verifyTheoryFile(file).getFirstValue()) {
 					failures.add(res.getValue().toString());
-				}
+				} */
 			}
 			
 			performedTests++;
