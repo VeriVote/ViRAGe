@@ -20,6 +20,14 @@ ViRAGe uses [JPL7](https://jpl7.org/) for its Prolog interaction. On some operat
 
 Make sure to install Scala on your system if ViRAGe shall compile generated source files automatically.
 
+### pdflatex
+
+The isabelle document tool requires pdflatex to be installed. As this tool is invoked on every proof process started by ViRAGe, make sure pdflatex is available.
+
+### BEAST
+
+The experimental SBMC integration requires the BEAST framework to be available. Clone the repository, check out the ```experimental``` branch and run ```mvn install```. If this procedure changes at some point, this README should be updated, in doubt, refer to the BEAST repository.
+
 ## Usage
 
 When launching ViRAGe, one must supply an (Extended)-Prolog file. An example of such a file can be found is ```../src/test/resources/framework.pl```. This file describes the Voting Rule Framework at its current state and is therefore the default right now (Just press 'enter' on the prompt.). Still, looking at it might give useful hints at the syntax ViRAGe expects for compositions and properties, which is structurally similar to Prolog.
@@ -54,7 +62,7 @@ Typing "exit" will terminate ViRAGe :-)
 
 ## Known Problems
 
-Error messages are often just logged Exceptions at this point. Forgit  somebody not familiar with ViRAGe's internals, this might be more confusing than helpful and will be changed in the future. (If any of the classes in the stack-trace is one of JPL's, that probably means that JPL is not set up correctly yet.)
+Error messages are often just logged Exceptions at this point. For somebody not familiar with ViRAGe's internals, this might be more confusing than helpful and will be changed in the future. (If any of the classes in the stack-trace is one of JPL's, that probably means that JPL is not set up correctly yet.)
 
 When invoking the Isabelle process on the "Voting" session (required for Code Generation and Automatic Verification) for the first time, this session has to be built. This might take a considerable amount of time and, on some machines, not work on the first try. In this case, navigating to ```../src/test/resources/theories/``` and calling ```isabelle build -o quick_and_dirty -o browser_info -b -D .``` might help. While the build process might not finish on first try due to SMT-timeouts, rerunning it a few times will usually work at some point, ViRAGe can then be restarted in the usual way. A better solution is very desirable, but not available yet.
 
