@@ -25,6 +25,6 @@ public class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<
 	protected void concreteExecute() throws Exception {
 		this.generator = this.executingCore.getIsabelleCodeGenerator();
 		
-		this.result = this.generator.generateScalaCode(this.composition);
+		this.result = this.generator.generateScalaCodeAndCompile(this.composition);
 	}
 }

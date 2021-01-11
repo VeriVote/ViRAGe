@@ -1,0 +1,27 @@
+#include "types.h"
+#include "voting_rule.h"
+
+unsigned int[C] voting(unsigned int votes[V][C]) {
+    profile p;
+    for(int i=0; i<C; i++) {
+        p.alternatives[i] = votes[0][i];
+    }
+    for(int i=0; i<V; i++) {
+        for(int j=0; j<C; j++) {
+            p.votes[i][j] = votes[i][j];
+        }
+    }
+
+    result r = voting_rule(p);
+
+    unsigned int res[C];
+    for(int i=0; i<C; i++) {
+        if(r.values[i] == ELECTED) {
+            res[i] = 1;
+        } else {
+            res[i] = 0;
+        }
+    }
+
+    return res;
+}

@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
+import com.fr2501.virage.analyzer.SBMCCompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
@@ -149,6 +150,7 @@ public class VirageCore implements Runnable {
     	try {
 	    	this.searchManager.addAnalyzer(new SimplePrologCompositionAnalyzer(framework));
 	    	this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
+	    	this.searchManager.addAnalyzer(new SBMCCompositionAnalyzer(framework));
 	    	this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
 	    	this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
 	    	this.codeGenerator = new IsabelleCodeGenerator(this.framework);

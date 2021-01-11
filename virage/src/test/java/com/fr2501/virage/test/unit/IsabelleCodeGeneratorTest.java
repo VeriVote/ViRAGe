@@ -52,7 +52,7 @@ public class IsabelleCodeGeneratorTest {
 	
 		File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
 		
-		codeGenerator.generateScalaCode(theory);
+		codeGenerator.generateScalaCodeAndCompile(theory);
 	}
 	
 	@Test
@@ -61,7 +61,7 @@ public class IsabelleCodeGeneratorTest {
 		
 		String module = "drop_module(1,_)";
 		
-		codeGenerator.generateScalaCode(module);
+		codeGenerator.generateScalaCodeAndCompile(module);
 	}
 	
 	@Test
@@ -72,7 +72,7 @@ public class IsabelleCodeGeneratorTest {
 	
 		File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
 		
-		codeGenerator.generateScalaCode(theory);
+		codeGenerator.generateScalaCodeAndCompile(theory);
 	}
 	
 	@Test
@@ -83,6 +83,6 @@ public class IsabelleCodeGeneratorTest {
 	
 		File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
 		
-		codeGenerator.generateScalaCode(theory);
+		codeGenerator.generateScalaCodeAndCompile(theory);
 	}
 }
