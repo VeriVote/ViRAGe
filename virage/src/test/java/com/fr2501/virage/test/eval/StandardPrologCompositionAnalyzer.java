@@ -1,11 +1,8 @@
 package com.fr2501.virage.test.eval;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.jpl7.PrologException;
 
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
@@ -25,7 +22,7 @@ public class StandardPrologCompositionAnalyzer implements CompositionAnalyzer {
 	
 	private long timeout;
 	
-	public StandardPrologCompositionAnalyzer(FrameworkRepresentation framework) throws IOException {
+	public StandardPrologCompositionAnalyzer(FrameworkRepresentation framework) {
 		this.framework = framework;
 		
 		this.facade = new JPLFacade(DEFAULT_TIMEOUT);

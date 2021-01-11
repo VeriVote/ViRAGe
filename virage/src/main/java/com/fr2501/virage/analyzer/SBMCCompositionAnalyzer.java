@@ -2,13 +2,10 @@ package com.fr2501.virage.analyzer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,9 +15,6 @@ import org.apache.logging.log4j.Logger;
 import com.fr2501.util.Pair;
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
-import com.fr2501.util.ThreadSignal;
-import com.fr2501.virage.isabelle.IsabelleCGLanguage;
-import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.Component;
@@ -29,14 +23,12 @@ import com.fr2501.virage.types.ComposableModule;
 import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
-import com.fr2501.virage.types.IsabelleBuildFailedException;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
 import edu.pse.beast.datatypes.electioncheckparameter.ElectionCheckParameter;
 import edu.pse.beast.datatypes.electiondescription.ElectionDescription;
 import edu.pse.beast.highlevel.BEASTCommunicator;
-import edu.pse.beast.highlevel.MainApplicationClass;
 import edu.pse.beast.highlevel.javafx.CheckChildTreeItem;
 import edu.pse.beast.highlevel.javafx.ChildTreeItem;
 import edu.pse.beast.highlevel.javafx.GUIController;

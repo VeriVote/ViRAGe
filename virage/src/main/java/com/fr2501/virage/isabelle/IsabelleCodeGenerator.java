@@ -248,7 +248,7 @@ public class IsabelleCodeGenerator {
 			newDefinition = newDefinition.replaceAll(old, this.codeReplacements.get(old));
 		}
 		
-		String exportCommand = this.exportTemplate.replace(MODULE_NAME_VAR, newName);
+		String exportCommand = exportTemplate.replace(MODULE_NAME_VAR, newName);
 		exportCommand = exportCommand.replace(LANGUAGE_VAR, language);
 		
 		String result = newDefinition + "\n\n" + exportCommand;
@@ -276,7 +276,7 @@ public class IsabelleCodeGenerator {
 		// TODO: Is there a way to do it?
 		String sessionName = "ad_hoc_session_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 		
-		String result = this.rootTemplate.replace(SESSION_NAME_VAR, sessionName).replace(THEORY_NAME_VAR, theoryName);
+		String result = rootTemplate.replace(SESSION_NAME_VAR, sessionName).replace(THEORY_NAME_VAR, theoryName);
 		SimpleFileWriter writer = new SimpleFileWriter();
 		writer.writeToFile(theory.getParent() + File.separator + "ROOT", result);
 		
@@ -317,7 +317,7 @@ public class IsabelleCodeGenerator {
 		SimpleFileReader reader = new SimpleFileReader();
 		String code = reader.readFile(moduleFile);
 		
-		String result = this.votingContextTemplate.replace(THEORY_NAME_VAR, theoryName)
+		String result = votingContextTemplate.replace(THEORY_NAME_VAR, theoryName)
 				.replace(MODULE_NAME_VAR, moduleName);
 		
 		boolean containsEnum = code.contains(ENUM);
