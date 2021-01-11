@@ -103,7 +103,15 @@ public class IsabelleCodeGenerator {
 		this.initCodeReplacements();
 	}
 	
-	// TODO: DOC
+	/**
+	 * Invokes Isabelle's code generator to create code from a composition
+	 * @param composition the composition
+	 * @param language the target language
+	 * @return a file containing the generated code
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws IsabelleBuildFailedException
+	 */
 	public File generateCode(String composition, IsabelleCGLanguage language) throws IOException, InterruptedException, IsabelleBuildFailedException {
 		File theory = this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
 		
@@ -114,6 +122,15 @@ public class IsabelleCodeGenerator {
 		return this.generateCode(composition.toString(), language);
 	}
 	
+	/**
+	 * Invokes Isabelle's code generator to generate code from a theory
+	 * @param theory the theory file
+	 * @param language the target language
+	 * @return a file containing the generated code
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws IsabelleBuildFailedException
+	 */
 	public File generateCode(File theory, IsabelleCGLanguage language) throws IOException, InterruptedException, IsabelleBuildFailedException {
 		String moduleName = this.prepareTheoryFile(theory, language);
 		

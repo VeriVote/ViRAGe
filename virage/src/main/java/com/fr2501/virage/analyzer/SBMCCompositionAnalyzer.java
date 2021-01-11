@@ -39,7 +39,11 @@ import edu.pse.beast.types.cbmctypes.inputplugins.Preference;
 import edu.pse.beast.types.cbmctypes.outputplugins.CandidateList;
 import javafx.application.Platform;
 
-// TODO: DOC
+/**
+ * 
+ * A {@link CompositionAnalyzer} that can use SBMC via BEAST
+ *
+ */
 public class SBMCCompositionAnalyzer extends AdmissionCheckPrologCompositionAnalyzer {
 	private Logger logger = LogManager.getLogger(SBMCCompositionAnalyzer.class);
 	

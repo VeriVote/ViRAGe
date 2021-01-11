@@ -1,6 +1,10 @@
 package com.fr2501.util;
 
-// TODO: DOC
+/**
+ * 
+ * A simple mutex mechanism
+ *
+ */
 public class ThreadSignal {
 	private boolean finished = false;
 	
