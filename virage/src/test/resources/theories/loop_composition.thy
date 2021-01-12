@@ -29,6 +29,13 @@ termination
   apply (simp)
   using loop_termination_helper by blast
 
+lemma[code]:
+  "loop_comp_helper acc m t A p = (if (t (acc A p) \<or> \<not>((defer (acc \<triangleright> m) A p) \<subset> (defer acc A p)) \<or> infinite (defer acc A p))
+  then (acc A p) else(loop_comp_helper (acc \<triangleright> m) m t A p))"
+  by (smt loop_comp_helper.simps(1) loop_comp_helper.simps(2))
+
+export_code loop_comp_helper in Scala
+
 (* The loop composition uses the same module in sequence, until a termination condition is met, or
    no new decisions are made.
 *)
@@ -44,6 +51,12 @@ termination
 abbreviation loop :: "'a Electoral_module \<Rightarrow> 'a Termination_condition \<Rightarrow> 'a Electoral_module"
     ("_ \<circlearrowleft>\<^sub>_" 50) where
   "m \<circlearrowleft>\<^sub>t \<equiv> loop_comp m t"
+
+lemma loop_comp_code[code]:
+  "loop_comp m t A p = (if (t ({},{},A)) then (Defer_module A p) else (loop_comp_helper m m t) A p)"
+  by simp
+
+export_code loop_comp in Haskell
 
 lemma loop_comp_helper_partitions:
   assumes module_m: "electoral_module m" and

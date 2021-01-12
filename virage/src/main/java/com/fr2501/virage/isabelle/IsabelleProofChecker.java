@@ -3,18 +3,27 @@ package com.fr2501.virage.isabelle;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.Pair;
+import com.fr2501.util.ProcessUtils;
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
+import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.IsabelleBuildFailedException;
 
 
 /**
@@ -39,6 +48,11 @@ public class IsabelleProofChecker {
 	private String sessionName;
 	private String theoryPath;
 	
+	private String rootTemplate = "";
+	private static final String SESSION_NAME_VAR = "$SESSION_NAME";
+	private static final String THEORY_NAME_VAR = "$THEORY_NAME";
+	private String texTemplate = "";
+	
 	boolean finished = false;
 	IsabelleEvent lastEvent;
 	
@@ -46,11 +60,32 @@ public class IsabelleProofChecker {
 		this.runtime = Runtime.getRuntime();
 		
 		try {
-			Process process = Runtime.getRuntime().exec("isabelle build -o quick_and_dirty -b -D `pwd`");
+			// TODO: Remove quick_and_dirty as soon as possible (or make optional?)
+			Process process = Runtime.getRuntime().exec("isabelle build -o quick_and_dirty -o browser_info -b -D `pwd`");
 			process.waitFor();
 			
 			this.initServer();
 			this.initClient(sessionName, theoryPath);
+			
+			if(this.rootTemplate.equals("")) {
+				StringWriter writer = new StringWriter();
+				InputStream rootTemplateStream = this.getClass().getClassLoader().getResourceAsStream("doc_root.template");
+				try {
+					IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
+				} catch (IOException e) {
+					logger.error("Something went wrong.", e);
+				}
+				rootTemplate = writer.toString();
+				
+				writer = new StringWriter();
+				InputStream texTemplateStream = this.getClass().getClassLoader().getResourceAsStream("tex_root.template");
+				try {
+					IOUtils.copy(texTemplateStream, writer, StandardCharsets.UTF_8);
+				} catch (IOException e) {
+					logger.error("Something went wrong.", e);
+				}
+				texTemplate = writer.toString();
+			}
 		} catch (Exception e) {
 			logger.error("Something went wrong.", e);
 			e.printStackTrace();
@@ -67,11 +102,12 @@ public class IsabelleProofChecker {
 	
 	/**
 	 * Creates singleton instance, if necessary, and returns it.
-	 * 
-	 * @return the instance
+	 * @param sessionName a name for the session to be created
+	 * @param theoryPath the path to the theory folder
+	 * @return the instance 
 	 */
 	public static IsabelleProofChecker getInstance(String sessionName, String theoryPath) {
-		if(instance == null || !instance.sessionName.equals(sessionName)
+		if(instance == null || instance.sessionName == null || !instance.sessionName.equals(sessionName)
 				|| !instance.theoryPath.equals(theoryPath)) {
 			instance = new IsabelleProofChecker(sessionName, theoryPath);
 		}
@@ -84,13 +120,14 @@ public class IsabelleProofChecker {
 	 * in the process because Isabelle purge_theories does not actually lead to reloading if the theory
 	 * is used again and in the same file (might be a bug?).
 	 * 
-	 * @param path to an Isabelle theory file
+	 * @param theory an Isabelle theory file
+	 * @param framework a framework representation
 	 * @return (true, newFile) if verification succeeds, (false, null) otherwise
 	 * 
 	 * @throws IOException if file system interaction fails
 	 * @throws InterruptedException if execution is interrupted by the OS
 	 */
-	public Pair<Boolean,File> verifyTheoryFile(File theory) throws IOException, InterruptedException {
+	public Pair<Boolean,File> verifyTheoryFile(File theory, FrameworkRepresentation framework) throws IOException, InterruptedException {
 		String theoryPath = theory.getCanonicalPath();
 		
 		if(theoryPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
@@ -100,11 +137,22 @@ public class IsabelleProofChecker {
 		logger.info("Starting to verify " + theory + ". This might take some time.");
 		String command = "use_theories {\"session_id\": \"" + this.sessionId + "\", " +
 				"\"theories\": [\"" + theoryPath + "\"]}";  
+		long start = System.currentTimeMillis();
 		this.sendCommandAndWaitForTermination(command);
+		long elapsed = System.currentTimeMillis() - start;
+		System.out.println(elapsed);
 		
 		String result = this.lastEvent.getValue("ok");
 		if(result.equals("true")) {
 			logger.info("Verification successful.");
+
+			String adHocSessionName = this.buildSessionRoot(theory.getName().substring(0, theory.getName().length()-4), theory);
+			try {
+				this.generateProofDocument(theory, adHocSessionName, framework.getTheoryPath());
+			} catch (Exception e) {
+				logger.warn("No documentation could be generated.");
+			}
+			
 			return new Pair<Boolean,File>(true,theory);
 		} else {
 			logger.info("Verification failed. Attempting to solve automatically by employing different solvers.");
@@ -127,7 +175,7 @@ public class IsabelleProofChecker {
 					// The content of the file has changed, and this can
 					// only happen IsabelleUtils.SOLVERS.length times,
 					// so the recursive call is fine.
-					return this.verifyTheoryFile(newFile);
+					return this.verifyTheoryFile(newFile, framework);
 				} else {
 					logger.info("Automatic verification failed. "
 							+ "You might be able to fix the errors manually within Isabelle.");
@@ -136,6 +184,40 @@ public class IsabelleProofChecker {
 			
 			return new Pair<Boolean,File>(false, null);
 		}
+	}
+	
+	private void generateProofDocument(File theory, String adHocSessionName, String theoryPath) throws IOException, InterruptedException, IsabelleBuildFailedException {
+		String generatedPath = theory.getParent();
+		
+		File docFolder = new File(generatedPath + File.separator + "document" + File.separator);
+		docFolder.mkdir();
+		String texDoc = generatedPath + File.separator + "document" + File.separator + "root.tex";
+		SimpleFileWriter writer = new SimpleFileWriter();
+		writer.writeToFile(texDoc, this.texTemplate);
+		
+		String isabelleCommand = "isabelle build -e -D " + generatedPath + " -D " + theoryPath + 
+				" -o quick_and_dirty -o browser_info -b " + adHocSessionName;
+		
+		int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
+		
+		if(status != 0) {
+			logger.warn("Isabelle documentation generation failed.");
+			
+			throw new IsabelleBuildFailedException();
+		}
+	}
+	
+	private String buildSessionRoot(String theoryName, File theory) {
+		// Session names MUST be universally unique, as Isabelle seems to be incapable of 
+		// rebuilding single sessions without triggering full rebuilds.
+		// TODO: Is there a way to do it?
+		String sessionName = "ad_hoc_session_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+		
+		String result = this.rootTemplate.replace(SESSION_NAME_VAR, sessionName).replace(THEORY_NAME_VAR, theoryName);
+		SimpleFileWriter writer = new SimpleFileWriter();
+		writer.writeToFile(theory.getParent() + File.separator + "ROOT", result);
+		
+		return sessionName;
 	}
 	
 	/**

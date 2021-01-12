@@ -19,6 +19,7 @@ public class IsabelleUtils {
 	 * String used by Isabelle to mark Exceptions in its commands
 	 */
 	public static final String EXCEPTION = "Exception";
+	
 	/**
 	 * File extension for Isabelle theory files.
 	 */
@@ -40,6 +41,10 @@ public class IsabelleUtils {
 	 */
 	public static final String[] SOLVERS = {"simp", "blast", "metis", "fastforce"};
 
+	/**
+	 * String used by Isabelle to denote the line stating imported theories
+	 */
+	public static final String IMPORTS = "imports";
 	
 	/**
 	 * This method tries, along with other things, to match Prolog predicates

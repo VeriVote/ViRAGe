@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
+import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
@@ -15,7 +16,7 @@ import com.fr2501.virage.types.SearchResult;
  * A {@link VirageJob} used to analyze a composition.
  *
  */
-public class VirageAnalyzeJob extends VirageJobWithExplicitResult<List<SearchResult<Boolean>>> {
+public class VirageAnalyzeJob extends VirageJobWithExplicitResult<List<List<SearchResult<BooleanWithUncertainty>>>> {
 	private List<String> propertyStrings;
 	private List<Property> properties;
 	private DecompositionTree tree;
@@ -26,7 +27,7 @@ public class VirageAnalyzeJob extends VirageJobWithExplicitResult<List<SearchRes
 	public VirageAnalyzeJob(VirageUserInterface issuer, String tree, List<String> properties) {
 		super(issuer);
 		
-		this.tree = new DecompositionTree(tree);
+		this.tree = DecompositionTree.parseString(tree);
 		this.propertyStrings = properties;
 	}
 	
@@ -45,7 +46,7 @@ public class VirageAnalyzeJob extends VirageJobWithExplicitResult<List<SearchRes
 	}
 
 	@Override
-	public List<SearchResult<Boolean>> getResult() {
+	public List<List<SearchResult<BooleanWithUncertainty>>> getResult() {
 		return this.result;
 	}
 }

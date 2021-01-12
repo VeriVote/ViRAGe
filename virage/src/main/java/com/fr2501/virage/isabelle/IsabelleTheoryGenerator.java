@@ -68,6 +68,10 @@ public class IsabelleTheoryGenerator {
 	
 	private Map<String, String> typedVariables;
 	
+	public IsabelleTheoryGenerator(FrameworkRepresentation framework) {
+		this(framework.getTheoryPath(), framework);
+	}
+	
 	public IsabelleTheoryGenerator(String theoryPath, FrameworkRepresentation framework) {
 		if(THEORY_TEMPLATE.equals("")) {
 			InputStream theoryTemplateStream = this.getClass().getClassLoader().getResourceAsStream("theory.template");
@@ -101,16 +105,18 @@ public class IsabelleTheoryGenerator {
 	/**
 	 * This method takes a Set of {@link CompositionProof} objects and a composition,
 	 * translates this information to Isabelle syntax and writes its result to a file.
-	 * @param path a path to the folder to which the result shall be written. 
-	 * If path points to a file, this file will be overwritten and the name will most probably
-	 * not correspond to the theory inside, so Isabelle won't be able to verify it.
 	 * @param composition the composition
 	 * @param proofs proofs for all the claimed properties
+	 * @param outputPath a path to the folder to which the result shall be written. 
+	 * If path points to a file, this file will be overwritten and the name will most probably
+	 * not correspond to the theory inside, so Isabelle won't be able to verify it.
 	 * @return the {@link File} containing the results
 	 */
 	public File generateTheoryFile(String composition, 
 			List<CompositionProof> proofs, String outputPath) {
 		composition = StringUtils.removeWhitespace(composition);
+		
+		this.typedVariables = new HashMap<String,String>();
 		
 		String theoryName = THEORY_NAME + "_" + theoryCounter;
 		String moduleName = MODULE_NAME + "_" + theoryCounter;
@@ -199,6 +205,9 @@ public class IsabelleTheoryGenerator {
 		SimpleFileWriter writer = new SimpleFileWriter();
 		
 		if(!outputPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
+			if(!outputPath.endsWith(File.separator)) {
+				outputPath = outputPath + File.separator;
+			}
 			outputPath = outputPath + theoryName + IsabelleUtils.FILE_EXTENSION;
 		}
 		

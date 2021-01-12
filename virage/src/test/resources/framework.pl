@@ -62,12 +62,7 @@
 % condorcet_consistent(electoral_module)
 % defer_condorcet_consistent(electoral_module)
 % condorcet_compatible(electoral_module)
-%% decrementing(electoral_module)
-%% defer_deciding(electoral_module)
-%% rejecting(electoral_module)
-%% eliminating(electoral_module)
 % condorcet_rating(eval_func)
-%% homogeneous(electoral_module)
 %
 % === composition_rule
 % = max_aggregator.thy
@@ -165,7 +160,7 @@ monotone(seq_comp(X,Y)) :-
 defer_monotone(X) :- defer_lift_invariant(X).
 
 % = defer_module.thy
-% defer_module_non_electing
+% defer_module_defer_lift_invariant
 defer_lift_invariant(defer_module).
 % = pass_module.thy
 % pass_module_defer_lift_invariant
@@ -293,7 +288,6 @@ eliminates(1,parallel_comp(X,Y,max_aggregator)) :-
 
 % = sequential_composition.thy 
 % disjoint_compatible_seq
-%% The '_' might be wrong, keep that in mind.
 disjoint_compatible(seq_comp(X,_),Z) :-
 	disjoint_compatible(X,Z).
 % = parallel_composition.thy

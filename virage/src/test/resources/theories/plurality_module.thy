@@ -11,6 +11,10 @@ begin
 *)
 abbreviation win_count where "win_count p a \<equiv> card{i::nat. i < size p \<and> above (p!i) a = {a}}"
 
+fun win_count_code :: "'a Profile \<Rightarrow> 'a \<Rightarrow> nat" where
+  "win_count_code Nil a = 0" |
+  "win_count_code (p#ps) a = (if (above p a = {a}) then 1 else 0) + win_count_code ps a"
+
 (* The plurality module elects all modules with the maximum win count among all alternatives, and
    rejects all the other alternatives. *)
 fun Plurality_module :: "'a Electoral_module" where
@@ -18,6 +22,14 @@ fun Plurality_module :: "'a Electoral_module" where
     ({a \<in> A. \<forall>x \<in> A. win_count p x \<le> win_count p a},
      {a \<in> A. \<exists>x \<in> A. win_count p x > win_count p a},
      {})"
+
+fun Plurality_module_code :: "'a Electoral_module" where
+  "Plurality_module_code A p =
+    ({a \<in> A. \<forall>x \<in> A. win_count_code p x \<le> win_count_code p a},
+     {a \<in> A. \<exists>x \<in> A. win_count_code p x > win_count_code p a},
+     {})"
+
+export_code Plurality_module_code in Haskell
 
 (* Soundness: Plurality Module *)
 (* The plurality module satisfies the electoral_module predicate. This ensures it can be used as

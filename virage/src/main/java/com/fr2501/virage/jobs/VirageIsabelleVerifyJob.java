@@ -26,7 +26,7 @@ public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Bo
 	protected void concreteExecute() throws Exception {
 		this.checker = this.executingCore.getIsabelleProofChecker();
 		
-		this.result = this.checker.verifyTheoryFile(this.file);
+		this.result = this.checker.verifyTheoryFile(this.file, this.executingCore.getFrameworkRepresentation());
 	}
 
 }

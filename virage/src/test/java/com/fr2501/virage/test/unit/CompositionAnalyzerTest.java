@@ -20,6 +20,7 @@ import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
+import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
@@ -69,7 +70,8 @@ public abstract class CompositionAnalyzerTest {
 		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("monotone"));
 		
-		SearchResult<Boolean> result = analyzer.analyzeComposition(smcTree, properties);
+		List<SearchResult<BooleanWithUncertainty>> resultList = analyzer.analyzeComposition(smcTree, properties);
+		SearchResult<BooleanWithUncertainty> result = resultList.get(0);
 		
 		if(result.getState() == QueryState.TIMEOUT) {
 			logger.warn("The current CompositionAnalyzer is very slow. "
@@ -78,7 +80,7 @@ public abstract class CompositionAnalyzerTest {
 		}
 		
 		assertTrue(result.hasValue());
-		assertTrue(result.getValue());
+		assertTrue(result.getValue() == BooleanWithUncertainty.TRUE);
 	}
 	
 	@Test
