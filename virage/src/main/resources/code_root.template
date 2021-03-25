@@ -1,4 +1,4 @@
-session $SESSION_NAME = Voting +
+session $SESSION_NAME = Verified_Voting_Rule_Construction +
   theories
     $THEORY_NAME
 

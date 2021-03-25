@@ -48,18 +48,18 @@ public abstract class CompositionAnalyzerTest {
 	@Test
 	public void testSequentialMajorityComparison() throws ValueNotPresentException, IOException {
 		logger.info("testSequentialMajorityComparison()");
-		String smc = "seq_comp(" + 
-						"loop_comp(" + 
-							"parallel_comp(" + 
-								"seq_comp(" + 
+		String smc = "sequential_composition(" + 
+						"loop_composition(" + 
+							"parallel_composition(" + 
+								"sequential_composition(" + 
 									"pass_module(2,_)," + 
-									"seq_comp(" + 
-										"downgrade(" + 
-											"plurality_module)," + 
+									"sequential_composition(" + 
+										"revision_composition(" + 
+											"plurality)," + 
 										"pass_module(1,_)))," + 
 								"drop_module(2,_)," + 
 								"max_aggregator)," + 
-							"defer_eq_condition(1))," + 
+							"defer_equal_condition(1))," + 
 						"elect_module)";
 		
 		DecompositionTree smcTree = DecompositionTree.parseString(smc);
@@ -68,7 +68,7 @@ public abstract class CompositionAnalyzerTest {
 		analyzer.setTimeout(10000);
 		
 		List<Property> properties = new LinkedList<Property>();
-		properties.add(this.framework.getProperty("monotone"));
+		properties.add(this.framework.getProperty("monotonicity"));
 		
 		List<SearchResult<BooleanWithUncertainty>> resultList = analyzer.analyzeComposition(smcTree, properties);
 		SearchResult<BooleanWithUncertainty> result = resultList.get(0);
@@ -162,7 +162,7 @@ public abstract class CompositionAnalyzerTest {
 		int trustedFailure = 0;
 		
 		for(int i=0; i<RUNS; i++) {
-			int amount = (int) (10 * Math.random()) + 1;
+			int amount = (int) (8 * Math.random()) + 1;
 			
 			List<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
 			
@@ -233,9 +233,9 @@ public abstract class CompositionAnalyzerTest {
 	@Test
 	public void testSimpleProofs() throws IOException {
 		List<Property> properties = new LinkedList<Property>();
-		properties.add(this.framework.getProperty("monotone"));
+		properties.add(this.framework.getProperty("monotonicity"));
 		
-		String votingRule = "seq_comp(pass_module(1,_),elect_module)";
+		String votingRule = "sequential_composition(pass_module(1,_),elect_module)";
 		
 		CompositionAnalyzer analyzer = this.createInstance();
 		
@@ -244,12 +244,11 @@ public abstract class CompositionAnalyzerTest {
 		// Prolog variable names are not always the same.
 		String proofString = proof.get(0).toString().replaceAll(",_[0-9]+", ",_1");
 		
-		String reference = ": monotone(seq_comp(pass_module(1,_1),elect_module)) by monotone_sequence\n" + 
-				"	: defer_lift_invariant(pass_module(1,_1)) by pass_module_defer_lift_invariant\n" + 
-				"	: non_electing(pass_module(1,_1)) by pass_module_non_electing\n" + 
-				"	: defers(1,pass_module(1,_1)) by pass_1_module_defers_1\n" + 
-				"	: electing(elect_module) by elect_module_electing";
-		
+		String reference = ": monotonicity(sequential_composition(pass_module(1,_1),elect_module)) by seq_comp_mono\n"
+				+ "	: defer_lift_invariance(pass_module(1,_1)) by pass_mod_dl_inv\n"
+				+ "	: non_electing(pass_module(1,_1)) by pass_mod_non_electing\n"
+				+ "	: defers(1,pass_module(1,_1)) by pass_one_mod_def_one\n"
+				+ "	: electing(elect_module) by elect_mod_electing";
 		logger.debug(proofString);
 		assertTrue(proofString.equals(reference));
 	}
