@@ -31,9 +31,7 @@ public class FrameworkRepresentation {
 	
 	private String composableModuleAlias;
 	
-	public FrameworkRepresentation(String absolutePath) {
-		this.absolutePath = absolutePath;
-		
+	public FrameworkRepresentation() {
 		this.componentTypes = new HashSet<ComponentType>();
 		this.components = new HashSet<Component>();
 		this.composableModules = new HashSet<ComposableModule>();
@@ -42,8 +40,18 @@ public class FrameworkRepresentation {
 		this.properties = new HashSet<Property>();
 	}
 	
+	public FrameworkRepresentation(String absolutePath) {
+		this();
+		
+		this.absolutePath = absolutePath;
+	}
+	
 	public String getAbsolutePath() {
 		return this.absolutePath;
+	}
+	
+	public void setAbsolutePath(String absolutePath) {
+		this.absolutePath = absolutePath;
 	}
 	
 	public Set<ComponentType> getComponentTypes() {

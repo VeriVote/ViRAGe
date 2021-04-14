@@ -15,6 +15,7 @@ import com.fr2501.util.StringUtils;
  * Very simple parser for Isabelle theories, nowhere near complete.
  *
  */
+@Deprecated
 public class IsabelleTheoryParser {
 	private static final String DEFINITION = "definition";
 	private static final String FUNCTION = "fun";
@@ -26,6 +27,7 @@ public class IsabelleTheoryParser {
 	 * @return a map containing all functions and definitions and their corresponding files
 	 * @throws IOException if file system interaction fails
 	 */
+	@Deprecated
 	public Map<String, String> getAllFunctionsAndDefinitions(String path) throws IOException {
 		Map<String, String> res = new HashMap<String, String>();
 		
@@ -59,6 +61,7 @@ public class IsabelleTheoryParser {
 		return res;
 	}
 	
+	@Deprecated
 	private List<File> collectContainedFiles(File dir) {
 		if(!dir.isDirectory()) {
 			throw new IllegalArgumentException();
@@ -82,6 +85,7 @@ public class IsabelleTheoryParser {
 	 * @return a list of the imports
 	 * @throws IOException if reading the file is not possible
 	 */
+	@Deprecated
 	public List<String> getImportsFromTheoryFile(File theory) throws IOException {
 		List<String> res = new LinkedList<String>();
 		SimpleFileReader reader = new SimpleFileReader();
@@ -116,6 +120,7 @@ public class IsabelleTheoryParser {
 	 * @return a String representing the definition
 	 * @throws IOException if file system interaction fails
 	 */
+	@Deprecated
 	public String getDefinitionByName(String name, File theory) throws IOException {
 		SimpleFileReader reader = new SimpleFileReader();
 		
