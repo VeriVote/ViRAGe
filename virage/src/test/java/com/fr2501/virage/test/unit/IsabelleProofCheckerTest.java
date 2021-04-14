@@ -35,18 +35,18 @@ public class IsabelleProofCheckerTest {
 	
 	private static final String EPL_PATH = "src/test/resources/framework.pl";
 	private static final String THEORY_PATH = "src/test/resources/theories";
-	private static final String SMC = 	"seq_comp(" + 
-											"loop_comp(" + 
-											"parallel_comp(" + 
-												"seq_comp(" + 
+	private static final String SMC = "sequential_composition(" + 
+										"loop_composition(" + 
+											"parallel_composition(" + 
+												"sequential_composition(" + 
 													"pass_module(2,_)," + 
-													"seq_comp(" + 
-														"downgrade(" + 
-															"plurality_module)," + 
+													"sequential_composition(" + 
+														"revision_composition(" + 
+															"plurality)," + 
 														"pass_module(1,_)))," + 
 												"drop_module(2,_)," + 
 												"max_aggregator)," + 
-											"defer_eq_condition(1))," + 
+											"defer_equal_condition(1))," + 
 										"elect_module)";
 	private FrameworkRepresentation framework;
 	private CompositionAnalyzer analyzer;
@@ -126,7 +126,6 @@ public class IsabelleProofCheckerTest {
 	@Test
 	public void simpleFrameworkTest() throws IOException, InterruptedException {
 		List<Property> properties = new LinkedList<Property>();
-		properties.add(this.framework.getProperty("electoral_module"));
 		properties.add(this.framework.getProperty("electing"));
 		
 		proveClaims(properties, "elect_module");
@@ -142,14 +141,13 @@ public class IsabelleProofCheckerTest {
 	}
 	
 	// Takes long, not performed by default.
-	@Test
+	// Currently, no such module is known for the reworked framework, so test fails.
+	/*@Test
 	public void worksWithBlastButNotWithSimpTest() throws IOException, InterruptedException {
 		List<Property> properties = new LinkedList<Property>();
-		properties.add(this.framework.getProperty("electoral_module"));
-		//properties.add(this.framework.getProperty("electing"));
-		//properties.add(this.framework.getProperty("monotone"));
+		properties.add(this.framework.getProperty("non_electing"));
 		
-		proveClaims(properties, "parallel_comp(elect_module,elect_module,max_aggregator)");
+		proveClaims(properties, "parallel_composition(elect_module,elect_module,max_aggregator)");
 		
 		IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
 		Pair<Boolean,File> result = checker.verifyTheoryFile(this.file, this.framework);
@@ -160,14 +158,13 @@ public class IsabelleProofCheckerTest {
 		assertTrue(checker.verifyTheoryFile(this.file, this.framework).getFirstValue());
 			
 		checker.destroy();
-	}
+	}*/
 	
 	@Test
 	public void SMCTest() throws IOException, InterruptedException {
 		List<Property> properties = new LinkedList<Property>();
-		properties.add(this.framework.getProperty("electoral_module"));
 		properties.add(this.framework.getProperty("electing"));
-		properties.add(this.framework.getProperty("monotone"));
+		properties.add(this.framework.getProperty("monotonicity"));
 		
 		proveClaims(properties, SMC);
 		

@@ -189,7 +189,7 @@ public class IsabelleTheoryGenerator {
 				String importStringWithoutSuffix = importString.replace(IsabelleUtils.FILE_EXTENSION, "");
 				
 				if(!imports.contains(importStringWithoutSuffix)) {
-					imports += " " + "Voting." + importStringWithoutSuffix + " ";
+					imports += " " + this.framework.getSessionName() + "." + importStringWithoutSuffix + " ";
 				}
 			}
 		}
@@ -271,7 +271,7 @@ public class IsabelleTheoryGenerator {
 		}
 		
 		for(String origin: originStrings) {
-			res += "Voting." + origin + " ";
+			res += this.framework.getSessionName() + "." + origin + " ";
 		}
 		
 		if(usingUnprovenFacts) {

@@ -20,18 +20,18 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
 public class IsabelleCodeGeneratorTest {
 	private static final String EPL_PATH = "src/test/resources/framework.pl";
 	private static final String THEORY_PATH = "src/test/resources/theories";
-	private static final String SMC = 	"seq_comp(" + 
-											"loop_comp(" + 
-											"parallel_comp(" + 
-												"seq_comp(" + 
+	private static final String SMC = 	"sequential_composition(" + 
+											"loop_composition(" + 
+											"parallel_composition(" + 
+												"sequential_composition(" + 
 													"pass_module(2,_)," + 
-													"seq_comp(" + 
-														"downgrade(" + 
-															"plurality_module)," + 
+													"sequential_composition(" + 
+														"revision_composition(" + 
+															"plurality)," + 
 														"pass_module(1,_)))," + 
 												"drop_module(2,_)," + 
 												"max_aggregator)," + 
-											"defer_eq_condition(1))," + 
+											"defer_equal_condition(1))," + 
 										"elect_module)";
 	private FrameworkRepresentation framework;
 	private IsabelleTheoryGenerator generator;
@@ -68,7 +68,7 @@ public class IsabelleCodeGeneratorTest {
 	public void pluralityTest() throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
 		IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 		
-		String module = "plurality_module";
+		String module = "plurality";
 	
 		File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
 		

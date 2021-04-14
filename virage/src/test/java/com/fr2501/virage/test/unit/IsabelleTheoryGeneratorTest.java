@@ -21,18 +21,18 @@ import com.fr2501.virage.types.Property;
 
 public class IsabelleTheoryGeneratorTest {
 	private static final String PATH = "src/test/resources/framework.pl";
-	private static final String SMC = 	"seq_comp(" + 
-											"loop_comp(" + 
-											"parallel_comp(" + 
-												"seq_comp(" + 
+	private static final String SMC = "sequential_composition(" + 
+										"loop_composition(" + 
+											"parallel_composition(" + 
+												"sequential_composition(" + 
 													"pass_module(2,_)," + 
-													"seq_comp(" + 
-														"downgrade(" + 
-															"plurality_module)," + 
+													"sequential_composition(" + 
+														"revision_composition(" + 
+															"plurality)," + 
 														"pass_module(1,_)))," + 
 												"drop_module(2,_)," + 
 												"max_aggregator)," + 
-											"defer_eq_condition(1))," + 
+											"defer_equal_condition(1))," + 
 										"elect_module)";
 	private FrameworkRepresentation framework;
 	private CompositionAnalyzer analyzer;
@@ -48,8 +48,7 @@ public class IsabelleTheoryGeneratorTest {
 	@Test
 	public void testSMCProof() {
 		List<Property> properties = new LinkedList<Property>();
-		properties.add(this.framework.getProperty("electoral_module"));
-		properties.add(this.framework.getProperty("monotone"));
+		properties.add(this.framework.getProperty("monotonicity"));
 		properties.add(this.framework.getProperty("electing"));
 		
 		proveClaims(properties, SMC);
@@ -58,7 +57,6 @@ public class IsabelleTheoryGeneratorTest {
 	@Test
 	public void testVerySimpleProof() {
 		List<Property> properties = new LinkedList<Property>();
-		properties.add(this.framework.getProperty("electoral_module"));
 		properties.add(this.framework.getProperty("electing"));
 		
 		proveClaims(properties, "elect_module");
@@ -67,20 +65,18 @@ public class IsabelleTheoryGeneratorTest {
 	@Test
 	public void testSimpleProof() {
 		List<Property> properties = new LinkedList<Property>();
-		properties.add(this.framework.getProperty("electoral_module"));
 		properties.add(this.framework.getProperty("electing"));
-		properties.add(this.framework.getProperty("monotone"));
+		properties.add(this.framework.getProperty("monotonicity"));
 		
-		proveClaims(properties, "seq_comp(pass_module(1,_),elect_module)");
+		proveClaims(properties, "sequential_composition(pass_module(1,_),elect_module)");
 	}
 	
 	@Test
 	public void testCondorcetProof() {
 		List<Property> properties = new LinkedList<Property>();
-		properties.add(this.framework.getProperty("electoral_module"));
-		properties.add(this.framework.getProperty("condorcet_consistent"));
+		properties.add(this.framework.getProperty("condorcet_consistency"));
 		
-		proveClaims(properties, "seq_comp(elimination_module(copeland_score,max,less), elect_module)");
+		proveClaims(properties, "sequential_composition(elimination_module(copeland_score,max,less), elect_module)");
 	}
 	
 	protected void proveClaims(List<Property> properties, String composition) {

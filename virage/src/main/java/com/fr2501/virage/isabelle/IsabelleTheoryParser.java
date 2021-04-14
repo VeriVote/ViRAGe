@@ -31,12 +31,12 @@ public class IsabelleTheoryParser {
 		
 		File pathFile = new File(path).getCanonicalFile();
 		
-		File[] files;
+		List<File> files = new LinkedList<File>();
+		
 		if(pathFile.isDirectory()) {
-			files = pathFile.listFiles();
+			files = this.collectContainedFiles(pathFile);
 		} else {
-			files = new File[1];
-			files[0] = pathFile;
+			files.add(pathFile);
 		}
 		
 		SimpleFileReader reader = new SimpleFileReader();
@@ -57,6 +57,23 @@ public class IsabelleTheoryParser {
 		}
 		
 		return res;
+	}
+	
+	private List<File> collectContainedFiles(File dir) {
+		if(!dir.isDirectory()) {
+			throw new IllegalArgumentException();
+		}
+		
+		List<File> files = new LinkedList<File>();
+		for(File file: dir.listFiles()) {
+			if(file.isDirectory()) {
+				files.addAll(this.collectContainedFiles(file));
+			} else {
+				files.add(file);
+			}
+		}
+		
+		return files;
 	}
 	
 	/**
