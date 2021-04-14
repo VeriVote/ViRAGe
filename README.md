@@ -12,13 +12,24 @@ For ViRAGe to work properly, some dependencies have to be supplied manually.
 
 Download and install Isabelle, for example from the package sources of your Linux distribution or from its [official page](http://isabelle.in.tum.de/). After installation, you have to make sure that Isabelle is accessible via the command line, i.e. the console command ```isabelle``` must point to the executable of the same name located in ```../isabelle/bin```. How to achieve this is heavily dependent on your system, and at this point is not possible on Windows machines, as this executable does not run there.
 
+For Manjaro: Install isabelle from the AUR, that's it.
+For Ubuntu: Download Isabelle from its [website](https://isabelle.in.tum.de/), extract the tar and add the ```./Isabelle2020/bin``` to your path. There might be other solutions as well.
+
 ### SWI-Prolog
 
-ViRAGe uses [JPL7](https://jpl7.org/) for its Prolog interaction. On some operating systems, it is shipped with the default swi-prolog/swipl install, on some others (e.g. Ubuntu), ```swi-prolog-java``` has to be installed explicitly. Sometimes it is necessary to also set some environment variables, as described [here](https://jpl7.org/TutorialResources). Bash scripts for building and running ViRAGe can be found in the repository, but the SWI_HOME_DIR variable has to be changed to fit your installation of SWI-Prolog. These scripts only change the bare minimum of variables, on some systems this might not be enough, follow the tutorial above in case of further problems. When the required environment variables are set correctly and permanently, the scripts can be omitted and ViRAGe can be built and run using Maven alone.
+ViRAGe uses [JPL7](https://jpl7.org/) for its Prolog interaction. On some operating systems, it is shipped with the default swi-prolog/swipl install, for Ubuntu and other Debian-bases systems see [here](https://swi-prolog.org/build/PPA.txt) and ```swi-prolog-java``` has to be installed explicitly. Sometimes it is necessary to also set some environment variables, as described [here](https://jpl7.org/TutorialResources). Bash scripts for building and running ViRAGe can be found in the repository, but the SWI_HOME_DIR variable has to be changed to fit your installation of SWI-Prolog. These scripts only change the bare minimum of variables, on some systems this might not be enough, follow the tutorial above in case of further problems. When the required environment variables are set correctly and permanently, the scripts can be omitted and ViRAGe can be built and run using Maven alone.
 
 ### Scala
 
-Make sure to install Scala on your system if ViRAGe shall compile generated source files automatically.
+Make sure to install Scala on your system if ViRAGe shall compile generated source files automatically. At least ```scala 2.13.0``` is required, as Isabelle uses ```scala.util.chaining.*```.
+
+### pdflatex
+
+The Isabelle document tool requires ```pdflatex``` to be installed. As this tool is invoked on every proof process started by ViRAGe, make sure ```pdflatex``` is available. ```texlive-full``` is recommended, ```texlive-core``` does not contain all packages required by Isabelle.
+
+### BEAST
+
+The experimental SBMC integration requires the BEAST framework to be available. Clone the repository, check out the ```experimental``` branch and run ```mvn clean install```. If this procedure changes at some point, this README should be updated, in doubt, refer to the BEAST repository.
 
 ## Usage
 
@@ -54,7 +65,7 @@ Typing "exit" will terminate ViRAGe :-)
 
 ## Known Problems
 
-Error messages are often just logged Exceptions at this point. Forgit  somebody not familiar with ViRAGe's internals, this might be more confusing than helpful and will be changed in the future. (If any of the classes in the stack-trace is one of JPL's, that probably means that JPL is not set up correctly yet.)
+Error messages are often just logged Exceptions at this point. For somebody not familiar with ViRAGe's internals, this might be more confusing than helpful and will be changed in the future. (If any of the classes in the stack-trace is one of JPL's, that probably means that JPL is not set up correctly yet.)
 
 When invoking the Isabelle process on the "Voting" session (required for Code Generation and Automatic Verification) for the first time, this session has to be built. This might take a considerable amount of time and, on some machines, not work on the first try. In this case, navigating to ```../src/test/resources/theories/``` and calling ```isabelle build -o quick_and_dirty -o browser_info -b -D .``` might help. While the build process might not finish on first try due to SMT-timeouts, rerunning it a few times will usually work at some point, ViRAGe can then be restarted in the usual way. A better solution is very desirable, but not available yet.
 

@@ -2,7 +2,6 @@ package com.fr2501.virage.test.eval;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,16 +11,11 @@ import com.fr2501.util.StringUtils;
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
-import com.fr2501.virage.isabelle.IsabelleProofChecker;
-import com.fr2501.virage.isabelle.IsabelleProofGenerator;
-import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
-import com.fr2501.virage.prolog.PrologProof;
 import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.test.unit.TestDataGenerator;
-import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
@@ -31,7 +25,7 @@ public class PropertySetTest {
 	private static final String FRAMEWORK_PATH = "src/test/resources/framework.pl";
 	
 	@Test
-	public void analyzerEval() throws IOException, MalformedEPLFileException, InterruptedException {
+	public void analyzerEval() throws IOException, MalformedEPLFileException {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 		FrameworkRepresentation framework = parser.parseFramework(new File(FRAMEWORK_PATH));
 		

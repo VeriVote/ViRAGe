@@ -121,6 +121,7 @@ public class IsabelleProofChecker {
 	 * is used again and in the same file (might be a bug?).
 	 * 
 	 * @param theory an Isabelle theory file
+	 * @param framework a framework representation
 	 * @return (true, newFile) if verification succeeds, (false, null) otherwise
 	 * 
 	 * @throws IOException if file system interaction fails
