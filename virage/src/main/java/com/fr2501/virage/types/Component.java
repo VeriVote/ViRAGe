@@ -45,4 +45,10 @@ public class Component implements TypedAndParameterized {
 		
 		return res;
 	}
+	
+	public String toStringWithoutTypeSignature() {
+		String res = this.name + "(" + StringUtils.printCollection(this.parameters) + ")";
+		
+		return res;
+	}
 }

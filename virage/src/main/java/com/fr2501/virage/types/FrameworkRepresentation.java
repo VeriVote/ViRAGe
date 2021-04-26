@@ -266,6 +266,43 @@ public class FrameworkRepresentation {
 		
 		return res;
 	}
+	
+	public String toEPLString() {
+		String res = "";
+		
+		res += "% ==== " + this.theoryPath + " - " + this.sessionName + "\n";
+		
+		res += "% === component_type\n";
+		for(ComponentType type: this.componentTypes) {
+			res += "% == " + type.getName() + "\n";
+			for(Component comp: this.components) {
+				if(comp.getType().equals(type)) {
+					res += "% " + comp.toStringWithoutTypeSignature() + "\n";
+				}
+			}
+		}
+		
+		res += "% === composable_module\n";
+		
+		res += "% === compositional_structure\n";
+		for(CompositionalStructure structure: this.compositionalStructures) {
+			res += "% " + structure.toString() + "\n";
+		}
+		
+		res += "% === property\n";
+		for(Property prop: this.properties) {
+			res += "% " + prop.toString() + "\n";
+		}
+		
+		res += "% === composition_rule";
+		for(CompositionRule rule: this.compositionRules) {
+			res += rule.toEPLString();
+		}
+		
+		System.out.println(res);
+		
+		return res;
+	}
 
 	private void checkTypes(TypedAndParameterized object) {
 		this.checkTypes((Typed) object);

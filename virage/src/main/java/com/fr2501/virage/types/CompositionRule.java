@@ -47,4 +47,14 @@ public class CompositionRule {
 		
 		return res;
 	}
+	
+	public String toEPLString() {
+		String res = "";
+		
+		res += "% = " + this.origin + "\n";
+		res += "% " + this.name + "\n";
+		res += this.clause.toString() + "\n";
+		
+		return res;
+	}
 }

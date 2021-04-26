@@ -15,12 +15,15 @@ import de.unruh.isabelle.mlvalue.MLFunction;
 import de.unruh.isabelle.mlvalue.MLFunction0;
 import de.unruh.isabelle.mlvalue.MLValue;
 import de.unruh.isabelle.mlvalue.StringConverter;
+import de.unruh.isabelle.mlvalue.Tuple2Converter;
 import de.unruh.isabelle.pure.Context;
 import de.unruh.isabelle.pure.Implicits;
 import de.unruh.isabelle.pure.Theory;
 import de.unruh.isabelle.pure.Thm;
+import de.unruh.isabelle.pure.Typ;
 import de.unruh.isabelle.mlvalue.MLValue.Converter;
 import scala.Some;
+import scala.Tuple2;
 import scala.collection.JavaConverters;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
@@ -34,12 +37,15 @@ import static scala.concurrent.ExecutionContext.global;
  */
 public class ScalaIsabelleFacade {
 	private static final String ISA_SEPARATOR = ".";
+	private static final JavaStringConverter sConv = new JavaStringConverter();
 	private static final ListConverter<String> lConv = new ListConverter<String>(new JavaStringConverter());
+	private static final ListConverter<Tuple2<String,String>> t2LConv = new ListConverter<Tuple2<String,String>>(new Tuple2Converter<String,String>(sConv, sConv));
 	
 	private String sessionDir;
 	private String sessionName;
 	
 	private Set<String> theoryNames;
+
 	private Map<String, Map<String, String>> theorems;
 	private Map<String, Map<String, String>> functionsAndDefinitions;
 	
@@ -65,6 +71,18 @@ public class ScalaIsabelleFacade {
 		
 		this.isabelle = new Isabelle(setup);
 		this.init();
+	}
+	
+	public Set<String> getTheoryNames() {
+		return theoryNames;
+	}
+
+	public Map<String, Map<String, String>> getTheorems() {
+		return theorems;
+	}
+
+	public Map<String, Map<String, String>> getFunctionsAndDefinitions() {
+		return functionsAndDefinitions;
 	}
 	
 	private void init() {
@@ -98,6 +116,10 @@ public class ScalaIsabelleFacade {
 				global(), 
 				Implicits.theoryConverter(), 
 				lConv);
+		MLFunction<Thm,String> convString = 
+				MLFunction.compileFunction("fn thm => (Syntax.string_of_term_global (hd (Theory.ancestors_of (Thm.theory_of_thm thm))) (Thm.prop_of thm))",
+						isabelle, global(),Implicits.thmConverter(), sConv);
+		
 		
 		for(String thyName: this.theoryNames) {
 			Map<String, String> toBeFilled = new HashMap<String, String>();
@@ -119,7 +141,7 @@ public class ScalaIsabelleFacade {
 				try {
 					MLFunction<Theory,Thm> thmFun = MLFunction.compileFunction("fn thy => Global_Theory.get_thm thy \"" + thmName + "\"", this.isabelle, global(), Implicits.theoryConverter(), Implicits.thmConverter());
 					Thm thm = thmFun.apply(theory, this.isabelle, global(), Implicits.theoryConverter()).retrieveNow(Implicits.thmConverter(), this.isabelle, global());
-					String pretty = thm.prettyRaw(ctxt, global());
+					String pretty = convString.apply(thm.mlValue(), isabelle, global()).retrieveNow(sConv, isabelle, global());
 					
 					toBeFilled.put(thmName, pretty);
 				} catch (Exception e) {
@@ -152,22 +174,36 @@ public class ScalaIsabelleFacade {
 					+ ")"
 				+ "(Defs.all_specifications_of (Theory.defs_of thy))))", this.isabelle, global(), Implicits.theoryConverter(), lConv);
 		
-		MLFunction<Theory, scala.collection.immutable.List<String>> mlFunToExtractConsts = MLFunction.compileFunction(
-				"fn thy => #constants (Consts.dest (Sign.consts_of thy))", this.isabelle, global(), Implicits.theoryConverter(), lConv);
+		String extractConstFunString = "#constants (Consts.dest (Sign.consts_of thy))";
+		
+		
+		String toStringFunction = "(fn x => let fun typ_to_string (x: Basic_Term.typ): string = case x of\n"
+				+ "Type x => \"(\" ^ (fst x) ^ String.concat (map (typ_to_string) (snd x)) ^ \")\"\n"
+				+ "| _ => \"(?\'a)\" in typ_to_string x end)";
+		
+		MLFunction<Theory, scala.collection.immutable.List<Tuple2<String,String>>> mlFunToExtractSigns = MLFunction.compileFunction(
+				"fn thy => ListPair.zip ((map (fn x => (fst x)) (" + extractConstFunString + ")),map " + toStringFunction + "(map (fn x => (fst (snd x))) (" + extractConstFunString + ")))", this.isabelle, global(), Implicits.theoryConverter(), t2LConv);
 		
 		for(String thyName: this.theoryNames) {
+			String thyNameWithoutSession = thyName.split("\\.")[1];
+			
 			Map<String, String> toBeFilled = new HashMap<String, String>();
-			this.theorems.put(thyName, toBeFilled);
+			this.functionsAndDefinitions.put(thyName, toBeFilled);
 			
 			Context ctxt = Context.apply(thyName, this.isabelle, global());
 			Theory theory = ctxt.theoryOf(this.isabelle, global());
 			
 			List<String> names = JavaConverters.asJava(mlFunToExtractAllNames.apply(theory.mlValue(), this.isabelle, global()).retrieveNow(lConv, this.isabelle, global()));
-			List<String> filteredNames = new LinkedList<String>();
+			List<Tuple2<String,String>> types = JavaConverters.asJava(mlFunToExtractSigns.apply(theory.mlValue(), this.isabelle, global()).retrieveNow(t2LConv, this.isabelle, global()));
 			
-			List
 			
-			for(String name: names) {
+			for(int i=0; i<names.size(); i++) {
+				String name = names.get(i);
+				
+				if(!name.startsWith(thyNameWithoutSession + ".")) {
+					continue;
+				}
+				
 				if(name.endsWith("_def") || name.endsWith("_def_raw")) {
 					name = name.replace("_raw", "");
 					name = name.replace("_def", "");
@@ -176,12 +212,22 @@ public class ScalaIsabelleFacade {
 						continue;
 					}
 					
-					filteredNames.add(name);
-					System.out.println(name);
+					String type = "";
+					
+					for(var tup: types) {
+						if(tup._1.equals(name)) {
+							type = tup._2;
+						}
+					}
+					
+					type = type.replace("Set.set(alternative)", "alternatives");
+							
+					toBeFilled.put(name, type);
+					System.out.println(name + " " + type);
 				}
 			}
 			
-			
+			System.out.println("");
 		}
 	}
 	
@@ -216,4 +262,5 @@ public class ScalaIsabelleFacade {
 		}
 		
 	}
+		
 }

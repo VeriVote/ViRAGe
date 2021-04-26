@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.StringUtils;
+import com.fr2501.virage.isabelle.IsabelleFrameworkExtractor;
 import com.fr2501.virage.jobs.VirageAnalyzeJob;
 import com.fr2501.virage.jobs.VirageExitJob;
 import com.fr2501.virage.jobs.VirageGenerateJob;
@@ -22,6 +23,7 @@ import com.fr2501.virage.jobs.VirageDummyJob;
 import com.fr2501.virage.jobs.VirageParseJob;
 import com.fr2501.virage.jobs.VirageProveJob;
 import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.FrameworkRepresentation;
 
 /**
  * 
@@ -56,7 +58,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 		
 		String defaultPath = "./src/test/resources/framework.pl";
 		
-		System.out.println("Please input the path to an EPL file. (default: " +
+		System.out.println("Please input the path to an EPL file or an Isabelle root directory. (default: " +
 				defaultPath + ")");
 		String path = this.scanner.nextLine();
 		
@@ -64,28 +66,41 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 			path = defaultPath;
 		}
 		
-		VirageParseJob parseJob;
-		try {
-			parseJob = new VirageParseJob(this, (new File(path).getCanonicalFile()));
+		if(!path.endsWith(".pl")) {
+			System.out.println("Please input the name of the session within this directory.");
+			String sessionName = this.scanner.nextLine();
 			
-			this.core.submit(parseJob);
-			while(parseJob.getState() != VirageJobState.FINISHED) {
-				if(parseJob.getState() == VirageJobState.FAILED) {
-
-					System.out.println("Please input the path to an EPL file. (default: " +
-							defaultPath + ")");
-					path = this.scanner.nextLine();
-					
-					if(path.equals("")) {
-						path = defaultPath;
+			IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
+			FrameworkRepresentation framework = extractor.extract(path, sessionName);
+			framework.setTheoryPath(path);
+			framework.setSessionName(sessionName);
+			
+			this.core.setFrameworkRepresentation(framework);
+		} else {
+		
+			VirageParseJob parseJob;
+			try {
+				parseJob = new VirageParseJob(this, (new File(path).getCanonicalFile()));
+				
+				this.core.submit(parseJob);
+				while(parseJob.getState() != VirageJobState.FINISHED) {
+					if(parseJob.getState() == VirageJobState.FAILED) {
+	
+						System.out.println("Please input the path to an EPL file or an Isabelle root directory. (default: " +
+								defaultPath + ")");
+						path = this.scanner.nextLine();
+						
+						if(path.equals("")) {
+							path = defaultPath;
+						}
+						
+						parseJob = new VirageParseJob(this, new File(path).getCanonicalFile());
+						this.core.submit(parseJob);
 					}
-					
-					parseJob = new VirageParseJob(this, new File(path));
-					this.core.submit(parseJob);
 				}
+			} catch (IOException e) {
+				logger.error("Something went wrong while accessing the file system.");
 			}
-		} catch (IOException e) {
-			logger.error("Something went wrong while accessing the file system.");
 		}
 		
 		while(true) {
