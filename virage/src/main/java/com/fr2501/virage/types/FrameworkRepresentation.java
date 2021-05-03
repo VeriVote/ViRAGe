@@ -1,5 +1,7 @@
 package com.fr2501.virage.types;
 
+import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,6 +9,12 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.fr2501.util.Pair;
+import com.fr2501.util.SimpleFileWriter;
+import com.fr2501.virage.core.ConfigReader;
+import com.fr2501.virage.prolog.PrologClause;
+import com.fr2501.virage.prolog.PrologPredicate;
 
 /**
  * 
@@ -29,21 +37,32 @@ public class FrameworkRepresentation {
 	private List<CompositionRule> compositionRules;
 	private Set<Property> properties;
 	
+	private List<Pair<String, String>> typeSynonyms;
+	private List<ComponentType> atomicTypes;
+	
 	private String composableModuleAlias;
 	
-	public FrameworkRepresentation() {
+	/*public FrameworkRepresentation() {
+		this(null);
+	}*/
+	
+	public FrameworkRepresentation(String absolutePath) {
+		this.absolutePath = absolutePath;
+		
 		this.componentTypes = new HashSet<ComponentType>();
 		this.components = new HashSet<Component>();
 		this.composableModules = new HashSet<ComposableModule>();
 		this.compositionalStructures = new HashSet<CompositionalStructure>();
 		this.compositionRules = new LinkedList<CompositionRule>();
 		this.properties = new HashSet<Property>();
-	}
-	
-	public FrameworkRepresentation(String absolutePath) {
-		this();
 		
-		this.absolutePath = absolutePath;
+		List<String> atomicTypeStrings = (new ConfigReader()).getAtomicTypes();
+		this.atomicTypes = new LinkedList<ComponentType>();
+		for(String s: atomicTypeStrings) {
+			ComponentType type = new ComponentType(s);
+			this.add(type);
+			this.atomicTypes.add(type);
+		}
 	}
 	
 	public String getAbsolutePath() {
@@ -78,6 +97,14 @@ public class FrameworkRepresentation {
 		return this.properties;
 	}
 	
+	public List<Pair<String, String>> getTypeSynonyms() {
+		return typeSynonyms;
+	}
+
+	public void setTypeSynonyms(List<Pair<String, String>> typeSynonyms) {
+		this.typeSynonyms = typeSynonyms;
+	}
+
 	public String getAlias() {
 		return this.composableModuleAlias;
 	}
@@ -174,6 +201,8 @@ public class FrameworkRepresentation {
 	 */
 	public void add(ComponentType ct) {
 		this.componentTypes.add(ct);
+		
+		this.updateFile();
 	}
 	
 	/**
@@ -184,6 +213,8 @@ public class FrameworkRepresentation {
 	public void add(Component c) {
 		this.checkTypes(c);
 		this.components.add(c);
+		
+		this.updateFile();
 	}
 	
 	/**
@@ -194,6 +225,8 @@ public class FrameworkRepresentation {
 	public void add(ComposableModule cm) {
 		this.checkTypes(cm);
 		this.composableModules.add(cm);
+		
+		this.updateFile();
 	}
 	
 	/**
@@ -204,6 +237,8 @@ public class FrameworkRepresentation {
 	public void add(CompositionalStructure cs) {
 		this.checkTypes(cs);
 		this.compositionalStructures.add(cs);
+		
+		this.updateFile();
 	}
 	
 	/**
@@ -211,7 +246,65 @@ public class FrameworkRepresentation {
 	 * @param cr the @link{ComposiotionRule} to be added
 	 */
 	public void add(CompositionRule cr) {
+		/*PrologClause actualClause = this.removeAtomicTypesFromClause(cr.getClause());
+		if(actualClause == null) {
+			return;
+		}
+		
+		cr = new CompositionRule(cr.getName(), cr.getOrigin(), actualClause);*/
+		
+		for(CompositionRule rule: this.compositionRules) {
+			if(rule.equals(cr)) return;
+		}
+		
 		this.compositionRules.add(cr);
+		
+		this.updateFile();
+	}
+	
+	private PrologClause removeAtomicTypesFromClause(PrologClause clause) {
+		PrologPredicate newSuccedent = this.removeAtomicTypesFromPredicate(clause.getSuccedent());
+		if(newSuccedent == null) {
+			return null;
+		}
+		
+		List<PrologPredicate> newAntecedents = new LinkedList<PrologPredicate>();
+		for(PrologPredicate antecedent: clause.getAntecedents()) {
+			PrologPredicate newAntecedent = this.removeAtomicTypesFromPredicate(antecedent);
+			if(newAntecedent != null) {
+				newAntecedents.add(newAntecedent);
+			}
+		}
+		
+		return new PrologClause(newSuccedent, newAntecedents);
+	}
+	
+	private PrologPredicate removeAtomicTypesFromPredicate(PrologPredicate pred) {
+		String name = pred.getName();
+		List<PrologPredicate> children = pred.getParameters();
+		
+		Property prop = this.getProperty(name);
+		if(prop == null) {
+			throw new IllegalArgumentException(name);
+		}
+		
+		for(int i=0; i<prop.getParameters().size(); i++) {
+			ComponentType cur = prop.getParameters().get(i);
+			
+			if(this.atomicTypes.contains(cur)) {
+				children.set(i, null);
+			}
+		}
+		
+		while(children.contains(null)) {
+			children.remove(null);
+		}
+		
+		if(children.size() == 0) {
+			return null;
+		}
+		
+		return new PrologPredicate(pred.getName(), children);
 	}
 	
 	/**
@@ -222,6 +315,34 @@ public class FrameworkRepresentation {
 	public void add(Property p) {
 		this.checkTypes(p);
 		this.properties.add(p);
+		
+		this.addDummyRulesIfNecessary(p);
+	}
+	
+	private void addDummyRulesIfNecessary(Property p) {
+		boolean allAtomicTypes = true;
+		for(ComponentType type: p.getParameters()) {
+			if(!this.atomicTypes.contains(type)) {
+				allAtomicTypes = false;
+				break;
+			}
+		}
+		
+		if(allAtomicTypes) {
+			// A new rule is added such that the atomic properties are ignored.
+			List<PrologPredicate> params = new LinkedList<PrologPredicate>();
+			for(ComponentType type: p.getParameters()) {
+				params.add(new PrologPredicate("_"));
+			}
+			
+			PrologPredicate pred = new PrologPredicate(p.getName(), params);
+			PrologClause clause = new PrologClause(pred);
+			
+			CompositionRule rule = new CompositionRule(p.getName() + "_intro", "generated", clause);
+			this.add(rule);
+			
+			this.updateFile();
+		}
 	}
 	
 	@Override
@@ -268,9 +389,13 @@ public class FrameworkRepresentation {
 	}
 	
 	public String toEPLString() {
+		Collections.sort(this.compositionRules);
+		
 		String res = "";
 		
 		res += "% ==== " + this.theoryPath + " - " + this.sessionName + "\n";
+		
+		res += "%\n";
 		
 		res += "% === component_type\n";
 		for(ComponentType type: this.componentTypes) {
@@ -282,21 +407,33 @@ public class FrameworkRepresentation {
 			}
 		}
 		
+		res += "%\n";
+		
 		res += "% === composable_module\n";
+		
+		res += "%% This area is deprecated and therefore intentionally empty.\n";
 		
 		res += "% === compositional_structure\n";
 		for(CompositionalStructure structure: this.compositionalStructures) {
 			res += "% " + structure.toString() + "\n";
 		}
 		
+		res += "%\n";
+		
 		res += "% === property\n";
 		for(Property prop: this.properties) {
 			res += "% " + prop.toString() + "\n";
 		}
+		List<String> additionalProperties = (new ConfigReader()).getAdditionalProperties();
+		for(String prop: additionalProperties) {
+			res += "% " + prop + "\n";
+		}
 		
-		res += "% === composition_rule";
+		res += "%\n";
+		
+		res += "% === composition_rule\n";
 		for(CompositionRule rule: this.compositionRules) {
-			res += rule.toEPLString();
+			res += rule.toEPLString() + "\n";
 		}
 		
 		System.out.println(res);
@@ -323,5 +460,16 @@ public class FrameworkRepresentation {
 				logger.warn("Added item with unknown parameter type \"" + paramType.getName() + "\" to framework.");
 			}
 		}
+	}
+	
+	private synchronized void updateFile() {
+		if(this.absolutePath == null) {
+			
+		}
+		
+		String newContent = this.toEPLString();
+		
+		SimpleFileWriter writer = new SimpleFileWriter();
+		writer.writeToFile(this.absolutePath, newContent);
 	}
 } 

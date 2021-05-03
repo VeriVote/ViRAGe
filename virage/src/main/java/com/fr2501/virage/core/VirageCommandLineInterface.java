@@ -75,7 +75,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 			framework.setTheoryPath(path);
 			framework.setSessionName(sessionName);
 			
-			this.core.setFrameworkRepresentation(framework);
+			VirageParseJob parseJob;
+			parseJob = new VirageParseJob(this, new File(framework.getAbsolutePath()));
+			this.core.submit(parseJob);
 		} else {
 		
 			VirageParseJob parseJob;

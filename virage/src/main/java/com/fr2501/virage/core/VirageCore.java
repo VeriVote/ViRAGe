@@ -1,5 +1,6 @@
 package com.fr2501.virage.core;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -38,6 +39,7 @@ public class VirageCore implements Runnable {
 	
 	private CommandLine cl;
 	private String[] args;
+	private ConfigReader configReader;
 	private VirageUserInterface ui;
 	
 	private ExtendedPrologParser extendedPrologParser = null;
@@ -54,6 +56,8 @@ public class VirageCore implements Runnable {
         
         this.args = args;
         this.jobs = new LinkedBlockingQueue<VirageJob<?>>();
+        
+        this.configReader = new ConfigReader();
     }
     
     public ExtendedPrologParser getExtendedPrologParser() {
@@ -82,6 +86,7 @@ public class VirageCore implements Runnable {
     
     public void setFrameworkRepresentation(FrameworkRepresentation framework) {
     	this.framework = framework;
+    	
     	this.initAnalyzers();
     }
     
@@ -153,6 +158,7 @@ public class VirageCore implements Runnable {
 	    	this.searchManager.addAnalyzer(new SBMCCompositionAnalyzer(framework));
 	    	this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
 	    	this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
+	    	this.checker.setSolvers(this.configReader.getIsabelleTactics());
 	    	this.codeGenerator = new IsabelleCodeGenerator(this.framework);
     	} catch (Exception e) {
     		logger.error("Initialising CompositionAnalyzers failed.", e);

@@ -35,11 +35,6 @@ public class IsabelleUtils {
 	 * Simple types offered by Isabelle/HOL
 	 */
 	public static final String[] SIMPLE_TYPES = {"nat, bool"};
-	
-	/**
-	 * Isabelle solvers
-	 */
-	public static final String[] SOLVERS = {"simp", "blast", "metis", "fastforce"};
 
 	/**
 	 * String used by Isabelle to denote the line stating imported theories

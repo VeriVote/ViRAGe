@@ -53,6 +53,7 @@ public class IsabelleCodeGenerator {
 	private static final String SESSION_NAME_VAR = "$SESSION_NAME";
 	private static final String THEORY_NAME_VAR = "$THEORY_NAME";
 	private static final String PARAM_VAR = "$PARAMS";
+	private static final String PARENT_NAME_VAR = "$PARENT_NAME";
 	
 	// TODO: This feels too "hard-coded"
 	private static final String ENUM = "Enum";
@@ -294,6 +295,7 @@ public class IsabelleCodeGenerator {
 		String sessionName = "ad_hoc_session_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 		
 		String result = rootTemplate.replace(SESSION_NAME_VAR, sessionName).replace(THEORY_NAME_VAR, theoryName);
+		result = result.replace(PARENT_NAME_VAR, this.framework.getSessionName());
 		SimpleFileWriter writer = new SimpleFileWriter();
 		writer.writeToFile(theory.getParent() + File.separator + "ROOT", result);
 		

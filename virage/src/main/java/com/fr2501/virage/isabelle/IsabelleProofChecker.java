@@ -47,11 +47,16 @@ public class IsabelleProofChecker {
 	private String sessionId;
 	private String sessionName;
 	private String theoryPath;
+	// Default if nothing else is given.
+	private String parentName = "Pure";
 	
 	private String rootTemplate = "";
 	private static final String SESSION_NAME_VAR = "$SESSION_NAME";
 	private static final String THEORY_NAME_VAR = "$THEORY_NAME";
+	private static final String PARENT_NAME_VAR = "$PARENT_NAME";
 	private String texTemplate = "";
+	
+	private List<String> solvers;
 	
 	boolean finished = false;
 	IsabelleEvent lastEvent;
@@ -100,6 +105,10 @@ public class IsabelleProofChecker {
 		this.finished = finished;
 	}
 	
+	public void setSolvers(List<String> solvers) {
+		this.solvers = solvers;
+	}
+	
 	/**
 	 * Creates singleton instance, if necessary, and returns it.
 	 * @param sessionName a name for the session to be created
@@ -129,6 +138,7 @@ public class IsabelleProofChecker {
 	 */
 	public Pair<Boolean,File> verifyTheoryFile(File theory, FrameworkRepresentation framework) throws IOException, InterruptedException {
 		String theoryPath = theory.getCanonicalPath();
+		this.parentName = framework.getSessionName();
 		
 		if(theoryPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
 			theoryPath = theoryPath.substring(0,theoryPath.length() - IsabelleUtils.FILE_EXTENSION.length());
@@ -214,6 +224,7 @@ public class IsabelleProofChecker {
 		String sessionName = "ad_hoc_session_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 		
 		String result = this.rootTemplate.replace(SESSION_NAME_VAR, sessionName).replace(THEORY_NAME_VAR, theoryName);
+		result = result.replace(PARENT_NAME_VAR, this.parentName);
 		SimpleFileWriter writer = new SimpleFileWriter();
 		writer.writeToFile(theory.getParent() + File.separator + "ROOT", result);
 		
@@ -323,9 +334,9 @@ public class IsabelleProofChecker {
 			
 			String line = lines.get(lineNum);
 			
-			for(int i=0; i<IsabelleUtils.SOLVERS.length-1; i++) {
-				if(line.contains(IsabelleUtils.SOLVERS[i])) {
-					line = line.replace(IsabelleUtils.SOLVERS[i], IsabelleUtils.SOLVERS[i+1]);
+			for(int i=0; i<this.solvers.size()-1; i++) {
+				if(line.contains(this.solvers.get(i))) {
+					line = line.replace(this.solvers.get(i), this.solvers.get(i+1));
 					
 					lines.set(lineNum, line);
 					

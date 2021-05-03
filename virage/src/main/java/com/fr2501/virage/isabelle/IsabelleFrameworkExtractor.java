@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.Pair;
 import com.fr2501.util.SimpleFileWriter;
+import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.prolog.PrologClause;
 import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.SimplePrologParser;
@@ -41,31 +42,26 @@ public class IsabelleFrameworkExtractor {
 	public FrameworkRepresentation extract(String sessionDir, String sessionName) {
 		ScalaIsabelleFacade facade = new ScalaIsabelleFacade(sessionDir, sessionName);
 		
-		FrameworkRepresentation framework = new FrameworkRepresentation();
-		
-		Map<String, Map<String,String>> compRulesRaw = facade.getTheorems();
-		Map<String, Map<String,String>> compsRaw = facade.getFunctionsAndDefinitions();
-		
-		this.convertComponents(framework, compsRaw);
-		this.convertCompositionRules(framework, compRulesRaw);
-		
-		framework.setTheoryPath(sessionDir);
-		framework.setSessionName(sessionName);
-		File plFile = this.writePrologFile(framework);
-		framework.setAbsolutePath(plFile.getAbsolutePath());
-		
-		return framework;
-	}
-	
-	private File writePrologFile(FrameworkRepresentation framework) {		
-		SimpleFileWriter writer = new SimpleFileWriter();
-		
+		File plFile;
 		try {
-			File file = File.createTempFile("framework", ".pl");
-			file.deleteOnExit();
+			plFile = File.createTempFile("framework", ".pl");
 			
-			writer.writeToFile(file.getAbsolutePath(), framework.toEPLString());
-			return file;
+			plFile.deleteOnExit();
+			
+			FrameworkRepresentation framework = new FrameworkRepresentation(plFile.getAbsolutePath());
+			
+			framework.setAbsolutePath(plFile.getAbsolutePath());
+			
+			framework.setTheoryPath(sessionDir);
+			framework.setSessionName(sessionName);
+			
+			Map<String, Map<String,String>> compRulesRaw = facade.getTheorems();
+			Map<String, Map<String,String>> compsRaw = facade.getFunctionsAndDefinitions();
+			
+			this.convertComponents(framework, compsRaw);
+			this.convertCompositionRules(framework, compRulesRaw);
+			
+			return framework;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -80,7 +76,7 @@ public class IsabelleFrameworkExtractor {
 			
 			for(String compName: currentThyContent.keySet()) {
 				String typeString = currentThyContent.get(compName);
-				compName = compName.replace(thyName + ".", "");
+				compName = compName.replace(thyName.split("\\.")[1] + ".", "");
 				
 				System.out.println(compName);
 				List<String> compType = this.parseType(typeString);
@@ -111,6 +107,10 @@ public class IsabelleFrameworkExtractor {
 	}
 	
 	private ComponentType findOrAdd(FrameworkRepresentation framework, String name) {
+		if(name.startsWith("(") && name.endsWith(")")) {
+			name = name.substring(1,name.length()-1);
+		}
+		
 		for(ComponentType frameworkType: framework.getComponentTypes()) {
 			if(frameworkType.getName().equals(name)) {
 				return frameworkType;
@@ -123,17 +123,14 @@ public class IsabelleFrameworkExtractor {
 	}
 	
 	private List<String> parseType(String typeString) {
-		// TODO implement in a robust way without hardcoding
-		
 		List<String> res = new LinkedList<String>();
 		
-		typeString = typeString.replace("Set.set(Product_Type.prod(?\'a)(?\'a))", "Preference_Relation");
-		typeString = typeString.replace("List.list(Preference_Relation)", "Profile");
-		typeString = typeString.replace("Product_Type.prod(Set.set(?\'a))(Product_Type.prod(Set.set(?\'a))(Set.set(?\'a)))", "Result");
-		typeString = typeString.replace("fun(Set.set(?\'a))(fun(Profile)(Result))", "Electoral_Module");
-		typeString = typeString.replace("fun(Set.set(?\'a))(fun(Result)(fun(Result)(Result)))", "Aggregator");
-		typeString = typeString.replace("fun(?\'a)(fun(Set.set(?\'a))(fun(Profile)(Nat.nat)))", "Evaluation_Function");
-		typeString = typeString.replace("fun(Result)(HOL.bool)", "Termination_Condition");
+		ConfigReader reader = new ConfigReader();
+		List<Pair<String,String>> replacements = reader.getTypeSynonyms();
+		
+		for(Pair<String,String> synonym: replacements) {
+			typeString = typeString.replace(synonym.getFirstValue(), synonym.getSecondValue());
+		}
 		
 		System.out.println(typeString);
 		if(typeString.startsWith("(fun")) {
@@ -206,7 +203,7 @@ public class IsabelleFrameworkExtractor {
 				sign = sign.replaceAll("[\n|\s]+"," ");
 				
 				// Remove theory prefixes of constants
-				sign = sign.replaceAll("\\?\\?\\..+\\.", "");
+				sign = sign.replaceAll("\\?\\?\\.\\w+\\.", "");
 				
 				// Composition Rules are very limited on the operators they can contain.
 				Pattern allowedChars = Pattern.compile("[A-Za-z0-9,_\\(\\)]+");
@@ -246,7 +243,7 @@ public class IsabelleFrameworkExtractor {
 				String prologString = this.buildPrologClauseString(succedent, antecedents);
 				
 				try {
-					CompositionRule rule = new CompositionRule(thmName, thyName + ".thy", this.parser.parseSingleClause(prologString));
+					CompositionRule rule = new CompositionRule(thmName, thyName.split("\\.")[1] + ".thy", this.parser.parseSingleClause(prologString));
 					
 					framework.add(rule);
 					
@@ -312,6 +309,9 @@ public class IsabelleFrameworkExtractor {
 					}
 					
 					res += this.convertIsabelleToProlog(s.substring(i+1,endIdx));
+					if(endIdx < s.length()-1 && s.charAt(endIdx+1) != ')') {
+						res += ",";
+					}
 					i = endIdx+1;
 				} else {
 					insideBrackets = true;
