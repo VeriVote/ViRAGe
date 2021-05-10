@@ -18,5 +18,5 @@ public interface ExtendedPrologParser {
 	 * @throws IOException if an error occurs while reading the file itself.
 	 * @throws MalformedEPLFileException if the file can be read, but not parsed.
 	 */
-	public FrameworkRepresentation parseFramework(File file) throws IOException, MalformedEPLFileException;
+	public FrameworkRepresentation parseFramework(File file, boolean addDummies) throws IOException, MalformedEPLFileException;
 }

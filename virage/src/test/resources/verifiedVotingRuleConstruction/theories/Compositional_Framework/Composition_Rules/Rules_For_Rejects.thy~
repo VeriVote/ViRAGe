@@ -1,0 +1,115 @@
+theory Rules_For_Rejects
+  imports "../Properties/Rejects"
+          "../Properties/Defers"
+          "../Components/Basic_Modules/Drop_Module"
+          "../Components/Basic_Modules/Pass_Module"
+          Rules_For_Defers
+
+begin
+
+theorem drop_zero_mod_rej_zero[simp]:
+  assumes order: "linear_order r"
+  shows "rejects 0 (drop_module 0 r)"
+  unfolding rejects_def
+proof (safe)
+  show "electoral_module (drop_module 0 r)"
+    using order
+    by simp
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile"
+  assume
+    card_pos: "0 ≤ card A" and
+    finite_A: "finite A" and
+    prof_A: "profile A p"
+  have f1: "connex UNIV r"
+    using assms lin_ord_imp_connex
+    by auto
+  obtain aa :: "('a ⇒ bool) ⇒ 'a" where
+    f2:
+    "∀p. (Collect p = {} ⟶ (∀a. ¬ p a)) ∧
+          (Collect p ≠ {} ⟶ p (aa p))"
+    by moura
+  have f3: "∀a. (a::'a) ∉ {}"
+    using empty_iff
+    by simp
+  have connex:
+    "connex A (limit A r)"
+    using f1 limit_presv_connex subset_UNIV
+    by metis
+  have rej_drop_eq_def_pass:
+    "reject (drop_module 0 r) = defer (pass_module 0 r)"
+    by simp
+  have f4:
+    "∀a Aa.
+      ¬ connex Aa (limit A r) ∨ a ∉ Aa ∨ a ∉ A ∨
+        ¬ card (above (limit A r) a) ≤ 0"
+    using above_connex above_presv_limit bot_nat_0.extremum_uniqueI
+          card_0_eq emptyE finite_A order rev_finite_subset
+    by (metis (lifting))
+  have "{a ∈ A. card(above (limit A r) a) ≤ 0} = {}"
+    using connex f4
+    by auto
+  hence "card {a ∈ A. card(above (limit A r) a) ≤ 0} = 0"
+    using card.empty
+    by (metis (full_types))
+  thus "card (reject (drop_module 0 r) A p) = 0"
+    by simp
+qed
+
+(*
+  The drop module rejects n alternatives (if there are n alternatives).
+  NOTE: The induction proof is still missing. Following is the proof for n=2.
+*)
+theorem drop_two_mod_rej_two[simp]:
+  assumes order: "linear_order r"
+  shows "rejects 2 (drop_module 2 r)"
+proof -
+  have rej_drop_eq_def_pass:
+    "reject (drop_module 2 r) = defer (pass_module 2 r)"
+    by simp
+  thus ?thesis
+  proof -
+    obtain
+      AA :: "('a Electoral_Module) ⇒ nat ⇒ 'a set" and
+      rrs :: "('a Electoral_Module) ⇒ nat ⇒ 'a Profile" where
+      "∀x0 x1. (∃v2 v3. (x1 ≤ card v2 ∧ finite_profile v2 v3) ∧
+          card (reject x0 v2 v3) ≠ x1) =
+              ((x1 ≤ card (AA x0 x1) ∧
+                finite_profile (AA x0 x1) (rrs x0 x1)) ∧
+                card (reject x0 (AA x0 x1) (rrs x0 x1)) ≠ x1)"
+      by moura
+    hence
+      "∀n f. (¬ rejects n f ∨ electoral_module f ∧
+          (∀A rs. (¬ n ≤ card A ∨ infinite A ∨ ¬ profile A rs) ∨
+              card (reject f A rs) = n)) ∧
+          (rejects n f ∨ ¬ electoral_module f ∨ (n ≤ card (AA f n) ∧
+              finite_profile (AA f n) (rrs f n)) ∧
+              card (reject f (AA f n) (rrs f n)) ≠ n)"
+      using rejects_def
+      by force
+    hence f1:
+      "∀n f. (¬ rejects n f ∨ electoral_module f ∧
+        (∀A rs. ¬ n ≤ card A ∨ infinite A ∨ ¬ profile A rs ∨
+            card (reject f A rs) = n)) ∧
+        (rejects n f ∨ ¬ electoral_module f ∨ n ≤ card (AA f n) ∧
+            finite (AA f n) ∧ profile (AA f n) (rrs f n) ∧
+            card (reject f (AA f n) (rrs f n)) ≠ n)"
+      by presburger
+    have
+      "¬ 2 ≤ card (AA (drop_module 2 r) 2) ∨
+          infinite (AA (drop_module 2 r) 2) ∨
+          ¬ profile (AA (drop_module 2 r) 2) (rrs (drop_module 2 r) 2) ∨
+          card (reject (drop_module 2 r) (AA (drop_module 2 r) 2)
+              (rrs (drop_module 2 r) 2)) = 2"
+      using rej_drop_eq_def_pass defers_def order
+            pass_two_mod_def_two
+      by (metis (no_types))
+    thus ?thesis
+      using f1 drop_mod_sound order
+      by blast
+  qed
+qed
+
+end

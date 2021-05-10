@@ -38,10 +38,10 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 	}
 	
 	@Override
-	public FrameworkRepresentation parseFramework(File file) throws IOException, MalformedEPLFileException {		
+	public FrameworkRepresentation parseFramework(File file, boolean addDummies) throws IOException, MalformedEPLFileException {		
 		List<String> framework = this.fileReader.readFileByLine(file);
 		
-		return this.parseFramework(framework, file.getAbsolutePath());
+		return this.parseFramework(framework, file.getAbsolutePath(), addDummies);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 	 * @return a {@link FrameworkRepresentation} of the input.
 	 * @throws MalformedEPLFileException if the input does not follow the specification of the extended Prolog format.
 	 */
-	private FrameworkRepresentation parseFramework(List<String> representation, String path) throws MalformedEPLFileException {
+	private FrameworkRepresentation parseFramework(List<String> representation, String path, boolean addDummies) throws MalformedEPLFileException {
 		FrameworkRepresentation framework = new FrameworkRepresentation(path);
 		ParserState state = ParserState.STARTING;
 		
@@ -112,6 +112,10 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 		this.parseSection(framework, compositionalStructureSection, ParserState.COMPOSITIONAL_STRUCTURE);
 		this.parseSection(framework, propertySection, ParserState.PROPERTY);
 		this.parseSection(framework, compositionRuleSection, ParserState.COMPOSITION_RULE);
+		
+		if(addDummies) {
+			framework.addDummyRulesIfNecessary();
+		}
 		
 		return framework;
 	}

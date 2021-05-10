@@ -1,5 +1,6 @@
 package com.fr2501.virage.isabelle;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,7 +54,7 @@ public class ScalaIsabelleFacade {
 	private Isabelle isabelle;
 	
 	public ScalaIsabelleFacade(String sessionDir, String sessionName) {
-		this.sessionDir = sessionDir;
+		this.sessionDir = (new File(sessionDir).getAbsolutePath());
 		this.sessionName = sessionName;
 		
 		this.theoryNames = new HashSet<String>();

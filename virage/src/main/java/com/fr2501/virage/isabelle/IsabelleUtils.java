@@ -34,7 +34,7 @@ public class IsabelleUtils {
 	/**
 	 * Simple types offered by Isabelle/HOL
 	 */
-	public static final String[] SIMPLE_TYPES = {"nat, bool"};
+	public static final String[] SIMPLE_TYPES = {"Nat.nat", "HOL.bool"};
 
 	/**
 	 * String used by Isabelle to denote the line stating imported theories

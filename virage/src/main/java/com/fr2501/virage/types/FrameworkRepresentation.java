@@ -55,14 +55,6 @@ public class FrameworkRepresentation {
 		this.compositionalStructures = new HashSet<CompositionalStructure>();
 		this.compositionRules = new LinkedList<CompositionRule>();
 		this.properties = new HashSet<Property>();
-		
-		List<String> atomicTypeStrings = (new ConfigReader()).getAtomicTypes();
-		this.atomicTypes = new LinkedList<ComponentType>();
-		for(String s: atomicTypeStrings) {
-			ComponentType type = new ComponentType(s);
-			this.add(type);
-			this.atomicTypes.add(type);
-		}
 	}
 	
 	public String getAbsolutePath() {
@@ -201,8 +193,6 @@ public class FrameworkRepresentation {
 	 */
 	public void add(ComponentType ct) {
 		this.componentTypes.add(ct);
-		
-		this.updateFile();
 	}
 	
 	/**
@@ -213,8 +203,6 @@ public class FrameworkRepresentation {
 	public void add(Component c) {
 		this.checkTypes(c);
 		this.components.add(c);
-		
-		this.updateFile();
 	}
 	
 	/**
@@ -225,8 +213,6 @@ public class FrameworkRepresentation {
 	public void add(ComposableModule cm) {
 		this.checkTypes(cm);
 		this.composableModules.add(cm);
-		
-		this.updateFile();
 	}
 	
 	/**
@@ -237,8 +223,6 @@ public class FrameworkRepresentation {
 	public void add(CompositionalStructure cs) {
 		this.checkTypes(cs);
 		this.compositionalStructures.add(cs);
-		
-		this.updateFile();
 	}
 	
 	/**
@@ -258,53 +242,6 @@ public class FrameworkRepresentation {
 		}
 		
 		this.compositionRules.add(cr);
-		
-		this.updateFile();
-	}
-	
-	private PrologClause removeAtomicTypesFromClause(PrologClause clause) {
-		PrologPredicate newSuccedent = this.removeAtomicTypesFromPredicate(clause.getSuccedent());
-		if(newSuccedent == null) {
-			return null;
-		}
-		
-		List<PrologPredicate> newAntecedents = new LinkedList<PrologPredicate>();
-		for(PrologPredicate antecedent: clause.getAntecedents()) {
-			PrologPredicate newAntecedent = this.removeAtomicTypesFromPredicate(antecedent);
-			if(newAntecedent != null) {
-				newAntecedents.add(newAntecedent);
-			}
-		}
-		
-		return new PrologClause(newSuccedent, newAntecedents);
-	}
-	
-	private PrologPredicate removeAtomicTypesFromPredicate(PrologPredicate pred) {
-		String name = pred.getName();
-		List<PrologPredicate> children = pred.getParameters();
-		
-		Property prop = this.getProperty(name);
-		if(prop == null) {
-			throw new IllegalArgumentException(name);
-		}
-		
-		for(int i=0; i<prop.getParameters().size(); i++) {
-			ComponentType cur = prop.getParameters().get(i);
-			
-			if(this.atomicTypes.contains(cur)) {
-				children.set(i, null);
-			}
-		}
-		
-		while(children.contains(null)) {
-			children.remove(null);
-		}
-		
-		if(children.size() == 0) {
-			return null;
-		}
-		
-		return new PrologPredicate(pred.getName(), children);
 	}
 	
 	/**
@@ -315,33 +252,41 @@ public class FrameworkRepresentation {
 	public void add(Property p) {
 		this.checkTypes(p);
 		this.properties.add(p);
-		
-		this.addDummyRulesIfNecessary(p);
 	}
 	
-	private void addDummyRulesIfNecessary(Property p) {
-		boolean allAtomicTypes = true;
-		for(ComponentType type: p.getParameters()) {
-			if(!this.atomicTypes.contains(type)) {
-				allAtomicTypes = false;
-				break;
-			}
+	public void addDummyRulesIfNecessary() {
+		List<String> atomicTypeStrings = (new ConfigReader()).getAtomicTypes();
+		this.atomicTypes = new LinkedList<ComponentType>();
+		for(String s: atomicTypeStrings) {
+			ComponentType type = new ComponentType(s);
+			this.add(type);
+			this.atomicTypes.add(type);
 		}
 		
-		if(allAtomicTypes) {
-			// A new rule is added such that the atomic properties are ignored.
-			List<PrologPredicate> params = new LinkedList<PrologPredicate>();
+		for(Property p: this.properties) {
+			boolean allAtomicTypes = true;
 			for(ComponentType type: p.getParameters()) {
-				params.add(new PrologPredicate("_"));
+				if(!this.atomicTypes.contains(type)) {
+					allAtomicTypes = false;
+					break;
+				}
 			}
 			
-			PrologPredicate pred = new PrologPredicate(p.getName(), params);
-			PrologClause clause = new PrologClause(pred);
-			
-			CompositionRule rule = new CompositionRule(p.getName() + "_intro", "generated", clause);
-			this.add(rule);
-			
-			this.updateFile();
+			if(allAtomicTypes) {
+				// A new rule is added such that the atomic properties are ignored.
+				List<PrologPredicate> params = new LinkedList<PrologPredicate>();
+				for(int i=0; i<p.getParameters().size(); i++) {
+					params.add(new PrologPredicate("_"));
+				}
+				
+				PrologPredicate pred = new PrologPredicate(p.getName(), params);
+				PrologClause clause = new PrologClause(pred);
+				
+				CompositionRule rule = new CompositionRule(p.getName() + "_intro", "generated", clause);
+				this.add(rule);
+				
+				this.updateFile();
+			}
 		}
 	}
 	
@@ -463,10 +408,6 @@ public class FrameworkRepresentation {
 	}
 	
 	private synchronized void updateFile() {
-		if(this.absolutePath == null) {
-			
-		}
-		
 		String newContent = this.toEPLString();
 		
 		SimpleFileWriter writer = new SimpleFileWriter();

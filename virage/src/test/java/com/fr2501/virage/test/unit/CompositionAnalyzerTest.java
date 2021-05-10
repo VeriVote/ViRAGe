@@ -40,7 +40,7 @@ public abstract class CompositionAnalyzerTest {
 	@Before
 	public void setup() throws IOException, MalformedEPLFileException {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-		this.framework = parser.parseFramework(new File(FRAMEWORK_PATH));
+		this.framework = parser.parseFramework(new File(FRAMEWORK_PATH), false);
 		
 		this.generator = new TestDataGenerator(framework);
 	}
@@ -49,18 +49,18 @@ public abstract class CompositionAnalyzerTest {
 	public void testSequentialMajorityComparison() throws ValueNotPresentException, IOException {
 		logger.info("testSequentialMajorityComparison()");
 		String smc = "sequential_composition(" + 
-						"loop_composition(" + 
-							"parallel_composition(" + 
-								"sequential_composition(" + 
-									"pass_module(2,_)," + 
-									"sequential_composition(" + 
-										"revision_composition(" + 
-											"plurality)," + 
-										"pass_module(1,_)))," + 
-								"drop_module(2,_)," + 
-								"max_aggregator)," + 
-							"defer_equal_condition(1))," + 
-						"elect_module)";
+				"loop_composition(" + 
+					"parallel_composition(" + 
+						"sequential_composition(" + 
+							"pass_module(2,_)," + 
+							"sequential_composition(" + 
+								"revision_composition(" + 
+									"plurality)," + 
+								"pass_module(1,_)))," + 
+						"drop_module(2,_)," + 
+						"max_aggregator)," + 
+					"defer_equal_condition(1))," + 
+				"elect_module)";
 		
 		DecompositionTree smcTree = DecompositionTree.parseString(smc);
 		
@@ -162,7 +162,7 @@ public abstract class CompositionAnalyzerTest {
 		int trustedFailure = 0;
 		
 		for(int i=0; i<RUNS; i++) {
-			int amount = (int) (8 * Math.random()) + 1;
+			int amount = (int) (3 * Math.random()) + 1;
 			
 			List<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
 			
@@ -235,19 +235,19 @@ public abstract class CompositionAnalyzerTest {
 		List<Property> properties = new LinkedList<Property>();
 		properties.add(this.framework.getProperty("monotonicity"));
 		
-		String votingRule = "sequential_composition(pass_module(1,_),elect_module)";
+		String votingRule = "sequential_composition(pass_module(1,R),elect_module)";
 		
 		CompositionAnalyzer analyzer = this.createInstance();
 		
 		List<CompositionProof> proof = analyzer.proveClaims(DecompositionTree.parseString(votingRule), properties);
 		
 		// Prolog variable names are not always the same.
-		String proofString = proof.get(0).toString().replaceAll(",_[0-9]+", ",_1");
+		String proofString = proof.get(0).toString().replaceAll("_[0-9]+", "R");
 		
-		String reference = ": monotonicity(sequential_composition(pass_module(1,_1),elect_module)) by seq_comp_mono\n"
-				+ "	: defer_lift_invariance(pass_module(1,_1)) by pass_mod_dl_inv\n"
-				+ "	: non_electing(pass_module(1,_1)) by pass_mod_non_electing\n"
-				+ "	: defers(1,pass_module(1,_1)) by pass_one_mod_def_one\n"
+		String reference = ": monotonicity(sequential_composition(pass_module(1,R),elect_module)) by seq_comp_mono\n"
+				+ "	: defer_lift_invariance(pass_module(1,R)) by pass_mod_dl_inv\n"
+				+ "	: non_electing(pass_module(1,R)) by pass_mod_non_electing\n"
+				+ "	: defers(1,pass_module(1,R)) by pass_one_mod_def_one\n"
 				+ "	: electing(elect_module) by elect_mod_electing";
 		logger.debug(proofString);
 		assertTrue(proofString.equals(reference));

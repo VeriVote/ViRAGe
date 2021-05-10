@@ -20,12 +20,13 @@ public class TestDataGenerator {
 				List<ComponentType> parameters = property.getParameters();
 				ComponentType parameter = parameters.get(0);
 				
-				if(parameter.getName().equals(this.framework.getAlias()) ||
+				/*if(parameter.getName().equals(this.framework.getAlias()) ||
 						parameter.getName().equals(ExtendedPrologStrings.COMPOSABLE_MODULE)) {
 					if(property.getName().equals("electoral_module")) continue;
 					
 					this.eligibleProperties.add(property);
-				}
+				}*/
+				this.eligibleProperties.add(property);
 			}
 		}
 	}

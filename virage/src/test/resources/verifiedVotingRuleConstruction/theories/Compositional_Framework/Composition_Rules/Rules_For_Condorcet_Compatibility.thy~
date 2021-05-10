@@ -1,0 +1,35 @@
+theory Rules_For_Condorcet_Compatibility
+  imports "../Properties/Condorcet_Compatibility"
+          "../Components/Basic_Modules/Elimination_Module"
+          Rules_For_Condorcet_Maximum
+
+begin
+
+(*** If the used evaluation function is Condorcet rating,
+     max-eliminator is Condorcet compatible. ***)
+theorem cr_eval_imp_ccomp_max_elim[simp]:
+  assumes
+    profile: "finite_profile A p" and
+    rating: "condorcet_rating e"
+  shows
+    "condorcet_compatibility (max_eliminator e)"
+  unfolding condorcet_compatibility_def
+proof (auto)
+  have f1:
+    "⋀A p w x. condorcet_winner A p w ⟹
+      finite A ⟹ w ∈ A ⟹ e w A p < Max {e x A p |x. x ∈ A} ⟹
+        x ∈ A ⟹ e x A p < Max {e x A p |x. x ∈ A}"
+    using rating
+    by (simp add: cond_winner_imp_max_eval_val)
+  thus
+    "⋀A p w x.
+      profile A p ⟹ w ∈ A ⟹
+        ∀x∈A - {w}.
+          card {i. i < length p ∧ (w, x) ∈ (p!i)} <
+            card {i. i < length p ∧ (x, w) ∈ (p!i)} ⟹
+              finite A ⟹ e w A p < Max {e x A p | x. x ∈ A} ⟹
+                x ∈ A ⟹ e x A p < Max {e x A p | x. x ∈ A}"
+    by simp
+qed
+
+end

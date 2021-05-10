@@ -1,0 +1,220 @@
+theory Rules_For_Non_Electing
+  imports "../Properties/Non_Electing"
+          "../Properties/Rejects"
+          "../Properties/Agg_Conservative"
+          "../Components/Basic_Modules/Defer_Module"
+          "../Components/Basic_Modules/Drop_Module"
+          "../Components/Basic_Modules/Elimination_Module"
+          "../Components/Basic_Modules/Pass_Module"
+          "../Components/Composites/Maximum_Parallel_Composition"
+          "../Components/Compositional_Structures/Parallel_Composition"
+          "../Components/Compositional_Structures/Revision_Composition"
+          "../Components/Compositional_Structures/Sequential_Composition"
+          "../Components/Compositional_Structures/Loop_Composition"
+
+begin
+
+theorem def_mod_non_electing: "non_electing defer_module"
+  unfolding non_electing_def
+  by simp
+
+
+(*The drop module is non-electing.*)
+theorem drop_mod_non_electing[simp]:
+  assumes order: "linear_order r"
+  shows "non_electing (drop_module n r)"
+  by (simp add: non_electing_def order)
+
+lemma elim_mod_non_electing:
+  assumes profile: "finite_profile A p"
+  shows "non_electing (elimination_module e t r )"
+  by (simp add: non_electing_def)
+
+lemma less_elim_non_electing:
+  assumes profile: "finite_profile A p"
+  shows "non_electing (less_eliminator e t)"
+  using elim_mod_non_electing profile less_elim_sound
+  by (simp add: non_electing_def)
+
+lemma leq_elim_non_electing:
+  assumes profile: "finite_profile A p"
+  shows "non_electing (leq_eliminator e t)"
+proof -
+  have "non_electing (elimination_module e t (≤))"
+    by (simp add: non_electing_def)
+  thus ?thesis
+    by (simp add: non_electing_def)
+qed
+
+lemma max_elim_non_electing:
+  assumes profile: "finite_profile A p"
+  shows "non_electing (max_eliminator e)"
+proof -
+  have "non_electing (elimination_module e t (<))"
+    by (simp add: non_electing_def)
+  thus ?thesis
+    by (simp add: non_electing_def)
+qed
+
+lemma min_elim_non_electing:
+  assumes profile: "finite_profile A p"
+  shows "non_electing (min_eliminator e)"
+proof -
+  have "non_electing (elimination_module e t (<))"
+    by (simp add: non_electing_def)
+  thus ?thesis
+    by (simp add: non_electing_def)
+qed
+
+lemma less_avg_elim_non_electing:
+  assumes profile: "finite_profile A p"
+  shows "non_electing (less_average_eliminator e)"
+proof -
+  have "non_electing (elimination_module e t (<))"
+    by (simp add: non_electing_def)
+  thus ?thesis
+    by (simp add: non_electing_def)
+qed
+
+lemma leq_avg_elim_non_electing:
+  assumes profile: "finite_profile A p"
+  shows "non_electing (leq_average_eliminator e)"
+proof -
+  have "non_electing (elimination_module e t (≤))"
+    by (simp add: non_electing_def)
+  thus ?thesis
+    by (simp add: non_electing_def)
+qed
+
+(*The pass module is non-electing.*)
+theorem pass_mod_non_electing[simp]:
+  assumes order: "linear_order r"
+  shows "non_electing (pass_module n r)"
+  by (simp add: non_electing_def order)
+
+(*
+   Using a conservative aggregator, the parallel composition
+   preserves the property non-electing.
+*)
+theorem conserv_agg_presv_non_electing[simp]:
+  assumes
+    non_electing_m: "non_electing m" and
+    non_electing_n: "non_electing n" and
+    conservative: "agg_conservative a"
+  shows "non_electing (m ∥⇩a n)"
+  unfolding non_electing_def
+proof (safe)
+  have emod_m: "electoral_module m"
+    using non_electing_m
+    by (simp add: non_electing_def)
+  have emod_n: "electoral_module n"
+    using non_electing_n
+    by (simp add: non_electing_def)
+  have agg_a: "aggregator a"
+    using conservative
+    by (simp add: agg_conservative_def)
+  thus "electoral_module (m ∥⇩a n)"
+    using emod_m emod_n agg_a par_comp_sound
+    by simp
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile" and
+    x :: "'a"
+  assume
+    fin_A: "finite A" and
+    prof_A: "profile A p" and
+    x_wins: "x ∈ elect (m ∥⇩a n) A p"
+  have emod_m: "electoral_module m"
+    using non_electing_m
+    by (simp add: non_electing_def)
+  have emod_n: "electoral_module n"
+    using non_electing_n
+    by (simp add: non_electing_def)
+  have
+    "let c = (a A (m A p) (n A p)) in
+      (elect_r c ⊆ ((elect m A p) ∪ (elect n A p)))"
+    using conservative agg_conservative_def
+          emod_m emod_n par_comp_result_sound
+          combine_ele_rej_def fin_A prof_A
+    by (smt (verit, ccfv_SIG))
+  hence "x ∈ ((elect m A p) ∪ (elect n A p))"
+    using x_wins
+    by auto
+  thus "x ∈ {}"
+    using sup_bot_right non_electing_def fin_A
+          non_electing_m non_electing_n prof_A
+    by (metis (no_types, lifting))
+qed
+
+(*
+   Using a conservative aggregator, the parallel composition
+   preserves the property non-electing.
+*)
+theorem conserv_max_agg_presv_non_electing[simp]:
+  assumes
+    non_electing_m: "non_electing m" and
+    non_electing_n: "non_electing n"
+  shows "non_electing (m ∥⇩↑ n)"
+  using non_electing_m non_electing_n
+  by simp
+
+
+(*An electoral module received by revision is never electing.*)
+theorem rev_comp_non_electing[simp]:
+  assumes "electoral_module m"
+  shows "non_electing (m↓)"
+  by (simp add: assms non_electing_def)
+
+(*Sequential composition preserves the non-electing property.*)
+theorem seq_comp_presv_non_electing[simp]:
+  assumes
+    "non_electing m" and
+    "non_electing n"
+  shows "non_electing (m ▹ n)"
+  using Un_empty assms non_electing_def prod.sel seq_comp_sound
+        sequential_composition.simps def_presv_fin_prof
+  by (smt (verit, del_insts))
+
+lemma loop_comp_presv_non_electing_helper:
+  assumes
+    non_electing_m: "non_electing m" and
+    f_prof: "finite_profile A p"
+  shows
+    "(n = card (defer acc A p) ∧ non_electing acc) ⟹
+        elect (loop_comp_helper acc m t) A p = {}"
+proof (induct n arbitrary: acc rule: less_induct)
+  case(less n)
+  thus ?case
+    using loop_comp_helper.simps(1) loop_comp_helper.simps(2)
+          non_electing_def non_electing_m f_prof psubset_card_mono
+          seq_comp_presv_non_electing
+    by (smt (verit, ccfv_threshold))
+qed
+
+(*The loop composition preserves the property non-electing.*)
+theorem loop_comp_presv_non_electing[simp]:
+  assumes non_electing_m: "non_electing m"
+  shows "non_electing (m \<circlearrowleft>⇩t)"
+  unfolding non_electing_def
+proof (safe, simp_all)
+  show "electoral_module (m \<circlearrowleft>⇩t)"
+    using loop_comp_sound non_electing_def non_electing_m
+    by metis
+next
+    fix
+      A :: "'a set" and
+      p :: "'a Profile" and
+      x :: "'a"
+    assume
+      fin_A: "finite A" and
+      prof_A: "profile A p" and
+      x_elect: "x ∈ elect (m \<circlearrowleft>⇩t) A p"
+    show "False"
+  using def_mod_non_electing loop_comp_presv_non_electing_helper
+        non_electing_m empty_iff fin_A loop_comp_code
+        non_electing_def prof_A x_elect
+  by metis
+qed
+
+end

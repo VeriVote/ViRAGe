@@ -15,6 +15,7 @@ import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
 import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.CompositionRule;
 
 /**
  * 
@@ -76,6 +77,14 @@ public class IsabelleProofStepGenerator {
 		
 		String subgoalIds = "";
 		for(CompositionProof subgoal: step.getSubgoals()) {
+			if(subgoal.getAllCompositionRules().size() == 1) {
+				CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
+				
+				if(rule.getOrigin().equals("generated")) {
+					continue;
+				}
+			}
+			
 			subgoalIds += subgoal.getId() + " ";
 		}
 		

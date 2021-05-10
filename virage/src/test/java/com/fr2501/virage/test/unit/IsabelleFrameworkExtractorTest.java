@@ -15,7 +15,7 @@ public class IsabelleFrameworkExtractorTest {
 		IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
 		
 		FrameworkRepresentation framework = extractor.extract(
-				"/home/fabian/Desktop/verifiedVotingRuleConstruction/theories",
+				"src/test/resources/verifiedVotingRuleConstruction/theories",
 				"Verified_Voting_Rule_Construction");
 		
 		System.out.println(framework.toString());

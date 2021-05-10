@@ -1,0 +1,96 @@
+theory Rules_For_Eliminates
+  imports "../Properties/Eliminates"
+          "../Properties/Non_Electing"
+          "../Properties/Rejects"
+          "../Properties/Defers"
+          "../Components/Composites/Maximum_Parallel_Composition"
+
+begin
+
+(*
+   Using the max-aggregator for composing two compatible modules in parallel,
+   whereof the first one is non-electing and defers exactly one alternative,
+   and the second one rejects exactly two alternatives, the composition
+   results in an electoral module that eliminates exactly one alternative.
+*)
+theorem par_comp_elim_one[simp]:
+  assumes
+    defers_m_1: "defers 1 m" and
+    non_elec_m: "non_electing m" and
+    rejec_n_2: "rejects 2 n" and
+    disj_comp: "disjoint_compatibility m n"
+  shows "eliminates 1 (m ∥⇩↑ n)"
+  unfolding eliminates_def
+proof (safe)
+  have electoral_mod_m: "electoral_module m"
+    using non_elec_m
+    by (simp add: non_electing_def)
+  have electoral_mod_n: "electoral_module n"
+    using rejec_n_2
+    by (simp add: rejects_def)
+  show "electoral_module (m ∥⇩↑ n)"
+    using electoral_mod_m electoral_mod_n
+    by simp
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile"
+  assume
+    min_2_card: "1 < card A" and
+    fin_A: "finite A" and
+    prof_A: "profile A p"
+  have card_geq_1: "card A ≥ 1"
+    using min_2_card dual_order.strict_trans2 less_imp_le_nat
+    by blast
+  have module: "electoral_module m"
+    using non_elec_m non_electing_def
+    by auto
+  have elec_card_0: "card (elect m A p) = 0"
+    using fin_A prof_A non_elec_m card_eq_0_iff non_electing_def
+    by metis
+  moreover
+  from card_geq_1 have def_card_1:
+    "card (defer m A p) = 1"
+    using defers_m_1 module fin_A prof_A
+    by (simp add: defers_def)
+  ultimately have card_reject_m:
+    "card (reject m A p) = card A - 1"
+  proof -
+    have "finite A"
+      by (simp add: fin_A)
+    moreover have
+      "well_formed A
+        (elect m A p, reject m A p, defer m A p)"
+      using fin_A prof_A electoral_module_def module
+      by auto
+    ultimately have
+      "card A =
+        card (elect m A p) + card (reject m A p) +
+          card (defer m A p)"
+      using result_count
+      by blast
+    thus ?thesis
+      using def_card_1 elec_card_0
+      by simp
+  qed
+  have case1: "card A ≥ 2"
+    using min_2_card
+    by auto
+  from case1 have card_reject_n:
+    "card (reject n A p) = 2"
+    using fin_A prof_A rejec_n_2 rejects_def
+    by blast
+  from card_reject_m card_reject_n
+  have
+    "card (reject m A p) + card (reject n A p) =
+      card A + 1"
+    using card_geq_1
+    by linarith
+  with disj_comp prof_A fin_A card_reject_m card_reject_n
+  show
+    "card (reject (m ∥⇩↑ n) A p) = 1"
+    using par_comp_rej_card
+    by blast
+qed
+
+end

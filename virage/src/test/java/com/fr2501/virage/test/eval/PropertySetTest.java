@@ -24,10 +24,10 @@ import com.fr2501.virage.types.SearchResult;
 public class PropertySetTest {
 	private static final String FRAMEWORK_PATH = "src/test/resources/framework.pl";
 	
-	@Test
+	/* @Test */
 	public void analyzerEval() throws IOException, MalformedEPLFileException {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-		FrameworkRepresentation framework = parser.parseFramework(new File(FRAMEWORK_PATH));
+		FrameworkRepresentation framework = parser.parseFramework(new File(FRAMEWORK_PATH), false);
 		
 		TestDataGenerator generator = new TestDataGenerator(framework);
 		

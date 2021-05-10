@@ -1,0 +1,16 @@
+theory Non_Electing
+  imports "../Components/Electoral_Module"
+
+begin
+
+(*
+   An electoral module is non-electing iff
+   it never elects an alternative.
+*)
+definition non_electing :: "'a Electoral_Module \<Rightarrow> bool" where
+  "non_electing m \<equiv>
+    electoral_module m \<and> (\<forall>A p. finite_profile A p \<longrightarrow> elect m A p = {})"
+
+
+
+end

@@ -10,7 +10,7 @@ public class ScalaIsabelleFacadeTest {
 	@Test
 	public void simpleTest() {
 		ScalaIsabelleFacade facade = new ScalaIsabelleFacade(
-				"/home/fabian/Desktop/verifiedVotingRuleConstruction/theories",
+				"src/test/resources/verifiedVotingRuleConstruction/theories",
 				"Verified_Voting_Rule_Construction");
 	}
 }

@@ -27,7 +27,7 @@ public class VirageParseJob extends VirageJobWithoutExplicitResult {
 	public void concreteExecute() throws IOException, MalformedEPLFileException {
 		this.parser = this.executingCore.getExtendedPrologParser();
 		
-		this.executingCore.setFrameworkRepresentation(this.parser.parseFramework(this.file));
+		this.executingCore.setFrameworkRepresentation(this.parser.parseFramework(this.file, true));
 		
 	}
 

@@ -22,6 +22,7 @@ import com.fr2501.util.Pair;
 import com.fr2501.util.ProcessUtils;
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
+import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
 
@@ -64,9 +65,11 @@ public class IsabelleProofChecker {
 	private IsabelleProofChecker(String sessionName, String theoryPath) {
 		this.runtime = Runtime.getRuntime();
 		
+		this.solvers = (new ConfigReader()).getIsabelleTactics();
+		
 		try {
 			// TODO: Remove quick_and_dirty as soon as possible (or make optional?)
-			Process process = Runtime.getRuntime().exec("isabelle build -o quick_and_dirty -o browser_info -b -D `pwd`");
+			Process process = Runtime.getRuntime().exec("isabelle build -o browser_info -b -D `pwd`");
 			process.waitFor();
 			
 			this.initServer();

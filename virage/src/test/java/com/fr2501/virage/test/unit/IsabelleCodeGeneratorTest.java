@@ -18,8 +18,8 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
 
 public class IsabelleCodeGeneratorTest {
-	private static final String EPL_PATH = "src/test/resources/framework.pl";
-	private static final String THEORY_PATH = "src/test/resources/theories";
+	private static final String EPL_PATH = "src/test/resources/framework_new.pl";
+	private static final String THEORY_PATH = "src/test/resources/verifiedVotingRuleConstruction/theories";
 	private static final String SMC = 	"sequential_composition(" + 
 											"loop_composition(" + 
 											"parallel_composition(" + 
@@ -39,7 +39,7 @@ public class IsabelleCodeGeneratorTest {
 	@Before
 	public void init() throws IOException, MalformedEPLFileException {
 		ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-		this.framework = parser.parseFramework(new File(EPL_PATH));
+		this.framework = parser.parseFramework(new File(EPL_PATH), false);
 		
 		this.generator = new IsabelleTheoryGenerator(THEORY_PATH, this.framework);
 	}

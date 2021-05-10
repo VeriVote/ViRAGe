@@ -1,5 +1,5 @@
 theorem $THEOREM_NAME
-	$ASSUMPTIONS
+	assumes $ASSUMPTIONS
 	shows "$GOAL"
 proof -
 $PROOF_STEPS

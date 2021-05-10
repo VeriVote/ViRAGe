@@ -61,6 +61,8 @@ public class IsabelleFrameworkExtractor {
 			this.convertComponents(framework, compsRaw);
 			this.convertCompositionRules(framework, compRulesRaw);
 			
+			framework.addDummyRulesIfNecessary();
+			
 			return framework;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

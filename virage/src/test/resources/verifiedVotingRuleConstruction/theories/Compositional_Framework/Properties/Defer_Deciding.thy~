@@ -1,0 +1,19 @@
+theory Defer_Deciding
+  imports "../Components/Electoral_Module"
+          "../Properties/Non_Electing"
+          "../Properties/Defers"
+
+begin
+
+(*
+   An electoral module is defer-deciding iff
+   this module chooses exactly 1 alternative to defer and
+   rejects any other alternative.
+   Note that `rejects n-1 m` can be omitted due to the
+   well-formedness property.
+*)
+definition defer_deciding :: "'a Electoral_Module \<Rightarrow> bool" where
+  "defer_deciding m \<equiv>
+    electoral_module m \<and> non_electing m \<and> defers 1 m"
+
+end

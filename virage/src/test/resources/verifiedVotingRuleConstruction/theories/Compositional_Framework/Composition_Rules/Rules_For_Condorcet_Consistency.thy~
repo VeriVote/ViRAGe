@@ -1,0 +1,318 @@
+theory Rules_For_Condorcet_Consistency
+  imports "../Properties/Condorcet_Consistency"
+          "../../Voting_Rules/Copeland_Rule"
+          "../../Voting_Rules/Minimax_Rule"
+          Rules_For_Defer_Condorcet_Consistency
+
+begin
+
+(*If m is defer-Condorcet-consistent, then elector(m) is Condorcet consistent.*)
+lemma dcc_imp_cc_elector:
+  assumes dcc: "defer_condorcet_consistency m"
+  shows "condorcet_consistency (elector m)"
+proof (unfold defer_condorcet_consistency_def
+              condorcet_consistency_def, auto)
+  show "electoral_module (m ▹ elect_module)"
+    using dcc defer_condorcet_consistency_def
+          elect_mod_sound seq_comp_sound
+    by metis
+next
+  show
+    "⋀A p w x.
+       finite A ⟹ profile A p ⟹ w ∈ A ⟹
+         ∀x∈A - {w}. card {i. i < length p ∧ (w, x) ∈ (p!i)} <
+            card {i. i < length p ∧ (x, w) ∈ (p!i)} ⟹
+        x ∈ elect m A p ⟹ x ∈ A"
+  proof -
+    fix
+      A :: "'a set" and
+      p :: "'a Profile" and
+      w :: "'a" and
+      x :: "'a"
+    assume
+      finite: "finite A" and
+      prof_A: "profile A p"
+    show
+      "∀y∈A - {w}.
+          card {i. i < length p ∧ (w, y) ∈ (p!i)} <
+            card {i. i < length p ∧ (y, w) ∈ (p!i)} ⟹
+             x ∈ elect m A p ⟹ x ∈ A"
+      using dcc defer_condorcet_consistency_def
+            elect_in_alts subset_eq finite prof_A
+      by metis
+  qed
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile" and
+    w :: "'a" and
+    x :: "'a" and
+    xa :: "'a"
+  assume
+    finite: "finite A" and
+    prof_A: "profile A p" and
+    w_in_A: "w ∈ A" and
+    1: "x ∈ elect m A p" and
+    2: "∀y∈A - {w}.
+          card {i. i < length p ∧ (w, y) ∈ (p!i)} <
+            card {i. i < length p ∧ (y, w) ∈ (p!i)}"
+  have "condorcet_winner A p w"
+    using finite prof_A w_in_A "2"
+    by simp
+  thus "xa = x"
+    using condorcet_winner.simps dcc fst_conv insert_Diff "1"
+          defer_condorcet_consistency_def insert_not_empty
+    by (metis (no_types, lifting))
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile" and
+    w :: "'a" and
+    x :: "'a"
+  assume
+    finite: "finite A" and
+    prof_A: "profile A p" and
+    w_in_A: "w ∈ A" and
+    0: "∀y∈A - {w}.
+          card {i. i < length p ∧ (w, y) ∈ (p!i)} <
+            card {i. i < length p ∧ (y, w) ∈ (p!i)}" and
+    1: "x ∈ defer m A p"
+  have "condorcet_winner A p w"
+    using finite prof_A w_in_A "0"
+    by simp
+  thus "x ∈ A"
+    using "0" "1" condorcet_winner.simps dcc defer_in_alts
+          defer_condorcet_consistency_def order_trans
+          subset_Compl_singleton
+    by (metis (no_types, lifting))
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile" and
+    w :: "'a" and
+    x :: "'a" and
+    xa :: "'a"
+  assume
+    finite: "finite A" and
+    prof_A: "profile A p" and
+    w_in_A: "w ∈ A" and
+    1: "x ∈ defer m A p" and
+    xa_in_A: "xa ∈ A" and
+    2: "∀y∈A - {w}.
+          card {i. i < length p ∧ (w, y) ∈ (p!i)} <
+            card {i. i < length p ∧ (y, w) ∈ (p!i)}" and
+    3: "¬ card {i. i < length p ∧ (x, xa) ∈ (p!i)} <
+            card {i. i < length p ∧ (xa, x) ∈ (p!i)}"
+  have "condorcet_winner A p w"
+    using finite prof_A w_in_A "2"
+    by simp
+  thus "xa = x"
+    using "1" "2" condorcet_winner.simps dcc empty_iff xa_in_A
+          defer_condorcet_consistency_def "3" DiffI
+          cond_winner_unique3 insert_iff prod.sel(2)
+    by (metis (no_types, lifting))
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile" and
+    w :: "'a" and
+    x :: "'a"
+  assume
+    finite: "finite A" and
+    prof_A: "profile A p" and
+    w_in_A: "w ∈ A" and
+    x_in_A: "x ∈ A" and
+    1: "x ∉ defer m A p" and
+    2: "∀y∈A - {w}.
+          card {i. i < length p ∧ (w, y) ∈ (p!i)} <
+            card {i. i < length p ∧ (y, w) ∈ (p!i)}" and
+    3: "∀y∈A - {x}.
+          card {i. i < length p ∧ (x, y) ∈ (p!i)} <
+            card {i. i < length p ∧ (y, x) ∈ (p!i)}"
+  have "condorcet_winner A p w"
+    using finite prof_A w_in_A "2"
+    by simp
+  also have "condorcet_winner A p x"
+    using finite prof_A x_in_A "3"
+    by simp
+  ultimately show "x ∈ elect m A p"
+    using "1" condorcet_winner.simps dcc
+          defer_condorcet_consistency_def
+          cond_winner_unique3 insert_iff eq_snd_iff
+    by (metis (no_types, lifting))
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile" and
+    w :: "'a" and
+    x :: "'a"
+  assume
+    finite: "finite A" and
+    prof_A: "profile A p" and
+    w_in_A: "w ∈ A" and
+    1: "x ∈ reject m A p" and
+    2: "∀y∈A - {w}.
+          card {i. i < length p ∧ (w, y) ∈ (p!i)} <
+            card {i. i < length p ∧ (y, w) ∈ (p!i)}"
+  have "condorcet_winner A p w"
+    using finite prof_A w_in_A "2"
+    by simp
+  thus "x ∈ A"
+    using "1" dcc defer_condorcet_consistency_def finite
+          prof_A reject_in_alts subsetD
+    by metis
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile" and
+    w :: "'a" and
+    x :: "'a"
+  assume
+    finite: "finite A" and
+    prof_A: "profile A p" and
+    w_in_A: "w ∈ A" and
+    0: "x ∈ reject m A p" and
+    1: "x ∈ elect m A p" and
+    2: "∀y∈A - {w}.
+          card {i. i < length p ∧ (w, y) ∈ (p!i)} <
+            card {i. i < length p ∧ (y, w) ∈ (p!i)}"
+  have "condorcet_winner A p w"
+    using finite prof_A w_in_A "2"
+    by simp
+  thus "False"
+    using "0" "1" condorcet_winner.simps dcc IntI empty_iff
+          defer_condorcet_consistency_def result_disj
+    by (metis (no_types, hide_lams))
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile" and
+    w :: "'a" and
+    x :: "'a"
+  assume
+    finite: "finite A" and
+    prof_A: "profile A p" and
+    w_in_A: "w ∈ A" and
+    0: "x ∈ reject m A p" and
+    1: "x ∈ defer m A p" and
+    2: "∀y∈A - {w}.
+          card {i. i < length p ∧ (w, y) ∈ (p!i)} <
+            card {i. i < length p ∧ (y, w) ∈ (p!i)}"
+  have "condorcet_winner A p w"
+    using finite prof_A w_in_A "2"
+    by simp
+  thus "False"
+    using "0" "1" dcc defer_condorcet_consistency_def IntI
+          Diff_empty Diff_iff finite prof_A result_disj
+    by (metis (no_types, hide_lams))
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile" and
+    w :: "'a" and
+    x :: "'a"
+  assume
+    finite: "finite A" and
+    prof_A: "profile A p" and
+    w_in_A: "w ∈ A" and
+    x_in_A: "x ∈ A" and
+    0: "x ∉ reject m A p" and
+    1: "x ∉ defer m A p" and
+    2: "∀y∈A - {w}.
+          card {i. i < length p ∧ (w, y) ∈ (p!i)} <
+            card {i. i < length p ∧ (y, w) ∈ (p!i)}"
+  have "condorcet_winner A p w"
+    using finite prof_A w_in_A "2"
+    by simp
+  thus "x ∈ elect m A p"
+    using "0" "1" condorcet_winner.simps dcc x_in_A
+          defer_condorcet_consistency_def electoral_mod_defer_elem
+    by (metis (no_types, lifting))
+qed
+
+lemma condorcet_consistency2:
+  "condorcet_consistency m ⟷
+      electoral_module m ∧
+        (∀ A p w. condorcet_winner A p w ⟶
+            (m A p =
+              ({w}, A - (elect m A p), {})))"
+proof (auto)
+  show "condorcet_consistency m ⟹ electoral_module m"
+    using condorcet_consistency_def
+    by metis
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile" and
+    w :: "'a"
+  assume
+    cc: "condorcet_consistency m"
+  have assm0:
+    "condorcet_winner A p w ⟹ m A p = ({w}, A - elect m A p, {})"
+    using cond_winner_unique3 condorcet_consistency_def cc
+    by (metis (mono_tags, lifting))
+  assume
+    finite_A: "finite A" and
+    prof_A: "profile A p" and
+    w_in_A: "w ∈ A"
+  also have
+    "∀x∈A - {w}.
+      prefer_count p w x > prefer_count p x w ⟹
+        condorcet_winner A p w"
+    using finite_A prof_A w_in_A wins.elims
+    by simp
+  ultimately show
+    "∀x∈A - {w}.
+        card {i. i < length p ∧ (w, x) ∈ (p!i)} <
+            card {i. i < length p ∧ (x, w) ∈ (p!i)} ⟹
+                m A p = ({w}, A - elect m A p, {})"
+    using assm0
+    by auto
+next
+  have assm0:
+    "electoral_module m ⟹
+      ∀A p w. condorcet_winner A p w ⟶
+          m A p = ({w}, A - elect m A p, {}) ⟹
+            condorcet_consistency m"
+    using condorcet_consistency_def cond_winner_unique3
+    by (smt (verit, del_insts))
+  assume e_mod:
+    "electoral_module m"
+  thus
+    "∀A p w. finite A ∧ profile A p ∧ w ∈ A ∧
+       (∀x∈A - {w}.
+          card {i. i < length p ∧ (w, x) ∈ (p!i)} <
+            card {i. i < length p ∧ (x, w) ∈ (p!i)}) ⟶
+       m A p = ({w}, A - elect m A p, {}) ⟹
+          condorcet_consistency m"
+    using assm0 e_mod
+    by simp
+qed
+
+
+theorem copeland_condorcet: "condorcet_consistency copeland_rule"
+proof -
+  have
+    "condorcet_consistency (elector copeland)"
+    using copeland_is_dcc dcc_imp_cc_elector
+    by metis
+  thus ?thesis
+    using condorcet_consistency2 electoral_module_def
+          copeland_rule.simps
+    by metis
+qed
+
+
+theorem minimax_condorcet: "condorcet_consistency minimax_rule"
+proof -
+  have
+    "condorcet_consistency (elector minimax)"
+    using minimax_is_dcc dcc_imp_cc_elector
+    by metis
+  thus ?thesis
+    using condorcet_consistency2 electoral_module_def
+          minimax_rule.simps
+    by metis
+qed
+
+end

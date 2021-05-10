@@ -1,0 +1,15 @@
+theory Rejects
+  imports "../Components/Electoral_Module"
+
+begin
+
+(*
+   "rejects n" is true for all electoral modules that reject exactly
+   n alternatives, whenever there are n or more alternatives.
+*)
+definition rejects :: "nat \<Rightarrow> 'a Electoral_Module \<Rightarrow> bool" where
+  "rejects n m \<equiv>
+    electoral_module m \<and>
+      (\<forall>A p. (card A \<ge> n \<and> finite_profile A p) \<longrightarrow> card (reject m A p) = n)"
+
+end

@@ -42,7 +42,6 @@ public class IsabelleTheoryGenerator {
 	protected static final String VAR_MODULE_NAME = "$MODULE_NAME";
 	protected static final String VAR_MODULE_PARAMETERS = "$MODULE_PARAMETERS";
 	private static final String VAR_MODULE_DEF = "$MODULE_DEF";
-	private static final String VAR_ASSUMPTIONS = "$ASSUMPTIONS";
 	private static final String VAR_PROOFS = "$PROOFS";
 	
 	private static final String THEORY_NAME = "generated_theory";
@@ -53,10 +52,9 @@ public class IsabelleTheoryGenerator {
 	private static final String DEFAULT_PATH = "../virage/target/generated-sources";
 	
 	// TODO Find better solution
-	private static final String ASSUMES = "assumes";
+
 	private static final String LINEAR_ORDER = "linear_order";
 	private static final String REL = "rel";
-	private static final String TRUE = "true";
 	
 	private static String THEORY_TEMPLATE = "";
 	private static int theoryCounter = 0;
@@ -100,6 +98,14 @@ public class IsabelleTheoryGenerator {
 	
 	public File generateTheoryFile(String composition, List<CompositionProof> proofs) {
 		return this.generateTheoryFile(composition, proofs, DEFAULT_PATH);
+	}
+	
+	protected Map<String,String> getTypedVariables() {
+		return this.typedVariables;
+	}
+	
+	protected FrameworkRepresentation getFramework() {
+		return this.framework;
 	}
 	
 	/**
@@ -162,13 +168,7 @@ public class IsabelleTheoryGenerator {
 			moduleParamTypes += type;
 		}
 		// -----
-			
-		String assumptions = ASSUMES + " \"" + TRUE + "\"";
-		// TODO: This is terribly ugly, but it's the best I can do for now.
-		if(this.typedVariables.keySet().contains(REL)) {
-			assumptions = ASSUMES + " " + "\"" + LINEAR_ORDER + " " + this.typedVariables.get(REL) + "\"";
-		}
-		
+
 		String imports = this.findImportsFromCompositionRules(proofs);
 		
 		Map<String, Set<String>> moduleDefMap = IsabelleUtils.translatePrologToIsabelle(this.functionsAndDefinitions, proofPredicate);
@@ -200,7 +200,7 @@ public class IsabelleTheoryGenerator {
 		}
 		
 		String fileContents = this.replaceVariables(theoryName, imports, moduleParamTypes,
-				moduleName, moduleParameters, moduleDef, assumptions, proofsString);
+				moduleName, moduleParameters, moduleDef, proofsString);
 		
 		SimpleFileWriter writer = new SimpleFileWriter();
 		
@@ -235,6 +235,10 @@ public class IsabelleTheoryGenerator {
 				
 				if(component == null) {
 					component = framework.getCompositionalStructure(predicate.getName());
+				}
+				
+				if(component == null) {
+					throw new IllegalArgumentException("Unknown component: " + predicate.getName());
 				}
 				
 				ComponentType childType = component.getParameters().get(i);
@@ -287,7 +291,7 @@ public class IsabelleTheoryGenerator {
 	}
 	
 	private String replaceVariables(String theoryName, String imports, String moduleParamTypes,
-			String moduleName, String moduleParameters, String moduleDef, String assumptions, String proofs) {
+			String moduleName, String moduleParameters, String moduleDef, String proofs) {
 		String res = THEORY_TEMPLATE;
 		
 		res = res.replace(VAR_PROOFS, proofs);
@@ -299,7 +303,6 @@ public class IsabelleTheoryGenerator {
 		
 		res = res.replace(VAR_MODULE_NAME, moduleName);
 		res = res.replace(VAR_MODULE_PARAMETERS, moduleParameters);
-		res = res.replace(VAR_ASSUMPTIONS, assumptions);
 
 		return res;
 	}

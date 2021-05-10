@@ -1,0 +1,613 @@
+theory Rules_For_Defers
+  imports "../Properties/Defers"
+          "../Properties/Non_Blocking"
+          "../Properties/Non_Electing"
+          "../Components/Basic_Modules/Pass_Module"
+          "../Components/Compositional_Structures/Sequential_Composition"
+          "../Components/Compositional_Structures/Loop_Composition"
+          Rules_For_Non_Electing
+
+begin
+
+theorem pass_zero_mod_def_zero[simp]:
+  assumes order: "linear_order r"
+  shows "defers 0 (pass_module 0 r)"
+  unfolding defers_def
+proof (safe)
+  show "electoral_module (pass_module 0 r)"
+    using pass_mod_sound order
+    by simp
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile"
+  assume
+    card_pos: "0 ≤ card A" and
+    finite_A: "finite A" and
+    prof_A: "profile A p"
+  show
+    "card (defer (pass_module 0 r) A p) = 0"
+  proof -
+    have lin_ord_on_A:
+      "linear_order_on A (limit A r)"
+      using order limit_presv_lin_ord
+      by blast
+    have f1: "connex A (limit A r)"
+      using lin_ord_imp_connex lin_ord_on_A
+      by simp
+    obtain aa :: "('a ⇒ bool) ⇒ 'a" where
+      f2:
+      "∀p. (Collect p = {} ⟶ (∀a. ¬ p a)) ∧
+            (Collect p ≠ {} ⟶ p (aa p))"
+      by moura
+    have "∀n. ¬ (n::nat) ≤ 0 ∨ n = 0"
+      by blast
+    hence
+      "∀a Aa. ¬ connex Aa (limit A r) ∨ a ∉ Aa ∨ a ∉ A ∨
+                  ¬ card (above (limit A r) a) ≤ 0"
+      using above_connex above_presv_limit card_eq_0_iff
+            equals0D finite_A order rev_finite_subset
+      by (metis (no_types))
+    hence "{a ∈ A. card(above (limit A r) a) ≤ 0} = {}"
+      using f1
+      by auto
+    hence "card {a ∈ A. card(above (limit A r) a) ≤ 0} = 0"
+      using card.empty
+      by metis
+    thus "card (defer (pass_module 0 r) A p) = 0"
+      by simp
+  qed
+qed
+
+(*
+   For any natural number n and any linear order, the according pass module
+   defers n alternatives (if there are n alternatives).
+   NOTE: The induction proof is still missing. Following are the proofs for
+   n=1 and n=2.
+*)
+theorem pass_one_mod_def_one[simp]:
+  assumes order: "linear_order r"
+  shows "defers 1 (pass_module 1 r)"
+  unfolding defers_def
+proof (safe)
+  show "electoral_module (pass_module 1 r)"
+    using pass_mod_sound order
+    by simp
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile"
+  assume
+    card_pos: "1 ≤ card A" and
+    finite_A: "finite A" and
+    prof_A: "profile A p"
+  show
+    "card (defer (pass_module 1 r) A p) = 1"
+  proof -
+    have "A ≠ {}"
+      using card_pos
+      by auto
+    moreover have lin_ord_on_A:
+      "linear_order_on A (limit A r)"
+      using order limit_presv_lin_ord
+      by blast
+    ultimately have winner_exists:
+      "∃a∈A. above (limit A r) a = {a} ∧
+        (∀x∈A. above (limit A r) x = {x} ⟶ x = a)"
+      using finite_A
+      by (simp add: above_one)
+    then obtain w where w_unique_top:
+      "above (limit A r) w = {w} ∧
+        (∀x∈A. above (limit A r) x = {x} ⟶ x = w)"
+      using above_one
+      by auto
+    hence "{a ∈ A. card(above (limit A r) a) ≤ 1} = {w}"
+    proof
+      assume
+        w_top: "above (limit A r) w = {w}" and
+        w_unique: "∀x∈A. above (limit A r) x = {x} ⟶ x = w"
+      have "card (above (limit A r) w) ≤ 1"
+        using w_top
+        by auto
+      hence "{w} ⊆ {a ∈ A. card(above (limit A r) a) ≤ 1}"
+        using winner_exists w_unique_top
+        by blast
+      moreover have
+        "{a ∈ A. card(above (limit A r) a) ≤ 1} ⊆ {w}"
+      proof
+        fix
+          x :: "'a"
+        assume x_in_winner_set:
+          "x ∈ {a ∈ A. card (above (limit A r) a) ≤ 1}"
+        hence x_in_A: "x ∈ A"
+          by auto
+        hence connex_limit:
+          "connex A (limit A r)"
+          using lin_ord_imp_connex lin_ord_on_A
+          by simp
+        hence "let q = limit A r in x ≼⇩q x"
+          using connex_limit above_connex
+                pref_imp_in_above x_in_A
+          by metis
+        hence "(x,x) ∈ limit A r"
+          by simp
+        hence x_above_x: "x ∈ above (limit A r) x"
+          by (simp add: above_def)
+        have "above (limit A r) x ⊆ A"
+          using above_presv_limit order
+          by fastforce
+        hence above_finite: "finite (above (limit A r) x)"
+          by (simp add: finite_A finite_subset)
+        have "card (above (limit A r) x) ≤ 1"
+          using x_in_winner_set
+          by simp
+        moreover have
+          "card (above (limit A r) x) ≥ 1"
+          using One_nat_def Suc_leI above_finite card_eq_0_iff
+                equals0D neq0_conv x_above_x
+          by metis
+        ultimately have
+          "card (above (limit A r) x) = 1"
+          by simp
+        hence "{x} = above (limit A r) x"
+          using is_singletonE is_singleton_altdef singletonD x_above_x
+          by metis
+        hence "x = w"
+          using w_unique
+          by (simp add: x_in_A)
+        thus "x ∈ {w}"
+          by simp
+      qed
+      ultimately have
+        "{w} = {a ∈ A. card (above (limit A r) a) ≤ 1}"
+        by auto
+      thus ?thesis
+        by simp
+    qed
+    hence "defer (pass_module 1 r) A p = {w}"
+      by simp
+    thus "card (defer (pass_module 1 r) A p) = 1"
+      by simp
+  qed
+qed
+
+theorem pass_two_mod_def_two:
+  assumes order: "linear_order r"
+  shows "defers 2 (pass_module 2 r)"
+  unfolding defers_def
+proof (safe)
+  show "electoral_module (pass_module 2 r)"
+    using order
+    by simp
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile"
+  assume
+    min_2_card: "2 ≤ card A" and
+    finA: "finite A" and
+    profA: "profile A p"
+  from min_2_card
+  have not_empty_A: "A ≠ {}"
+    by auto
+  moreover have limitA_order:
+    "linear_order_on A (limit A r)"
+    using limit_presv_lin_ord order
+    by auto
+  ultimately obtain a where
+    a: "above (limit A r) a = {a}"
+    using above_one min_2_card finA profA
+    by blast
+  hence "∀b ∈ A. let q = limit A r in (b ≼⇩q a)"
+    using limitA_order pref_imp_in_above empty_iff
+          insert_iff insert_subset above_presv_limit
+          order connex_def lin_ord_imp_connex
+    by metis
+  hence a_best: "∀b ∈ A. (b, a) ∈ limit A r"
+    by simp
+  hence a_above: "∀b ∈ A. a ∈ above (limit A r) b"
+    by (simp add: above_def)
+  from a have "a ∈ {a ∈ A. card(above (limit A r) a) ≤ 2}"
+    using CollectI Suc_leI not_empty_A a_above card_UNIV_bool
+          card_eq_0_iff card_insert_disjoint empty_iff finA
+          finite.emptyI insert_iff limitA_order above_one
+          UNIV_bool nat.simps(3) zero_less_Suc
+    by (metis (no_types, lifting))
+  hence a_in_defer: "a ∈ defer (pass_module 2 r) A p"
+    by simp
+  have "finite (A-{a})"
+    by (simp add: finA)
+  moreover have A_not_only_a: "A-{a} ≠ {}"
+    using min_2_card Diff_empty Diff_idemp Diff_insert0
+          One_nat_def not_empty_A card.insert_remove
+          card_eq_0_iff finite.emptyI insert_Diff
+          numeral_le_one_iff semiring_norm(69) card.empty
+    by metis
+  moreover have limitAa_order:
+    "linear_order_on (A-{a}) (limit (A-{a}) r)"
+    using limit_presv_lin_ord order top_greatest
+    by blast
+  ultimately obtain b where b: "above (limit (A-{a}) r) b = {b}"
+    using above_one
+    by metis
+  hence "∀c ∈ A-{a}. let q = limit (A-{a}) r in (c ≼⇩q b)"
+    using limitAa_order pref_imp_in_above empty_iff insert_iff
+          insert_subset above_presv_limit order connex_def
+          lin_ord_imp_connex
+    by metis
+  hence b_in_limit: "∀c ∈ A-{a}. (c, b) ∈ limit (A-{a}) r"
+    by simp
+  hence b_best: "∀c ∈ A-{a}. (c, b) ∈ limit A r"
+    by auto
+  hence c_not_above_b: "∀c ∈ A-{a, b}. c ∉ above (limit A r) b"
+    using b Diff_iff Diff_insert2 subset_UNIV above_presv_limit
+          insert_subset order limit_presv_above limit_presv_above2
+    by metis
+  moreover have above_subset: "above (limit A r) b ⊆ A"
+    using above_presv_limit order
+    by metis
+  moreover have b_above_b: "b ∈ above (limit A r) b"
+    using above_def b b_best above_presv_limit
+          mem_Collect_eq order insert_subset
+    by metis
+  ultimately have above_b_eq_ab: "above (limit A r) b = {a, b}"
+    using a_above
+    by auto
+  hence card_above_b_eq_2: "card (above (limit A r) b) = 2"
+    using A_not_only_a b_in_limit
+    by auto
+  hence b_in_defer: "b ∈ defer (pass_module 2 r) A p"
+    using b_above_b above_subset
+    by auto
+  from b_best have b_above:
+    "∀c ∈ A-{a}. b ∈ above (limit A r) c"
+    using above_def mem_Collect_eq
+    by metis
+  have "connex A (limit A r)"
+    using limitA_order lin_ord_imp_connex
+    by auto
+  hence "∀c ∈ A. c ∈ above (limit A r) c"
+    by (simp add: above_connex)
+  hence "∀c ∈ A-{a, b}. {a, b, c} ⊆ above (limit A r) c"
+    using a_above b_above
+    by auto
+  moreover have "∀c ∈ A-{a, b}. card{a, b, c} = 3"
+    using DiffE One_nat_def Suc_1 above_b_eq_ab card_above_b_eq_2
+          above_subset card_insert_disjoint finA finite_subset
+          insert_commute numeral_3_eq_3
+    by metis
+  ultimately have
+    "∀c ∈ A-{a, b}. card (above (limit A r) c) ≥ 3"
+    using card_mono finA finite_subset above_presv_limit order
+    by metis
+  hence "∀c ∈ A-{a, b}. card (above (limit A r) c) > 2"
+    using less_le_trans numeral_less_iff order_refl semiring_norm(79)
+    by metis
+  hence "∀c ∈ A-{a, b}. c ∉ defer (pass_module 2 r) A p"
+    by (simp add: not_le)
+  moreover have "defer (pass_module 2 r) A p ⊆ A"
+    by auto
+  ultimately have "defer (pass_module 2 r) A p ⊆ {a, b}"
+    by blast
+  with a_in_defer b_in_defer have
+    "defer (pass_module 2 r) A p = {a, b}"
+    by fastforce
+  thus "card (defer (pass_module 2 r) A p) = 2"
+    using above_b_eq_ab card_above_b_eq_2
+    by presburger
+qed
+
+(*
+   Composing a non-blocking, non-electing electoral module
+   in sequence with an electoral module that defers exactly
+   one alternative results in an electoral module that defers
+   exactly one alternative.
+*)
+theorem seq_comp_def_one[simp]:
+  assumes
+    non_blocking_m: "non_blocking m" and
+    non_electing_m: "non_electing m" and
+    def_1_n: "defers 1 n"
+  shows "defers 1 (m ▹ n)"
+  unfolding defers_def
+proof (safe)
+  have electoral_mod_m: "electoral_module m"
+    using non_electing_m
+    by (simp add: non_electing_def)
+  have electoral_mod_n: "electoral_module n"
+    using def_1_n
+    by (simp add: defers_def)
+  show "electoral_module (m ▹ n)"
+    using electoral_mod_m electoral_mod_n
+    by simp
+next
+  fix
+    A :: "'a set" and
+    p :: "'a Profile"
+  assume
+    pos_card: "1 ≤ card A" and
+    fin_A: "finite A" and
+    prof_A: "profile A p"
+  from pos_card have
+    "A ≠ {}"
+    by auto
+  with fin_A prof_A have m_non_blocking:
+    "reject m A p ≠ A"
+    using non_blocking_m non_blocking_def
+    by metis
+  hence
+    "∃a. a ∈ A ∧ a ∉ reject m A p"
+    using pos_card non_electing_def non_electing_m
+          reject_in_alts subset_antisym subset_iff
+          fin_A prof_A subsetI
+    by metis
+  hence "defer m A p ≠ {}"
+    using electoral_mod_defer_elem empty_iff pos_card
+          non_electing_def non_electing_m fin_A prof_A
+    by (metis (no_types))
+  hence defer_non_empty:
+    "card (defer m A p) ≥ 1"
+    using One_nat_def Suc_leI card_gt_0_iff pos_card fin_A prof_A
+          non_blocking_def non_blocking_m def_presv_fin_prof
+    by metis
+  have defer_fun:
+    "defer (m ▹ n) A p =
+      defer n (defer m A p) (limit_profile (defer m A p) p)"
+    using def_1_n defers_def fin_A non_blocking_def non_blocking_m
+          prof_A seq_comp_defers_def_set
+    by (metis (no_types, hide_lams))
+  have
+    "∀n f. defers n f =
+      (electoral_module f ∧
+        (∀A rs.
+          (¬ n ≤ card (A::'a set) ∨ infinite A ∨
+            ¬ profile A rs) ∨
+          card (defer f A rs) = n))"
+    using defers_def
+    by blast
+  hence
+    "card (defer n (defer m A p)
+      (limit_profile (defer m A p) p)) = 1"
+    using defer_non_empty def_1_n
+          fin_A prof_A non_blocking_def
+          non_blocking_m def_presv_fin_prof
+    by metis
+  thus "card (defer (m ▹ n) A p) = 1"
+    using defer_fun
+    by auto
+qed
+
+lemma loop_comp_helper_iter_elim_def_n_helper:
+  assumes
+    non_electing_m: "non_electing m" and
+    single_elimination: "eliminates 1 m" and
+    terminate_if_n_left: "∀ r. ((t r) ⟷ (card (defer_r r) = x))" and
+    x_greater_zero: "x > 0" and
+    f_prof: "finite_profile A p"
+  shows
+    "(n = card (defer acc A p) ∧ n ≥ x ∧ card (defer acc A p) > 1 ∧
+      non_electing acc) ⟶
+          card (defer (loop_comp_helper acc m t) A p) = x"
+proof (induct n arbitrary: acc rule: less_induct)
+  case(less n)
+  have subset:
+    "(card (defer acc A p) > 1 ∧ finite_profile A p ∧ electoral_module acc) ⟶
+        defer (acc ▹ m) A p ⊂ defer acc A p"
+    using seq_comp_elim_one_red_def_set single_elimination
+    by blast
+  hence step_reduces_defer_set:
+    "(card (defer acc A p) > 1 ∧ finite_profile A p ∧ non_electing acc) ⟶
+        defer (acc ▹ m) A p ⊂ defer acc A p"
+    using non_electing_def
+    by auto
+  thus ?case
+  proof cases
+    assume term_satisfied: "t (acc A p)"
+    have "card (defer_r (loop_comp_helper acc m t A p)) = x"
+      using loop_comp_helper.simps(1) term_satisfied terminate_if_n_left
+      by metis
+    thus ?case
+      by blast
+  next
+    assume term_not_satisfied: "¬(t (acc A p))"
+    hence card_not_eq_x: "card (defer acc A p) ≠ x"
+      by (simp add: terminate_if_n_left)
+    have rec_step:
+      "(card (defer acc A p) > 1 ∧ finite_profile A p ∧ non_electing acc) ⟶
+          loop_comp_helper acc m t A p =
+              loop_comp_helper (acc ▹ m) m t A p" (*needed for step*)
+      using loop_comp_helper.simps(2) non_electing_def def_presv_fin_prof
+            step_reduces_defer_set term_not_satisfied
+      by metis
+    thus ?case
+    proof cases
+      assume card_too_small: "card (defer acc A p) < x"
+      thus ?thesis
+        using not_le
+        by blast
+    next
+      assume old_card_at_least_x: "¬(card (defer acc A p) < x)"
+      obtain i where i_is_new_card: "i = card (defer (acc ▹ m) A p)"
+        by blast
+      with card_not_eq_x have card_too_big:
+        "card (defer acc A p) > x"
+        using nat_neq_iff old_card_at_least_x
+        by blast
+      hence enough_leftover: "card (defer acc A p) > 1"
+        using x_greater_zero
+        by auto
+      have "electoral_module acc ⟶ (defer acc A p) ⊆ A"
+        by (simp add: defer_in_alts f_prof)
+      hence step_profile:
+        "electoral_module acc ⟶
+            finite_profile (defer acc A p)
+              (limit_profile (defer acc A p) p)"
+        using f_prof limit_profile_sound
+        by auto
+      hence
+        "electoral_module acc ⟶
+            card (defer m (defer acc A p)
+              (limit_profile (defer acc A p) p)) =
+                card (defer acc A p) - 1"
+        using non_electing_m single_elimination
+              single_elim_decr_def_card2 enough_leftover
+        by blast
+      hence "electoral_module acc ⟶ i = card (defer acc A p) - 1"
+        using sequential_composition.simps snd_conv i_is_new_card
+        by metis
+      hence "electoral_module acc ⟶ i ≥ x"
+        using card_too_big
+        by linarith
+      hence new_card_still_big_enough: "electoral_module acc ⟶ x ≤ i"
+        by blast
+      have
+        "electoral_module acc ∧ electoral_module m ⟶
+            defer (acc ▹ m) A p ⊆ defer acc A p"
+        using enough_leftover f_prof subset
+        by blast
+      hence
+        "electoral_module acc ∧ electoral_module m ⟶
+            i ≤ card (defer acc A p)"
+        using card_mono i_is_new_card step_profile
+        by blast
+      hence i_geq_x:
+        "electoral_module acc ∧ electoral_module m ⟶ (i = x ∨ i > x)"
+        using nat_less_le new_card_still_big_enough
+        by blast
+      thus ?thesis
+      proof cases
+        assume new_card_greater_x: "electoral_module acc ⟶ i > x"
+        hence "electoral_module acc ⟶ 1 < card (defer (acc ▹ m) A p)"
+          using x_greater_zero i_is_new_card
+          by linarith
+        moreover have new_card_still_big_enough2:
+          "electoral_module acc ⟶ x ≤ i" (* Needed for step *)
+          using i_is_new_card new_card_still_big_enough
+          by blast
+        moreover have
+          "n = card (defer acc A p) ⟶
+              (electoral_module acc ⟶ i < n)" (* Needed for step *)
+          using subset step_profile enough_leftover f_prof psubset_card_mono
+                i_is_new_card
+          by blast
+        moreover have
+          "electoral_module acc ⟶
+              electoral_module (acc ▹ m)" (* Needed for step *)
+          using non_electing_def non_electing_m seq_comp_sound
+          by blast
+        moreover have non_electing_new:
+          "non_electing acc ⟶ non_electing (acc ▹ m)"
+          by (simp add: non_electing_m)
+        ultimately have
+          "(n = card (defer acc A p) ∧ non_electing acc ∧
+              electoral_module acc) ⟶
+                  card (defer (loop_comp_helper (acc ▹ m) m t) A p) = x"
+          using less.hyps i_is_new_card new_card_greater_x
+          by blast
+        thus ?thesis
+          using f_prof rec_step non_electing_def
+          by metis
+      next
+        assume i_not_gt_x: "¬(electoral_module acc ⟶ i > x)"
+        hence "electoral_module acc ∧ electoral_module m ⟶ i = x"
+          using i_geq_x
+          by blast
+        hence "electoral_module acc ∧ electoral_module m ⟶ t ((acc ▹ m) A p)"
+          using i_is_new_card terminate_if_n_left
+          by blast
+        hence
+          "electoral_module acc ∧ electoral_module m ⟶
+              card (defer_r (loop_comp_helper (acc ▹ m) m t A p)) = x"
+          using loop_comp_helper.simps(1) terminate_if_n_left
+          by metis
+        thus ?thesis
+          using i_not_gt_x dual_order.strict_iff_order i_is_new_card
+                loop_comp_helper.simps(1) new_card_still_big_enough
+                f_prof rec_step terminate_if_n_left
+          by metis
+      qed
+    qed
+  qed
+qed
+
+lemma loop_comp_helper_iter_elim_def_n:
+  assumes
+    non_electing_m: "non_electing m" and
+    single_elimination: "eliminates 1 m" and
+    terminate_if_n_left: "∀ r. ((t r) ⟷ (card (defer_r r) = x))" and
+    x_greater_zero: "x > 0" and
+    f_prof: "finite_profile A p" and
+    acc_defers_enough: "card (defer acc A p) ≥ x" and
+    non_electing_acc: "non_electing acc"
+  shows "card (defer (loop_comp_helper acc m t) A p) = x"
+  using acc_defers_enough gr_implies_not0 le_neq_implies_less
+        less_one linorder_neqE_nat loop_comp_helper.simps(1)
+        loop_comp_helper_iter_elim_def_n_helper non_electing_acc
+        non_electing_m f_prof single_elimination nat_neq_iff
+        terminate_if_n_left x_greater_zero less_le
+  by (metis (no_types, lifting))
+
+lemma iter_elim_def_n_helper:
+  assumes
+    non_electing_m: "non_electing m" and
+    single_elimination: "eliminates 1 m" and
+    terminate_if_n_left: "∀ r. ((t r) ⟷ (card (defer_r r) = x))" and
+    x_greater_zero: "x > 0" and
+    f_prof: "finite_profile A p" and
+    enough_alternatives: "card A ≥ x"
+  shows "card (defer (m \<circlearrowleft>⇩t) A p) = x"
+proof cases
+  assume "card A = x"
+  thus ?thesis
+    by (simp add: terminate_if_n_left)
+next
+  assume card_not_x: "¬ card A = x"
+  thus ?thesis
+  proof cases
+    assume "card A < x"
+    thus ?thesis
+      using enough_alternatives not_le
+      by blast
+  next
+    assume "¬card A < x"
+    hence card_big_enough_A: "card A > x"
+      using card_not_x
+      by linarith
+    hence card_m: "card (defer m A p) = card A - 1"
+      using non_electing_m f_prof single_elimination
+            single_elim_decr_def_card2 x_greater_zero
+      by fastforce
+    hence card_big_enough_m: "card (defer m A p) ≥ x"
+      using card_big_enough_A
+      by linarith
+    hence "(m \<circlearrowleft>⇩t) A p = (loop_comp_helper m m t) A p"
+      by (simp add: card_not_x terminate_if_n_left)
+    thus ?thesis
+      using card_big_enough_m non_electing_m f_prof single_elimination
+            terminate_if_n_left x_greater_zero loop_comp_helper_iter_elim_def_n
+      by metis
+  qed
+qed
+
+theorem iter_elim_def_n[simp]:
+  assumes
+    non_electing_m: "non_electing m" and
+    single_elimination: "eliminates 1 m" and
+    terminate_if_n_left: "∀ r. ((t r) ⟷ (card (defer_r r) = n))" and
+    x_greater_zero: "n > 0"
+  shows "defers n (m \<circlearrowleft>⇩t)"
+proof -
+  have
+    "∀ A p. finite_profile A p ∧ card A ≥ n ⟶
+        card (defer (m \<circlearrowleft>⇩t) A p) = n"
+    using iter_elim_def_n_helper non_electing_m single_elimination
+          terminate_if_n_left x_greater_zero
+    by blast
+  moreover have "electoral_module (m \<circlearrowleft>⇩t)"
+    using loop_comp_sound eliminates_def single_elimination
+    by blast
+  thus ?thesis
+    by (simp add: calculation defers_def)
+qed
+
+end
