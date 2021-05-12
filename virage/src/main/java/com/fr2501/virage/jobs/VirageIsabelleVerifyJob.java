@@ -8,25 +8,26 @@ import com.fr2501.virage.isabelle.IsabelleProofChecker;
 
 /**
  * 
- * A {@link VirageJob} that invokes Isabelle to automatically attempt proof verification.
+ * A {@link VirageJob} that invokes Isabelle to automatically attempt proof
+ * verification.
  *
  */
-public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Boolean,File>> {
-	private IsabelleProofChecker checker;
-	
-	private File file;
+public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Boolean, File>> {
+  private IsabelleProofChecker checker;
 
-	public VirageIsabelleVerifyJob(VirageUserInterface issuer, File file) {
-		super(issuer);
-		
-		this.file = file;
-	}
-	
-	@Override
-	protected void concreteExecute() throws Exception {
-		this.checker = this.executingCore.getIsabelleProofChecker();
-		
-		this.result = this.checker.verifyTheoryFile(this.file, this.executingCore.getFrameworkRepresentation());
-	}
+  private File file;
+
+  public VirageIsabelleVerifyJob(VirageUserInterface issuer, File file) {
+    super(issuer);
+
+    this.file = file;
+  }
+
+  @Override
+  protected void concreteExecute() throws Exception {
+    this.checker = this.executingCore.getIsabelleProofChecker();
+
+    this.result = this.checker.verifyTheoryFile(this.file, this.executingCore.getFrameworkRepresentation());
+  }
 
 }

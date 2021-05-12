@@ -4,14 +4,14 @@ import java.util.Map;
 
 /**
  * 
- * An {@link IsabelleEvent} raised by Isabelle for informing the user about intermediate changes,
- * e.g. progress of a command.
+ * An {@link IsabelleEvent} raised by Isabelle for informing the user about
+ * intermediate changes, e.g. progress of a command.
  *
  */
 public class IsabelleNoteEvent extends IsabelleEvent {
 
-	public IsabelleNoteEvent(Map<String, String> parameters) {
-		super(parameters);
-	}
+  public IsabelleNoteEvent(Map<String, String> parameters) {
+    super(parameters);
+  }
 
 }

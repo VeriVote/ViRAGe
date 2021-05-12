@@ -10,10 +10,10 @@ import edu.pse.beast.types.cbmctypes.outputplugins.CandidateList;
  *
  */
 public class ElectionDescriptionFactory {
-	public static ElectionDescription getElectionDescriptionFromString(String codeString) {
-		ElectionDescription result = new ElectionDescription("test", new Preference(), new CandidateList());
-		result.setCode(codeString);
-		
-		return result;
-	}
+  public static ElectionDescription getElectionDescriptionFromString(String codeString) {
+    ElectionDescription result = new ElectionDescription("test", new Preference(), new CandidateList());
+    result.setCode(codeString);
+
+    return result;
+  }
 }

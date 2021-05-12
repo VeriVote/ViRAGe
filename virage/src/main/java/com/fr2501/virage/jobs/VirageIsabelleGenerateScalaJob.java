@@ -11,20 +11,20 @@ import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
  *
  */
 public class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<File> {
-	private IsabelleCodeGenerator generator;
-	
-	private String composition;
+  private IsabelleCodeGenerator generator;
 
-	public VirageIsabelleGenerateScalaJob(VirageUserInterface issuer, String composition) {
-		super(issuer);
-		
-		this.composition = composition;
-	}
+  private String composition;
 
-	@Override
-	protected void concreteExecute() throws Exception {
-		this.generator = this.executingCore.getIsabelleCodeGenerator();
-		
-		this.result = this.generator.generateScalaCodeAndCompile(this.composition);
-	}
+  public VirageIsabelleGenerateScalaJob(VirageUserInterface issuer, String composition) {
+    super(issuer);
+
+    this.composition = composition;
+  }
+
+  @Override
+  protected void concreteExecute() throws Exception {
+    this.generator = this.executingCore.getIsabelleCodeGenerator();
+
+    this.result = this.generator.generateScalaCodeAndCompile(this.composition);
+  }
 }

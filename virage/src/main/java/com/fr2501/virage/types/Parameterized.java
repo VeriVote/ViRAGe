@@ -8,5 +8,5 @@ import java.util.List;
  *
  */
 public interface Parameterized {
-	public List<ComponentType> getParameters();
+  public List<ComponentType> getParameters();
 }

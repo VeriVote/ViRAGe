@@ -16,31 +16,31 @@ import com.fr2501.util.SimpleFileReader;
  *
  */
 public class RootFile {
-	private static Logger logger = LogManager.getRootLogger();
-	
-	private File file;
-	
-	private List<String> lines;
-	private String sessionName;
-	private List<String> theoryNames;
-	
-	public RootFile(File file) {
-		this.file = file;
-		
-		SimpleFileReader reader = new SimpleFileReader();
-		
-		try {
-			this.lines = reader.readFileByLine(file);
-		} catch (IOException e) {
-			logger.warn(e);
-		}
-	}
-	
-	private void parseFile() {
-		for(int i=0; i<this.lines.size(); i++) {
-			String line = lines.get(i);
-			
-			// TODO
-		}
-	}
+  private static Logger logger = LogManager.getRootLogger();
+
+  private File file;
+
+  private List<String> lines;
+  private String sessionName;
+  private List<String> theoryNames;
+
+  public RootFile(File file) {
+    this.file = file;
+
+    SimpleFileReader reader = new SimpleFileReader();
+
+    try {
+      this.lines = reader.readFileByLine(file);
+    } catch (IOException e) {
+      logger.warn(e);
+    }
+  }
+
+  private void parseFile() {
+    for (int i = 0; i < this.lines.size(); i++) {
+      String line = lines.get(i);
+
+      // TODO
+    }
+  }
 }

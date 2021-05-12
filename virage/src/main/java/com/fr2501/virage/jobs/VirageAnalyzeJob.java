@@ -17,36 +17,36 @@ import com.fr2501.virage.types.SearchResult;
  *
  */
 public class VirageAnalyzeJob extends VirageJobWithExplicitResult<List<List<SearchResult<BooleanWithUncertainty>>>> {
-	private List<String> propertyStrings;
-	private List<Property> properties;
-	private DecompositionTree tree;
-	
-	private FrameworkRepresentation framework;
-	private VirageSearchManager manager;
-	
-	public VirageAnalyzeJob(VirageUserInterface issuer, String tree, List<String> properties) {
-		super(issuer);
-		
-		this.tree = DecompositionTree.parseString(tree);
-		this.propertyStrings = properties;
-	}
-	
-	@Override
-	public void concreteExecute() {
-		this.framework = this.executingCore.getFrameworkRepresentation();
-		this.manager = this.executingCore.getSearchManager();
-		
-		this.properties = new LinkedList<Property>();
-		
-		for(String s: this.propertyStrings) {
-			this.properties.add(this.framework.getProperty(s));
-		}
-		
-		this.result = this.manager.analyzeComposition(tree, properties);
-	}
+  private List<String> propertyStrings;
+  private List<Property> properties;
+  private DecompositionTree tree;
 
-	@Override
-	public List<List<SearchResult<BooleanWithUncertainty>>> getResult() {
-		return this.result;
-	}
+  private FrameworkRepresentation framework;
+  private VirageSearchManager manager;
+
+  public VirageAnalyzeJob(VirageUserInterface issuer, String tree, List<String> properties) {
+    super(issuer);
+
+    this.tree = DecompositionTree.parseString(tree);
+    this.propertyStrings = properties;
+  }
+
+  @Override
+  public void concreteExecute() {
+    this.framework = this.executingCore.getFrameworkRepresentation();
+    this.manager = this.executingCore.getSearchManager();
+
+    this.properties = new LinkedList<Property>();
+
+    for (String s : this.propertyStrings) {
+      this.properties.add(this.framework.getProperty(s));
+    }
+
+    this.result = this.manager.analyzeComposition(tree, properties);
+  }
+
+  @Override
+  public List<List<SearchResult<BooleanWithUncertainty>>> getResult() {
+    return this.result;
+  }
 }

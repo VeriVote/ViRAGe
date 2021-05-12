@@ -16,36 +16,36 @@ import com.fr2501.virage.types.Property;
  *
  */
 public class VirageProveJob extends VirageJobWithExplicitResult<List<List<CompositionProof>>> {
-	private List<String> propertyStrings;
-	private List<Property> properties;
-	private DecompositionTree tree;
-	
-	private FrameworkRepresentation framework;
-	private VirageSearchManager manager;
-	
-	public VirageProveJob(VirageUserInterface issuer, String tree, List<String> properties) {
-		super(issuer);
-		
-		this.tree = new DecompositionTree(tree);
-		this.propertyStrings = properties;
-	}
-	
-	@Override
-	public void concreteExecute() {
-		this.framework = this.executingCore.getFrameworkRepresentation();
-		this.manager = this.executingCore.getSearchManager();
-		
-		this.properties = new LinkedList<Property>();
-		
-		for(String s: this.propertyStrings) {
-			this.properties.add(this.framework.getProperty(s));
-		}
-		
-		this.result = this.manager.proveClaims(tree, properties);
-	}
+  private List<String> propertyStrings;
+  private List<Property> properties;
+  private DecompositionTree tree;
 
-	@Override
-	public List<List<CompositionProof>> getResult() {
-		return this.result;
-	}
+  private FrameworkRepresentation framework;
+  private VirageSearchManager manager;
+
+  public VirageProveJob(VirageUserInterface issuer, String tree, List<String> properties) {
+    super(issuer);
+
+    this.tree = new DecompositionTree(tree);
+    this.propertyStrings = properties;
+  }
+
+  @Override
+  public void concreteExecute() {
+    this.framework = this.executingCore.getFrameworkRepresentation();
+    this.manager = this.executingCore.getSearchManager();
+
+    this.properties = new LinkedList<Property>();
+
+    for (String s : this.propertyStrings) {
+      this.properties.add(this.framework.getProperty(s));
+    }
+
+    this.result = this.manager.proveClaims(tree, properties);
+  }
+
+  @Override
+  public List<List<CompositionProof>> getResult() {
+    return this.result;
+  }
 }
