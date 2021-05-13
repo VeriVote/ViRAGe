@@ -5,6 +5,7 @@ import java.time.Instant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fr2501.util.ProgressIndicator;
 import com.fr2501.virage.core.VirageCore;
 import com.fr2501.virage.core.VirageUserInterface;
 
@@ -98,6 +99,8 @@ public abstract class VirageJob<T> {
    * {@link VirageJobState#FAILED})
    */
   public void waitFor() {
+    ProgressIndicator progressIndicator = new ProgressIndicator();
+    
     while (true) {
       boolean finished = false;
       synchronized (this) {
@@ -106,39 +109,15 @@ public abstract class VirageJob<T> {
 
       if (finished)
         return;
-
+     
       try {
         Thread.sleep(250);
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
-
-      String message = "";
-      switch (this.phase) {
-      case 0:
-      case 4:
-        message = "|";
-        break;
-      case 1:
-      case 5:
-        message = "/";
-        break;
-      case 2:
-      case 6:
-        message = "-";
-        break;
-      case 3:
-      case 7:
-        message = "\\";
-        break;
-      }
-
-      phase++;
-      if (phase == 8)
-        phase = 0;
-
-      System.out.print(message + "\r");
+      
+      progressIndicator.advance();
     }
   }
 

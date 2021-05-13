@@ -119,6 +119,12 @@ public class VirageCore implements Runnable {
         }
       } else {
         // No jobs, busy waiting
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
       }
     }
   }
@@ -192,6 +198,6 @@ public class VirageCore implements Runnable {
   }
 
   private void initEnvironment() {
-    SystemUtils.setUnixEnvironmentVariable("SWI_HOME_DIR", ConfigReader.getInstance().getSWIPLHome());
+    SystemUtils.setUnixEnvironmentVariable("SWI_HOME_DIR", ConfigReader.getInstance().getSwiplHome());
   }
 }

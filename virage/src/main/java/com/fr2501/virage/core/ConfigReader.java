@@ -1,5 +1,6 @@
 package com.fr2501.virage.core;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,10 +10,32 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jpl7.JPL;
+
 import com.fr2501.util.Pair;
+import com.fr2501.util.ProcessUtils;
 
 public class ConfigReader {
+  Logger logger = LogManager.getRootLogger();
+  
   private static final String LIST_SEPARATOR = ";";
+  
+  private static final String SCALA_COMPILER = "scala_compiler";
+  private static final String ISABELLE_HOME = "isabelle_home";
+  private static final String SWIPL_HOME = "swipl_home";
+  private static final String SWIPL_BIN = "swipl_bin";
+  
+  private static final String ISA_EXE = "/bin/isabelle";
+  
+  private static final String INSTALL_PLEASE = "Please install if necessary and check config.properties!";
+  private static final String SEPARATOR = "----------";
+  
+  private boolean isabelleAvailable = true;
+  private boolean scalacAvailable = true;
+  private boolean swiplAvailable = true;
+  private boolean jplAvailable = true;
 
   private Properties properties;
 
@@ -42,7 +65,57 @@ public class ConfigReader {
 
     this.properties.load(input);
 
-    // TODO print properties + versions
+    System.out.println("Properties: ");
+    for(Object prop: this.properties.keySet()) {
+      System.out.println("\t" + prop.toString() + ": " + this.properties.get(prop));
+    }
+    
+    this.checkAvailabilityAndPrintVersions();
+  }
+  
+  private void checkAvailabilityAndPrintVersions() {
+    System.out.println(SEPARATOR);
+    // SCALA
+    try {
+      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SCALA_COMPILER) + " --version");
+    } catch (IOException e) {
+      logger.warn("No Scala compiler found! " + INSTALL_PLEASE);
+      this.scalacAvailable = false;
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    // ISABELLE
+    try {
+      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(ISABELLE_HOME) + ISA_EXE + " version");
+    } catch (IOException e) {
+      logger.warn("Isabelle not found! " + INSTALL_PLEASE);
+      this.isabelleAvailable = false;
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    // SWIPL
+    try {
+      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SWIPL_BIN) + " --version");
+    } catch (IOException e) {
+      logger.warn("SWI-Prolog not found! " + INSTALL_PLEASE);
+      this.isabelleAvailable = false;
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    
+    File file = new File(this.properties.get(SWIPL_HOME) + "lib/jpl.jar");
+    if(!file.exists()) {
+      this.logger.error("No jpl.jar found! " + INSTALL_PLEASE);
+    } else {
+      System.out.println("JPL version " + JPL.version_string());
+    }
+    System.out.println(SEPARATOR);
   }
 
   public List<String> getIsabelleTactics() {
@@ -86,7 +159,7 @@ public class ConfigReader {
   }
 
   public boolean hasScalaCompiler() {
-    return this.properties.containsKey("scala_compiler");
+    return this.scalacAvailable;
   }
 
   public String getScalaCompiler() {
@@ -117,7 +190,7 @@ public class ConfigReader {
     return this.properties.getProperty("session_name");
   }
 
-  public String getSWIPLHome() {
+  public String getSwiplHome() {
     return this.properties.getProperty("swipl_home");
   }
 

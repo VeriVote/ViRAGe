@@ -13,6 +13,7 @@ import com.fr2501.util.StringUtils;
 import com.fr2501.virage.isabelle.IsabelleFrameworkExtractor;
 import com.fr2501.virage.jobs.VirageAnalyzeJob;
 import com.fr2501.virage.jobs.VirageExitJob;
+import com.fr2501.virage.jobs.VirageExtractJob;
 import com.fr2501.virage.jobs.VirageGenerateJob;
 import com.fr2501.virage.jobs.VirageIsabelleGenerateJob;
 import com.fr2501.virage.jobs.VirageIsabelleGenerateScalaJob;
@@ -84,11 +85,11 @@ public class VirageCommandLineInterface implements VirageUserInterface {
       } else {
         sessionName = this.scanner.nextLine();
       }
-
-      IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
-      FrameworkRepresentation framework = extractor.extract(path, sessionName);
-      framework.setTheoryPath(path);
-      framework.setSessionName(sessionName);
+      
+      VirageExtractJob extractJob = new VirageExtractJob(this, path, sessionName);
+      this.core.submit(extractJob);
+      extractJob.waitFor();
+      FrameworkRepresentation framework = extractJob.getResult();
 
       VirageParseJob parseJob;
       parseJob = new VirageParseJob(this, new File(framework.getAbsolutePath()));
