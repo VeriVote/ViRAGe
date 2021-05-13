@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.SystemUtils;
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
-import com.fr2501.virage.analyzer.SBMCCompositionAnalyzer;
+//import com.fr2501.virage.analyzer.SBMCCompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;

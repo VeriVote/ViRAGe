@@ -66,11 +66,11 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.9.8</version>
 		</dependency>
-		<dependency>
-			<groupId>edu.pse.beast</groupId>
-			<artifactId>Beast</artifactId>
-			<version>2.02</version>
-		</dependency>
+<!-- 		<dependency>
+			<groupId>com.github.VeriVote</groupId>
+			<artifactId>BEAST</artifactId>
+			<version>master-SNAPSHOT</version>
+		</dependency> -->
 		<!-- https://mvnrepository.com/artifact/de.unruh/scala-isabelle -->
 		<dependency>
 			<groupId>de.unruh</groupId>
