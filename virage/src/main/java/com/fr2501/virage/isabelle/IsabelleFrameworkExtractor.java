@@ -199,7 +199,7 @@ public class IsabelleFrameworkExtractor {
       thmLoop: for (String thmName : compRulesRaw.get(thyName).keySet()) {
         String sign = compRulesRaw.get(thyName).get(thmName);
         sign = sign.replaceAll("[\n]+", " ");
-        sign = sign.replaceAll("[\s]+", " ");
+        sign = sign.replaceAll("[\\s]+", " ");
 
         // Remove theory prefixes of constants
         sign = sign.replaceAll("\\?\\?\\.\\w+\\.", "");

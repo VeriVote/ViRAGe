@@ -25,7 +25,7 @@ public class ConfigReader {
   private static final String SCALA_COMPILER = "scala_compiler";
   private static final String ISABELLE_HOME = "isabelle_home";
   private static final String SWIPL_HOME = "swipl_home";
-  private static final String SWIPL_BIN = "swipl_bin";
+  private static final String SWIPL_LIB = "swipl_lib";
   
   private static final String ISA_EXE = "/bin/isabelle";
   
@@ -97,16 +97,16 @@ public class ConfigReader {
       e.printStackTrace();
     }
     
-    // SWIPL
-    try {
-      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SWIPL_BIN) + " --version");
-    } catch (IOException e) {
-      logger.warn("SWI-Prolog not found! " + INSTALL_PLEASE);
-      this.isabelleAvailable = false;
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+//    // SWIPL
+//    try {
+//      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SWIPL_LIB) + "swipl --version");
+//    } catch (IOException e) {
+//      logger.warn("SWI-Prolog not found! " + INSTALL_PLEASE);
+//      this.isabelleAvailable = false;
+//    } catch (InterruptedException e) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//    }
     
     
     File file = new File(this.properties.get(SWIPL_HOME) + "lib/jpl.jar");
@@ -171,7 +171,11 @@ public class ConfigReader {
   }
 
   public String getIsabelleSessionDir() {
-    return this.properties.getProperty("isabelle_session_dir");
+    String s = this.properties.getProperty("isabelle_session_dir");
+    
+    s = s.replace("~", System.getProperty("user.home"));
+    
+    return s;
   }
 
   public boolean hasPathToRootFile() {
@@ -192,6 +196,10 @@ public class ConfigReader {
 
   public String getSwiplHome() {
     return this.properties.getProperty("swipl_home");
+  }
+  
+  public String getSwiplLib() {
+    return this.properties.getProperty(SWIPL_LIB);
   }
 
 }
