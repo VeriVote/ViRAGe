@@ -64,6 +64,8 @@ public abstract class VirageJob<T> {
 
     this.issuer.notify(this);
   }
+  
+  public abstract boolean externalSoftwareAvailable();
 
   /**
    * The actual implementation of the job's functionality

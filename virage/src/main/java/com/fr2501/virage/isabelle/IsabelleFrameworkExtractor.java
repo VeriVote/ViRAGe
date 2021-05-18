@@ -24,6 +24,7 @@ import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.CompositionalStructure;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 
@@ -39,7 +40,7 @@ public class IsabelleFrameworkExtractor {
     this.prologStrings = new LinkedList<String>();
   }
 
-  public FrameworkRepresentation extract(String sessionDir, String sessionName) {
+  public FrameworkRepresentation extract(String sessionDir, String sessionName) throws ExternalSoftwareUnavailableException {
     ScalaIsabelleFacade facade = new ScalaIsabelleFacade(sessionDir, sessionName);
 
     File plFile;

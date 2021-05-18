@@ -16,6 +16,7 @@ import org.jpl7.JPL;
 
 import com.fr2501.util.Pair;
 import com.fr2501.util.ProcessUtils;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 
 public class ConfigReader {
   Logger logger = LogManager.getRootLogger();
@@ -88,11 +89,14 @@ public class ConfigReader {
     
     // ISABELLE
     try {
-      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(ISABELLE_HOME) + ISA_EXE + " version");
+      ProcessUtils.runTerminatingProcessAndPrintOutput(this.getIsabelleExecutable() + " version");
     } catch (IOException e) {
       logger.warn("Isabelle not found! " + INSTALL_PLEASE);
       this.isabelleAvailable = false;
     } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (ExternalSoftwareUnavailableException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
@@ -116,6 +120,18 @@ public class ConfigReader {
       System.out.println("JPL version " + JPL.version_string());
     }
     System.out.println(SEPARATOR);
+  }
+  
+  public String getIsabelleExecutable() throws ExternalSoftwareUnavailableException {
+    if(!this.isabelleAvailable) {
+      throw new ExternalSoftwareUnavailableException();
+    }
+    
+    return this.properties.get(ISABELLE_HOME) + ISA_EXE;
+  }
+  
+  public boolean hasIsabelle() {
+    return this.isabelleAvailable;
   }
 
   public List<String> getIsabelleTactics() {
@@ -162,15 +178,27 @@ public class ConfigReader {
     return this.scalacAvailable;
   }
 
-  public String getScalaCompiler() {
+  public String getScalaCompiler() throws ExternalSoftwareUnavailableException {
+    if(!this.hasScalaCompiler()) {
+      throw new ExternalSoftwareUnavailableException();
+    }
+    
     return this.properties.getProperty("scala_compiler");
   }
 
-  public String getIsabelleHome() {
+  public String getIsabelleHome() throws ExternalSoftwareUnavailableException {
+    if(!this.isabelleAvailable) {
+      throw new ExternalSoftwareUnavailableException();
+    }
+    
     return this.properties.getProperty("isabelle_home");
   }
 
-  public String getIsabelleSessionDir() {
+  public String getIsabelleSessionDir() throws ExternalSoftwareUnavailableException {
+    if(!this.isabelleAvailable) {
+      throw new ExternalSoftwareUnavailableException();
+    }
+    
     String s = this.properties.getProperty("isabelle_session_dir");
     
     s = s.replace("~", System.getProperty("user.home"));
@@ -194,6 +222,10 @@ public class ConfigReader {
     return this.properties.getProperty("session_name");
   }
 
+  public boolean hasJPL() {
+    return this.jplAvailable;
+  }
+  
   public String getSwiplHome() {
     return this.properties.getProperty("swipl_home");
   }

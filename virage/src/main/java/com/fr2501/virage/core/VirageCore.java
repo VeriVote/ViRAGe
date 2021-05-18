@@ -23,6 +23,7 @@ import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.jobs.VirageJob;
+import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.FrameworkRepresentation;
@@ -89,7 +90,9 @@ public class VirageCore implements Runnable {
   }
 
   public void destroy(int statusCode) {
-    this.checker.destroy();
+    if(this.checker != null) {
+      this.checker.destroy(); 
+    }
 
     System.exit(statusCode);
   }
@@ -135,6 +138,14 @@ public class VirageCore implements Runnable {
    * @param job the job
    */
   public void submit(VirageJob<?> job) {
+    if(!job.externalSoftwareAvailable()) {
+      job.setState(VirageJobState.FAILED);
+      
+      logger.warn("External software unavailable!");
+      
+      return;
+    }
+    
     this.jobs.add(job);
   }
 
@@ -165,9 +176,12 @@ public class VirageCore implements Runnable {
       this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
       // this.searchManager.addAnalyzer(new SBMCCompositionAnalyzer(framework));
       this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
-      this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
-      this.checker.setSolvers(ConfigReader.getInstance().getIsabelleTactics());
-      this.codeGenerator = new IsabelleCodeGenerator(this.framework);
+      
+      if(ConfigReader.getInstance().hasIsabelle()) {
+        this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
+        this.checker.setSolvers(ConfigReader.getInstance().getIsabelleTactics());
+        this.codeGenerator = new IsabelleCodeGenerator(this.framework);
+      }
     } catch (Exception e) {
       logger.error("Initialising CompositionAnalyzers failed.", e);
     }

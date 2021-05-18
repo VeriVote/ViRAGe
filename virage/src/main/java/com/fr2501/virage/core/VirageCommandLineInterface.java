@@ -60,68 +60,31 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     String defaultPath = "./src/test/resources/framework.pl";
 
     String path;
-
-    System.out
-        .println("Please input the path to an EPL file or an Isabelle root directory. (default: " + defaultPath + ")");
-    if (ConfigReader.getInstance().hasPathToRootFile()) {
-      System.out.println("Configuration option \"path_to_root_file\" is specified and will be used.");
-
-      path = ConfigReader.getInstance().getPathToRootFile();
-    } else {
-      path = this.scanner.nextLine();
-    }
-
-    if (path.equals("")) {
-      path = defaultPath;
-    }
-
-    if (!path.endsWith(".pl")) {
-      String sessionName;
-      System.out.println("Please input the name of the session within this directory.");
-      if (ConfigReader.getInstance().hasSessionName()) {
-        System.out.println("Configuration option \"session_name\" is specified and will be used.");
-
-        sessionName = ConfigReader.getInstance().getSessionName();
+    
+    boolean firstTry = true;
+    
+    while(true) {
+      System.out.println("Please input the path to an EPL file or an Isabelle root directory. "
+          + "(default: " + defaultPath + ")");
+      if (ConfigReader.getInstance().hasPathToRootFile() && firstTry) {
+        System.out.println("Configuration option \"path_to_root_file\" is specified and will be used.");
+  
+        path = ConfigReader.getInstance().getPathToRootFile();
+        
+        firstTry = false;
       } else {
-        sessionName = this.scanner.nextLine();
+        path = this.scanner.nextLine();
+      }
+  
+      if (path.equals("")) {
+        path = defaultPath;
       }
       
-      VirageExtractJob extractJob = new VirageExtractJob(this, path, sessionName);
-      this.core.submit(extractJob);
-      extractJob.waitFor();
-      FrameworkRepresentation framework = extractJob.getResult();
-
-      VirageParseJob parseJob;
-      parseJob = new VirageParseJob(this, new File(framework.getAbsolutePath()));
-      this.core.submit(parseJob);
-    } else {
-
-      VirageParseJob parseJob;
-      try {
-        parseJob = new VirageParseJob(this, (new File(path).getCanonicalFile()));
-
-        this.core.submit(parseJob);
-        while (parseJob.getState() != VirageJobState.FINISHED) {
-          if (parseJob.getState() == VirageJobState.FAILED) {
-
-            System.out.println(
-                "Please input the path to an EPL file or an Isabelle root directory. (default: " + defaultPath + ")");
-            path = this.scanner.nextLine();
-
-            if (path.equals("")) {
-              path = defaultPath;
-            }
-
-            parseJob = new VirageParseJob(this, new File(path).getCanonicalFile());
-            this.core.submit(parseJob);
-
-            // parseJob.waitFor();
-          }
-        }
-      } catch (IOException e) {
-        logger.error("Something went wrong while accessing the file system.");
+      if(this.extractAndOrParseFramework(path) != null) {
+        break;
       }
     }
+
 
     while (true) {
       System.out.println("Do you want to (g)enerate a composition, (a)nalyze one, (p)rove a claim,\n"
@@ -156,6 +119,50 @@ public class VirageCommandLineInterface implements VirageUserInterface {
       // too much sense when using a CLI, so it is disabled.
       job.waitFor();
     }
+  }
+  
+  private FrameworkRepresentation extractAndOrParseFramework(String path) {
+    FrameworkRepresentation framework = null;
+    VirageParseJob parseJob;
+    
+    if (!path.endsWith(".pl")) {
+      if(!ConfigReader.getInstance().hasIsabelle()) {
+        System.out.println("Isabelle is not available. Please install or supply an EPL-file directly.");
+        
+        return null;
+      }
+      
+      String sessionName;
+      System.out.println("Please input the name of the session within this directory.");
+      if (ConfigReader.getInstance().hasSessionName()) {
+        System.out.println("Configuration option \"session_name\" is specified and will be used.");
+
+        sessionName = ConfigReader.getInstance().getSessionName();
+      } else {
+        sessionName = this.scanner.nextLine();
+      }
+      
+      VirageExtractJob extractJob = new VirageExtractJob(this, path, sessionName);
+      this.core.submit(extractJob);
+      extractJob.waitFor();
+      if(extractJob.getState().equals(VirageJobState.FAILED)) {
+        return null;
+      }
+      framework = extractJob.getResult();
+
+      parseJob = new VirageParseJob(this, new File(framework.getAbsolutePath()));
+    } else {
+      parseJob = new VirageParseJob(this, new File(path));
+    }
+
+    this.core.submit(parseJob);
+    parseJob.waitFor();
+    
+    if(!parseJob.getState().equals(VirageJobState.FINISHED)) {
+      return null;
+    }
+    
+    return parseJob.getResult();
   }
 
   @Override

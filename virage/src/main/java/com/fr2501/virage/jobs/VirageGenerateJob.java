@@ -3,6 +3,7 @@ package com.fr2501.virage.jobs;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.types.DecompositionTree;
@@ -45,5 +46,10 @@ public class VirageGenerateJob extends VirageJobWithExplicitResult<List<SearchRe
   @Override
   public List<SearchResult<DecompositionTree>> getResult() {
     return this.result;
+  }
+
+  @Override
+  public boolean externalSoftwareAvailable() {
+    return (ConfigReader.getInstance().hasJPL());
   }
 }

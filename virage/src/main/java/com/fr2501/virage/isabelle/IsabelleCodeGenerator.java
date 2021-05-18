@@ -25,6 +25,7 @@ import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.types.CompilationFailedException;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
 
@@ -116,16 +117,17 @@ public class IsabelleCodeGenerator {
    * @throws IOException
    * @throws InterruptedException
    * @throws IsabelleBuildFailedException
+   * @throws ExternalSoftwareUnavailableException 
    */
   public File generateCode(String composition, IsabelleCGLanguage language)
-      throws IOException, InterruptedException, IsabelleBuildFailedException {
+      throws IOException, InterruptedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     File theory = this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
 
     return this.generateCode(theory, language);
   }
 
   public File generateCode(DecompositionTree composition, IsabelleCGLanguage language)
-      throws IOException, InterruptedException, IsabelleBuildFailedException {
+      throws IOException, InterruptedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     return this.generateCode(composition.toString(), language);
   }
 
@@ -138,9 +140,10 @@ public class IsabelleCodeGenerator {
    * @throws IOException
    * @throws InterruptedException
    * @throws IsabelleBuildFailedException
+   * @throws ExternalSoftwareUnavailableException 
    */
   public File generateCode(File theory, IsabelleCGLanguage language)
-      throws IOException, InterruptedException, IsabelleBuildFailedException {
+      throws IOException, InterruptedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     String moduleName = this.prepareTheoryFile(theory, language);
 
     String theoryName = theory.getName().substring(0,
@@ -169,9 +172,10 @@ public class IsabelleCodeGenerator {
    * @throws InterruptedException         if processes are interrupted prematurely
    * @throws CompilationFailedException   if Scala compilation fails
    * @throws IsabelleBuildFailedException if Isabelle code generation fails
+   * @throws ExternalSoftwareUnavailableException 
    */
   public File generateScalaCodeAndCompile(String composition)
-      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
+      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     File theory = this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
 
     return this.generateScalaCodeAndCompile(theory);
@@ -188,9 +192,10 @@ public class IsabelleCodeGenerator {
    * @throws InterruptedException         if processes are interrupted prematurely
    * @throws CompilationFailedException   if Scala compilation fails
    * @throws IsabelleBuildFailedException if Isabelle code generation fails
+   * @throws ExternalSoftwareUnavailableException 
    */
   public File generateScalaCodeAndCompile(File theory)
-      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
+      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     String moduleName = this.prepareTheoryFile(theory, "Scala");
 
     String theoryName = theory.getName().substring(0,
@@ -207,19 +212,26 @@ public class IsabelleCodeGenerator {
     String jarPath = codeFile.getParent() + File.separator + moduleName + ".jar";
 
     if (ConfigReader.getInstance().hasScalaCompiler()) {
-      int status = ProcessUtils.runTerminatingProcessAndLogOutput(ConfigReader.getInstance().getScalaCompiler() + " "
-          + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath() + " -d " + jarPath);
-
-      if (status != 0) {
-        // Implicit values did not work, try setting them explicitly.
-        votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile, true);
-
-        status = ProcessUtils.runTerminatingProcessAndLogOutput(
-            "scalac " + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath() + " -d " + jarPath);
+      int status;
+      try {
+        status = ProcessUtils.runTerminatingProcessAndLogOutput(ConfigReader.getInstance().getScalaCompiler() + " "
+            + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath() + " -d " + jarPath);
 
         if (status != 0) {
-          throw new CompilationFailedException("Generated Scala code could not be compiled.");
+          // Implicit values did not work, try setting them explicitly.
+          votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile, true);
+  
+          status = ProcessUtils.runTerminatingProcessAndLogOutput(ConfigReader.getInstance().getScalaCompiler() + " "
+              + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath() + " -d " + jarPath);
+  
+          if (status != 0) {
+            throw new CompilationFailedException("Generated Scala code could not be compiled.");
+          }
         }
+          
+      } catch (ExternalSoftwareUnavailableException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
       }
 
       logger.info("Scala compilation was successful. The jar file can be found at " + jarPath);
@@ -313,11 +325,11 @@ public class IsabelleCodeGenerator {
   }
 
   private File invokeIsabelleCodeGeneration(File theory, String sessionName, String theoryName)
-      throws IOException, InterruptedException, IsabelleBuildFailedException {
+      throws IOException, InterruptedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     String generatedPath = theory.getParent();
     String theoryPath = new File(this.framework.getTheoryPath()).getCanonicalPath();
 
-    String isabelleCommand = "isabelle build -e -D " + generatedPath + " -D " + theoryPath + " -o quick_and_dirty -b "
+    String isabelleCommand = ConfigReader.getInstance().getIsabelleExecutable() + " build -e -D " + generatedPath + " -D " + theoryPath + " -o quick_and_dirty -b "
         + sessionName;
 
     int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);

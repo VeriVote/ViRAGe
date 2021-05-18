@@ -20,4 +20,9 @@ public class VirageExitJob extends VirageJobWithoutExplicitResult {
   public void concreteExecute() {
     this.executingCore.destroy(this.statusCode);
   }
+
+  @Override
+  public boolean externalSoftwareAvailable() {
+    return true;
+  }
 }

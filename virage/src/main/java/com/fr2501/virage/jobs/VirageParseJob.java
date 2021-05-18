@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.MalformedEPLFileException;
+import com.fr2501.virage.types.FrameworkRepresentation;
 
 /**
  * 
@@ -13,7 +14,7 @@ import com.fr2501.virage.prolog.MalformedEPLFileException;
  * core.
  *
  */
-public class VirageParseJob extends VirageJobWithoutExplicitResult {
+public class VirageParseJob extends VirageJobWithExplicitResult<FrameworkRepresentation> {
   private ExtendedPrologParser parser;
 
   private File file;
@@ -28,12 +29,18 @@ public class VirageParseJob extends VirageJobWithoutExplicitResult {
   public void concreteExecute() throws IOException, MalformedEPLFileException {
     this.parser = this.executingCore.getExtendedPrologParser();
 
-    this.executingCore.setFrameworkRepresentation(this.parser.parseFramework(this.file, true));
+    this.result = this.parser.parseFramework(this.file, true);
+    this.executingCore.setFrameworkRepresentation(this.result);
 
   }
 
   @Override
-  public Void getResult() {
-    throw new UnsupportedOperationException();
+  public FrameworkRepresentation getResult() {
+    return this.result;
+  }
+
+  @Override
+  public boolean externalSoftwareAvailable() {
+    return true;
   }
 }

@@ -14,6 +14,7 @@ import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.CompilationFailedException;
 import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
 
@@ -37,7 +38,7 @@ public class IsabelleCodeGeneratorTest {
 
   @Test
   public void electTest()
-      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
+      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
     String module = "elect_module";
@@ -49,7 +50,7 @@ public class IsabelleCodeGeneratorTest {
 
   @Test
   public void dropTest()
-      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
+      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
     String module = "drop_module(1,_)";
@@ -59,7 +60,7 @@ public class IsabelleCodeGeneratorTest {
 
   @Test
   public void pluralityTest()
-      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
+      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
     String module = "plurality";
@@ -71,7 +72,7 @@ public class IsabelleCodeGeneratorTest {
 
   @Test
   public void smcTest()
-      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException {
+      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
     String module = SMC;

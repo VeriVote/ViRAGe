@@ -19,4 +19,9 @@ public class VirageDummyJob extends VirageJobWithoutExplicitResult {
     // no-op
   }
 
+  @Override
+  public boolean externalSoftwareAvailable() {
+    return true;
+  }
+
 }

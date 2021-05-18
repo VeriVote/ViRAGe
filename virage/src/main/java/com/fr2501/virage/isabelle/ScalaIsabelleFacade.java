@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fr2501.virage.core.ConfigReader;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 
 import de.unruh.isabelle.control.Isabelle;
 import de.unruh.isabelle.control.Isabelle.Setup;
@@ -56,7 +57,7 @@ public class ScalaIsabelleFacade {
   private Setup setup;
   private Isabelle isabelle;
 
-  public ScalaIsabelleFacade(String sessionDir, String sessionName) {
+  public ScalaIsabelleFacade(String sessionDir, String sessionName) throws ExternalSoftwareUnavailableException {
     this.sessionDir = (new File(sessionDir).getAbsolutePath());
     this.sessionName = sessionName;
 

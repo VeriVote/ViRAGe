@@ -68,7 +68,7 @@ public class IsabelleProofChecker {
 
     try {
       // TODO: Remove quick_and_dirty as soon as possible (or make optional?)
-      Process process = Runtime.getRuntime().exec("isabelle build -o browser_info -b -D `pwd`");
+      Process process = Runtime.getRuntime().exec(ConfigReader.getInstance().getIsabelleExecutable() + " build -o browser_info -b -D `pwd`");
       process.waitFor();
 
       this.initServer();

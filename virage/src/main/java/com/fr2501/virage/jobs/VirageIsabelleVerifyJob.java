@@ -3,6 +3,7 @@ package com.fr2501.virage.jobs;
 import java.io.File;
 
 import com.fr2501.util.Pair;
+import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
 
@@ -28,6 +29,11 @@ public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Bo
     this.checker = this.executingCore.getIsabelleProofChecker();
 
     this.result = this.checker.verifyTheoryFile(this.file, this.executingCore.getFrameworkRepresentation());
+  }
+
+  @Override
+  public boolean externalSoftwareAvailable() {
+    return (ConfigReader.getInstance().hasIsabelle());
   }
 
 }
