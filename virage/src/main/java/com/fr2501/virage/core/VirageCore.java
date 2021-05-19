@@ -213,7 +213,15 @@ public class VirageCore implements Runnable {
 
   private void initEnvironment() {
     SystemUtils.setUnixEnvironmentVariable("SWI_HOME_DIR", ConfigReader.getInstance().getSwiplHome());
-    SystemUtils.setUnixEnvironmentVariable("LD_LIBRARY_PATH", ConfigReader.getInstance().getSwiplLib());
+    
+    //SystemUtils.setUnixEnvironmentVariable("LD_LIBRARY_PATH", ConfigReader.getInstance().getSwiplLib());
+    try {
+      SystemUtils.addDir(ConfigReader.getInstance().getSwiplLib());
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
     SystemUtils.setUnixEnvironmentVariable("LD_PRELOAD", ConfigReader.getInstance().getSwiplLib() + "libswipl.so");
 
     String classPath = "";
