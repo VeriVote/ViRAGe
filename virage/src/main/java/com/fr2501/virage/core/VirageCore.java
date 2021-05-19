@@ -90,8 +90,8 @@ public class VirageCore implements Runnable {
   }
 
   public void destroy(int statusCode) {
-    if(this.checker != null) {
-      this.checker.destroy(); 
+    if (this.checker != null) {
+      this.checker.destroy();
     }
 
     System.exit(statusCode);
@@ -138,14 +138,14 @@ public class VirageCore implements Runnable {
    * @param job the job
    */
   public void submit(VirageJob<?> job) {
-    if(!job.externalSoftwareAvailable()) {
+    if (!job.externalSoftwareAvailable()) {
       job.setState(VirageJobState.FAILED);
-      
+
       logger.warn("External software unavailable!");
-      
+
       return;
     }
-    
+
     this.jobs.add(job);
   }
 
@@ -176,8 +176,8 @@ public class VirageCore implements Runnable {
       this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
       // this.searchManager.addAnalyzer(new SBMCCompositionAnalyzer(framework));
       this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
-      
-      if(ConfigReader.getInstance().hasIsabelle()) {
+
+      if (ConfigReader.getInstance().hasIsabelle()) {
         this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
         this.checker.setSolvers(ConfigReader.getInstance().getIsabelleTactics());
         this.codeGenerator = new IsabelleCodeGenerator(this.framework);
@@ -215,5 +215,15 @@ public class VirageCore implements Runnable {
     SystemUtils.setUnixEnvironmentVariable("SWI_HOME_DIR", ConfigReader.getInstance().getSwiplHome());
     SystemUtils.setUnixEnvironmentVariable("LD_LIBRARY_PATH", ConfigReader.getInstance().getSwiplLib());
     SystemUtils.setUnixEnvironmentVariable("LD_PRELOAD", ConfigReader.getInstance().getSwiplLib() + "libswipl.so");
+
+    String classPath = "";
+    if (System.getenv().containsKey("CLASSPATH")) {
+      classPath = System.getenv("CLASSPATH") + ";";
+    }
+
+    if (!classPath.contains("jpl.jar")) {
+      classPath += ConfigReader.getInstance().getSwiplHome() + "/lib/jpl.jar";
+      SystemUtils.setUnixEnvironmentVariable("CLASSPATH", classPath);
+    }
   }
 }
