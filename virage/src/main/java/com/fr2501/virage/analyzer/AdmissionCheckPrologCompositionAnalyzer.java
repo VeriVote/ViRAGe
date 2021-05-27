@@ -2,6 +2,7 @@ package com.fr2501.virage.analyzer;
 
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
@@ -29,9 +30,10 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
    * 
    * @param framework the framework
    * @throws IOException but should actually not
+   * @throws ExternalSoftwareUnavailableException 
    */
   public AdmissionCheckPrologCompositionAnalyzer(FrameworkRepresentation framework) 
-      throws IOException {
+      throws IOException, ExternalSoftwareUnavailableException {
     super(framework);
 
     logger.info("Initialising AdmissionCheckPrologCompositionAnalyzer");

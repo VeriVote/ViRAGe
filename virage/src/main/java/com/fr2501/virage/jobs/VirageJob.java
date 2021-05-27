@@ -61,8 +61,6 @@ public abstract class VirageJob<T> {
       logger.error("An error occured.", e);
       this.setState(VirageJobState.FAILED);
     }
-
-    this.issuer.notify(this);
   }
   
   public abstract boolean externalSoftwareAvailable();
@@ -91,6 +89,8 @@ public abstract class VirageJob<T> {
       this.time_started = System.currentTimeMillis();
     } else if (state == VirageJobState.FAILED || state == VirageJobState.FINISHED) {
       this.time_finished = System.currentTimeMillis();
+      
+      this.issuer.notify(this);
     }
 
     this.state = state;

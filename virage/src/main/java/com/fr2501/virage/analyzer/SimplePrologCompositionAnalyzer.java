@@ -18,6 +18,7 @@ import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
@@ -42,8 +43,9 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
    * 
    * @param framework the framework
    * @throws IOException but should actually not
+   * @throws ExternalSoftwareUnavailableException 
    */
-  public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) throws IOException {
+  public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) throws IOException, ExternalSoftwareUnavailableException {
     logger.info("Initialising SimplePrologCompositionAnalyzer.");
     this.framework = framework;
 

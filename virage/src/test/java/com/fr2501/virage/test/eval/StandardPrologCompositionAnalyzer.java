@@ -11,6 +11,7 @@ import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
@@ -22,7 +23,7 @@ public class StandardPrologCompositionAnalyzer implements CompositionAnalyzer {
 
   private long timeout;
 
-  public StandardPrologCompositionAnalyzer(FrameworkRepresentation framework) {
+  public StandardPrologCompositionAnalyzer(FrameworkRepresentation framework) throws ExternalSoftwareUnavailableException {
     this.framework = framework;
 
     this.facade = new JPLFacade(DEFAULT_TIMEOUT);

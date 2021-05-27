@@ -7,12 +7,13 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.ValueNotPresentException;
 
 public class SimplePrologCompositionAnalyzerTest extends CompositionAnalyzerTest {
   private static final Logger logger = LogManager.getLogger(SimplePrologCompositionAnalyzer.class);
 
-  protected CompositionAnalyzer createInstance() throws IOException {
+  protected CompositionAnalyzer createInstance() throws IOException, ExternalSoftwareUnavailableException {
     return new SimplePrologCompositionAnalyzer(this.framework);
   }
 

@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.fr2501.virage.prolog.JPLFacade;
 import com.fr2501.virage.prolog.QueryState;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.SearchResult;
 
 public class JPLFacadeTest {
@@ -18,7 +19,7 @@ public class JPLFacadeTest {
   private static final String validTestPath = "src/test/resources/valid_test.pl";
 
   @Test
-  public void testInvalidQuery() {
+  public void testInvalidQuery() throws ExternalSoftwareUnavailableException {
     logger.info("testInvalidQuery()");
     JPLFacade facade = new JPLFacade(1000);
 
@@ -60,7 +61,7 @@ public class JPLFacadeTest {
   }
 
   @Test
-  public void testUnification() {
+  public void testUnification() throws ExternalSoftwareUnavailableException {
     JPLFacade facade = new JPLFacade(1000);
 
     String generic = "f(X)";

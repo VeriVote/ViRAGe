@@ -23,6 +23,7 @@ import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
@@ -35,7 +36,7 @@ public abstract class CompositionAnalyzerTest {
   protected TestDataGenerator generator;
   protected FrameworkRepresentation framework;
 
-  protected abstract CompositionAnalyzer createInstance() throws IOException;
+  protected abstract CompositionAnalyzer createInstance() throws IOException, ExternalSoftwareUnavailableException;
 
   @Before
   public void setup() throws IOException, MalformedEPLFileException {
@@ -46,7 +47,7 @@ public abstract class CompositionAnalyzerTest {
   }
 
   @Test
-  public void testSequentialMajorityComparison() throws ValueNotPresentException, IOException {
+  public void testSequentialMajorityComparison() throws ValueNotPresentException, IOException, ExternalSoftwareUnavailableException {
     logger.info("testSequentialMajorityComparison()");
     String smc = "sequential_composition(" + "loop_composition(" + "parallel_composition(" + "sequential_composition("
         + "pass_module(2,_)," + "sequential_composition(" + "revision_composition(" + "plurality),"
@@ -128,7 +129,7 @@ public abstract class CompositionAnalyzerTest {
   // is thus used as a baseline for all other implementations of
   // CompositionAnalyzer.
   @Test
-  public void testAccordanceWithSPCA() throws IOException {
+  public void testAccordanceWithSPCA() throws IOException, ExternalSoftwareUnavailableException {
     logger.info("testAccordanceWithSCPA()");
     SimplePrologCompositionAnalyzer spca = new SimplePrologCompositionAnalyzer(this.framework);
     CompositionAnalyzer self = this.createInstance();
@@ -219,7 +220,7 @@ public abstract class CompositionAnalyzerTest {
   }
 
   @Test
-  public void testSimpleProofs() throws IOException {
+  public void testSimpleProofs() throws IOException, ExternalSoftwareUnavailableException {
     List<Property> properties = new LinkedList<Property>();
     properties.add(this.framework.getProperty("monotonicity"));
 

@@ -16,6 +16,7 @@ import com.fr2501.virage.prolog.MalformedEPLFileException;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 
@@ -29,7 +30,7 @@ public class IsabelleTheoryGeneratorTest {
   private CompositionAnalyzer analyzer;
 
   @Before
-  public void init() throws IOException, MalformedEPLFileException {
+  public void init() throws IOException, MalformedEPLFileException, ExternalSoftwareUnavailableException {
     ExtendedPrologParser parser = new SimpleExtendedPrologParser();
     this.framework = parser.parseFramework(new File(PATH), false);
 

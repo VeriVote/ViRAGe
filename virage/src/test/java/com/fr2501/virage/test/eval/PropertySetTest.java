@@ -17,6 +17,7 @@ import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.test.unit.TestDataGenerator;
 import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
@@ -25,7 +26,7 @@ public class PropertySetTest {
   private static final String FRAMEWORK_PATH = "src/test/resources/framework.pl";
 
   /* @Test */
-  public void analyzerEval() throws IOException, MalformedEPLFileException {
+  public void analyzerEval() throws IOException, MalformedEPLFileException, ExternalSoftwareUnavailableException {
     ExtendedPrologParser parser = new SimpleExtendedPrologParser();
     FrameworkRepresentation framework = parser.parseFramework(new File(FRAMEWORK_PATH), false);
 

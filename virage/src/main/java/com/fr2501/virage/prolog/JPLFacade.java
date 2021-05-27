@@ -16,6 +16,7 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 
 import com.fr2501.util.StringUtils;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.SearchResult;
 import com.fr2501.virage.types.ValueNotPresentException;
 
@@ -31,13 +32,18 @@ public class JPLFacade {
 
   private static int fileCounter = 0;
 
-  public JPLFacade() {
+  public JPLFacade() throws ExternalSoftwareUnavailableException {
     this(JPLFacade.DEFAULT_TIMEOUT);
   }
 
-  public JPLFacade(long timeout) {
+  public JPLFacade(long timeout) throws ExternalSoftwareUnavailableException {
     this.timeout = timeout;
-    JPL.init();
+    
+    try {
+      JPL.init();
+    } catch (UnsatisfiedLinkError e) {
+      throw new ExternalSoftwareUnavailableException();
+    }
   }
 
   public void setTimeout(long timeout) {

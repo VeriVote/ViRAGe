@@ -54,6 +54,7 @@ public interface CompositionAnalyzer {
    * @throws IllegalArgumentException if no proof can be generated (i.e. asked to
    *                                  prove a non-provable claim)
    */
-  public List<CompositionProof> proveClaims(DecompositionTree composition, List<Property> properties)
+  public List<CompositionProof> proveClaims(
+      DecompositionTree composition, List<Property> properties)
       throws IllegalArgumentException;
 }

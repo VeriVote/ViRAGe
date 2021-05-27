@@ -26,6 +26,7 @@ import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
@@ -46,7 +47,7 @@ public class IsabelleProofCheckerTest {
   private File file;
 
   @Before
-  public void init() throws IOException, MalformedEPLFileException {
+  public void init() throws IOException, MalformedEPLFileException, ExternalSoftwareUnavailableException {
     ExtendedPrologParser parser = new SimpleExtendedPrologParser();
     this.framework = parser.parseFramework(new File(EPL_PATH), false);
 
