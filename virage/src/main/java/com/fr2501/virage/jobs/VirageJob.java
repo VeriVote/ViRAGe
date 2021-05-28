@@ -85,6 +85,8 @@ public abstract class VirageJob<T> {
    * @param state the new state
    */
   public void setState(VirageJobState state) {
+    this.state = state;
+    
     if (state == VirageJobState.RUNNING) {
       this.time_started = System.currentTimeMillis();
     } else if (state == VirageJobState.FAILED || state == VirageJobState.FINISHED) {
@@ -92,8 +94,6 @@ public abstract class VirageJob<T> {
       
       this.issuer.notify(this);
     }
-
-    this.state = state;
   }
 
   /**

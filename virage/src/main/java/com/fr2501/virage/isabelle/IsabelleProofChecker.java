@@ -23,6 +23,7 @@ import com.fr2501.util.ProcessUtils;
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.virage.core.ConfigReader;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
 
@@ -200,7 +201,7 @@ public class IsabelleProofChecker {
   }
 
   private void generateProofDocument(File theory, String adHocSessionName, String theoryPath)
-      throws IOException, InterruptedException, IsabelleBuildFailedException {
+      throws IOException, InterruptedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     String generatedPath = theory.getParent();
 
     File docFolder = new File(generatedPath + File.separator + "document" + File.separator);
@@ -209,7 +210,7 @@ public class IsabelleProofChecker {
     SimpleFileWriter writer = new SimpleFileWriter();
     writer.writeToFile(texDoc, this.texTemplate);
 
-    String isabelleCommand = "isabelle build -e -D " + generatedPath + " -D " + theoryPath
+    String isabelleCommand = ConfigReader.getInstance().getIsabelleExecutable() + " build -e -D " + generatedPath + " -D " + theoryPath
         + " -o quick_and_dirty -o browser_info -b " + adHocSessionName;
 
     int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
@@ -280,8 +281,8 @@ public class IsabelleProofChecker {
     this.lastEvent = new IsabelleMiscEvent();
   }
 
-  private void initServer() throws IOException {
-    this.server = this.runtime.exec("isabelle server -n " + SERVER_NAME);
+  private void initServer() throws IOException, ExternalSoftwareUnavailableException {
+    this.server = this.runtime.exec(ConfigReader.getInstance().getIsabelleExecutable() + " server -n " + SERVER_NAME);
 
     // The server will send a message when startup is finished.
     // Contents are irrelevant, just wait for it to appear.
@@ -290,8 +291,8 @@ public class IsabelleProofChecker {
       ;
   }
 
-  private void initClient(String sessionName, String theoryPath) throws IOException {
-    this.client = this.runtime.exec("isabelle client -n " + SERVER_NAME);
+  private void initClient(String sessionName, String theoryPath) throws IOException, ExternalSoftwareUnavailableException {
+    this.client = this.runtime.exec(ConfigReader.getInstance().getIsabelleExecutable() + " client -n " + SERVER_NAME);
     this.clientInput = this.client.getOutputStream();
 
     IsabelleClientObserver.start(this, this.client);
