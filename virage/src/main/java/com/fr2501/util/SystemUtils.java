@@ -14,8 +14,8 @@ public class SystemUtils {
   // TODO This is terrible and I know it. "export" is not possible from Java?
   @SuppressWarnings("unchecked")
   public static void setUnixEnvironmentVariable(String name, String value) {
-    logger.warn("Attempting to change environment variable " + name + " to " + value);
-    logger.warn("Old value: " + System.getenv(name));
+    logger.info("Attempting to change environment variable " + name + " to " + value);
+    logger.info("Old value: " + System.getenv(name));
 
     Map<String, String> env = System.getenv();
 
@@ -41,7 +41,7 @@ public class SystemUtils {
       e.printStackTrace();
     }
 
-    logger.warn("New value: " + System.getenv(name));
+    logger.info("New value: " + System.getenv(name));
     if (!System.getenv(name).equals(value)) {
       logger.error("Setting environment variable " + name + " to " + value + " failed.");
     }
@@ -49,7 +49,7 @@ public class SystemUtils {
 
   // See
   // https://stackoverflow.com/questions/5419039/is-djava-library-path-equivalent-to-system-setpropertyjava-library-path
-  public static void addDir(String s) throws IOException {
+  public static void addDirToLibraryPath(String s) throws IOException {
     try {
       // This enables the java.library.path to be modified at runtime
       // From a Sun engineer at http://forums.sun.com/thread.jspa?threadID=707176

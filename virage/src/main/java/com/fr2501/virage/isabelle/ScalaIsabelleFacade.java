@@ -147,7 +147,7 @@ public class ScalaIsabelleFacade {
 
           toBeFilled.put(thmName, pretty);
         } catch (Exception e) {
-          System.out.println(e);
+          // TODO
         }
       }
     }

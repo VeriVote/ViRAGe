@@ -2,13 +2,17 @@ package com.fr2501.virage.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jpl7.JPL;
 
+import com.fr2501.util.ProcessUtils;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.isabelle.IsabelleFrameworkExtractor;
 import com.fr2501.virage.jobs.VirageAnalyzeJob;
@@ -24,6 +28,7 @@ import com.fr2501.virage.jobs.VirageDummyJob;
 import com.fr2501.virage.jobs.VirageParseJob;
 import com.fr2501.virage.jobs.VirageProveJob;
 import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
 /**
@@ -32,17 +37,45 @@ import com.fr2501.virage.types.FrameworkRepresentation;
  *
  */
 public class VirageCommandLineInterface implements VirageUserInterface {
-  private static final Logger logger = LogManager.getLogger(VirageCommandLineInterface.class);
+  private final Logger logger = LogManager.getLogger(VirageCommandLineInterface.class);
   private Scanner scanner;
   private VirageCore core;
+  
+  private static final String SEPARATOR = "###########################################################";
+  private final static String BANNER = "#\n"
+      + "# Y88b      / ,e, 888~-_        e       e88~~\\           \n"
+      + "#  Y88b    /   \"  888   \\      d8b     d888      e88~~8e \n"
+      + "#   Y88b  /   888 888    |    /Y88b    8888 __  d888  88b\n"
+      + "#    Y888/    888 888   /    /  Y88b   8888   | 8888__888\n"
+      + "#     Y8/     888 888_-~    /____Y88b  Y888   | Y888    ,\n"
+      + "#      Y      888 888 ~-_  /      Y88b  \"88__/   \"88___/ \n#";
+  private static final String INSTALL_PLEASE = "Please install if necessary and check config.properties!";
 
   private Thread thread;
 
   protected VirageCommandLineInterface(VirageCore core) {
     logger.info("Initialising VirageCommandLineInterface.");
+    
+    this.printSeparator();
+    System.out.println(BANNER);
+    this.printSeparator();
+    
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");  
+    LocalDateTime now = LocalDateTime.now();
+    System.out.println("# Version " + core.getVersion() + ", Timestamp: " + dtf.format(now));
 
+    this.printSeparator();
+    
+    ConfigReader.getInstance().checkAvailabilityAndPrintVersions();
+    
+    this.printSeparator();
+    
     this.scanner = new Scanner(System.in);
     this.core = core;
+  }
+  
+  private void printSeparator() {
+    System.out.println(SEPARATOR);
   }
 
   /**
@@ -138,6 +171,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         System.out.println("Configuration option \"session_name\" is specified and will be used.");
 
         sessionName = ConfigReader.getInstance().getSessionName();
+        
+        System.out.println("Extracting framework from session \"" + sessionName + "\" at " + path + ".\n"
+            + "This might take some time.");
       } else {
         sessionName = this.scanner.nextLine();
       }

@@ -16,6 +16,7 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 
 import com.fr2501.util.StringUtils;
+import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.SearchResult;
 import com.fr2501.virage.types.ValueNotPresentException;
@@ -39,9 +40,19 @@ public class JPLFacade {
   public JPLFacade(long timeout) throws ExternalSoftwareUnavailableException {
     this.timeout = timeout;
     
+    if(!System.getenv("LD_PRELOAD").contains(ConfigReader.getInstance().getSwiplLib() + "libswipl.so")) {
+      logger.error("libswipl.so has not been preloaded, JPL will not work properly.");
+      logger.error("\t Try running \"export LD_PRELOAD=" + ConfigReader.getInstance().getSwiplLib() + "libswipl.so\" and restarting ViRAGe.");
+      
+      throw new ExternalSoftwareUnavailableException();
+    }
+    
     try {
       JPL.init();
     } catch (UnsatisfiedLinkError e) {
+      logger.error("Unable to locate shared objects. Please make sure that they are contained within LD_LIBRARY_PATH.");
+      logger.error("\t Try running \"export LD_LIBRARY_PATH=" + ConfigReader.getInstance().getSwiplLib() + "\" and restarting ViRAGe.");
+      
       throw new ExternalSoftwareUnavailableException();
     }
   }

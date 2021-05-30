@@ -66,16 +66,13 @@ public class ConfigReader {
 
     this.properties.load(input);
 
-    System.out.println("Properties: ");
+    /*System.out.println("Properties: ");
     for(Object prop: this.properties.keySet()) {
       System.out.println("\t" + prop.toString() + ": " + this.properties.get(prop));
-    }
-    
-    this.checkAvailabilityAndPrintVersions();
+    }*/
   }
   
-  private void checkAvailabilityAndPrintVersions() {
-    System.out.println(SEPARATOR);
+  public void checkAvailabilityAndPrintVersions() {
     // SCALA
     try {
       ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SCALA_COMPILER) + " --version");
@@ -112,14 +109,12 @@ public class ConfigReader {
 //      e.printStackTrace();
 //    }
     
-    
     File file = new File(this.properties.get(SWIPL_HOME) + "lib/jpl.jar");
     if(!file.exists()) {
       this.logger.error("No jpl.jar found! " + INSTALL_PLEASE);
     } else {
       System.out.println("JPL version " + JPL.version_string());
     }
-    System.out.println(SEPARATOR);
   }
   
   public String getIsabelleExecutable() throws ExternalSoftwareUnavailableException {
@@ -233,5 +228,4 @@ public class ConfigReader {
   public String getSwiplLib() {
     return this.properties.getProperty(SWIPL_LIB);
   }
-
 }

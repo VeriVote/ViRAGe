@@ -303,7 +303,7 @@ public class IsabelleFrameworkExtractor {
           int endIdx = this.findMatchingBracket(s, i);
 
           if (endIdx == -1) {
-            System.out.println("\t\t\tError");
+            //System.out.println("\t\t\tError");
             continue;
           }
 

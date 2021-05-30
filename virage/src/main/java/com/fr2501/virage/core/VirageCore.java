@@ -39,6 +39,9 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 @SuppressWarnings("deprecation")
 public class VirageCore implements Runnable {
   private final static Logger logger = LogManager.getLogger(VirageCore.class.getName());
+  
+  private final static String _NAME = "ViRAGe";
+  private final static String _VERSION = "0.1.0";
 
   private CommandLine cl;
   private String[] args;
@@ -177,14 +180,19 @@ public class VirageCore implements Runnable {
       this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
       // this.searchManager.addAnalyzer(new SBMCCompositionAnalyzer(framework));
       this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
-
-      if (ConfigReader.getInstance().hasIsabelle()) {
-        this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
-        this.checker.setSolvers(ConfigReader.getInstance().getIsabelleTactics());
-        this.codeGenerator = new IsabelleCodeGenerator(this.framework);
-      }
     } catch (Exception e) {
       logger.error("Initialising CompositionAnalyzers failed.", e);
+    }
+    
+    if (ConfigReader.getInstance().hasIsabelle()) {
+      this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
+      this.checker.setSolvers(ConfigReader.getInstance().getIsabelleTactics());
+      try {
+        this.codeGenerator = new IsabelleCodeGenerator(this.framework);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
   }
 
@@ -213,26 +221,30 @@ public class VirageCore implements Runnable {
   }
 
   private void initEnvironment() {
-    SystemUtils.setUnixEnvironmentVariable("SWI_HOME_DIR", ConfigReader.getInstance().getSwiplHome());
-    
-    //SystemUtils.setUnixEnvironmentVariable("LD_LIBRARY_PATH", ConfigReader.getInstance().getSwiplLib());
-    try {
-      SystemUtils.addDir(ConfigReader.getInstance().getSwiplLib());
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    
-    SystemUtils.setUnixEnvironmentVariable("LD_PRELOAD", ConfigReader.getInstance().getSwiplLib() + "libswipl.so");
-
-    String classPath = "";
-    if (System.getenv().containsKey("CLASSPATH")) {
-      classPath = System.getenv("CLASSPATH") + ";";
-    }
-
-    if (!classPath.contains("jpl.jar")) {
-      classPath += ConfigReader.getInstance().getSwiplHome() + "/lib/jpl.jar";
-      SystemUtils.setUnixEnvironmentVariable("CLASSPATH", classPath);
-    }
+//    SystemUtils.setUnixEnvironmentVariable("SWI_HOME_DIR", ConfigReader.getInstance().getSwiplHome());
+//    
+//    //SystemUtils.setUnixEnvironmentVariable("LD_LIBRARY_PATH", ConfigReader.getInstance().getSwiplLib());
+//    try {
+//      SystemUtils.addDirToLibraryPath(ConfigReader.getInstance().getSwiplHome() + "lib/");
+//    } catch (IOException e) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//    }
+//    
+//    SystemUtils.setUnixEnvironmentVariable("LD_PRELOAD", ConfigReader.getInstance().getSwiplLib() + "libswipl.so");
+//
+//    String classPath = "";
+//    if (System.getenv().containsKey("CLASSPATH")) {
+//      classPath = System.getenv("CLASSPATH") + ";";
+//    }
+//
+//    if (!classPath.contains("jpl.jar")) {
+//      classPath += ConfigReader.getInstance().getSwiplHome() + "/lib/jpl.jar";
+//      SystemUtils.setUnixEnvironmentVariable("CLASSPATH", classPath);
+//    }
+  }
+  
+  public String getVersion() {
+    return _VERSION;
   }
 }

@@ -304,6 +304,10 @@ public class FrameworkRepresentation {
 
   @Override
   public String toString() {
+    return this.sessionName;
+  }
+  
+  public String toVerboseString() {
     String res = "";
 
     res += "ComponentTypes:\n";
