@@ -40,7 +40,7 @@ public class JPLFacade {
   public JPLFacade(long timeout) throws ExternalSoftwareUnavailableException {
     this.timeout = timeout;
     
-    if(!System.getenv("LD_PRELOAD").contains(ConfigReader.getInstance().getSwiplLib() + "libswipl.so")) {
+    if(!System.getenv().containsKey("LD_PRELOAD") || !System.getenv("LD_PRELOAD").contains(ConfigReader.getInstance().getSwiplLib() + "libswipl.so")) {
       logger.error("libswipl.so has not been preloaded, JPL will not work properly.");
       logger.error("\t Try running \"export LD_PRELOAD=" + ConfigReader.getInstance().getSwiplLib() + "libswipl.so\" and restarting ViRAGe.");
       
