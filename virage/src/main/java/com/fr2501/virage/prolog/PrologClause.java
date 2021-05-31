@@ -1,7 +1,9 @@
 package com.fr2501.virage.prolog;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 
@@ -110,4 +112,36 @@ public class PrologClause {
     }
     return true;
   }
+  
+  public void anonymizeSingletons() {
+    List<PrologPredicate> allPreds = this.succedent.getAllChildren();
+    for(PrologPredicate antecedent: this.antecedents) {
+      allPreds.addAll(antecedent.getAllChildren());
+    }
+    
+    List<PrologPredicate> allVars = new LinkedList<PrologPredicate>();
+    for(PrologPredicate pred: allPreds) {
+      if(pred.isVariable()) {
+        allVars.add(pred);
+      }
+    }
+    
+    for(int i=0; i<allVars.size(); i++) {
+      boolean singleton = true;
+      
+      for(int j=0; j<allVars.size() && singleton; j++) {
+        if(i==j) continue;
+        
+        if(allVars.get(i).equals(allVars.get(j))) {
+          singleton = false;
+        }
+      }
+      
+      if(singleton) {
+        allVars.get(i).setName("_");
+      }
+    }
+  }
+  
+
 }

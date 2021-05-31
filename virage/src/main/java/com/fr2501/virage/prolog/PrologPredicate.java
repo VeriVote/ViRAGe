@@ -1,7 +1,9 @@
 package com.fr2501.virage.prolog;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 
@@ -85,6 +87,17 @@ public class PrologPredicate {
       res += ")";
     }
 
+    return res;
+  }
+  
+  public List<PrologPredicate> getAllChildren() {
+    List<PrologPredicate> res = new LinkedList<PrologPredicate>();
+    res.add(this);
+    
+    for(PrologPredicate child: this.parameters) {
+      res.addAll(child.getAllChildren());
+    }
+    
     return res;
   }
 

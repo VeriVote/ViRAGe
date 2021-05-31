@@ -19,6 +19,8 @@ public class CompositionRule implements Comparable<CompositionRule> {
   public CompositionRule(String name, String origin, PrologClause clause) {
     this.name = name;
     this.origin = origin;
+    
+    clause.anonymizeSingletons();
     this.clause = clause;
   }
 
