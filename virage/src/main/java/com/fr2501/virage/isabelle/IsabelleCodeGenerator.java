@@ -225,6 +225,9 @@ public class IsabelleCodeGenerator {
               + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath() + " -d " + jarPath);
   
           if (status != 0) {
+            logger.error("Generated Scala code could not be compiled. " +
+                          "ViRAGe requires at least Scala 2.13.0 to work properly."
+                          + "Please check and update accordingly.");
             throw new CompilationFailedException("Generated Scala code could not be compiled.");
           }
         }

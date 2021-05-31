@@ -75,7 +75,7 @@ public class ConfigReader {
   public void checkAvailabilityAndPrintVersions() {
     // SCALA
     try {
-      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SCALA_COMPILER) + " --version");
+      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SCALA_COMPILER) + " -version");
     } catch (IOException e) {
       logger.warn("No Scala compiler found! " + INSTALL_PLEASE);
       this.scalacAvailable = false;

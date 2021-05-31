@@ -9,11 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 
 import de.unruh.isabelle.control.Isabelle;
 import de.unruh.isabelle.control.Isabelle.Setup;
+import de.unruh.isabelle.control.IsabelleBuildException;
 import de.unruh.isabelle.mlvalue.ListConverter;
 import de.unruh.isabelle.mlvalue.MLFunction;
 import de.unruh.isabelle.mlvalue.MLFunction0;
@@ -40,6 +44,8 @@ import static scala.concurrent.ExecutionContext.global;
  *
  */
 public class ScalaIsabelleFacade {
+  private static final Logger logger = LogManager.getRootLogger();
+  
   private static final String ISA_SEPARATOR = ".";
   private static final JavaStringConverter sConv = new JavaStringConverter();
   private static final ListConverter<String> lConv = new ListConverter<String>(new JavaStringConverter());
@@ -70,7 +76,13 @@ public class ScalaIsabelleFacade {
         new Some<Path>(Path.of(ConfigReader.getInstance().getIsabelleSessionDir())), Path.of(sessionDir),
         JavaConverters.asScalaIteratorConverter(sessionDirs.iterator()).asScala().toSeq(), true, null);
 
-    this.isabelle = new Isabelle(setup);
+    try {
+      this.isabelle = new Isabelle(setup);
+    } catch (/*IsabelleBuild*/Exception e) {
+      logger.error("Building session " + sessionName + "failed. Restarting ViRAGe or building" +
+                    " the session manually within Isabelle might help. If the session is supposed" +
+                    " to generate documentation, texlive is required!");
+    } 
     this.init();
   }
 
