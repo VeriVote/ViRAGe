@@ -409,14 +409,14 @@ public class FrameworkRepresentation {
     ComponentType type = object.getType();
 
     if (!this.componentTypes.contains(type)) {
-      logger.warn("Added item with unknown type \"" + type.getName() + "\" to framework.");
+      logger.info("Added item with unknown type \"" + type.getName() + "\" to framework.");
     }
   }
 
   private void checkTypes(Parameterized object) {
     for (ComponentType paramType : object.getParameters()) {
       if (!this.componentTypes.contains(paramType)) {
-        logger.warn("Added item with unknown parameter type \"" + paramType.getName() + "\" to framework.");
+        logger.info("Added item with unknown parameter type \"" + paramType.getName() + "\" to framework.");
       }
     }
   }

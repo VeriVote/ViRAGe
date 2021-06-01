@@ -282,8 +282,8 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
   private List<ComponentType> extractParameters(String component) throws MalformedEPLFileException {
     List<ComponentType> res = new LinkedList<ComponentType>();
 
-    if (!component.contains("(")) {
-      // No brackets, so no parameters.
+    if (!component.contains("(") || component.endsWith("()")) {
+      // No parameters.
       return res;
     }
 

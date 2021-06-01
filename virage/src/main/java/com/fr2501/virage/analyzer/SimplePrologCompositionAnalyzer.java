@@ -32,6 +32,8 @@ import com.fr2501.virage.types.ValueNotPresentException;
  */
 public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
   private static final Logger logger = LogManager.getLogger();
+  
+  protected static boolean loadedMetaInterpreter = false;
 
   protected static final long DEFAULT_TIMEOUT = 10000;
   protected JPLFacade facade;
@@ -55,7 +57,11 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 
   protected void consultKnowledgeBase() {
     this.facade.consultFile(this.framework.getAbsolutePath());
-    this.facade.consultFile(this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
+    
+    if(!loadedMetaInterpreter) {
+      this.facade.consultFile(this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
+      loadedMetaInterpreter = true;
+    }
   }
 
   @Override

@@ -51,7 +51,10 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
 
       this.facade.consultFile(admissionGuards.getAbsolutePath());
 
-      this.facade.consultFile(this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
+      if(!loadedMetaInterpreter) {
+        this.facade.consultFile(this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
+        loadedMetaInterpreter = true;
+      }
     } catch (IOException e) {
       logger.error("An error occured.", e);
     }
