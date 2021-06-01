@@ -37,6 +37,8 @@ public class ConfigReader {
   private boolean scalacAvailable = true;
   private boolean swiplAvailable = true;
   private boolean jplAvailable = true;
+  
+  private String configPath;
 
   private Properties properties;
 
@@ -63,7 +65,9 @@ public class ConfigReader {
     this.properties = new Properties();
 
     InputStream input = this.getClass().getClassLoader().getResourceAsStream("config.properties");
-
+    File file = new File(this.getClass().getClassLoader().getResource("config.properties").getFile());
+    this.configPath = file.getAbsolutePath();
+    
     this.properties.load(input);
 
     /*System.out.println("Properties: ");
@@ -227,5 +231,9 @@ public class ConfigReader {
   
   public String getSwiplLib() {
     return this.properties.getProperty(SWIPL_LIB);
+  }
+  
+  public String getConfigPath() {
+    return this.configPath;
   }
 }

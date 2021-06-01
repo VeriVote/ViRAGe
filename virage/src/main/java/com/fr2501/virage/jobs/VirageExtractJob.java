@@ -1,5 +1,8 @@
 package com.fr2501.virage.jobs;
 
+import java.io.File;
+
+import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleFrameworkExtractor;
@@ -23,6 +26,10 @@ public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepre
     FrameworkRepresentation framework = extractor.extract(this.path, this.sessionName);
     framework.setTheoryPath(this.path);
     framework.setSessionName(this.sessionName);
+    
+    File frameworkFile = new File(this.path + File.separator + "framework.pl");
+    SimpleFileWriter writer = new SimpleFileWriter();
+    writer.writeToFile(frameworkFile.getAbsolutePath(), framework.toEPLString());
     
     this.result = framework;
   }

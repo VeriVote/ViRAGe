@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.jpl7.JPL;
 
 import com.fr2501.util.ProcessUtils;
+import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.isabelle.IsabelleFrameworkExtractor;
 import com.fr2501.virage.jobs.VirageAnalyzeJob;
@@ -63,6 +64,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");  
     LocalDateTime now = LocalDateTime.now();
     System.out.println("# Version " + core.getVersion() + ", Timestamp: " + dtf.format(now));
+    System.out.println("# Using " + ConfigReader.getInstance().getConfigPath() + ".");
 
     this.printSeparator();
     
@@ -159,6 +161,26 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     VirageParseJob parseJob;
     
     if (!path.endsWith(".pl")) {
+      File file = new File(path);
+      if(file.isDirectory()) {
+        File[] files = file.listFiles();
+        
+        outer: for(File child: files) {
+          if(child.getAbsolutePath().endsWith(".pl")) {
+            while(true) {
+              System.out.println("EPL file " + child.getAbsolutePath() + " found. " +
+                  "Do you want to use it? (y\\n)");
+              String input = this.scanner.nextLine();
+              
+              switch(input) {
+              case "y": return this.extractAndOrParseFramework(child.getAbsolutePath());
+              case "n": continue outer;
+              }
+            }
+          }
+        }
+      }
+      
       if(!ConfigReader.getInstance().hasIsabelle()) {
         System.out.println("Isabelle is not available. Please install or supply an EPL-file directly.");
         
