@@ -24,19 +24,20 @@ public class ConfigReader {
   private static final String LIST_SEPARATOR = ";";
   
   private static final String SCALA_COMPILER = "scala_compiler";
-  private static final String ISABELLE_HOME = "isabelle_home";
-  private static final String SWIPL_HOME = "swipl_home";
-  private static final String SWIPL_LIB = "swipl_lib";
-  
-  private static final String ISA_EXE = "/bin/isabelle";
+  private static final String ISABELLE_BIN = "isabelle_bin";
+  private static final String SWIPL_BIN = "swipl_bin";
   
   private static final String INSTALL_PLEASE = "Please install if necessary and check config.properties!";
-  private static final String SEPARATOR = "----------";
   
   private boolean isabelleAvailable = true;
   private boolean scalacAvailable = true;
   private boolean swiplAvailable = true;
   private boolean jplAvailable = true;
+  
+  private String isabelleHome;
+  private String swiplHome;
+  private String swiplLib;
+  private String isabelleSessionDir;
   
   private String configPath;
 
@@ -102,20 +103,20 @@ public class ConfigReader {
       e.printStackTrace();
     }
     
-//    // SWIPL
-//    try {
-//      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SWIPL_LIB) + "swipl --version");
-//    } catch (IOException e) {
-//      logger.warn("SWI-Prolog not found! " + INSTALL_PLEASE);
-//      this.isabelleAvailable = false;
-//    } catch (InterruptedException e) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//    }
+    // SWIPL
+    try {
+      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SWIPL_BIN) + " --version");
+    } catch (IOException e) {
+      logger.warn("SWI-Prolog not found! " + INSTALL_PLEASE + " (relevant options: swipl_bin)");
+      this.swiplAvailable = false;
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     
-    File file = new File(this.properties.get(SWIPL_HOME) + "lib/jpl.jar");
+    File file = new File(this.getSwiplHome() + "lib/jpl.jar");
     if(!file.exists()) {
-      this.logger.warn("No jpl.jar found! " + INSTALL_PLEASE + " (relevant options: swipl_home and swipl_lib)");
+      this.logger.warn("No jpl.jar found! " + INSTALL_PLEASE + " (relevant options: swipl_bin)");
     } else {
       System.out.println("JPL version " + JPL.version_string());
     }
@@ -126,7 +127,7 @@ public class ConfigReader {
       throw new ExternalSoftwareUnavailableException();
     }
     
-    return this.properties.get(ISABELLE_HOME) + ISA_EXE;
+    return this.properties.get(ISABELLE_BIN).toString();
   }
   
   public boolean hasIsabelle() {
@@ -190,7 +191,28 @@ public class ConfigReader {
       throw new ExternalSoftwareUnavailableException();
     }
     
-    return this.properties.getProperty("isabelle_home");
+    if(this.isabelleHome == null) {
+      try {
+        this.isabelleHome = this.computeIsabelleHome();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (ExternalSoftwareUnavailableException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    
+    return this.isabelleHome;
+  }
+  
+  private String computeIsabelleHome() throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
+    String output = ProcessUtils.runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME").getFirstValue();
+    
+    return (output.split("=")[1].trim());
   }
 
   public String getIsabelleSessionDir() throws ExternalSoftwareUnavailableException {
@@ -198,11 +220,32 @@ public class ConfigReader {
       throw new ExternalSoftwareUnavailableException();
     }
     
-    String s = this.properties.getProperty("isabelle_session_dir");
+    if(this.isabelleSessionDir == null) {
+      try {
+        this.isabelleSessionDir = this.computeIsabelleSessionDir();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (ExternalSoftwareUnavailableException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
     
-    s = s.replace("~", System.getProperty("user.home"));
+    // This is weird, but scala-isabelle expects .isabelle/, not .isabelle/Isabelle202x.
+    File file = new File(this.isabelleSessionDir);
+    this.isabelleSessionDir = file.getParentFile().getAbsolutePath();
     
-    return s;
+    return this.isabelleSessionDir;
+  }
+  
+  private String computeIsabelleSessionDir() throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
+ String output = ProcessUtils.runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME_USER").getFirstValue();
+    
+    return (output.split("=")[1].trim());
   }
 
   public boolean hasPathToRootFile() {
@@ -226,11 +269,55 @@ public class ConfigReader {
   }
   
   public String getSwiplHome() {
-    return this.properties.getProperty("swipl_home");
+    if(this.swiplHome == null) {
+      try {
+        String output = ProcessUtils.runTerminatingProcess(this.properties.getProperty(SWIPL_BIN) + " --dump-runtime-variables").getFirstValue();
+        String[] lines = output.split("\n");
+        String value = "";
+        for(String line: lines) {
+          if(line.startsWith("PLBASE")) {
+            value = line;
+          }
+        }
+        
+        String path = value.split("=")[1];
+        this.swiplHome = path.substring(1,path.length()-2);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    
+    return this.swiplHome;
   }
   
   public String getSwiplLib() {
-    return this.properties.getProperty(SWIPL_LIB);
+        if(this.swiplLib == null) {
+      try {
+        String output = ProcessUtils.runTerminatingProcess(this.properties.getProperty(SWIPL_BIN) + " --dump-runtime-variables").getFirstValue();
+        String[] lines = output.split("\n");
+        String value = "";
+        for(String line: lines) {
+          if(line.startsWith("PLLIBDIR")) {
+            value = line;
+          }
+        }
+        
+        String path = value.split("=")[1];
+        this.swiplLib = path.substring(1,path.length()-2) + File.separator;
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    
+    return this.swiplLib;
   }
   
   public String getConfigPath() {

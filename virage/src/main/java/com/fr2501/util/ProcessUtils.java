@@ -74,4 +74,19 @@ public class ProcessUtils {
 
     return status;
   }
+  
+  public static Pair<String,String> runTerminatingProcess(String command)
+      throws IOException, InterruptedException {
+    logger.info("Running command: " + command);
+
+    Runtime rt = Runtime.getRuntime();
+
+    Process p = rt.exec(command);
+    p.waitFor();
+
+    String stdErr = new String(p.getErrorStream().readAllBytes());
+    String stdOut = new String(p.getInputStream().readAllBytes());
+
+    return new Pair<String,String>(stdOut, stdErr);
+  }
 }
