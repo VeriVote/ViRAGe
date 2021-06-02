@@ -114,7 +114,7 @@ public class ConfigReader {
       e.printStackTrace();
     }
     
-    File file = new File(this.getSwiplHome() + "lib/jpl.jar");
+    File file = new File(this.getSwiplHome() + File.separator + "lib/jpl.jar");
     if(!file.exists()) {
       this.logger.warn("No jpl.jar found! " + INSTALL_PLEASE + " (relevant options: swipl_bin)");
     } else {
