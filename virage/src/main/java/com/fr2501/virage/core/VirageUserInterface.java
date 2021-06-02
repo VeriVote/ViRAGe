@@ -20,4 +20,8 @@ public interface VirageUserInterface extends Runnable {
    * @param job the notifying job
    */
   public void notify(VirageJob<?> job);
+  
+  public boolean requestConfirmation(String message);
+  
+  public ProgressIndicator spawnProgressIndicator();
 }

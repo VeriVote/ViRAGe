@@ -5,7 +5,8 @@ import java.time.Instant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fr2501.util.ProgressIndicator;
+import com.fr2501.virage.core.CommandLineProgressIndicator;
+import com.fr2501.virage.core.ProgressIndicator;
 import com.fr2501.virage.core.VirageCore;
 import com.fr2501.virage.core.VirageUserInterface;
 
@@ -101,7 +102,7 @@ public abstract class VirageJob<T> {
    * {@link VirageJobState#FAILED})
    */
   public void waitFor() {
-    ProgressIndicator progressIndicator = new ProgressIndicator();
+    ProgressIndicator progressIndicator = this.issuer.spawnProgressIndicator();
     
     while (true) {
       boolean finished = false;

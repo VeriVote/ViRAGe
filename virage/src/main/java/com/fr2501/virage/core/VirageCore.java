@@ -23,6 +23,7 @@ import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
+import com.fr2501.virage.jobs.VirageExitJob;
 import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
@@ -182,6 +183,10 @@ public class VirageCore implements Runnable {
       this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
     } catch (Exception e) {
       logger.error("Initialising CompositionAnalyzers failed. Is JPL installed?");
+      
+      if(!this.ui.requestConfirmation("System is in an unsafe state. Do you want to continue?")) {
+        System.exit(0);
+      }
     }
     
     if (ConfigReader.getInstance().hasIsabelle()) {

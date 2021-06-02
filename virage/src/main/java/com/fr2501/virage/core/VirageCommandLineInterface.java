@@ -42,6 +42,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   private Scanner scanner;
   private VirageCore core;
   
+  private CommandLineProgressIndicator clpi;
+  
   private static final String SEPARATOR = "###########################################################";
   private final static String BANNER = "#\n"
       + "# Y88b      / ,e, 888~-_        e       e88~~\\           \n"
@@ -74,6 +76,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     
     this.scanner = new Scanner(System.in);
     this.core = core;
+    
+    this.clpi = new CommandLineProgressIndicator();
   }
   
   private void printSeparator() {
@@ -329,5 +333,29 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     VirageIsabelleGenerateScalaJob res = new VirageIsabelleGenerateScalaJob(this, composition);
     return res;
+  }
+  
+  public boolean requestConfirmation(String message) {
+    this.clpi.hide();
+    
+    boolean returnValue;
+    
+    loop: while(true) {
+      System.out.println(message + " (y/n)");
+
+      String input = this.scanner.nextLine();
+
+      switch(input) {
+      case "y": returnValue = true; break loop;
+      case "n": returnValue = false; break loop;
+      }
+    }
+    
+    this.clpi.show();
+    return returnValue;
+  }
+  
+  public ProgressIndicator spawnProgressIndicator() {
+    return this.clpi;
   }
 }
