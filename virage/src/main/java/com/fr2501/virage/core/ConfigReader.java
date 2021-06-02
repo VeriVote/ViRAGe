@@ -70,12 +70,6 @@ public class ConfigReader {
     this.configPath = file.getAbsolutePath();
 
     this.properties.load(input);
-
-    /*
-     * System.out.println("Properties: "); for(Object prop:
-     * this.properties.keySet()) { System.out.println("\t" + prop.toString() + ": "
-     * + this.properties.get(prop)); }
-     */
   }
 
   public void checkAvailabilityAndPrintVersions() {
@@ -116,22 +110,32 @@ public class ConfigReader {
       e.printStackTrace();
     }
 
-    if(this.swiplAvailable) {
+    try {
+      this.getSwiplHome();
+      this.getSwiplLib();
+    } catch (ExternalSoftwareUnavailableException e) {
+      this.jplAvailable = false;
+      this.swiplAvailable = false;
+    }
+
+    if (this.swiplAvailable) {
       File file = null;
       try {
-        file = new File(this.getSwiplHome() + File.separator + "lib/jpl.jar");
+        file = new File(this.getSwiplHome() + File.separator + "lib" + File.separator + "jpl.jar");
       } catch (ExternalSoftwareUnavailableException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
       if (!file.exists()) {
         try {
-          this.logger.warn("No jpl.jar found at " + this.getSwiplHome() + File.separator + "lib/jpl.jar! " + INSTALL_PLEASE + " (relevant options: swipl_bin)");
+          this.logger.warn("No jpl.jar found at " + this.getSwiplHome() + File.separator + "lib/jpl.jar! "
+              + INSTALL_PLEASE + " (relevant options: swipl_bin)");
         } catch (ExternalSoftwareUnavailableException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
         }
-        this.jplAvailable = false;
+        // TODO
+        // this.jplAvailable = false;
       } else {
         System.out.println("JPL version " + JPL.version_string());
       }
@@ -289,10 +293,10 @@ public class ConfigReader {
   }
 
   public String getSwiplHome() throws ExternalSoftwareUnavailableException {
-    if(!this.swiplAvailable) {
+    if (!this.swiplAvailable) {
       throw new ExternalSoftwareUnavailableException();
     }
-    
+
     if (this.swiplHome == null) {
       try {
         String output = ProcessUtils
@@ -320,11 +324,12 @@ public class ConfigReader {
     return this.swiplHome + File.separator;
   }
 
+  // TODO: De-spaghettize
   public String getSwiplLib() throws ExternalSoftwareUnavailableException {
-    if(!this.swiplAvailable) {
+    if (!this.swiplAvailable) {
       throw new ExternalSoftwareUnavailableException();
     }
-    
+
     if (this.swiplLib == null) {
       try {
         String output = ProcessUtils
@@ -336,26 +341,41 @@ public class ConfigReader {
         for (String line : lines) {
           if (line.startsWith("PLLIBDIR")) {
             value = line;
+            path = value.split("=")[1];
           }
         }
-        
-        if(value.equals("")) {
+
+        if (value.equals("")) {
+          logger.warn("SWI-Prolog runtime variable $PLLIBDIR is missing. "
+              + "Attempting to compute it from $PLBASE and $PLARCH, but that might be wrong.");
+
           for (String line : lines) {
             if (line.startsWith("PLARCH")) {
               value = line;
             }
-            
-            if(value.equals("")) {
-              logger.error("Path to jpl.jar could not be computed.");
+          }
+
+          if (value.equals("")) {
+            logger.error("$PLARCH is undefined as well.");
+            throw new ExternalSoftwareUnavailableException();
+          } else {
+            String tmp = value.split("=")[1];
+            tmp = tmp.substring(1,tmp.length()-2);
+            path = this.swiplHome + File.separator + "lib" + File.separator + tmp;
+
+            File file = new File(path);
+            if (!file.exists() || !file.isDirectory()) {
+              logger.error("The computed path " + path + " is not a directory.");
+              throw new ExternalSoftwareUnavailableException();
             } else {
-              value = value.split("=")[1];
-              path = this.swiplHome + File.separator + "lib" + File.separator + value;
+              logger.warn("Computed path: " + path);
             }
           }
+
         } else {
           path = path.substring(1, path.length() - 2);
         }
-        
+
         this.swiplLib = path + File.separator;
       } catch (IOException e) {
         // TODO Auto-generated catch block
