@@ -81,7 +81,7 @@ public class ConfigReader {
     try {
       ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SCALA_COMPILER) + " -version");
     } catch (IOException e) {
-      logger.warn("No Scala compiler found! " + INSTALL_PLEASE);
+      logger.warn("No Scala compiler found! " + INSTALL_PLEASE + " (relevant option: scala_compiler)");
       this.scalacAvailable = false;
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
@@ -92,7 +92,7 @@ public class ConfigReader {
     try {
       ProcessUtils.runTerminatingProcessAndPrintOutput(this.getIsabelleExecutable() + " version");
     } catch (IOException e) {
-      logger.warn("Isabelle not found! " + INSTALL_PLEASE);
+      logger.warn("Isabelle not found! " + INSTALL_PLEASE + " (relevant option: isabelle_home)");
       this.isabelleAvailable = false;
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
@@ -115,7 +115,7 @@ public class ConfigReader {
     
     File file = new File(this.properties.get(SWIPL_HOME) + "lib/jpl.jar");
     if(!file.exists()) {
-      this.logger.error("No jpl.jar found! " + INSTALL_PLEASE);
+      this.logger.warn("No jpl.jar found! " + INSTALL_PLEASE + " (relevant options: swipl_home and swipl_lib)");
     } else {
       System.out.println("JPL version " + JPL.version_string());
     }
