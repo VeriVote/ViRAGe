@@ -110,16 +110,31 @@ public class ConfigReader {
     } catch (IOException e) {
       logger.warn("SWI-Prolog not found! " + INSTALL_PLEASE + " (relevant options: swipl_bin)");
       this.swiplAvailable = false;
+      this.jplAvailable = false;
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
-    File file = new File(this.getSwiplHome() + File.separator + "lib/jpl.jar");
-    if (!file.exists()) {
-      this.logger.warn("No jpl.jar found at " + this.getSwiplHome() + File.separator + "lib/jpl.jar! " + INSTALL_PLEASE + " (relevant options: swipl_bin)");
-    } else {
-      System.out.println("JPL version " + JPL.version_string());
+    if(this.swiplAvailable) {
+      File file = null;
+      try {
+        file = new File(this.getSwiplHome() + File.separator + "lib/jpl.jar");
+      } catch (ExternalSoftwareUnavailableException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      if (!file.exists()) {
+        try {
+          this.logger.warn("No jpl.jar found at " + this.getSwiplHome() + File.separator + "lib/jpl.jar! " + INSTALL_PLEASE + " (relevant options: swipl_bin)");
+        } catch (ExternalSoftwareUnavailableException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        this.jplAvailable = false;
+      } else {
+        System.out.println("JPL version " + JPL.version_string());
+      }
     }
   }
 
@@ -273,7 +288,11 @@ public class ConfigReader {
     return this.jplAvailable;
   }
 
-  public String getSwiplHome() {
+  public String getSwiplHome() throws ExternalSoftwareUnavailableException {
+    if(!this.swiplAvailable) {
+      throw new ExternalSoftwareUnavailableException();
+    }
+    
     if (this.swiplHome == null) {
       try {
         String output = ProcessUtils
@@ -301,7 +320,11 @@ public class ConfigReader {
     return this.swiplHome + File.separator;
   }
 
-  public String getSwiplLib() {
+  public String getSwiplLib() throws ExternalSoftwareUnavailableException {
+    if(!this.swiplAvailable) {
+      throw new ExternalSoftwareUnavailableException();
+    }
+    
     if (this.swiplLib == null) {
       try {
         String output = ProcessUtils
@@ -309,14 +332,31 @@ public class ConfigReader {
             .getFirstValue();
         String[] lines = output.split("\n");
         String value = "";
+        String path = "";
         for (String line : lines) {
           if (line.startsWith("PLLIBDIR")) {
             value = line;
           }
         }
-
-        String path = value.split("=")[1];
-        this.swiplLib = path.substring(1, path.length() - 2) + File.separator;
+        
+        if(value.equals("")) {
+          for (String line : lines) {
+            if (line.startsWith("PLARCH")) {
+              value = line;
+            }
+            
+            if(value.equals("")) {
+              logger.error("Path to jpl.jar could not be computed.");
+            } else {
+              value = value.split("=")[1];
+              path = this.swiplHome + File.separator + "lib" + File.separator + value;
+            }
+          }
+        } else {
+          path = path.substring(1, path.length() - 2);
+        }
+        
+        this.swiplLib = path + File.separator;
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
