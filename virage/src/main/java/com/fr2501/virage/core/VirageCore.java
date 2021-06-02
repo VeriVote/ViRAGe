@@ -184,7 +184,7 @@ public class VirageCore implements Runnable {
     } catch (Exception e) {
       logger.error("Initialising CompositionAnalyzers failed. Is JPL installed?");
       
-      if(!this.ui.requestConfirmation("System is in an unsafe state. Do you want to continue?")) {
+      if(!this.ui.requestConfirmation("ViRAGe is in an unsafe state, possibly due to JPL not being installed correctly. Do you want to continue?")) {
         System.exit(0);
       }
     }
@@ -235,8 +235,6 @@ public class VirageCore implements Runnable {
 //      // TODO Auto-generated catch block
 //      e.printStackTrace();
 //    }
-//    
-//    SystemUtils.setUnixEnvironmentVariable("LD_PRELOAD", ConfigReader.getInstance().getSwiplLib() + "libswipl.so");
 //
 //    String classPath = "";
 //    if (System.getenv().containsKey("CLASSPATH")) {
