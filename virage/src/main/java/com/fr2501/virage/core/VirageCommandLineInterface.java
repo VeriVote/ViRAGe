@@ -172,13 +172,13 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         outer: for(File child: files) {
           if(child.getAbsolutePath().endsWith(".pl")) {
             while(true) {
-              System.out.println("EPL file " + child.getAbsolutePath() + " found. " +
-                  "Do you want to use it? (y\\n)");
-              String input = this.scanner.nextLine();
+              boolean conf = this.requestConfirmation("EPL file " + child.getAbsolutePath() + " found. " +
+                  "Do you want to use it?");
               
-              switch(input) {
-              case "y": return this.extractAndOrParseFramework(child.getAbsolutePath());
-              case "n": continue outer;
+              if(conf) {
+                return this.extractAndOrParseFramework(child.getAbsolutePath());
+              } else {
+                continue outer;
               }
             }
           }
