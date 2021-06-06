@@ -21,6 +21,8 @@ public class DecompositionTree {
     this.children = children;
   }
 
+  @Deprecated // This is very easy to confuse with DecompositionTree.parseString.
+  // Use DecompositionTree(label, new LinkedList<DecompositionTree>()) instead.
   public DecompositionTree(String label) {
     this(label, new LinkedList<DecompositionTree>());
   }

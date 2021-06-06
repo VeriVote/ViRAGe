@@ -27,7 +27,7 @@ public class VirageProveJob extends VirageJobWithExplicitResult<List<List<Compos
   public VirageProveJob(VirageUserInterface issuer, String tree, List<String> properties) {
     super(issuer);
 
-    this.tree = new DecompositionTree(tree);
+    this.tree = DecompositionTree.parseString(tree);
     this.propertyStrings = properties;
   }
 

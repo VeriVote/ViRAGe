@@ -29,8 +29,10 @@ import com.fr2501.virage.jobs.VirageDummyJob;
 import com.fr2501.virage.jobs.VirageParseJob;
 import com.fr2501.virage.jobs.VirageProveJob;
 import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.Property;
 
 /**
  * 
@@ -233,9 +235,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   }
 
   private VirageGenerateJob createGenerationQuery() {
-    System.out.println("Please input the desired properties (separated by ',').");
-    String propertyString = this.scanner.nextLine();
-
+    String propertyString = this.requestPropertyString();
+    
     List<String> properties = StringUtils.separate(",", propertyString);
 
     VirageGenerateJob res = new VirageGenerateJob(this, properties);
@@ -243,11 +244,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   }
 
   private VirageAnalyzeJob createAnalysisQuery() {
-    System.out.println("Please input a composition (in Prolog format).");
-    String composition = this.scanner.nextLine();
+    String composition = this.requestCompositionString();
 
-    System.out.println("Please input the desired properties (separated by ',').");
-    String propertyString = this.scanner.nextLine();
+    String propertyString = this.requestPropertyString();
 
     List<String> properties = StringUtils.separate(",", propertyString);
 
@@ -256,11 +255,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   }
 
   private VirageProveJob createProofQuery() {
-    System.out.println("Please input a composition (in Prolog format).");
-    String composition = this.scanner.nextLine();
+    String composition = this.requestCompositionString();
 
-    System.out.println("Please input the desired properties (separated by ',').");
-    String propertyString = this.scanner.nextLine();
+    String propertyString = this.requestPropertyString();
 
     return this.createProofQuery(composition, propertyString);
   }
@@ -273,11 +270,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   }
 
   private VirageJob<?> createIsabelleQuery() {
-    System.out.println("Please input a composition (in Prolog format).");
-    String composition = this.scanner.nextLine();
+    String composition = this.requestCompositionString();
 
-    System.out.println("Please input the desired properties (separated by ',').");
-    String propertyString = this.scanner.nextLine();
+    String propertyString = this.requestPropertyString();
 
     String defaultPath = "./target/generated-sources/";
     System.out.println("Please specify a directory for the generated theory file. (default: " + defaultPath + ")");
@@ -328,11 +323,68 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   }
 
   private VirageIsabelleGenerateScalaJob createCodeGenerationQuery() {
-    System.out.println("Please input a composition (in Prolog format).");
-    String composition = this.scanner.nextLine();
+    String composition = this.requestCompositionString();
 
     VirageIsabelleGenerateScalaJob res = new VirageIsabelleGenerateScalaJob(this, composition);
     return res;
+  }
+  
+  // TODO Change to return List<Property> maybe?
+  private String requestPropertyString() {
+    FrameworkRepresentation framework = this.core.getFrameworkRepresentation();
+    
+    System.out.println("Please input the desired properties (separated by ',') or leave empty to display available properties.");
+    String propertiesString = this.scanner.nextLine();
+    
+    boolean invalid = false;
+    
+    if(!propertiesString.isEmpty()) {
+      String[] propertyStrings = propertiesString.split(",");
+      for(String propertyString: propertyStrings) {
+        Property property = framework.getProperty(propertyString);
+        
+        if(property == null) {
+          logger.error("Property \"" + propertyString + "\" is undefined.");
+          
+          invalid = true;
+          break;
+        }
+      }
+    }
+    
+    if(propertiesString.isEmpty() || invalid) {
+      System.out.println("Available properties: " + StringUtils.printCollection(framework.getProperties()));
+      
+      return this.requestPropertyString();
+    }
+    
+    return propertiesString;
+  }
+  
+  private String requestCompositionString() {
+    FrameworkRepresentation framework = this.core.getFrameworkRepresentation();
+    boolean invalid = false;
+    
+    System.out.println("Please input a composition (in Prolog format) or leave empty to display available components.");
+    String compositionString = this.scanner.nextLine();
+    
+    if(!compositionString.isEmpty()) {
+      try {
+        DecompositionTree.parseString(compositionString);
+      } catch (Exception e) {
+        logger.error("\"" + compositionString + "\" could not be parsed. Please check the brackets and try again.");
+        invalid = true;
+      }
+    }
+    
+    if(compositionString.isEmpty() || invalid) {
+      System.out.println("Available components: " + StringUtils.printCollection(framework.getComponents()) + "," +
+                StringUtils.printCollection(framework.getCompositionalStructures()));
+      
+      return this.requestCompositionString();
+    }
+    
+    return compositionString;
   }
   
   public boolean requestConfirmation(String message) {
