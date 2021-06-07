@@ -1,13 +1,11 @@
 package com.fr2501.virage.prolog;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 
- * A simple data object to contain a single Prolog predicate and its parameters
+ * A simple data object to contain a single Prolog predicate and its parameters.
  *
  */
 public class PrologPredicate {
@@ -61,7 +59,7 @@ public class PrologPredicate {
   }
 
   /**
-   * Checks whether a PrologPredicate is a variable
+   * Checks whether a PrologPredicate is a variable.
    * 
    * @return true if this is a variable, false otherwise
    */
@@ -89,15 +87,15 @@ public class PrologPredicate {
 
     return res;
   }
-  
+
   public List<PrologPredicate> getAllChildren() {
     List<PrologPredicate> res = new LinkedList<PrologPredicate>();
     res.add(this);
-    
-    for(PrologPredicate child: this.parameters) {
+
+    for (PrologPredicate child : this.parameters) {
       res.addAll(child.getAllChildren());
     }
-    
+
     return res;
   }
 
@@ -113,23 +111,30 @@ public class PrologPredicate {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     PrologPredicate other = (PrologPredicate) obj;
-    if (arity != other.arity)
+    if (arity != other.arity) {
       return false;
+    }
     if (name == null) {
-      if (other.name != null)
+      if (other.name != null) {
         return false;
-    } else if (!name.equals(other.name))
+      }
+    } else if (!name.equals(other.name)) {
       return false;
+    }
     if (parameters == null) {
-      if (other.parameters != null)
+      if (other.parameters != null) {
         return false;
+      }
     }
 
     if (this.parameters.size() != other.parameters.size()) {

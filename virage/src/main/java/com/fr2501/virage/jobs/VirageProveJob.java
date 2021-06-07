@@ -1,8 +1,5 @@
 package com.fr2501.virage.jobs;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
@@ -10,6 +7,8 @@ import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 
@@ -52,6 +51,6 @@ public class VirageProveJob extends VirageJobWithExplicitResult<List<List<Compos
 
   @Override
   public boolean externalSoftwareAvailable() {
-    return (ConfigReader.getInstance().hasJPL());
+    return (ConfigReader.getInstance().hasJpl());
   }
 }

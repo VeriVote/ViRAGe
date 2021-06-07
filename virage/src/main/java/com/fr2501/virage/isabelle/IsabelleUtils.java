@@ -1,13 +1,12 @@
 package com.fr2501.virage.isabelle;
 
+import com.fr2501.virage.prolog.PrologPredicate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.fr2501.virage.prolog.PrologPredicate;
 
 /**
  * 
@@ -17,7 +16,7 @@ import com.fr2501.virage.prolog.PrologPredicate;
  */
 public class IsabelleUtils {
   /**
-   * String used by Isabelle to mark Exceptions in its commands
+   * String used by Isabelle to mark Exceptions in its commands.
    */
   public static final String EXCEPTION = "Exception";
 
@@ -27,18 +26,18 @@ public class IsabelleUtils {
   public static final String FILE_EXTENSION = ".thy";
 
   /**
-   * String used by Isabelle to denote successful termination
+   * String used by Isabelle to denote successful termination.
    */
   public static final String SUCCESS_STRING = "OK ";
 
   // TODO: Add all types
   /**
-   * Simple types offered by Isabelle/HOL
+   * Simple types offered by Isabelle/HOL.
    */
   public static final String[] SIMPLE_TYPES = { "Nat.nat", "HOL.bool" };
 
   /**
-   * String used by Isabelle to denote the line stating imported theories
+   * String used by Isabelle to denote the line stating imported theories.
    */
   public static final String IMPORTS = "imports";
 
@@ -53,7 +52,8 @@ public class IsabelleUtils {
    * @return a map containing the Isabelle String and a set of all files that need
    *         to be imported for it to be fully known in the current file
    */
-  public static Map<String, Set<String>> translatePrologToIsabelle(Map<String, String> functionsAndDefinitions,
+  public static Map<String, Set<String>> translatePrologToIsabelle(
+      Map<String, String> functionsAndDefinitions,
       String predicate) {
     Set<String> requiredFiles = new HashSet<String>();
 
@@ -94,7 +94,8 @@ public class IsabelleUtils {
    * @return a map containing the Isabelle String and a set of all files that need
    *         to be imported for it to be fully known in the current file
    */
-  public static Map<String, Set<String>> translatePrologToIsabelle(Map<String, String> functionsAndDefinitions,
+  public static Map<String, Set<String>> translatePrologToIsabelle(
+      Map<String, String> functionsAndDefinitions,
       PrologPredicate predicate) {
     return translatePrologToIsabelle(functionsAndDefinitions, predicate.toString());
   }
@@ -108,8 +109,9 @@ public class IsabelleUtils {
    */
   public static boolean isSimpleType(String type) {
     for (String standardType : SIMPLE_TYPES) {
-      if (standardType.equals(type))
+      if (standardType.equals(type)) {
         return true;
+      }
     }
 
     return false;
@@ -124,12 +126,14 @@ public class IsabelleUtils {
   public static String getUnusedVariable(String statement) {
     String unused = "x";
 
-    if (!statement.contains(unused))
+    if (!statement.contains(unused)) {
       return unused;
+    }
 
     for (int i = 1; true; i++) {
-      if (!statement.contains(unused + i))
+      if (!statement.contains(unused + i)) {
         return unused + i;
+      }
     }
   }
 }

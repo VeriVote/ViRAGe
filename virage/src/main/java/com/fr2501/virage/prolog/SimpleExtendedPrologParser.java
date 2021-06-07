@@ -1,15 +1,5 @@
 package com.fr2501.virage.prolog;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.types.Component;
@@ -19,10 +9,18 @@ import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 
- * A very simple implementation of the {@link ExtendedPrologParser}
+ * A very simple implementation of the {@link ExtendedPrologParser}.
  *
  */
 public class SimpleExtendedPrologParser implements ExtendedPrologParser {
@@ -39,7 +37,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
   @Override
   public FrameworkRepresentation parseFramework(File file, boolean addDummies)
-      throws IOException, MalformedEPLFileException {
+      throws IOException, MalformedEplFileException {
     List<String> framework = this.fileReader.readFileByLine(file);
 
     return this.parseFramework(framework, file.getAbsolutePath(), addDummies);
@@ -48,17 +46,14 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
   /**
    * This method does the actual parsing.
    * 
-   * @param representation a line-by-line representation of the extended Prolog
-   *                       file.
-   * @param path           the path to the framework (required for compatibility
-   *                       reasons)
+   * @param representation a line-by-line representation of the extended Prolog file.
+   * @param path the path to the framework (required for compatibility reasons)
    * @return a {@link FrameworkRepresentation} of the input.
-   * @throws MalformedEPLFileException if the input does not follow the
-   *                                   specification of the extended Prolog
-   *                                   format.
+   * @throws MalformedEplFileException if the input does not follow the specification of the
+   * extended Prolog format.
    */
-  private FrameworkRepresentation parseFramework(List<String> representation, String path, boolean addDummies)
-      throws MalformedEPLFileException {
+  private FrameworkRepresentation parseFramework(List<String> representation, String path,
+      boolean addDummies) throws MalformedEplFileException {
     FrameworkRepresentation framework = new FrameworkRepresentation(path);
     ParserState state = ParserState.STARTING;
 
@@ -92,8 +87,9 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
       String currentLine = representation.get(lineNumber);
 
       // Skip comments
-      if (currentLine.startsWith("%%"))
+      if (currentLine.startsWith("%%")) {
         continue;
+      }
 
       // Remove Prolog comment markings, they are not necessary any more.
       currentLine = currentLine.replace("% ", "");
@@ -101,34 +97,36 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
       // Skip empty lines. (Careful: currentLine is not actually sanitized after
       // this!)
-      if (this.sanitizeLine(currentLine).equals(""))
+      if (this.sanitizeLine(currentLine).equals("")) {
         continue;
+      }
 
       state = this.newState(currentLine, state);
 
       switch (state) {
-      case COMPOSITION_TYPE:
-        compositionTypeSection.add(currentLine);
-        break;
-      case COMPOSABLE_MODULE:
-        composableModuleSection.add(currentLine);
-        break;
-      case COMPOSITIONAL_STRUCTURE:
-        compositionalStructureSection.add(currentLine);
-        break;
-      case PROPERTY:
-        propertySection.add(currentLine);
-        break;
-      case COMPOSITION_RULE:
-        compositionRuleSection.add(currentLine);
-        break;
-      default: // no-op, invalid call.
+        case COMPOSITION_TYPE:
+          compositionTypeSection.add(currentLine);
+          break;
+        case COMPOSABLE_MODULE:
+          composableModuleSection.add(currentLine);
+          break;
+        case COMPOSITIONAL_STRUCTURE:
+          compositionalStructureSection.add(currentLine);
+          break;
+        case PROPERTY:
+          propertySection.add(currentLine);
+          break;
+        case COMPOSITION_RULE:
+          compositionRuleSection.add(currentLine);
+          break;
+        default: // no-op, invalid call.
       }
     }
 
     this.parseSection(framework, compositionTypeSection, ParserState.COMPOSITION_TYPE);
     this.parseSection(framework, composableModuleSection, ParserState.COMPOSABLE_MODULE);
-    this.parseSection(framework, compositionalStructureSection, ParserState.COMPOSITIONAL_STRUCTURE);
+    this.parseSection(framework, compositionalStructureSection,
+        ParserState.COMPOSITIONAL_STRUCTURE);
     this.parseSection(framework, propertySection, ParserState.PROPERTY);
     this.parseSection(framework, compositionRuleSection, ParserState.COMPOSITION_RULE);
 
@@ -139,8 +137,8 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
     return framework;
   }
 
-  private void parseSection(FrameworkRepresentation framework, List<String> lines, ParserState state)
-      throws MalformedEPLFileException {
+  private void parseSection(FrameworkRepresentation framework, List<String> lines,
+      ParserState state) throws MalformedEplFileException {
     switch (state) {
     case COMPOSITION_TYPE:
       this.parseCompositionTypeSection(framework, lines);
@@ -158,7 +156,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
   }
 
   private void parseCompositionTypeSection(FrameworkRepresentation framework, List<String> lines)
-      throws MalformedEPLFileException {
+      throws MalformedEplFileException {
     ComponentType currentType = null;
 
     // Starting at 1, because first line has to be the header by construction.
@@ -174,7 +172,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
         // New Instance of given type.
         if (currentType == null) {
           logger.error("No type defined for \"" + currentLine + "\".");
-          throw new MalformedEPLFileException();
+          throw new MalformedEplFileException();
         }
 
         currentLine = this.sanitizeLine(currentLine);
@@ -187,8 +185,8 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
     }
   }
 
-  private void parseSimpleSection(FrameworkRepresentation framework, List<String> lines, ParserState state)
-      throws MalformedEPLFileException {
+  private void parseSimpleSection(FrameworkRepresentation framework, List<String> lines,
+      ParserState state) throws MalformedEplFileException {
     String header = lines.get(0);
     ComponentType type = null;
 
@@ -205,7 +203,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
           framework.setAlias(typeString);
         } else {
           logger.error("Malformed header: \"" + lines.get(0) + "\"");
-          throw new MalformedEPLFileException();
+          throw new MalformedEplFileException();
         }
       } else {
         // Default type.
@@ -231,13 +229,14 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
         break;
       case PROPERTY:
         framework.add(new Property(name, parameters));
+        break;
       default: // no-op, invalid call.
       }
     }
   }
 
   private void parseCompositionRuleSection(FrameworkRepresentation framework, List<String> lines)
-      throws MalformedEPLFileException {
+      throws MalformedEplFileException {
     String origin = "";
     String name = "";
     String prologString = "";
@@ -250,7 +249,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
         // No origin.
         if (!currentLine.startsWith("=")) {
           logger.error("No origin specified for: \"" + currentLine + "\"");
-          throw new MalformedEPLFileException();
+          throw new MalformedEplFileException();
         } else {
           origin = this.sanitizeLine(currentLine);
           continue;
@@ -279,7 +278,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
     }
   }
 
-  private List<ComponentType> extractParameters(String component) throws MalformedEPLFileException {
+  private List<ComponentType> extractParameters(String component) throws MalformedEplFileException {
     List<ComponentType> res = new LinkedList<ComponentType>();
 
     if (!component.contains("(") || component.endsWith("()")) {
@@ -290,7 +289,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
     // Opening, but no closing bracket.
     if (!component.contains(")")) {
       logger.error("Opening, but no closing bracket on: \"" + component + "\"");
-      throw new MalformedEPLFileException();
+      throw new MalformedEplFileException();
     }
 
     String regex = "\\(.*\\)";
@@ -311,7 +310,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
       }
     } else {
       // This should never happen.
-      throw new MalformedEPLFileException();
+      throw new MalformedEplFileException();
     }
 
     return res;

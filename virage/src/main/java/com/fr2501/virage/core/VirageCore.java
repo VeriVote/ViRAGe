@@ -1,9 +1,20 @@
 package com.fr2501.virage.core;
 
+import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
+import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
+import com.fr2501.virage.isabelle.IsabelleProofChecker;
+import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
+import com.fr2501.virage.jobs.VirageJob;
+import com.fr2501.virage.jobs.VirageJobState;
+import com.fr2501.virage.prolog.ExtendedPrologParser;
+import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
+import com.fr2501.virage.types.FrameworkRepresentation;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -14,35 +25,19 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jpl7.JPL;
-
-import com.fr2501.util.SystemUtils;
-import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
-//import com.fr2501.virage.analyzer.SBMCCompositionAnalyzer;
-import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
-import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
-import com.fr2501.virage.isabelle.IsabelleProofChecker;
-import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
-import com.fr2501.virage.jobs.VirageExitJob;
-import com.fr2501.virage.jobs.VirageJob;
-import com.fr2501.virage.jobs.VirageJobState;
-import com.fr2501.virage.prolog.ExtendedPrologParser;
-import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
-import com.fr2501.virage.types.FrameworkRepresentation;
 
 /**
  * 
- * The main application
+ * The main application.
  *
  */
 
 // This is required due to Commons CLI still recommending the deprecated way of building Options.
 @SuppressWarnings("deprecation")
 public class VirageCore implements Runnable {
-  private final static Logger logger = LogManager.getLogger(VirageCore.class.getName());
-  
-  private final static String _NAME = "ViRAGe";
-  private final static String _VERSION = "0.1.0";
+  private static final Logger logger = LogManager.getLogger(VirageCore.class.getName());
+
+  private static final String _VERSION = "0.1.0";
 
   private CommandLine cl;
   private String[] args;
@@ -62,6 +57,8 @@ public class VirageCore implements Runnable {
 
     this.args = args;
     this.jobs = new LinkedBlockingQueue<VirageJob<?>>();
+    
+    this.initEnvironment();
   }
 
   public ExtendedPrologParser getExtendedPrologParser() {
@@ -103,8 +100,8 @@ public class VirageCore implements Runnable {
   }
 
   /**
-   * Once started, this method keeps looking for new jobs and executes available
-   * ones. <b> Does not return! </b>
+   * Once started, this method keeps looking for new jobs and executes available ones. <b> Does not
+   * return! </b>
    */
   public void run() {
     try {
@@ -164,9 +161,9 @@ public class VirageCore implements Runnable {
     if (cl.hasOption("ui")) {
       String value = cl.getOptionValue("ui");
 
-      this.ui = factory.getUI(value, this);
+      this.ui = factory.getUi(value, this);
     } else {
-      this.ui = factory.getUI("none", this);
+      this.ui = factory.getUi("none", this);
     }
     this.ui.launch();
 
@@ -183,14 +180,17 @@ public class VirageCore implements Runnable {
       this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
     } catch (Exception e) {
       logger.error("Initialising CompositionAnalyzers failed. Is JPL installed?");
-      
-      if(!this.ui.requestConfirmation("ViRAGe is in an unsafe state, possibly due to JPL not being installed correctly. Do you want to continue?")) {
+
+      if (!this.ui.requestConfirmation(
+          "ViRAGe is in an unsafe state, possibly due to JPL not being installed correctly. "
+              + "Do you want to continue?")) {
         System.exit(0);
       }
     }
-    
+
     if (ConfigReader.getInstance().hasIsabelle()) {
-      this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(), framework.getTheoryPath());
+      this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(),
+          framework.getTheoryPath());
       this.checker.setSolvers(ConfigReader.getInstance().getIsabelleTactics());
       try {
         this.codeGenerator = new IsabelleCodeGenerator(this.framework);
@@ -226,27 +226,29 @@ public class VirageCore implements Runnable {
   }
 
   private void initEnvironment() {
-//    SystemUtils.setUnixEnvironmentVariable("SWI_HOME_DIR", ConfigReader.getInstance().getSwiplHome());
-//    
-//    //SystemUtils.setUnixEnvironmentVariable("LD_LIBRARY_PATH", ConfigReader.getInstance().getSwiplLib());
-//    try {
-//      SystemUtils.addDirToLibraryPath(ConfigReader.getInstance().getSwiplHome() + "lib/");
-//    } catch (IOException e) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//    }
-//
-//    String classPath = "";
-//    if (System.getenv().containsKey("CLASSPATH")) {
-//      classPath = System.getenv("CLASSPATH") + ";";
-//    }
-//
-//    if (!classPath.contains("jpl.jar")) {
-//      classPath += ConfigReader.getInstance().getSwiplHome() + "/lib/jpl.jar";
-//      SystemUtils.setUnixEnvironmentVariable("CLASSPATH", classPath);
-//    }
+      //    SystemUtils.setUnixEnvironmentVariable(
+      //    "SWI_HOME_DIR", ConfigReader.getInstance().getSwiplHome());
+      //    
+      //    SystemUtils.setUnixEnvironmentVariable(
+      //    "LD_LIBRARY_PATH", ConfigReader.getInstance().getSwiplLib());
+      //    try {
+      //      SystemUtils.addDirToLibraryPath(ConfigReader.getInstance().getSwiplHome() + "lib/");
+      //    } catch (IOException e) {
+      //      // TODO Auto-generated catch block
+      //      e.printStackTrace();
+      //    }
+      //
+      //    String classPath = "";
+      //    if (System.getenv().containsKey("CLASSPATH")) {
+      //      classPath = System.getenv("CLASSPATH") + ";";
+      //    }
+      //
+      //    if (!classPath.contains("jpl.jar")) {
+      //      classPath += ConfigReader.getInstance().getSwiplHome() + "/lib/jpl.jar";
+      //      SystemUtils.setUnixEnvironmentVariable("CLASSPATH", classPath);
+      //  }
   }
-  
+
   public String getVersion() {
     return _VERSION;
   }

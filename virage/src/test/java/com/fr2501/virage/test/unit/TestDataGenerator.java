@@ -1,11 +1,10 @@
 package com.fr2501.virage.test.unit;
 
+import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.Property;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.fr2501.virage.prolog.ExtendedPrologStrings;
-import com.fr2501.virage.types.*;
 
 public class TestDataGenerator {
   private FrameworkRepresentation framework;
@@ -17,11 +16,9 @@ public class TestDataGenerator {
 
     for (Property property : this.framework.getProperties()) {
       if (property.getArity() == 1) {
-        List<ComponentType> parameters = property.getParameters();
-        ComponentType parameter = parameters.get(0);
-
         /*
-         * if(parameter.getName().equals(this.framework.getAlias()) ||
+         * List<ComponentType> parameters = property.getParameters(); ComponentType parameter =
+         * parameters.get(0); if(parameter.getName().equals(this.framework.getAlias()) ||
          * parameter.getName().equals(ExtendedPrologStrings.COMPOSABLE_MODULE)) {
          * if(property.getName().equals("electoral_module")) continue;
          * 

@@ -1,10 +1,9 @@
 package com.fr2501.virage.jobs;
 
-import java.io.File;
-
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
+import java.io.File;
 
 /**
  * 
@@ -31,6 +30,7 @@ public class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<
 
   @Override
   public boolean externalSoftwareAvailable() {
-    return (ConfigReader.getInstance().hasIsabelle() && ConfigReader.getInstance().hasScalaCompiler());
+    return (ConfigReader.getInstance().hasIsabelle()
+        && ConfigReader.getInstance().hasScalaCompiler());
   }
 }

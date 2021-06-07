@@ -2,7 +2,7 @@ package com.fr2501.virage.core;
 
 /**
  * 
- * Collection of Strings required by ViRAGe
+ * Collection of Strings required by ViRAGe.
  *
  */
 public class VirageStrings {

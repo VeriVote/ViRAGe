@@ -1,22 +1,19 @@
 package com.fr2501.virage.isabelle;
 
+import com.fr2501.virage.types.ComponentType;
+import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.CompositionRule;
+import com.fr2501.virage.types.Property;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.fr2501.virage.types.ComponentType;
-import com.fr2501.virage.types.CompositionProof;
-import com.fr2501.virage.types.CompositionRule;
-import com.fr2501.virage.types.Property;
 
 /**
  * 
@@ -41,9 +38,11 @@ public class IsabelleProofGenerator {
 
   private IsabelleTheoryGenerator parent;
 
-  public IsabelleProofGenerator(IsabelleTheoryGenerator parent, Map<String, String> functionsAndDefinitions) {
+  public IsabelleProofGenerator(IsabelleTheoryGenerator parent,
+      Map<String, String> functionsAndDefinitions) {
     if (PROOF_TEMPLATE.equals("")) {
-      InputStream proofTemplateStream = this.getClass().getClassLoader().getResourceAsStream("proof.template");
+      InputStream proofTemplateStream = this.getClass().getClassLoader()
+          .getResourceAsStream("proof.template");
       StringWriter writer = new StringWriter();
       try {
         IOUtils.copy(proofTemplateStream, writer, StandardCharsets.UTF_8);
@@ -70,7 +69,7 @@ public class IsabelleProofGenerator {
   }
 
   /**
-   * Translates a {@link CompositionProof} into Isabelle syntax
+   * Translates a {@link CompositionProof} into Isabelle syntax.
    * 
    * @param proof the proof
    * @return a String representing the proof, readable by Isabelle
@@ -133,7 +132,8 @@ public class IsabelleProofGenerator {
     return this.replaceVariables(theoremName, goal, proofSteps, subgoalIds, assumptionString);
   }
 
-  private String replaceVariables(String theoremName, String goal, String proofSteps, String subgoalIds,
+  private String replaceVariables(String theoremName, String goal, String proofSteps,
+      String subgoalIds,
       String assumptions) {
     String res = PROOF_TEMPLATE;
 

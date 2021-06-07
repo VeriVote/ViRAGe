@@ -1,16 +1,14 @@
 package com.fr2501.virage.jobs;
 
-import java.io.File;
-
 import com.fr2501.util.Pair;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
+import java.io.File;
 
 /**
  * 
- * A {@link VirageJob} that invokes Isabelle to automatically attempt proof
- * verification.
+ * A {@link VirageJob} that invokes Isabelle to automatically attempt proof verification.
  *
  */
 public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Boolean, File>> {
@@ -28,7 +26,8 @@ public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Bo
   protected void concreteExecute() throws Exception {
     this.checker = this.executingCore.getIsabelleProofChecker();
 
-    this.result = this.checker.verifyTheoryFile(this.file, this.executingCore.getFrameworkRepresentation());
+    this.result = this.checker.verifyTheoryFile(this.file,
+        this.executingCore.getFrameworkRepresentation());
   }
 
   @Override

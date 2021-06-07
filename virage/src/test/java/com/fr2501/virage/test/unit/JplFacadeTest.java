@@ -3,25 +3,23 @@ package com.fr2501.virage.test.unit;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.fr2501.virage.prolog.JplFacade;
+import com.fr2501.virage.prolog.QueryState;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
+import com.fr2501.virage.types.SearchResult;
 import java.util.Map;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
-import com.fr2501.virage.prolog.JPLFacade;
-import com.fr2501.virage.prolog.QueryState;
-import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
-import com.fr2501.virage.types.SearchResult;
-
-public class JPLFacadeTest {
-  private static final Logger logger = LogManager.getLogger(JPLFacadeTest.class);
+public class JplFacadeTest {
+  private static final Logger logger = LogManager.getLogger(JplFacadeTest.class);
   private static final String validTestPath = "src/test/resources/valid_test.pl";
 
   @Test
   public void testInvalidQuery() throws ExternalSoftwareUnavailableException {
     logger.info("testInvalidQuery()");
-    JPLFacade facade = new JPLFacade(1000);
+    JplFacade facade = new JplFacade(1000);
 
     String query = "(,this is not a ) legit ,;. query @ all.)(";
 
@@ -33,7 +31,7 @@ public class JPLFacadeTest {
   @Test
   public void testSimpleQuery() throws Exception {
     logger.info("testSimpleQuery()");
-    JPLFacade facade = new JPLFacade(1000);
+    JplFacade facade = new JplFacade(1000);
     facade.consultFile(validTestPath);
 
     String query = "property_a(X)";
@@ -46,7 +44,7 @@ public class JPLFacadeTest {
   @Test
   public void testFactQuery() throws Exception {
     logger.info("testFactQuery()");
-    JPLFacade facade = new JPLFacade(1000);
+    JplFacade facade = new JplFacade(1000);
     facade.consultFile(validTestPath);
 
     String query = "property_a(d)";
@@ -62,7 +60,7 @@ public class JPLFacadeTest {
 
   @Test
   public void testUnification() throws ExternalSoftwareUnavailableException {
-    JPLFacade facade = new JPLFacade(1000);
+    JplFacade facade = new JplFacade(1000);
 
     String generic = "f(X)";
     String specific = "f(a)";

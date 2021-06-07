@@ -1,14 +1,12 @@
 package com.fr2501.virage.jobs;
 
-import java.time.Instant;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.fr2501.virage.core.CommandLineProgressIndicator;
 import com.fr2501.virage.core.ProgressIndicator;
 import com.fr2501.virage.core.VirageCore;
 import com.fr2501.virage.core.VirageUserInterface;
+import java.time.Instant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 
@@ -29,9 +27,9 @@ public abstract class VirageJob<T> {
 
   private long id;
 
-  private long time_issued;
-  private long time_started;
-  private long time_finished;
+  private long timeIssued;
+  private long timeStarted;
+  private long timeFinished;
 
   int phase = 0;
 
@@ -40,7 +38,7 @@ public abstract class VirageJob<T> {
     this.id = VirageJob.next_id;
     VirageJob.next_id++;
 
-    this.time_issued = System.currentTimeMillis();
+    this.timeIssued = System.currentTimeMillis();
 
     this.state = VirageJobState.PENDING;
   }
@@ -67,7 +65,7 @@ public abstract class VirageJob<T> {
   public abstract boolean externalSoftwareAvailable();
 
   /**
-   * The actual implementation of the job's functionality
+   * The actual implementation of the job's functionality.
    * 
    * @throws Exception which will be caught by the
    *                   {@link com.fr2501.virage.core.VirageCore} object
@@ -89,9 +87,9 @@ public abstract class VirageJob<T> {
     this.state = state;
     
     if (state == VirageJobState.RUNNING) {
-      this.time_started = System.currentTimeMillis();
+      this.timeStarted = System.currentTimeMillis();
     } else if (state == VirageJobState.FAILED || state == VirageJobState.FINISHED) {
-      this.time_finished = System.currentTimeMillis();
+      this.timeFinished = System.currentTimeMillis();
       
       this.issuer.notify(this);
     }
@@ -99,7 +97,7 @@ public abstract class VirageJob<T> {
 
   /**
    * Halts execution until this is finished ({@link VirageJobState#FINISHED} or
-   * {@link VirageJobState#FAILED})
+   * {@link VirageJobState#FAILED}).
    */
   public void waitFor() {
     ProgressIndicator progressIndicator = this.issuer.spawnProgressIndicator();
@@ -107,11 +105,13 @@ public abstract class VirageJob<T> {
     while (true) {
       boolean finished = false;
       synchronized (this) {
-        finished = (this.getState() != VirageJobState.PENDING && this.getState() != VirageJobState.RUNNING);
+        finished = (this.getState() != VirageJobState.PENDING
+            && this.getState() != VirageJobState.RUNNING);
       }
 
-      if (finished)
+      if (finished) {
         return;
+      }
      
       try {
         Thread.sleep(250);
@@ -129,10 +129,10 @@ public abstract class VirageJob<T> {
     String res = "----------- " + this.getClass().getCanonicalName() + "\n";
     res += "ID: " + this.id + "\n";
 
-    res += "Issued: " + Instant.ofEpochMilli(time_issued).toString() + "\n";
-    res += "Started: " + Instant.ofEpochMilli(time_started).toString() + "\n";
-    res += "Finished: " + Instant.ofEpochMilli(time_finished).toString() + "\n";
-    res += "Time elapsed: " + (time_finished - time_started) + " milliseconds \n";
+    res += "Issued: " + Instant.ofEpochMilli(timeIssued).toString() + "\n";
+    res += "Started: " + Instant.ofEpochMilli(timeStarted).toString() + "\n";
+    res += "Finished: " + Instant.ofEpochMilli(timeFinished).toString() + "\n";
+    res += "Time elapsed: " + (timeFinished - timeStarted) + " milliseconds \n";
     res += "-----\n";
     res += "State: " + this.state + "\n";
 

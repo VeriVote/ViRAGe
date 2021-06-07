@@ -1,18 +1,11 @@
 package com.fr2501.virage.test.eval;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.junit.Test;
-
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
-import com.fr2501.virage.prolog.MalformedEPLFileException;
+import com.fr2501.virage.prolog.MalformedEplFileException;
 import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.test.unit.TestDataGenerator;
@@ -21,12 +14,17 @@ import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PropertySetTest {
   private static final String FRAMEWORK_PATH = "src/test/resources/framework.pl";
 
   /* @Test */
-  public void analyzerEval() throws IOException, MalformedEPLFileException, ExternalSoftwareUnavailableException {
+  public void analyzerEval()
+      throws IOException, MalformedEplFileException, ExternalSoftwareUnavailableException {
     ExtendedPrologParser parser = new SimpleExtendedPrologParser();
     FrameworkRepresentation framework = parser.parseFramework(new File(FRAMEWORK_PATH), false);
 
@@ -35,7 +33,7 @@ public class PropertySetTest {
     long timeout = 10;
 
     boolean performBase = false;
-    boolean performSPCA = false;
+    boolean performSpca = false;
 
     CompositionAnalyzer base = new StandardPrologCompositionAnalyzer(framework);
     base.setTimeout(timeout);
@@ -50,8 +48,8 @@ public class PropertySetTest {
     int allTests = 3 * allProperties.size();
 
     int[] timeoutBaseArray = new int[11];
-    int[] timeoutSPCAArray = new int[11];
-    int[] timeoutACCAArray = new int[11];
+    int[] timeoutSpcaArray = new int[11];
+    int[] timeoutAccaArray = new int[11];
     int[] sizes = new int[11];
 
     int timeoutBase = 0;
@@ -59,12 +57,14 @@ public class PropertySetTest {
     int successBase = 0;
 
     for (List<Property> list : allProperties) {
-      if (list.size() == 0)
+      if (list.size() == 0) {
         continue;
+      }
       sizes[list.size() - 1]++;
 
-      if (!performBase)
+      if (!performBase) {
         break;
+      }
 
       SearchResult<?> res = base.generateComposition(list);
 
@@ -72,10 +72,12 @@ public class PropertySetTest {
         timeoutBase++;
         timeoutBaseArray[list.size() - 1]++;
       }
-      if (res.getState().equals(QueryState.FAILED))
+      if (res.getState().equals(QueryState.FAILED)) {
         failureBase++;
-      if (res.getState().equals(QueryState.SUCCESS))
+      }
+      if (res.getState().equals(QueryState.SUCCESS)) {
         successBase++;
+      }
 
       performedTests++;
       if (performedTests % 100 == 0) {
@@ -83,24 +85,26 @@ public class PropertySetTest {
       }
     }
 
-    int timeoutSPCA = 0;
-    int failureSPCA = 0;
-    int successSPCA = 0;
+    int timeoutSpca = 0;
+    int failureSpca = 0;
+    int successSpca = 0;
 
     for (List<Property> list : allProperties) {
-      if (!performSPCA)
+      if (!performSpca) {
         break;
+      }
 
       SearchResult<?> res = spca.generateComposition(list);
 
       if (res.getState().equals(QueryState.TIMEOUT)) {
-        timeoutSPCA++;
-        timeoutSPCAArray[list.size() - 1]++;
+        timeoutSpca++;
+        timeoutSpcaArray[list.size() - 1]++;
       }
-      if (res.getState().equals(QueryState.FAILED))
-        failureSPCA++;
+      if (res.getState().equals(QueryState.FAILED)) {
+        failureSpca++;
+      }
       if (res.getState().equals(QueryState.SUCCESS)) {
-        successSPCA++;
+        successSpca++;
 
         SearchResult<?> res2 = base.generateComposition(list);
         if (res2.getState() == QueryState.TIMEOUT) {
@@ -114,9 +118,9 @@ public class PropertySetTest {
       }
     }
 
-    int timeoutACCA = 0;
-    int failureACCA = 0;
-    int successACCA = 0;
+    int timeoutAcca = 0;
+    int failureAcca = 0;
+    int successAcca = 0;
 
     List<String> failures = new LinkedList<String>();
 
@@ -124,22 +128,23 @@ public class PropertySetTest {
       SearchResult<DecompositionTree> res = acca.generateComposition(list);
 
       if (res.getState().equals(QueryState.TIMEOUT)) {
-        timeoutACCA++;
-        timeoutACCAArray[list.size() - 1]++;
+        timeoutAcca++;
+        timeoutAccaArray[list.size() - 1]++;
       }
-      if (res.getState().equals(QueryState.FAILED))
-        failureACCA++;
+      if (res.getState().equals(QueryState.FAILED)) {
+        failureAcca++;
+      }
       if (res.getState().equals(QueryState.SUCCESS)) {
-        successACCA++;
+        successAcca++;
 
-        if (res.getValue().toString().contains("elim") || res.getValue().toString().contains("defer_module")) {
+        if (res.getValue().toString().contains("elim")
+            || res.getValue().toString().contains("defer_module")) {
           failures.add(res.getValue().toString());
           continue;
         }
         /*
          * IsabelleProofChecker checker =
-         * IsabelleProofChecker.getInstance(framework.getSessionName(),framework.
-         * getTheoryPath());
+         * IsabelleProofChecker.getInstance(framework.getSessionName(),framework. getTheoryPath());
          * 
          * IsabelleTheoryGenerator theoryGen = new IsabelleTheoryGenerator(framework);
          * 
@@ -158,16 +163,16 @@ public class PropertySetTest {
       }
     }
 
-    System.out
-        .println("BASE:\t" + timeoutBase + " timeouts\t" + failureBase + " failures\t" + successBase + " successes");
-    System.out
-        .println("SPCA:\t" + timeoutSPCA + " timeouts\t" + failureSPCA + " failures\t" + successSPCA + " successes");
-    System.out
-        .println("ACCA:\t" + timeoutACCA + " timeouts\t" + failureACCA + " failures\t" + successACCA + " successes");
+    System.out.println("BASE:\t" + timeoutBase + " timeouts\t" + failureBase + " failures\t"
+        + successBase + " successes");
+    System.out.println("SPCA:\t" + timeoutSpca + " timeouts\t" + failureSpca + " failures\t"
+        + successSpca + " successes");
+    System.out.println("ACCA:\t" + timeoutAcca + " timeouts\t" + failureAcca + " failures\t"
+        + successAcca + " successes");
 
     for (int i = 0; i < 11; i++) {
-      System.out
-          .println(timeoutBaseArray[i] + "\t" + timeoutSPCAArray[i] + "\t" + timeoutACCAArray[i] + "\t" + sizes[i]);
+      System.out.println(timeoutBaseArray[i] + "\t" + timeoutSpcaArray[i] + "\t"
+          + timeoutAccaArray[i] + "\t" + sizes[i]);
     }
 
     System.out.println(StringUtils.printCollection(failures));

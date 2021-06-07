@@ -1,12 +1,11 @@
 package com.fr2501.virage.isabelle;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 
@@ -26,8 +25,7 @@ public class IsabelleEventFactory {
   }
 
   /**
-   * Creates an {@link IsabelleEvent} representing the event described within the
-   * given String.
+   * Creates an {@link IsabelleEvent} representing the event described within the given String.
    * 
    * @param s the String given by the Isabelle client CLI
    * @return the corresponding event

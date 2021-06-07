@@ -1,22 +1,17 @@
 package com.fr2501.virage.core;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jpl7.JPL;
-
 import com.fr2501.util.Pair;
 import com.fr2501.util.ProcessUtils;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jpl7.JPL;
 
 public class ConfigReader {
   Logger logger = LogManager.getRootLogger();
@@ -27,7 +22,8 @@ public class ConfigReader {
   private static final String ISABELLE_BIN = "isabelle_bin";
   private static final String SWIPL_BIN = "swipl_bin";
 
-  private static final String INSTALL_PLEASE = "Please install if necessary and check config.properties!";
+  private static final String INSTALL_PLEASE = 
+      "Please install if necessary and check config.properties!";
 
   private boolean isabelleAvailable = true;
   private boolean scalacAvailable = true;
@@ -66,7 +62,8 @@ public class ConfigReader {
     this.properties = new Properties();
 
     InputStream input = this.getClass().getClassLoader().getResourceAsStream("config.properties");
-    File file = new File(this.getClass().getClassLoader().getResource("config.properties").getFile());
+    File file = new File(
+        this.getClass().getClassLoader().getResource("config.properties").getFile());
     this.configPath = file.getAbsolutePath();
 
     this.properties.load(input);
@@ -75,9 +72,11 @@ public class ConfigReader {
   public void checkAvailabilityAndPrintVersions() {
     // SCALA
     try {
-      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SCALA_COMPILER) + " -version");
+      ProcessUtils.runTerminatingProcessAndPrintOutput(
+          this.properties.get(SCALA_COMPILER) + " -version");
     } catch (IOException e) {
-      logger.warn("No Scala compiler found! " + INSTALL_PLEASE + " (relevant option: scala_compiler)");
+      logger.warn("No Scala compiler found! " + INSTALL_PLEASE 
+          + " (relevant option: scala_compiler)");
       this.scalacAvailable = false;
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
@@ -100,7 +99,8 @@ public class ConfigReader {
 
     // SWIPL
     try {
-      ProcessUtils.runTerminatingProcessAndPrintOutput(this.properties.get(SWIPL_BIN) + " --version");
+      ProcessUtils.runTerminatingProcessAndPrintOutput(
+          this.properties.get(SWIPL_BIN) + " --version");
     } catch (IOException e) {
       logger.warn("SWI-Prolog not found! " + INSTALL_PLEASE + " (relevant options: swipl_bin)");
       this.swiplAvailable = false;
@@ -118,28 +118,7 @@ public class ConfigReader {
       this.swiplAvailable = false;
     }
 
-    if (this.swiplAvailable) {
-      File file = null;
-      try {
-        file = new File(this.getSwiplHome() + File.separator + "lib" + File.separator + "jpl.jar");
-      } catch (ExternalSoftwareUnavailableException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      if (!file.exists()) {
-        try {
-          this.logger.warn("No jpl.jar found at " + this.getSwiplHome() + File.separator + "lib/jpl.jar! "
-              + INSTALL_PLEASE + " (relevant options: swipl_bin)");
-        } catch (ExternalSoftwareUnavailableException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-        // TODO
-        // this.jplAvailable = false;
-      } else {
-        System.out.println("JPL version " + JPL.version_string());
-      }
-    }
+    System.out.println("JPL version " + JPL.version_string());  
   }
 
   public String getIsabelleExecutable() throws ExternalSoftwareUnavailableException {
@@ -165,8 +144,9 @@ public class ConfigReader {
     for (String synonym : typeSynonyms) {
       String[] splits = synonym.split("->");
 
-      if (splits.length != 2)
+      if (splits.length != 2) {
         throw new IllegalArgumentException();
+      }
 
       res.add(new Pair<String, String>(splits[0], splits[1]));
     }
@@ -229,9 +209,10 @@ public class ConfigReader {
     return this.isabelleHome;
   }
 
-  private String computeIsabelleHome() throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
-    String output = ProcessUtils.runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME")
-        .getFirstValue();
+  private String computeIsabelleHome() throws IOException, 
+      InterruptedException, ExternalSoftwareUnavailableException {
+    String output = ProcessUtils.runTerminatingProcess(
+        this.getIsabelleExecutable() + " getenv ISABELLE_HOME").getFirstValue();
 
     return (output.split("=")[1].trim());
   }
@@ -266,8 +247,8 @@ public class ConfigReader {
 
   private String computeIsabelleSessionDir()
       throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
-    String output = ProcessUtils.runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME_USER")
-        .getFirstValue();
+    String output = ProcessUtils.runTerminatingProcess(
+        this.getIsabelleExecutable() + " getenv ISABELLE_HOME_USER").getFirstValue();
 
     return (output.split("=")[1].trim());
   }
@@ -288,7 +269,7 @@ public class ConfigReader {
     return this.properties.getProperty("session_name");
   }
 
-  public boolean hasJPL() {
+  public boolean hasJpl() {
     return this.jplAvailable;
   }
 
@@ -300,8 +281,8 @@ public class ConfigReader {
     if (this.swiplHome == null) {
       try {
         String output = ProcessUtils
-            .runTerminatingProcess(this.properties.getProperty(SWIPL_BIN) + " --dump-runtime-variables")
-            .getFirstValue();
+            .runTerminatingProcess(this.properties.getProperty(SWIPL_BIN) 
+                + " --dump-runtime-variables").getFirstValue();
         String[] lines = output.split("\n");
         String value = "";
         for (String line : lines) {
@@ -333,8 +314,8 @@ public class ConfigReader {
     if (this.swiplLib == null) {
       try {
         String output = ProcessUtils
-            .runTerminatingProcess(this.properties.getProperty(SWIPL_BIN) + " --dump-runtime-variables")
-            .getFirstValue();
+            .runTerminatingProcess(this.properties.getProperty(SWIPL_BIN) 
+                + " --dump-runtime-variables").getFirstValue();
         String[] lines = output.split("\n");
         String value = "";
         String path = "";
@@ -360,7 +341,7 @@ public class ConfigReader {
             throw new ExternalSoftwareUnavailableException();
           } else {
             String tmp = value.split("=")[1];
-            tmp = tmp.substring(1,tmp.length()-2);
+            tmp = tmp.substring(1, tmp.length() - 2);
             path = this.swiplHome + File.separator + "lib" + File.separator + tmp;
 
             File file = new File(path);
@@ -368,7 +349,8 @@ public class ConfigReader {
               logger.error("The computed path " + path + " is not a directory.");
               throw new ExternalSoftwareUnavailableException();
             } else {
-              logger.warn("Computed path: " + path);
+              logger.warn("Computed path: " + path 
+                  + ". This should contain both libswipl.so and libjpl.so");
             }
           }
 

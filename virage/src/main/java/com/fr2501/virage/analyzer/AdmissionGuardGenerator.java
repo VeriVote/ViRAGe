@@ -1,19 +1,18 @@
 package com.fr2501.virage.analyzer;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.virage.prolog.PrologClause;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 
- * This class generates a new Prolog file containing admission guards from a
+ * Generates a new Prolog file containing admission guards from a
  * given {@link FrameworkRepresentation}.
  *
  */
@@ -25,10 +24,10 @@ public class AdmissionGuardGenerator {
   }
 
   /**
-   * Generates the file containing the admission guards
+   * Generates the file containing the admission guards.
    * 
-   * @throws IOException but should actually not
    * @return the file
+   * @throws IOException but should actually not
    */
   public File createAdmissionGuardFile() throws IOException {
     List<CompositionRule> newRules = this.generateAdmissionGuards();

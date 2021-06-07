@@ -1,17 +1,7 @@
 package com.fr2501.virage.analyzer;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fr2501.util.StringUtils;
-import com.fr2501.virage.prolog.JPLFacade;
+import com.fr2501.virage.prolog.JplFacade;
 import com.fr2501.virage.prolog.PrologProof;
 import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.types.BooleanWithUncertainty;
@@ -23,6 +13,14 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 import com.fr2501.virage.types.ValueNotPresentException;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 
@@ -32,11 +30,11 @@ import com.fr2501.virage.types.ValueNotPresentException;
  */
 public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
   private static final Logger logger = LogManager.getLogger();
-  
+
   protected static boolean loadedMetaInterpreter = false;
 
   protected static final long DEFAULT_TIMEOUT = 10000;
-  protected JPLFacade facade;
+  protected JplFacade facade;
   protected FrameworkRepresentation framework;
 
   /**
@@ -44,21 +42,22 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
    * framework.
    * 
    * @param framework the framework
-   * @throws IOException but should actually not
-   * @throws ExternalSoftwareUnavailableException 
+   * @throws IOException                          but should actually not
+   * @throws ExternalSoftwareUnavailableException
    */
-  public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework) throws IOException, ExternalSoftwareUnavailableException {
+  public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework)
+      throws IOException, ExternalSoftwareUnavailableException {
     logger.info("Initialising SimplePrologCompositionAnalyzer.");
     this.framework = framework;
 
-    this.facade = new JPLFacade(DEFAULT_TIMEOUT);
+    this.facade = new JplFacade(DEFAULT_TIMEOUT);
     this.consultKnowledgeBase();
   }
 
   protected void consultKnowledgeBase() {
     this.facade.consultFile(this.framework.getAbsolutePath());
-    
-    if(!loadedMetaInterpreter) {
+
+    if (!loadedMetaInterpreter) {
       this.facade.consultFile(this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
       loadedMetaInterpreter = true;
     }
@@ -70,9 +69,10 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
   }
 
   @Override
-  public List<SearchResult<BooleanWithUncertainty>> analyzeComposition(DecompositionTree composition,
-      List<Property> properties) {
-    List<SearchResult<BooleanWithUncertainty>> result = new LinkedList<SearchResult<BooleanWithUncertainty>>();
+  public List<SearchResult<BooleanWithUncertainty>> analyzeComposition(
+      DecompositionTree composition, List<Property> properties) {
+    List<SearchResult<BooleanWithUncertainty>> result 
+        = new LinkedList<SearchResult<BooleanWithUncertainty>>();
 
     for (Property property : properties) {
       if (property.getArity() != 1) {
@@ -91,9 +91,11 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
         boolean original = queryResult.getValue();
 
         if (original) {
-          searchResult = new SearchResult<BooleanWithUncertainty>(QueryState.SUCCESS, BooleanWithUncertainty.TRUE);
+          searchResult = new SearchResult<BooleanWithUncertainty>(QueryState.SUCCESS, 
+              BooleanWithUncertainty.TRUE);
         } else {
-          searchResult = new SearchResult<BooleanWithUncertainty>(QueryState.SUCCESS, BooleanWithUncertainty.MAYBE);
+          searchResult = new SearchResult<BooleanWithUncertainty>(QueryState.SUCCESS, 
+              BooleanWithUncertainty.MAYBE);
         }
       } else {
         searchResult = new SearchResult<BooleanWithUncertainty>(QueryState.FAILED, null);
@@ -143,7 +145,8 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
   }
 
   @Override
-  public List<CompositionProof> proveClaims(DecompositionTree composition, List<Property> properties) {
+  public List<CompositionProof> proveClaims(
+      DecompositionTree composition, List<Property> properties) {
     List<PrologProof> proofs = new LinkedList<PrologProof>();
 
     for (Property property : properties) {
@@ -157,7 +160,8 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
     for (Property property : properties) {
       // This is fine as it's the only variable.
       String proofVariable = "P";
-      String query = "prove((" + property.getInstantiatedString(votingRule) + ")," + proofVariable + ")";
+      String query = "prove((" + property.getInstantiatedString(votingRule) 
+          + ")," + proofVariable + ")";
 
       logger.debug(query);
 

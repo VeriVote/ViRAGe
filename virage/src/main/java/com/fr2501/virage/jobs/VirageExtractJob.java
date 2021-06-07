@@ -1,36 +1,37 @@
 package com.fr2501.virage.jobs;
 
-import java.io.File;
-
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleFrameworkExtractor;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.IsabelleBuildFailedException;
+import java.io.File;
 
 public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepresentation> {
   private String sessionName;
   private String path;
-  
+
   public VirageExtractJob(VirageUserInterface issuer, String path, String sessionName) {
     super(issuer);
-    
+
     this.sessionName = sessionName;
     this.path = path;
   }
 
   @Override
-  protected void concreteExecute() throws ExternalSoftwareUnavailableException {
+  protected void concreteExecute()
+      throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
     IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
     FrameworkRepresentation framework = extractor.extract(this.path, this.sessionName);
     framework.setTheoryPath(this.path);
     framework.setSessionName(this.sessionName);
-    
+
     File frameworkFile = new File(this.path + File.separator + "framework.pl");
     SimpleFileWriter writer = new SimpleFileWriter();
-    writer.writeToFile(frameworkFile.getAbsolutePath(), framework.toEPLString());
-    
+    writer.writeToFile(frameworkFile.getAbsolutePath(), framework.toEplString());
+
     this.result = framework;
   }
 

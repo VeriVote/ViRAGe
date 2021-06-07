@@ -29,10 +29,10 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
    * framework.
    * 
    * @param framework the framework
-   * @throws IOException but should actually not
-   * @throws ExternalSoftwareUnavailableException 
+   * @throws IOException                          but should actually not
+   * @throws ExternalSoftwareUnavailableException
    */
-  public AdmissionCheckPrologCompositionAnalyzer(FrameworkRepresentation framework) 
+  public AdmissionCheckPrologCompositionAnalyzer(FrameworkRepresentation framework)
       throws IOException, ExternalSoftwareUnavailableException {
     super(framework);
 
@@ -51,8 +51,9 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
 
       this.facade.consultFile(admissionGuards.getAbsolutePath());
 
-      if(!loadedMetaInterpreter) {
-        this.facade.consultFile(this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
+      if (!loadedMetaInterpreter) {
+        this.facade.consultFile(this.getClass().getClassLoader()
+            .getResource("meta_interpreter.pl"));
         loadedMetaInterpreter = true;
       }
     } catch (IOException e) {
@@ -74,8 +75,8 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
     for (Property property : properties) {
       admitStrings.add(AdmissionGuardStrings.ADMITS + property.getInstantiatedString("X"));
       propertyStrings
-          .add(property.getName() + AdmissionGuardStrings.SUFFIX + 
-              property.getInstantiatedStringWithoutName("X"));
+          .add(property.getName() + AdmissionGuardStrings.SUFFIX 
+              + property.getInstantiatedStringWithoutName("X"));
     }
     admitStrings.addAll(propertyStrings);
 

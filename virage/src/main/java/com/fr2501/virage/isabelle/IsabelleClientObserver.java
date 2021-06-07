@@ -3,7 +3,6 @@ package com.fr2501.virage.isabelle;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,8 +27,10 @@ public class IsabelleClientObserver implements Runnable {
     this.isabelleClient = isabelleClient;
     this.factory = new IsabelleEventFactory();
 
-    this.stdoutReader = new BufferedReader(new InputStreamReader(this.isabelleClient.getInputStream()));
-    this.stderrReader = new BufferedReader(new InputStreamReader(this.isabelleClient.getErrorStream()));
+    this.stdoutReader = new BufferedReader(
+        new InputStreamReader(this.isabelleClient.getInputStream()));
+    this.stderrReader = new BufferedReader(
+        new InputStreamReader(this.isabelleClient.getErrorStream()));
 
     Thread thread = new Thread(this, "isa_obs");
     thread.start();

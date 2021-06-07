@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class StringUtils {
 
   /**
-   * Removes whitespace from String
+   * Removes whitespace from String.
    * 
    * @param s the String
    * @return new String, s without whitespace
@@ -28,8 +28,9 @@ public class StringUtils {
    * @return the String, empty if c is empty
    */
   public static String printCollection(Collection<?> c) {
-    if (c.isEmpty())
+    if (c.isEmpty()) {
       return "";
+    }
 
     String res = "";
 
@@ -43,7 +44,7 @@ public class StringUtils {
   }
 
   /**
-   * Checks whether a String is a number
+   * Checks whether a String is a number.
    * 
    * @param strNum the String to be checked
    * @return true if strNum represents a number, false otherwise.

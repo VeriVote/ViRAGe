@@ -2,7 +2,7 @@ package com.fr2501.virage.types;
 
 /**
  * 
- * An exception thrown if Isabelle is unable to generate code from a theory file
+ * An exception thrown if Isabelle is unable to generate code from a theory file.
  *
  */
 public class IsabelleBuildFailedException extends Exception {

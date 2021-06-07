@@ -1,23 +1,7 @@
 package com.fr2501.virage.isabelle;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fr2501.util.Pair;
-import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.virage.core.ConfigReader;
-import com.fr2501.virage.prolog.PrologClause;
 import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.SimplePrologParser;
 import com.fr2501.virage.types.Component;
@@ -26,7 +10,17 @@ import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.IsabelleBuildFailedException;
 import com.fr2501.virage.types.Property;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class IsabelleFrameworkExtractor {
   private Logger logger = LogManager.getRootLogger();
@@ -40,7 +34,8 @@ public class IsabelleFrameworkExtractor {
     this.prologStrings = new LinkedList<String>();
   }
 
-  public FrameworkRepresentation extract(String sessionDir, String sessionName) throws ExternalSoftwareUnavailableException {
+  public FrameworkRepresentation extract(String sessionDir, String sessionName)
+      throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
     ScalaIsabelleFacade facade = new ScalaIsabelleFacade(sessionDir, sessionName);
 
     File plFile;
@@ -73,7 +68,8 @@ public class IsabelleFrameworkExtractor {
     return null;
   }
 
-  private void convertComponents(FrameworkRepresentation framework, Map<String, Map<String, String>> compsRaw) {
+  private void convertComponents(FrameworkRepresentation framework,
+      Map<String, Map<String, String>> compsRaw) {
     for (String thyName : compsRaw.keySet()) {
       Map<String, String> currentThyContent = compsRaw.get(thyName);
 
@@ -154,11 +150,13 @@ public class IsabelleFrameworkExtractor {
     for (int i = 4; i < funString.length() - 1; i++) {
       char current = funString.charAt(i);
 
-      if (current == '(')
+      if (current == '(') {
         depth++;
+      }
 
-      if (current == ')')
+      if (current == ')') {
         depth--;
+      }
 
       if (depth == 1) {
         if (current == '(') {
@@ -228,14 +226,15 @@ public class IsabelleFrameworkExtractor {
         }
 
         Matcher matcher = allowedChars.matcher(succedent);
-        if (!matcher.matches())
+        if (!matcher.matches()) {
           continue thmLoop;
+        }
 
         for (String ant : antecedents) {
           matcher = allowedChars.matcher(ant);
-          if (!matcher.matches())
+          if (!matcher.matches()) {
             continue thmLoop;
-
+          }
         }
 
         String prologString = this.buildPrologClauseString(succedent, antecedents);
@@ -298,36 +297,36 @@ public class IsabelleFrameworkExtractor {
       char cur = s.charAt(i);
 
       switch (cur) {
-      case '(':
-        if (insideBrackets) {
-          int endIdx = this.findMatchingBracket(s, i);
-
-          if (endIdx == -1) {
-            //System.out.println("\t\t\tError");
-            continue;
+        case '(':
+          if (insideBrackets) {
+            int endIdx = this.findMatchingBracket(s, i);
+  
+            if (endIdx == -1) {
+              // System.out.println("\t\t\tError");
+              continue;
+            }
+  
+            res += this.convertIsabelleToProlog(s.substring(i + 1, endIdx));
+            if (endIdx < s.length() - 1 && s.charAt(endIdx + 1) != ')') {
+              res += ",";
+            }
+            i = endIdx + 1;
+          } else {
+            insideBrackets = true;
+            res += cur;
           }
-
-          res += this.convertIsabelleToProlog(s.substring(i + 1, endIdx));
-          if (endIdx < s.length() - 1 && s.charAt(endIdx + 1) != ')') {
+          break;
+        case ' ':
+          if (insideBrackets) {
             res += ",";
+          } else {
+            res += '(';
+            insideBrackets = true;
           }
-          i = endIdx + 1;
-        } else {
-          insideBrackets = true;
+          break;
+        default:
           res += cur;
-        }
-        break;
-      case ' ':
-        if (insideBrackets) {
-          res += ",";
-        } else {
-          res += '(';
-          insideBrackets = true;
-        }
-        break;
-      default:
-        res += cur;
-        break;
+          break;
       }
     }
 
@@ -341,10 +340,12 @@ public class IsabelleFrameworkExtractor {
     for (int i = idx; i < s.length(); i++) {
       char cur = s.charAt(i);
 
-      if (cur == '(')
+      if (cur == '(') {
         depth++;
-      if (cur == ')')
+      }
+      if (cur == ')') {
         depth--;
+      }
 
       if (depth == 0) {
         return i;

@@ -1,13 +1,12 @@
 package com.fr2501.virage.types;
 
+import com.fr2501.util.StringUtils;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.fr2501.util.StringUtils;
-
 /**
  * 
- * A class for representing decomposition trees
+ * A class for representing decomposition trees.
  *
  */
 public class DecompositionTree {
@@ -49,7 +48,7 @@ public class DecompositionTree {
   }
 
   /**
-   * Creates a DecompositionTree object from a string in bracket notation
+   * Creates a DecompositionTree object from a string in bracket notation.
    * 
    * @param s the string
    * @return a DecompositionTree representing s
@@ -67,15 +66,17 @@ public class DecompositionTree {
 
       if (current == '(') {
         level++;
-        if (level == 1)
+        if (level == 1) {
           continue;
+        }
       } else if (current == ')') {
         level--;
         if (level < 0) {
           throw new IllegalArgumentException();
         }
-        if (level == 0)
+        if (level == 0) {
           continue;
+        }
       } else {
         if (level == 0) {
           label += current;
@@ -127,18 +128,23 @@ public class DecompositionTree {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     DecompositionTree other = (DecompositionTree) obj;
-    if (arity != other.arity)
+    if (arity != other.arity) {
       return false;
+    }
     if (children == null) {
-      if (other.children != null)
+      if (other.children != null) {
         return false;
+      }
     } else {
       for (int i = 0; i < this.arity; i++) {
         if (!this.children.get(i).equals(other.children.get(i))) {
@@ -148,10 +154,12 @@ public class DecompositionTree {
     }
 
     if (label == null) {
-      if (other.label != null)
+      if (other.label != null) {
         return false;
-    } else if (!label.equals(other.label))
+      }
+    } else if (!label.equals(other.label)) {
       return false;
+    }
     return true;
   }
 }

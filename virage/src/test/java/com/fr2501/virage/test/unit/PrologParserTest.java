@@ -2,17 +2,15 @@ package com.fr2501.virage.test.unit;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.Test;
-
 import com.fr2501.virage.prolog.PrologClause;
 import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
+import java.util.LinkedList;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.Test;
 
 public class PrologParserTest {
   private static final Logger logger = LogManager.getLogger(PrologParserTest.class);
@@ -43,16 +41,16 @@ public class PrologParserTest {
     }
 
     {
-      List<PrologPredicate> X = new LinkedList<PrologPredicate>();
-      X.add(new PrologPredicate("X"));
-      List<PrologPredicate> XY = new LinkedList<PrologPredicate>();
-      XY.add(new PrologPredicate("X"));
-      XY.add(new PrologPredicate("Y"));
+      List<PrologPredicate> x = new LinkedList<PrologPredicate>();
+      x.add(new PrologPredicate("X"));
+      List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
+      xy.add(new PrologPredicate("X"));
+      xy.add(new PrologPredicate("Y"));
 
-      PrologPredicate a = new PrologPredicate("a", XY);
+      PrologPredicate a = new PrologPredicate("a", xy);
       PrologPredicate b = new PrologPredicate("b");
-      PrologPredicate c = new PrologPredicate("c", X);
-      PrologPredicate d = new PrologPredicate("d", XY);
+      PrologPredicate c = new PrologPredicate("c", x);
+      PrologPredicate d = new PrologPredicate("d", xy);
 
       List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
       antecedents.add(b);
@@ -64,22 +62,22 @@ public class PrologParserTest {
     }
 
     {
-      List<PrologPredicate> X = new LinkedList<PrologPredicate>();
-      X.add(new PrologPredicate("X"));
-      List<PrologPredicate> Y = new LinkedList<PrologPredicate>();
-      X.add(new PrologPredicate("Y"));
-      List<PrologPredicate> XY = new LinkedList<PrologPredicate>();
-      XY.add(new PrologPredicate("X"));
-      XY.add(new PrologPredicate("Y"));
-      List<PrologPredicate> X1 = new LinkedList<PrologPredicate>();
-      X1.add(new PrologPredicate("X"));
-      X1.add(new PrologPredicate("1"));
+      List<PrologPredicate> x = new LinkedList<PrologPredicate>();
+      x.add(new PrologPredicate("X"));
+      List<PrologPredicate> y = new LinkedList<PrologPredicate>();
+      x.add(new PrologPredicate("Y"));
+      List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
+      xy.add(new PrologPredicate("X"));
+      xy.add(new PrologPredicate("Y"));
+      List<PrologPredicate> x1 = new LinkedList<PrologPredicate>();
+      x1.add(new PrologPredicate("X"));
+      x1.add(new PrologPredicate("1"));
 
-      PrologPredicate seq = new PrologPredicate("sequential_composition", XY);
-      PrologPredicate dli = new PrologPredicate("defer_lift_invariant", X);
-      PrologPredicate nel = new PrologPredicate("non_electing", X);
-      PrologPredicate ele = new PrologPredicate("electing", Y);
-      PrologPredicate def = new PrologPredicate("defers", X1);
+      PrologPredicate seq = new PrologPredicate("sequential_composition", xy);
+      PrologPredicate dli = new PrologPredicate("defer_lift_invariant", x);
+      PrologPredicate nel = new PrologPredicate("non_electing", x);
+      PrologPredicate ele = new PrologPredicate("electing", y);
+      PrologPredicate def = new PrologPredicate("defers", x1);
 
       List<PrologPredicate> param = new LinkedList<PrologPredicate>();
       param.add(seq);
@@ -131,16 +129,16 @@ public class PrologParserTest {
     logger.info("parseComplexClause()");
     String clause = "a(X,Y) :- b,c(X),d(X,Y).";
 
-    List<PrologPredicate> X = new LinkedList<PrologPredicate>();
-    X.add(new PrologPredicate("X"));
-    List<PrologPredicate> XY = new LinkedList<PrologPredicate>();
-    XY.add(new PrologPredicate("X"));
-    XY.add(new PrologPredicate("Y"));
+    List<PrologPredicate> x = new LinkedList<PrologPredicate>();
+    x.add(new PrologPredicate("X"));
+    List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
+    xy.add(new PrologPredicate("X"));
+    xy.add(new PrologPredicate("Y"));
 
-    PrologPredicate a = new PrologPredicate("a", XY);
+    PrologPredicate a = new PrologPredicate("a", xy);
     PrologPredicate b = new PrologPredicate("b");
-    PrologPredicate c = new PrologPredicate("c", X);
-    PrologPredicate d = new PrologPredicate("d", XY);
+    PrologPredicate c = new PrologPredicate("c", x);
+    PrologPredicate d = new PrologPredicate("d", xy);
 
     List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
     antecedents.add(b);
@@ -159,24 +157,25 @@ public class PrologParserTest {
   @Test
   public void parseRealClause() {
     logger.info("parseRealClause()");
-    String clause = "monotone(sequential_composition(X,Y)) :- defer_lift_invariant(X),non_electing(X),defers(X,1),electing(Y).";
+    String clause = "monotone(sequential_composition(X,Y)) "
+        + ":- defer_lift_invariant(X),non_electing(X),defers(X,1),electing(Y).";
 
-    List<PrologPredicate> X = new LinkedList<PrologPredicate>();
-    X.add(new PrologPredicate("X"));
-    List<PrologPredicate> Y = new LinkedList<PrologPredicate>();
-    Y.add(new PrologPredicate("Y"));
-    List<PrologPredicate> XY = new LinkedList<PrologPredicate>();
-    XY.add(new PrologPredicate("X"));
-    XY.add(new PrologPredicate("Y"));
-    List<PrologPredicate> X1 = new LinkedList<PrologPredicate>();
-    X1.add(new PrologPredicate("X"));
-    X1.add(new PrologPredicate("1"));
+    List<PrologPredicate> x = new LinkedList<PrologPredicate>();
+    x.add(new PrologPredicate("X"));
+    List<PrologPredicate> y = new LinkedList<PrologPredicate>();
+    y.add(new PrologPredicate("Y"));
+    List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
+    xy.add(new PrologPredicate("X"));
+    xy.add(new PrologPredicate("Y"));
+    List<PrologPredicate> x1 = new LinkedList<PrologPredicate>();
+    x1.add(new PrologPredicate("X"));
+    x1.add(new PrologPredicate("1"));
 
-    PrologPredicate seq = new PrologPredicate("sequential_composition", XY);
-    PrologPredicate dli = new PrologPredicate("defer_lift_invariant", X);
-    PrologPredicate nel = new PrologPredicate("non_electing", X);
-    PrologPredicate def = new PrologPredicate("defers", X1);
-    PrologPredicate ele = new PrologPredicate("electing", Y);
+    PrologPredicate seq = new PrologPredicate("sequential_composition", xy);
+    PrologPredicate dli = new PrologPredicate("defer_lift_invariant", x);
+    PrologPredicate nel = new PrologPredicate("non_electing", x);
+    PrologPredicate def = new PrologPredicate("defers", x1);
+    PrologPredicate ele = new PrologPredicate("electing", y);
 
     List<PrologPredicate> param = new LinkedList<PrologPredicate>();
     param.add(seq);

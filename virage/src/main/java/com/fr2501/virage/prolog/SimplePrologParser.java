@@ -5,14 +5,15 @@ import java.util.List;
 
 /**
  * 
- * A simple implementation of the {@link PrologParser} interface
+ * A simple implementation of the {@link PrologParser} interface.
  *
  */
 public class SimplePrologParser implements PrologParser {
   @Override
   public PrologClause parseSingleClause(String clause) {
-    if (clause.equals(""))
+    if (clause.equals("")) {
       throw new IllegalArgumentException();
+    }
 
     String sanitizedClause = this.sanitizeClause(clause);
     if (sanitizedClause.charAt(sanitizedClause.length() - 1) != '.') {
@@ -48,8 +49,9 @@ public class SimplePrologParser implements PrologParser {
 
   @Override
   public PrologPredicate parsePredicate(String string) {
-    if (string.equals(""))
+    if (string.equals("")) {
       throw new IllegalArgumentException();
+    }
     String name = "";
     List<PrologPredicate> parameters = new LinkedList<PrologPredicate>();
     String currentPredicate = "";
@@ -60,15 +62,17 @@ public class SimplePrologParser implements PrologParser {
 
       if (current == '(') {
         level++;
-        if (level == 1)
+        if (level == 1) {
           continue;
+        }
       } else if (current == ')') {
         level--;
         if (level < 0) {
           throw new IllegalArgumentException();
         }
-        if (level == 0)
+        if (level == 0) {
           continue;
+        }
       } else {
         if (level == 0) {
           name += current;
@@ -98,8 +102,9 @@ public class SimplePrologParser implements PrologParser {
   }
 
   private List<PrologPredicate> splitAntecedents(String antecedentString) {
-    if (antecedentString.equals(""))
+    if (antecedentString.equals("")) {
       throw new IllegalArgumentException();
+    }
     List<PrologPredicate> res = new LinkedList<PrologPredicate>();
     String currentPredicate = "";
     int level = 0;

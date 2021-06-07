@@ -1,12 +1,11 @@
 package com.fr2501.virage.types;
 
-import java.util.List;
-
 import com.fr2501.util.StringUtils;
+import java.util.List;
 
 /**
  * 
- * A compositional structure for the modular framework
+ * A compositional structure for the modular framework.
  *
  */
 public class CompositionalStructure implements Parameterized {

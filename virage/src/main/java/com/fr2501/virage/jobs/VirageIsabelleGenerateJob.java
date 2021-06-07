@@ -1,12 +1,10 @@
 package com.fr2501.virage.jobs;
 
-import java.io.File;
-import java.util.List;
-
-import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.types.CompositionProof;
+import java.io.File;
+import java.util.List;
 
 /**
  * 
@@ -20,8 +18,8 @@ public class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult<File>
 
   private IsabelleTheoryGenerator generator;
 
-  public VirageIsabelleGenerateJob(VirageUserInterface issuer, String composition, List<CompositionProof> proofs,
-      String outputPath) {
+  public VirageIsabelleGenerateJob(VirageUserInterface issuer, String composition,
+      List<CompositionProof> proofs, String outputPath) {
     super(issuer);
 
     this.composition = composition;

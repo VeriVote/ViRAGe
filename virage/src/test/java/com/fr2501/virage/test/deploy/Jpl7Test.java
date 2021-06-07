@@ -7,11 +7,11 @@ import org.apache.logging.log4j.Logger;
 import org.jpl7.JPL;
 import org.junit.Test;
 
-public class JPL7Test {
-  private static final Logger logger = LogManager.getLogger(JPL7Test.class);
+public class Jpl7Test {
+  private static final Logger logger = LogManager.getLogger(Jpl7Test.class);
 
   @Test
-  public void checkJPLAvailability() {
+  public void checkJplAvailability() {
     try {
       Class.forName("org.jpl7.JPL", false, this.getClass().getClassLoader());
 
@@ -19,9 +19,10 @@ public class JPL7Test {
       String version = JPL.version_string();
 
       if (!version.equals(referenceVersion)) {
-        logger.warn("You are using JPL version " + version + ". " + "ViRAGe was developed and tested using JPL version "
-            + referenceVersion + ". If the program seems to behave " + "weirdly when running Prolog commands, consider "
-            + "switching to that version.");
+        logger.warn("You are using JPL version " + version + ". "
+            + "ViRAGe was developed and tested using JPL version " + referenceVersion
+            + ". If the program seems to behave "
+            + "weirdly when running Prolog commands, consider " + "switching to that version.");
       }
 
     } catch (ClassNotFoundException e) {

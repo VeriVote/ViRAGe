@@ -2,7 +2,7 @@ package com.fr2501.util;
 
 /**
  * 
- * A simple mutex mechanism
+ * A simple mutex mechanism.
  *
  */
 public class ThreadSignal {
@@ -19,8 +19,9 @@ public class ThreadSignal {
   public void waitFor() {
     while (true) {
       synchronized (this) {
-        if (this.getFinished())
+        if (this.getFinished()) {
           return;
+        }
       }
     }
   }

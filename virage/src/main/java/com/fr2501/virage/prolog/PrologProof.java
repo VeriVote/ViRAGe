@@ -1,27 +1,24 @@
 package com.fr2501.virage.prolog;
 
+import com.fr2501.util.StringUtils;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fr2501.util.StringUtils;
-
 /**
  * 
- * Using the meta interpreter in src/java/main/resources, this class is able to
- * make the Prolog search process more transparent, exposing goals and subgoals
- * for every proof step.
+ * Using the meta interpreter in src/java/main/resources, this class is able to make the Prolog
+ * search process more transparent, exposing goals and subgoals for every proof step.
  *
  */
 public class PrologProof {
-  private final static Logger logger = LogManager.getLogger(PrologProof.class);
+  private static final Logger logger = LogManager.getLogger(PrologProof.class);
 
-  private final static String SUBGOAL = "subgoal";
-  private final static String MORE_GOALS_ON_LEVEL = "','";
-  private final static String BRANCH_CLOSE = "true";
-  private final static String SEPARATOR = ",";
+  private static final String SUBGOAL = "subgoal";
+  private static final String MORE_GOALS_ON_LEVEL = "','";
+  private static final String BRANCH_CLOSE = "true";
+  private static final String SEPARATOR = ",";
 
   private String goal;
   private List<PrologProof> subgoals;
@@ -36,7 +33,7 @@ public class PrologProof {
   }
 
   /**
-   * Translates a String given by the meta interpreter to a PrologProof object
+   * Translates a String given by the meta interpreter to a PrologProof object.
    * 
    * @param string the string
    * @return the PrologProof object

@@ -1,8 +1,5 @@
 package com.fr2501.virage.jobs;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
@@ -10,13 +7,16 @@ import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 
- * A {@link VirageJob} used for generating compositions
+ * A {@link VirageJob} used for generating compositions.
  *
  */
-public class VirageGenerateJob extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
+public class VirageGenerateJob
+    extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
   private List<String> propertyStrings;
   private List<Property> properties;
 
@@ -50,6 +50,6 @@ public class VirageGenerateJob extends VirageJobWithExplicitResult<List<SearchRe
 
   @Override
   public boolean externalSoftwareAvailable() {
-    return (ConfigReader.getInstance().hasJPL());
+    return (ConfigReader.getInstance().hasJpl());
   }
 }

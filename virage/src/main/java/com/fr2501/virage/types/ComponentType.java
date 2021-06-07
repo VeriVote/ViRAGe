@@ -2,7 +2,7 @@ package com.fr2501.virage.types;
 
 /**
  * 
- * A type for components of the modular framework
+ * A type for components of the modular framework.
  *
  */
 public class ComponentType {
@@ -31,18 +31,23 @@ public class ComponentType {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass())  {
       return false;
+    }
     ComponentType other = (ComponentType) obj;
     if (name == null) {
-      if (other.name != null)
+      if (other.name != null) {
         return false;
-    } else if (!name.equals(other.name))
+      }
+    } else if (!name.equals(other.name)) {
       return false;
+    }
     return true;
   }
 }

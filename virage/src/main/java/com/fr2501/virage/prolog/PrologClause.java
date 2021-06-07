@@ -1,13 +1,11 @@
 package com.fr2501.virage.prolog;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 
- * Represents a single Prolog clause
+ * Represents a single Prolog clause.
  *
  */
 public class PrologClause {
@@ -48,7 +46,7 @@ public class PrologClause {
    * 
    * @return true if {@code this} is a fact, false otherwise
    */
-  public boolean isAFact() {
+  public boolean isFact() {
     return this.antecedents.isEmpty();
   }
 
@@ -85,22 +83,28 @@ public class PrologClause {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     PrologClause other = (PrologClause) obj;
     if (antecedents == null) {
-      if (other.antecedents != null)
+      if (other.antecedents != null) {
         return false;
+      }
     }
     if (succedent == null) {
-      if (other.succedent != null)
+      if (other.succedent != null) {
         return false;
-    } else if (!succedent.equals(other.succedent))
+      }
+    } else if (!succedent.equals(other.succedent)) {
       return false;
+    }
 
     if (this.antecedents.size() != other.antecedents.size()) {
       return false;
@@ -112,36 +116,37 @@ public class PrologClause {
     }
     return true;
   }
-  
+
   public void anonymizeSingletons() {
     List<PrologPredicate> allPreds = this.succedent.getAllChildren();
-    for(PrologPredicate antecedent: this.antecedents) {
+    for (PrologPredicate antecedent : this.antecedents) {
       allPreds.addAll(antecedent.getAllChildren());
     }
-    
+
     List<PrologPredicate> allVars = new LinkedList<PrologPredicate>();
-    for(PrologPredicate pred: allPreds) {
-      if(pred.isVariable()) {
+    for (PrologPredicate pred : allPreds) {
+      if (pred.isVariable()) {
         allVars.add(pred);
       }
     }
-    
-    for(int i=0; i<allVars.size(); i++) {
+
+    for (int i = 0; i < allVars.size(); i++) {
       boolean singleton = true;
-      
-      for(int j=0; j<allVars.size() && singleton; j++) {
-        if(i==j) continue;
-        
-        if(allVars.get(i).equals(allVars.get(j))) {
+
+      for (int j = 0; j < allVars.size() && singleton; j++) {
+        if (i == j) {
+          continue;
+        }
+
+        if (allVars.get(i).equals(allVars.get(j))) {
           singleton = false;
         }
       }
-      
-      if(singleton) {
+
+      if (singleton) {
         allVars.get(i).setName("_");
       }
     }
   }
-  
 
 }

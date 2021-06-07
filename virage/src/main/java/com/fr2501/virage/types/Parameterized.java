@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * 
- * Parts of the framework which have parameters
+ * Parts of the framework which have parameters.
  *
  */
 public interface Parameterized {

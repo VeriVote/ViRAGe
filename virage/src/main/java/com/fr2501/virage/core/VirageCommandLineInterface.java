@@ -1,22 +1,8 @@
 package com.fr2501.virage.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jpl7.JPL;
-
-import com.fr2501.util.ProcessUtils;
-import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
-import com.fr2501.virage.isabelle.IsabelleFrameworkExtractor;
 import com.fr2501.virage.jobs.VirageAnalyzeJob;
+import com.fr2501.virage.jobs.VirageDummyJob;
 import com.fr2501.virage.jobs.VirageExitJob;
 import com.fr2501.virage.jobs.VirageExtractJob;
 import com.fr2501.virage.jobs.VirageGenerateJob;
@@ -25,63 +11,69 @@ import com.fr2501.virage.jobs.VirageIsabelleGenerateScalaJob;
 import com.fr2501.virage.jobs.VirageIsabelleVerifyJob;
 import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
-import com.fr2501.virage.jobs.VirageDummyJob;
 import com.fr2501.virage.jobs.VirageParseJob;
 import com.fr2501.virage.jobs.VirageProveJob;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
-import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
+import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 
- * A simple command line interface for ViRAGe
+ * A simple command line interface for ViRAGe.
  *
  */
 public class VirageCommandLineInterface implements VirageUserInterface {
   private final Logger logger = LogManager.getLogger(VirageCommandLineInterface.class);
   private Scanner scanner;
   private VirageCore core;
-  
+
   private CommandLineProgressIndicator clpi;
-  
-  private static final String SEPARATOR = "###########################################################";
-  private final static String BANNER = "#\n"
+
+  private static final String SEPARATOR 
+      = "###########################################################";
+  private static final String BANNER = "#\n"
       + "# Y88b      / ,e, 888~-_        e       e88~~\\           \n"
       + "#  Y88b    /   \"  888   \\      d8b     d888      e88~~8e \n"
       + "#   Y88b  /   888 888    |    /Y88b    8888 __  d888  88b\n"
       + "#    Y888/    888 888   /    /  Y88b   8888   | 8888__888\n"
       + "#     Y8/     888 888_-~    /____Y88b  Y888   | Y888    ,\n"
       + "#      Y      888 888 ~-_  /      Y88b  \"88__/   \"88___/ \n#";
-  private static final String INSTALL_PLEASE = "Please install if necessary and check config.properties!";
 
   private Thread thread;
 
   protected VirageCommandLineInterface(VirageCore core) {
     logger.info("Initialising VirageCommandLineInterface.");
-    
+
     this.printSeparator();
     System.out.println(BANNER);
     this.printSeparator();
-    
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");  
+
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     LocalDateTime now = LocalDateTime.now();
     System.out.println("# Version " + core.getVersion() + ", Timestamp: " + dtf.format(now));
     System.out.println("# Using " + ConfigReader.getInstance().getConfigPath() + ".");
 
     this.printSeparator();
-    
+
     ConfigReader.getInstance().checkAvailabilityAndPrintVersions();
-    
+
     this.printSeparator();
-    
+
     this.scanner = new Scanner(System.in);
     this.core = core;
-    
+
     this.clpi = new CommandLineProgressIndicator();
   }
-  
+
   private void printSeparator() {
     System.out.println(SEPARATOR);
   }
@@ -101,35 +93,35 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     String defaultPath = "./src/test/resources/framework.pl";
 
     String path;
-    
+
     boolean firstTry = true;
-    
-    while(true) {
+
+    while (true) {
       System.out.println("Please input the path to an EPL file or an Isabelle root directory. "
           + "(default: " + defaultPath + ")");
       if (ConfigReader.getInstance().hasPathToRootFile() && firstTry) {
-        System.out.println("Configuration option \"path_to_root_file\" is specified and will be used.");
-  
+        System.out.println(
+            "Configuration option \"path_to_root_file\" " + "is specified and will be used.");
+
         path = ConfigReader.getInstance().getPathToRootFile();
-        
+
         firstTry = false;
       } else {
         path = this.scanner.nextLine();
       }
-  
+
       if (path.equals("")) {
         path = defaultPath;
       }
-      
-      if(this.extractAndOrParseFramework(path) != null) {
+
+      if (this.extractAndOrParseFramework(path) != null) {
         break;
       }
     }
 
-
     while (true) {
-      System.out.println("Do you want to (g)enerate a composition, (a)nalyze one, (p)rove a claim,\n"
-          + "generate (I)sabelle code or generate (S)cala code?");
+      System.out.println("Do you want to (g)enerate a composition, (a)nalyze one, "
+          + "(p)rove a claim,\n" + "generate (I)sabelle code or generate (S)cala code?");
       String arg = this.scanner.nextLine();
 
       VirageJob<?> job = null;
@@ -161,23 +153,23 @@ public class VirageCommandLineInterface implements VirageUserInterface {
       job.waitFor();
     }
   }
-  
+
   private FrameworkRepresentation extractAndOrParseFramework(String path) {
     FrameworkRepresentation framework = null;
     VirageParseJob parseJob;
-    
+
     if (!path.endsWith(".pl")) {
       File file = new File(path);
-      if(file.isDirectory()) {
+      if (file.isDirectory()) {
         File[] files = file.listFiles();
-        
-        outer: for(File child: files) {
-          if(child.getAbsolutePath().endsWith(".pl")) {
-            while(true) {
-              boolean conf = this.requestConfirmation("EPL file " + child.getAbsolutePath() + " found. " +
-                  "Do you want to use it?");
-              
-              if(conf) {
+
+        outer: for (File child : files) {
+          if (child.getAbsolutePath().endsWith(".pl")) {
+            while (true) {
+              boolean conf = this.requestConfirmation(
+                  "EPL file " + child.getAbsolutePath() + " found. " + "Do you want to use it?");
+
+              if (conf) {
                 return this.extractAndOrParseFramework(child.getAbsolutePath());
               } else {
                 continue outer;
@@ -186,30 +178,31 @@ public class VirageCommandLineInterface implements VirageUserInterface {
           }
         }
       }
-      
-      if(!ConfigReader.getInstance().hasIsabelle()) {
-        System.out.println("Isabelle is not available. Please install or supply an EPL-file directly.");
-        
+
+      if (!ConfigReader.getInstance().hasIsabelle()) {
+        System.out
+            .println("Isabelle is not available. Please install or supply an EPL-file directly.");
+
         return null;
       }
-      
+
       String sessionName;
       System.out.println("Please input the name of the session within this directory.");
       if (ConfigReader.getInstance().hasSessionName()) {
         System.out.println("Configuration option \"session_name\" is specified and will be used.");
 
         sessionName = ConfigReader.getInstance().getSessionName();
-        
-        System.out.println("Extracting framework from session \"" + sessionName + "\" at " + path + ".\n"
-            + "This might take some time.");
+
+        System.out.println("Extracting framework from session \"" + sessionName + "\" at " + path
+            + ".\n" + "This might take some time.");
       } else {
         sessionName = this.scanner.nextLine();
       }
-      
+
       VirageExtractJob extractJob = new VirageExtractJob(this, path, sessionName);
       this.core.submit(extractJob);
       extractJob.waitFor();
-      if(extractJob.getState().equals(VirageJobState.FAILED)) {
+      if (extractJob.getState().equals(VirageJobState.FAILED)) {
         return null;
       }
       framework = extractJob.getResult();
@@ -221,11 +214,11 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     this.core.submit(parseJob);
     parseJob.waitFor();
-    
-    if(!parseJob.getState().equals(VirageJobState.FINISHED)) {
+
+    if (!parseJob.getState().equals(VirageJobState.FINISHED)) {
       return null;
     }
-    
+
     return parseJob.getResult();
   }
 
@@ -236,7 +229,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
   private VirageGenerateJob createGenerationQuery() {
     String propertyString = this.requestPropertyString();
-    
+
     List<String> properties = StringUtils.separate(",", propertyString);
 
     VirageGenerateJob res = new VirageGenerateJob(this, properties);
@@ -275,7 +268,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     String propertyString = this.requestPropertyString();
 
     String defaultPath = "./target/generated-sources/";
-    System.out.println("Please specify a directory for the generated theory file. (default: " + defaultPath + ")");
+    System.out.println(
+        "Please specify a directory for the generated theory file. (default: " + defaultPath + ")");
     String outputPath = this.scanner.nextLine();
     if (outputPath.equals("")) {
       outputPath = defaultPath;
@@ -311,7 +305,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
       }
     }
 
-    VirageIsabelleGenerateJob generateJob = new VirageIsabelleGenerateJob(this, composition, bestProof, outputPath);
+    VirageIsabelleGenerateJob generateJob = new VirageIsabelleGenerateJob(this, composition,
+        bestProof, outputPath);
     if (!verify) {
       return generateJob;
     }
@@ -328,85 +323,96 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     VirageIsabelleGenerateScalaJob res = new VirageIsabelleGenerateScalaJob(this, composition);
     return res;
   }
-  
+
   // TODO Change to return List<Property> maybe?
   private String requestPropertyString() {
     FrameworkRepresentation framework = this.core.getFrameworkRepresentation();
-    
-    System.out.println("Please input the desired properties (separated by ',') or leave empty to display available properties.");
+
+    System.out.println(
+        "Please input the desired properties (separated by ',') "
+        + "or leave empty to display available properties.");
     String propertiesString = this.scanner.nextLine();
-    
+
     boolean invalid = false;
-    
-    if(!propertiesString.isEmpty()) {
+
+    if (!propertiesString.isEmpty()) {
       String[] propertyStrings = propertiesString.split(",");
-      for(String propertyString: propertyStrings) {
+      for (String propertyString : propertyStrings) {
         Property property = framework.getProperty(propertyString);
-        
-        if(property == null) {
+
+        if (property == null) {
           logger.error("Property \"" + propertyString + "\" is undefined.");
-          
+
           invalid = true;
           break;
         }
       }
     }
-    
-    if(propertiesString.isEmpty() || invalid) {
-      System.out.println("Available properties: " + StringUtils.printCollection(framework.getProperties()));
-      
+
+    if (propertiesString.isEmpty() || invalid) {
+      System.out.println(
+          "Available properties: " + StringUtils.printCollection(framework.getProperties()));
+
       return this.requestPropertyString();
     }
-    
+
     return propertiesString;
   }
-  
+
   private String requestCompositionString() {
     FrameworkRepresentation framework = this.core.getFrameworkRepresentation();
     boolean invalid = false;
-    
-    System.out.println("Please input a composition (in Prolog format) or leave empty to display available components.");
+
+    System.out.println(
+        "Please input a composition (in Prolog format) "
+        + "or leave empty to display available components.");
     String compositionString = this.scanner.nextLine();
-    
-    if(!compositionString.isEmpty()) {
+
+    if (!compositionString.isEmpty()) {
       try {
         DecompositionTree.parseString(compositionString);
       } catch (Exception e) {
-        logger.error("\"" + compositionString + "\" could not be parsed. Please check the brackets and try again.");
+        logger.error("\"" + compositionString
+            + "\" could not be parsed. Please check the brackets and try again.");
         invalid = true;
       }
     }
-    
-    if(compositionString.isEmpty() || invalid) {
-      System.out.println("Available components: " + StringUtils.printCollection(framework.getComponents()) + "," +
-                StringUtils.printCollection(framework.getCompositionalStructures()));
-      
+
+    if (compositionString.isEmpty() || invalid) {
+      System.out
+          .println("Available components: " + StringUtils.printCollection(framework.getComponents())
+              + "," + StringUtils.printCollection(framework.getCompositionalStructures()));
+
       return this.requestCompositionString();
     }
-    
+
     return compositionString;
   }
-  
+
   public boolean requestConfirmation(String message) {
     this.clpi.hide();
-    
+
     boolean returnValue;
-    
-    loop: while(true) {
+
+    loop: while (true) {
       System.out.println(message + " (y/n)");
 
       String input = this.scanner.nextLine();
 
-      switch(input) {
-      case "y": returnValue = true; break loop;
-      case "n": returnValue = false; break loop;
+      switch (input) {
+      case "y":
+        returnValue = true;
+        break loop;
+      case "n":
+        returnValue = false;
+        break loop;
       }
     }
-    
+
     this.clpi.show();
     return returnValue;
   }
-  
+
   public ProgressIndicator spawnProgressIndicator() {
     return this.clpi;
   }

@@ -1,14 +1,13 @@
 package com.fr2501.virage.isabelle;
 
+import com.fr2501.util.SimpleFileReader;
+import com.fr2501.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import com.fr2501.util.SimpleFileReader;
-import com.fr2501.util.StringUtils;
 
 /**
  * 
@@ -82,7 +81,7 @@ public class IsabelleTheoryParser {
   }
 
   /**
-   * This method returns a list of all imports in the given theory file
+   * This method returns a list of all imports in the given theory file.
    * 
    * @param theory the .thy-file
    * @return a list of the imports
@@ -100,7 +99,8 @@ public class IsabelleTheoryParser {
         String[] splits = line.split(" ");
 
         for (String split : splits) {
-          if (StringUtils.removeWhitespace(split).equals("") || split.equals(IsabelleUtils.IMPORTS)) {
+          if (StringUtils.removeWhitespace(split).equals("")
+              || split.equals(IsabelleUtils.IMPORTS)) {
             continue;
           }
 
@@ -116,7 +116,7 @@ public class IsabelleTheoryParser {
   }
 
   /**
-   * Extracts a definition from an Isabelle file
+   * Extracts a definition from an Isabelle file.
    * 
    * @param name   the name of the definition
    * @param theory the theory file

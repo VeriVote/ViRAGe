@@ -1,21 +1,19 @@
 package com.fr2501.virage.isabelle;
 
+import com.fr2501.virage.prolog.PrologParser;
+import com.fr2501.virage.prolog.PrologPredicate;
+import com.fr2501.virage.prolog.SimplePrologParser;
+import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.CompositionRule;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.fr2501.virage.prolog.PrologParser;
-import com.fr2501.virage.prolog.PrologPredicate;
-import com.fr2501.virage.prolog.SimplePrologParser;
-import com.fr2501.virage.types.CompositionProof;
-import com.fr2501.virage.types.CompositionRule;
 
 /**
  * 
@@ -36,9 +34,11 @@ public class IsabelleProofStepGenerator {
   private PrologParser parser;
   private IsabelleProofGenerator parent;
 
-  public IsabelleProofStepGenerator(IsabelleProofGenerator parent, Map<String, String> functionsAndDefinitions) {
+  public IsabelleProofStepGenerator(IsabelleProofGenerator parent,
+      Map<String, String> functionsAndDefinitions) {
     if (PROOF_STEP_TEMPLATE.equals("")) {
-      InputStream proofStepTemplateStream = this.getClass().getClassLoader().getResourceAsStream("proof_step.template");
+      InputStream proofStepTemplateStream = this.getClass().getClassLoader()
+          .getResourceAsStream("proof_step.template");
       StringWriter writer = new StringWriter();
       try {
         IOUtils.copy(proofStepTemplateStream, writer, StandardCharsets.UTF_8);
@@ -65,7 +65,8 @@ public class IsabelleProofStepGenerator {
 
     PrologPredicate predicate = this.parser.parsePredicate(step.getGoal());
     this.parent.getParent().replacePrologVariables(predicate);
-    Map<String, Set<String>> goalMap = IsabelleUtils.translatePrologToIsabelle(this.functionsAndDefinitions,
+    Map<String, Set<String>> goalMap = IsabelleUtils
+        .translatePrologToIsabelle(this.functionsAndDefinitions,
         predicate.toString());
 
     if (goalMap.keySet().size() != 1) {
@@ -103,7 +104,8 @@ public class IsabelleProofStepGenerator {
     return this.replaceVariables(goalId, goal, subgoalIds, rule, solver);
   }
 
-  private String replaceVariables(String goalId, String goal, String subgoalIds, String rule, String solver) {
+  private String replaceVariables(String goalId, String goal, String subgoalIds, String rule,
+      String solver) {
     String res = PROOF_STEP_TEMPLATE;
 
     res = res.replace(VAR_GOAL_ID, goalId);

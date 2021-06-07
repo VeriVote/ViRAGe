@@ -1,27 +1,23 @@
 package com.fr2501.virage.types;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fr2501.util.Pair;
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.prolog.PrologClause;
 import com.fr2501.virage.prolog.PrologPredicate;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 
  * The data model required to represent the compositional framework as a whole
  * <p>
- * It is designed for the electoral module framework, but not at all limited to
- * it.
+ * It is designed for the electoral module framework, but not at all limited to it.
  *
  */
 public class FrameworkRepresentation {
@@ -202,8 +198,8 @@ public class FrameworkRepresentation {
   }
 
   /**
-   * Adds a @link{Component} to the FrameworkRepresentation. Performs type check
-   * without throwing any exceptions.
+   * Adds a @link{Component} to the FrameworkRepresentation. Performs type check without throwing
+   * any exceptions.
    * 
    * @param c the @link{Component} to be added
    */
@@ -213,8 +209,8 @@ public class FrameworkRepresentation {
   }
 
   /**
-   * Adds a @link{ComposableModule} to the FrameworkRepresentation Performs type
-   * check without throwing any exceptions.
+   * Adds a @link{ComposableModule} to the FrameworkRepresentation Performs type check without
+   * throwing any exceptions.
    * 
    * @param cm the @link{ComposableModule} to be added
    */
@@ -224,8 +220,8 @@ public class FrameworkRepresentation {
   }
 
   /**
-   * Adds a @link{CompositionalStructure} to the FrameworkRepresentation Performs
-   * type check without throwing any exceptions.
+   * Adds a @link{CompositionalStructure} to the FrameworkRepresentation Performs type check without
+   * throwing any exceptions.
    * 
    * @param cs the @link{CompositionalStructure} to be added
    */
@@ -235,29 +231,30 @@ public class FrameworkRepresentation {
   }
 
   /**
-   * Adds a @link{CompositionRule} to the FrameworkRepresentation
+   * Adds a @link{CompositionRule} to the FrameworkRepresentation.
    * 
    * @param cr the @link{ComposiotionRule} to be added
    */
   public void add(CompositionRule cr) {
     /*
-     * PrologClause actualClause = this.removeAtomicTypesFromClause(cr.getClause());
-     * if(actualClause == null) { return; }
+     * PrologClause actualClause = this.removeAtomicTypesFromClause(cr.getClause()); if(actualClause
+     * == null) { return; }
      * 
      * cr = new CompositionRule(cr.getName(), cr.getOrigin(), actualClause);
      */
 
     for (CompositionRule rule : this.compositionRules) {
-      if (rule.equals(cr))
+      if (rule.equals(cr)) {
         return;
+      }
     }
 
     this.compositionRules.add(cr);
   }
 
   /**
-   * Adds a {@link Property} to the FrameworkRepresentation Performs type check
-   * without throwing any exceptions.
+   * Adds a {@link Property} to the FrameworkRepresentation Performs type check without throwing any
+   * exceptions.
    * 
    * @param p the {@link Property} to be added
    */
@@ -306,7 +303,7 @@ public class FrameworkRepresentation {
   public String toString() {
     return this.sessionName;
   }
-  
+
   public String toVerboseString() {
     String res = "";
 
@@ -349,7 +346,7 @@ public class FrameworkRepresentation {
     return res;
   }
 
-  public String toEPLString() {
+  public String toEplString() {
     Collections.sort(this.compositionRules);
 
     String res = "";
@@ -394,7 +391,7 @@ public class FrameworkRepresentation {
 
     res += "% === composition_rule\n";
     for (CompositionRule rule : this.compositionRules) {
-      res += rule.toEPLString() + "\n";
+      res += rule.toEplString() + "\n";
     }
 
     return res;
@@ -416,13 +413,14 @@ public class FrameworkRepresentation {
   private void checkTypes(Parameterized object) {
     for (ComponentType paramType : object.getParameters()) {
       if (!this.componentTypes.contains(paramType)) {
-        logger.info("Added item with unknown parameter type \"" + paramType.getName() + "\" to framework.");
+        logger.info(
+            "Added item with unknown parameter type \"" + paramType.getName() + "\" to framework.");
       }
     }
   }
 
   private synchronized void updateFile() {
-    String newContent = this.toEPLString();
+    String newContent = this.toEplString();
 
     SimpleFileWriter writer = new SimpleFileWriter();
     writer.writeToFile(this.absolutePath, newContent);

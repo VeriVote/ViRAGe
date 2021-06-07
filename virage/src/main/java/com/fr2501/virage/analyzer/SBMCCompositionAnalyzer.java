@@ -56,7 +56,8 @@
 //
 //    this.compositionsTemplate = (new SimpleFileReader())
 //        .readFile(new File("src/test/resources/c_implementations/compositions.template"));
-//    this.codeFileTemplate = (new SimpleFileReader()).readFile(new File("src/test/resources/code_file.template"));
+//    this.codeFileTemplate = (new SimpleFileReader()).
+//      readFile(new File("src/test/resources/code_file.template"));
 //    this.electionDescriptionForBeast = (new SimpleFileReader())
 //        .readFile(new File("src/test/resources/election_description.template"));
 //
@@ -78,15 +79,18 @@
 //  }
 //
 //  @Override
-//  public List<SearchResult<BooleanWithUncertainty>> analyzeComposition(DecompositionTree composition,
+//  public List<SearchResult<BooleanWithUncertainty>> 
+//    analyzeComposition(DecompositionTree composition,
 //      List<Property> properties) {
-//    List<SearchResult<BooleanWithUncertainty>> res = new LinkedList<SearchResult<BooleanWithUncertainty>>();
+//    List<SearchResult<BooleanWithUncertainty>> res = 
+//      new LinkedList<SearchResult<BooleanWithUncertainty>>();
 //
 //    for (Property property : properties) {
 //      List<Property> singleProp = new LinkedList<Property>();
 //      singleProp.add(property);
 //
-//      List<SearchResult<BooleanWithUncertainty>> superResults = super.analyzeComposition(composition, singleProp);
+//      List<SearchResult<BooleanWithUncertainty>> superResults = 
+//        super.analyzeComposition(composition, singleProp);
 //
 //      // Single property, single result.
 //      SearchResult<BooleanWithUncertainty> superResult = superResults.get(0);
@@ -123,14 +127,16 @@
 //
 //    Pair<Pair<String, String>, Integer> res = this.getCCodeFromComposition(composition, 0);
 //
-//    String fileContents = this.codeFileTemplate.replace("$CONTENT", res.getFirstValue().getSecondValue());
+//    String fileContents = this.codeFileTemplate.replace("$CONTENT", 
+//      res.getFirstValue().getSecondValue());
 //    fileContents = fileContents.replace("$ENTRY", res.getFirstValue().getFirstValue());
 //    (new SimpleFileWriter()).writeToFile("target/generated-sources/voting_rule.c", fileContents);
 //
 //    return null;
 //  }
 //
-//  private Pair<Pair<String, String>, Integer> getCCodeFromComposition(DecompositionTree composition, int ctr) {
+//  private Pair<Pair<String, String>, Integer> getCCodeFromComposition(
+//    DecompositionTree composition, int ctr) {
 //    String head = "";
 //    String body = "";
 //
@@ -143,7 +149,8 @@
 //        String childLabel = child.getLabel();
 //
 //        if (childLabel.equals("_")) {
-//          ComponentType childType = this.framework.getComponent(composition.getLabel()).getParameters().get(i);
+//          ComponentType childType = this.framework.getComponent(composition.getLabel())
+//            .getParameters().get(i);
 //
 //          if (childType.getName().equals("nat")) {
 //            head += "1";
@@ -160,11 +167,13 @@
 //      head += "p,r)";
 //    }
 //
-//    CompositionalStructure currentStructure = framework.getCompositionalStructure(composition.getLabel());
+//    CompositionalStructure currentStructure = 
+//      framework.getCompositionalStructure(composition.getLabel());
 //    if (currentStructure != null) {
 //      String structure = composition.getLabel();
 //
-//      Pattern pattern = Pattern.compile("// " + structure + ".*" + "// " + structure, Pattern.DOTALL);
+//      Pattern pattern = Pattern.compile("// " + structure + ".*" + "// " 
+//        + structure, Pattern.DOTALL);
 //      Matcher matcher = pattern.matcher(this.compositionsTemplate);
 //
 //      if (matcher.find()) {
@@ -176,11 +185,13 @@
 //        for (DecompositionTree child : composition.getChildren()) {
 //          if (this.framework.getComposableModule(child.getLabel()) != null
 //              || this.framework.getCompositionalStructure(child.getLabel()) != null) {
-//            Pair<Pair<String, String>, Integer> childCode = this.getCCodeFromComposition(child, ctr + 1);
+//            Pair<Pair<String, String>, Integer> childCode = 
+//              this.getCCodeFromComposition(child, ctr + 1);
 //
 //            body += childCode.getFirstValue().getSecondValue() + "\n";
 //
-//            structureTemplate = structureTemplate.replace("$MODULE_" + String.valueOf(moduleCounter),
+//            structureTemplate = structureTemplate.replace("$MODULE_" 
+//              + String.valueOf(moduleCounter),
 //                childCode.getFirstValue().getFirstValue());
 //            moduleCounter++;
 //          } else if (this.framework.getComponent(child.getLabel()) != null) {
@@ -188,12 +199,14 @@
 //            ComponentType type = currentComponent.getType();
 //
 //            if (type.getName().equals("aggregator")) {
-//              structureTemplate = structureTemplate.replace("$AGGREGATOR", currentComponent.getName());
+//              structureTemplate = structureTemplate.replace("$AGGREGATOR", 
+//                currentComponent.getName());
 //            } else if (type.getName().equals("termination_condition")) {
 //              // TODO: This is completely non-generic and only admissible for the
 //              // defer_eq_condition.
 //              structureTemplate = structureTemplate.replace("$TERMINATION_CONDITION",
-//                  currentComponent.getName() + "(" + child.getChildren().get(0).getLabel() + ",p,r)");
+//                  currentComponent.getName() + "(" 
+//                    + child.getChildren().get(0).getLabel() + ",p,r)");
 //            }
 //          }
 //        }
@@ -212,8 +225,10 @@
 //    return new Pair<Pair<String, String>, Integer>(new Pair<String, String>(head, body), ctr);
 //  }
 //
-//  private SearchResult<BooleanWithUncertainty> runSBMCCheck(DecompositionTree composition, Property property) {
-//    final BlockingQueue<SearchResult<BooleanWithUncertainty>> queue = new LinkedBlockingQueue<SearchResult<BooleanWithUncertainty>>();
+//  private SearchResult<BooleanWithUncertainty> 
+//    runSBMCCheck(DecompositionTree composition, Property property) {
+//    final BlockingQueue<SearchResult<BooleanWithUncertainty>> queue = 
+//      new LinkedBlockingQueue<SearchResult<BooleanWithUncertainty>>();
 //
 //    // Make sure BEAST is started and ready.
 //    GUIController tmpController = null;
@@ -227,9 +242,11 @@
 //    Platform.runLater(new Runnable() {
 //      @Override
 //      public synchronized void run() {
-//        SearchResult<BooleanWithUncertainty> res = new SearchResult<BooleanWithUncertainty>(QueryState.FAILED, null);
+//        SearchResult<BooleanWithUncertainty> res 
+//          = new SearchResult<BooleanWithUncertainty>(QueryState.FAILED, null);
 //
-//        ElectionDescription elecDesc = new ElectionDescription("tmp", new Preference(), new CandidateList());
+//        ElectionDescription elecDesc 
+//          = new ElectionDescription("tmp", new Preference(), new CandidateList());
 //
 //        String[] lines = elecDescCode.split("\n");
 //
@@ -245,14 +262,17 @@
 //        }
 //
 //        elecDesc.setCode(elecDescCode);
-//        elecDesc.setLockedPositions(offset, offset + lines[lockedLine].length(), elecDescCode.length() - 1);
+//        elecDesc.setLockedPositions(offset, offset + lines[lockedLine].length(), 
+//          elecDescCode.length() - 1);
 //        elecDesc.setNotNew();
 //
 //        controller.getCodeArea().setNewElectionDescription(elecDesc);
 //
-//        controller.getPostConditionsArea().replaceText("(VOTES2, VOTES3) <- SPLIT(PERM(VOTES1));");
+//        controller.getPostConditionsArea()
+//          .replaceText("(VOTES2, VOTES3) <- SPLIT(PERM(VOTES1));");
 //        controller.getPreConditionsArea()
-//            .replaceText("NOTEMPTY(INTERSECT(ELECT2, ELECT3)) ==> ELECT1 == INTERSECT(ELECT2, ELECT3);");
+//            .replaceText("NOTEMPTY(INTERSECT(ELECT2, ELECT3))"
+//              + "==> ELECT1 == INTERSECT(ELECT2, ELECT3);");
 //
 //        for (ChildTreeItem child : controller.getProperties().get(0).getSubItems()) {
 //          if (child instanceof CheckChildTreeItem) {
@@ -269,7 +289,8 @@
 //        if (!BEASTCommunicator.checkForErrors(elecDesc, properties)) {
 //          PropertyChecker checker = new PropertyChecker("CBMC");
 //
-//          List<Result> results = checker.checkPropertiesForDescription(elecDesc, properties, parameter);
+//          List<Result> results = checker
+//            .checkPropertiesForDescription(elecDesc, properties, parameter);
 //
 //          // while(results == null) { /* no-op */ };
 //

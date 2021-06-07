@@ -1,5 +1,16 @@
 package com.fr2501.virage.isabelle;
 
+import com.fr2501.util.ProcessUtils;
+import com.fr2501.util.SimpleFileReader;
+import com.fr2501.util.SimpleFileWriter;
+import com.fr2501.util.StringUtils;
+import com.fr2501.virage.core.ConfigReader;
+import com.fr2501.virage.types.CompilationFailedException;
+import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
+import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.IsabelleBuildFailedException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,22 +23,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.fr2501.util.ProcessUtils;
-import com.fr2501.util.SimpleFileReader;
-import com.fr2501.util.SimpleFileWriter;
-import com.fr2501.util.StringUtils;
-import com.fr2501.virage.core.ConfigReader;
-import com.fr2501.virage.types.CompilationFailedException;
-import com.fr2501.virage.types.CompositionProof;
-import com.fr2501.virage.types.DecompositionTree;
-import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
-import com.fr2501.virage.types.FrameworkRepresentation;
-import com.fr2501.virage.types.IsabelleBuildFailedException;
 
 /**
  * 
@@ -77,7 +75,8 @@ public class IsabelleCodeGenerator {
     if (exportTemplate.equals("")) {
       StringWriter writer = new StringWriter();
 
-      InputStream exportTemplateStream = this.getClass().getClassLoader().getResourceAsStream("export_code.template");
+      InputStream exportTemplateStream = this.getClass().getClassLoader()
+          .getResourceAsStream("export_code.template");
       try {
         IOUtils.copy(exportTemplateStream, writer, StandardCharsets.UTF_8);
       } catch (IOException e) {
@@ -86,7 +85,8 @@ public class IsabelleCodeGenerator {
       exportTemplate = writer.toString();
 
       writer = new StringWriter();
-      InputStream rootTemplateStream = this.getClass().getClassLoader().getResourceAsStream("code_root.template");
+      InputStream rootTemplateStream = this.getClass().getClassLoader()
+          .getResourceAsStream("code_root.template");
       try {
         IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
       } catch (IOException e) {
@@ -109,7 +109,7 @@ public class IsabelleCodeGenerator {
   }
 
   /**
-   * Invokes Isabelle's code generator to create code from a composition
+   * Invokes Isabelle's code generator to create code from a composition.
    * 
    * @param composition the composition
    * @param language    the target language
@@ -119,20 +119,23 @@ public class IsabelleCodeGenerator {
    * @throws IsabelleBuildFailedException
    * @throws ExternalSoftwareUnavailableException 
    */
-  public File generateCode(String composition, IsabelleCGLanguage language)
-      throws IOException, InterruptedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
-    File theory = this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
+  public File generateCode(String composition, IsabelleCodeGenerationLanguage language)
+      throws IOException, InterruptedException, IsabelleBuildFailedException, 
+          ExternalSoftwareUnavailableException {
+    File theory = this.generator.generateTheoryFile(
+        composition, new LinkedList<CompositionProof>());
 
     return this.generateCode(theory, language);
   }
 
-  public File generateCode(DecompositionTree composition, IsabelleCGLanguage language)
-      throws IOException, InterruptedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+  public File generateCode(DecompositionTree composition, IsabelleCodeGenerationLanguage language)
+      throws IOException, InterruptedException, IsabelleBuildFailedException,
+      ExternalSoftwareUnavailableException {
     return this.generateCode(composition.toString(), language);
   }
 
   /**
-   * Invokes Isabelle's code generator to generate code from a theory
+   * Invokes Isabelle's code generator to generate code from a theory.
    * 
    * @param theory   the theory file
    * @param language the target language
@@ -142,9 +145,10 @@ public class IsabelleCodeGenerator {
    * @throws IsabelleBuildFailedException
    * @throws ExternalSoftwareUnavailableException 
    */
-  public File generateCode(File theory, IsabelleCGLanguage language)
-      throws IOException, InterruptedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
-    String moduleName = this.prepareTheoryFile(theory, language);
+  public File generateCode(File theory, IsabelleCodeGenerationLanguage language)
+      throws IOException, InterruptedException, IsabelleBuildFailedException,
+      ExternalSoftwareUnavailableException {
+    //String moduleName = this.prepareTheoryFile(theory, language);
 
     String theoryName = theory.getName().substring(0,
         theory.getName().length() - (IsabelleUtils.FILE_EXTENSION.length()));
@@ -175,8 +179,10 @@ public class IsabelleCodeGenerator {
    * @throws ExternalSoftwareUnavailableException 
    */
   public File generateScalaCodeAndCompile(String composition)
-      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
-    File theory = this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
+      throws IOException, InterruptedException, CompilationFailedException, 
+      IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+    File theory = this.generator.generateTheoryFile(
+        composition, new LinkedList<CompositionProof>());
 
     return this.generateScalaCodeAndCompile(theory);
   }
@@ -195,7 +201,8 @@ public class IsabelleCodeGenerator {
    * @throws ExternalSoftwareUnavailableException 
    */
   public File generateScalaCodeAndCompile(File theory)
-      throws IOException, InterruptedException, CompilationFailedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+      throws IOException, InterruptedException, CompilationFailedException,
+      IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
     String moduleName = this.prepareTheoryFile(theory, "Scala");
 
     String theoryName = theory.getName().substring(0,
@@ -203,7 +210,6 @@ public class IsabelleCodeGenerator {
 
     String sessionName = this.buildSessionRoot(theoryName, theory);
 
-    long start = System.currentTimeMillis();
     File codeFile = this.invokeIsabelleCodeGeneration(theory, sessionName, theoryName);
 
     // First, try using implicit values only
@@ -214,19 +220,23 @@ public class IsabelleCodeGenerator {
     if (ConfigReader.getInstance().hasScalaCompiler()) {
       int status;
       try {
-        status = ProcessUtils.runTerminatingProcessAndLogOutput(ConfigReader.getInstance().getScalaCompiler() + " "
-            + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath() + " -d " + jarPath);
+        status = ProcessUtils.runTerminatingProcessAndLogOutput(ConfigReader.getInstance()
+            .getScalaCompiler() + " "
+            + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath() + " -d "
+            + jarPath);
 
         if (status != 0) {
           // Implicit values did not work, try setting them explicitly.
           votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile, true);
   
-          status = ProcessUtils.runTerminatingProcessAndLogOutput(ConfigReader.getInstance().getScalaCompiler() + " "
-              + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath() + " -d " + jarPath);
+          status = ProcessUtils.runTerminatingProcessAndLogOutput(ConfigReader.getInstance()
+              .getScalaCompiler() + " "
+              + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath() + " -d "
+              + jarPath);
   
           if (status != 0) {
-            logger.error("Generated Scala code could not be compiled. " +
-                          "ViRAGe requires at least Scala 2.13.0 to work properly. "
+            logger.error("Generated Scala code could not be compiled. "
+                          + "ViRAGe requires at least Scala 2.13.0 to work properly. "
                           + "Please check and update accordingly.");
             throw new CompilationFailedException("Generated Scala code could not be compiled.");
           }
@@ -261,7 +271,10 @@ public class IsabelleCodeGenerator {
     this.codeReplacements = replacements;
   }
 
-  private String prepareTheoryFile(File theory, IsabelleCGLanguage language) throws IOException {
+   // TODO Should this become public?
+  @SuppressWarnings("unused")
+  private String prepareTheoryFile(File theory, IsabelleCodeGenerationLanguage language)
+      throws IOException {
     return this.prepareTheoryFile(theory, language.toString());
   }
 
@@ -317,9 +330,11 @@ public class IsabelleCodeGenerator {
     // of
     // rebuilding single sessions without triggering full rebuilds.
     // TODO: Is there a way to do it?
-    String sessionName = "ad_hoc_session_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+    String sessionName = "ad_hoc_session_"
+        + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
-    String result = rootTemplate.replace(SESSION_NAME_VAR, sessionName).replace(THEORY_NAME_VAR, theoryName);
+    String result = rootTemplate.replace(SESSION_NAME_VAR, sessionName).replace(THEORY_NAME_VAR,
+        theoryName);
     result = result.replace(PARENT_NAME_VAR, this.framework.getSessionName());
     SimpleFileWriter writer = new SimpleFileWriter();
     writer.writeToFile(theory.getParent() + File.separator + "ROOT", result);
@@ -328,11 +343,13 @@ public class IsabelleCodeGenerator {
   }
 
   private File invokeIsabelleCodeGeneration(File theory, String sessionName, String theoryName)
-      throws IOException, InterruptedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+      throws IOException, InterruptedException, IsabelleBuildFailedException,
+      ExternalSoftwareUnavailableException {
     String generatedPath = theory.getParent();
     String theoryPath = new File(this.framework.getTheoryPath()).getCanonicalPath();
 
-    String isabelleCommand = ConfigReader.getInstance().getIsabelleExecutable() + " build -e -D " + generatedPath + " -D " + theoryPath + " -o quick_and_dirty -b "
+    String isabelleCommand = ConfigReader.getInstance().getIsabelleExecutable() + " build -e -D "
+        + generatedPath + " -D " + theoryPath + " -o quick_and_dirty -b "
         + sessionName;
 
     int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
@@ -343,7 +360,8 @@ public class IsabelleCodeGenerator {
       throw new IsabelleBuildFailedException();
     }
 
-    String codePath = generatedPath + File.separator + "export" + File.separator + sessionName + "." + theoryName
+    String codePath = generatedPath + File.separator + "export" + File.separator + sessionName + "."
+        + theoryName
         + File.separator + "code" + File.separator;
     File codeDir = new File(codePath);
     File[] generatedFiles = codeDir.listFiles();
@@ -363,7 +381,8 @@ public class IsabelleCodeGenerator {
     SimpleFileReader reader = new SimpleFileReader();
     String code = reader.readFile(moduleFile);
 
-    String result = votingContextTemplate.replace(THEORY_NAME_VAR, theoryName).replace(MODULE_NAME_VAR, moduleName);
+    String result = votingContextTemplate.replace(THEORY_NAME_VAR, theoryName)
+        .replace(MODULE_NAME_VAR, moduleName);
 
     boolean containsEnum = code.contains(ENUM);
     boolean containsEquality = code.contains(EQUALITY);

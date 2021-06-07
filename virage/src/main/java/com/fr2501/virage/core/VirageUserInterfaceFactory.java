@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * 
- * A factory for {@link VirageUserInterface}
+ * A factory for {@link VirageUserInterface}.
  *
  */
 public class VirageUserInterfaceFactory {
@@ -13,13 +13,13 @@ public class VirageUserInterfaceFactory {
 
   /**
    * Creates the user interface described by string, defaults to
-   * {@link VirageCommandLineInterface}
+   * {@link VirageCommandLineInterface}.
    * 
    * @param string the string
    * @param core   the core object the user interface will use for execution
    * @return a user interface
    */
-  public VirageUserInterface getUI(String string, VirageCore core) {
+  public VirageUserInterface getUi(String string, VirageCore core) {
     VirageUserInterface res;
 
     if (string.equals(VirageStrings.CLI_ARG)) {

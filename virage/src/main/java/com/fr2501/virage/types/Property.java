@@ -1,12 +1,11 @@
 package com.fr2501.virage.types;
 
-import java.util.List;
-
 import com.fr2501.util.StringUtils;
+import java.util.List;
 
 /**
  * 
- * Represents a property defined in the modular framework
+ * Represents a property defined in the modular framework.
  *
  */
 public class Property implements Parameterized {
@@ -91,20 +90,26 @@ public class Property implements Parameterized {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     Property other = (Property) obj;
-    if (arity != other.arity)
+    if (arity != other.arity) {
       return false;
+    }
     if (name == null) {
-      if (other.name != null)
+      if (other.name != null) {
         return false;
-    } else if (!name.equals(other.name))
+      }
+    } else if (!name.equals(other.name)) {
       return false;
+    }
     return true;
   }
 }

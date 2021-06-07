@@ -1,12 +1,8 @@
 package com.fr2501.virage.test.eval;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
-import com.fr2501.virage.prolog.JPLFacade;
+import com.fr2501.virage.prolog.JplFacade;
 import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.CompositionProof;
@@ -15,18 +11,22 @@ import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class StandardPrologCompositionAnalyzer implements CompositionAnalyzer {
   protected static final long DEFAULT_TIMEOUT = 10000;
-  protected JPLFacade facade;
+  protected JplFacade facade;
   protected FrameworkRepresentation framework;
 
   private long timeout;
 
-  public StandardPrologCompositionAnalyzer(FrameworkRepresentation framework) throws ExternalSoftwareUnavailableException {
+  public StandardPrologCompositionAnalyzer(FrameworkRepresentation framework)
+      throws ExternalSoftwareUnavailableException {
     this.framework = framework;
 
-    this.facade = new JPLFacade(DEFAULT_TIMEOUT);
+    this.facade = new JplFacade(DEFAULT_TIMEOUT);
     this.timeout = DEFAULT_TIMEOUT;
     this.consultKnowledgeBase();
   }
@@ -55,8 +55,9 @@ public class StandardPrologCompositionAnalyzer implements CompositionAnalyzer {
     try {
       Map<String, String> result = this.facade.simpleQueryWithTimeout(query, this.timeout);
 
-      if (result.isEmpty())
+      if (result.isEmpty()) {
         return new SearchResult<DecompositionTree>(QueryState.TIMEOUT, null);
+      }
 
       return new SearchResult<DecompositionTree>(QueryState.SUCCESS, null);
 
@@ -73,15 +74,15 @@ public class StandardPrologCompositionAnalyzer implements CompositionAnalyzer {
   }
 
   @Override
-  public List<SearchResult<BooleanWithUncertainty>> analyzeComposition(DecompositionTree composition,
-      List<Property> properties) {
+  public List<SearchResult<BooleanWithUncertainty>> analyzeComposition(
+      DecompositionTree composition, List<Property> properties) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public List<CompositionProof> proveClaims(DecompositionTree composition, List<Property> properties)
-      throws IllegalArgumentException {
+  public List<CompositionProof> proveClaims(DecompositionTree composition,
+      List<Property> properties) throws IllegalArgumentException {
     // TODO Auto-generated method stub
     return null;
   }

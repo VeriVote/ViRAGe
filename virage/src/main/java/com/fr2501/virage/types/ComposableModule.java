@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * 
- * A composable module (a special type of components) for the modular framework
+ * A composable module (a special type of components) for the modular framework.
  *
  */
 public class ComposableModule extends Component {

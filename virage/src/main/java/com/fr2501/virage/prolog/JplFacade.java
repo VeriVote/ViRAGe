@@ -1,11 +1,15 @@
 package com.fr2501.virage.prolog;
 
+import com.fr2501.util.StringUtils;
+import com.fr2501.virage.core.ConfigReader;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
+import com.fr2501.virage.types.SearchResult;
+import com.fr2501.virage.types.ValueNotPresentException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,44 +19,45 @@ import org.jpl7.PrologException;
 import org.jpl7.Query;
 import org.jpl7.Term;
 
-import com.fr2501.util.StringUtils;
-import com.fr2501.virage.core.ConfigReader;
-import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
-import com.fr2501.virage.types.SearchResult;
-import com.fr2501.virage.types.ValueNotPresentException;
-
 /**
  * 
  * A class used to interface with JPL7.
  *
  */
-public class JPLFacade {
-  private static final Logger logger = LogManager.getLogger(JPLFacade.class);
+public class JplFacade {
+  private static final Logger logger = LogManager.getLogger(JplFacade.class);
   private static final long DEFAULT_TIMEOUT = 10000;
   private long timeout;
 
   private static int fileCounter = 0;
 
-  public JPLFacade() throws ExternalSoftwareUnavailableException {
-    this(JPLFacade.DEFAULT_TIMEOUT);
+  public JplFacade() throws ExternalSoftwareUnavailableException {
+    this(JplFacade.DEFAULT_TIMEOUT);
   }
 
-  public JPLFacade(long timeout) throws ExternalSoftwareUnavailableException {
+  public JplFacade(long timeout) throws ExternalSoftwareUnavailableException {
     this.timeout = timeout;
-    
-    if(!System.getenv().containsKey("LD_PRELOAD") || !System.getenv("LD_PRELOAD").contains(ConfigReader.getInstance().getSwiplLib() + "libswipl.so")) {
+
+    if (!System.getenv().containsKey("LD_PRELOAD") || !System.getenv("LD_PRELOAD")
+        .contains(ConfigReader.getInstance().getSwiplLib() + "libswipl.so")) {
       logger.error("libswipl.so has not been preloaded, JPL will not work properly.");
-      logger.error("\t Try running \"export LD_PRELOAD=" + ConfigReader.getInstance().getSwiplLib() + "libswipl.so\" and restarting ViRAGe.");
-      
+      logger.error("\t Try setting \"value_for_ld_preload\" in " + 
+          ConfigReader.getInstance().getConfigPath() + " to " 
+          + ConfigReader.getInstance().getSwiplLib()
+          + "libswipl.so\" and restart ViRAGe.");
+
       throw new ExternalSoftwareUnavailableException();
     }
-    
+
     try {
       JPL.init();
     } catch (UnsatisfiedLinkError e) {
-      logger.error("Unable to locate shared objects. Please make sure that they are contained within LD_LIBRARY_PATH.");
-      logger.error("\t Try running \"export LD_LIBRARY_PATH=" + ConfigReader.getInstance().getSwiplLib() + "\" and restarting ViRAGe.");
-      
+      logger.error(
+          "Unable to locate shared objects. "
+          + "Please make sure that they are contained within LD_LIBRARY_PATH.");
+      logger.error("\t Try running \"export LD_LIBRARY_PATH="
+          + ConfigReader.getInstance().getSwiplLib() + "\" and restarting ViRAGe.");
+
       throw new ExternalSoftwareUnavailableException();
     }
   }
@@ -92,13 +97,13 @@ public class JPLFacade {
    * Simple Prolog query, returns only the first result due to Prolog limitations.
    * 
    * @param queryString the query
-   * @param timeout     the timeout
-   * @return a {@link Map} containing the result. If no solution is found within
-   *         timeout, an empty Map is returned. If no solution exists, return
-   *         null.
+   * @param timeout the timeout
+   * @return a {@link Map} containing the result. If no solution is found within timeout, an empty
+   * Map is returned. If no solution exists, return null.
    * @throws PrologException if query is malformed.
    */
-  public Map<String, String> simpleQueryWithTimeout(String queryString, long timeout) throws PrologException {
+  public Map<String, String> simpleQueryWithTimeout(String queryString, long timeout)
+      throws PrologException {
     float timeoutInSeconds = ((float) timeout) / 1000.0f;
 
     String actualQuery = "call_with_time_limit(" + timeoutInSeconds + ",(" + queryString + "))";
@@ -134,8 +139,7 @@ public class JPLFacade {
   }
 
   /**
-   * A query not containing variables, only asking for true or false, using
-   * default timeout.
+   * A query not containing variables, only asking for true or false, using default timeout.
    * 
    * @param queryString the query
    * @return a SearchResult representing the result of the query
@@ -145,11 +149,10 @@ public class JPLFacade {
   }
 
   /**
-   * A query not containing variables, only asking for true or false, using
-   * default timeout.
+   * A query not containing variables, only asking for true or false, using default timeout.
    * 
    * @param queryString the query
-   * @param timeout     the timeout
+   * @param timeout the timeout
    * @return a SearchResult representing the result of the query
    */
   public SearchResult<Boolean> factQuery(String queryString, long timeout) {
@@ -161,7 +164,8 @@ public class JPLFacade {
     while (System.currentTimeMillis() < endTime) {
       logger.debug("Current maxDepth: " + maxDepth);
       long remainingTime = endTime - System.currentTimeMillis();
-      String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + "," + unusedVariable + ")";
+      String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + ","
+          + unusedVariable + ")";
 
       Map<String, String> result = new HashMap<String, String>();
 
@@ -200,13 +204,13 @@ public class JPLFacade {
   }
 
   /**
-   * A query containing variables, disables timeout for this query and resets it
-   * afterwards.
+   * A query containing variables, disables timeout for this query and resets it afterwards.
    * 
    * @param queryString the query
    * @return a SearchResult representing the result of the query
    */
-  public SearchResult<Map<String, String>> iterativeDeepeningQueryWithoutTimeout(String queryString) {
+  public SearchResult<Map<String, String>> iterativeDeepeningQueryWithoutTimeout(
+      String queryString) {
     long oldTimeout = this.timeout;
     this.timeout = Long.MAX_VALUE / 2;
 
@@ -230,10 +234,11 @@ public class JPLFacade {
    * A query containing variables.
    * 
    * @param queryString the query
-   * @param timeout     the timeout
+   * @param timeout the timeout
    * @return a SearchResult representing the result of the query
    */
-  public SearchResult<Map<String, String>> iterativeDeepeningQuery(String queryString, long timeout) {
+  public SearchResult<Map<String, String>> iterativeDeepeningQuery(String queryString,
+      long timeout) {
     long endTime = System.currentTimeMillis() + timeout;
 
     String unusedVariable = findUnusedVariable(queryString);
@@ -242,7 +247,8 @@ public class JPLFacade {
     while (System.currentTimeMillis() < endTime) {
       logger.debug("Current maxDepth: " + maxDepth);
       long remainingTime = endTime - System.currentTimeMillis();
-      String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + "," + unusedVariable + ")";
+      String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + ","
+          + unusedVariable + ")";
 
       Map<String, String> result = new HashMap<String, String>();
 
@@ -281,10 +287,10 @@ public class JPLFacade {
   }
 
   /**
-   * Checks, whether a term is a specialization of another term. Semantically
-   * similar to subsumes_term\2 in SWI-Prolog
+   * Checks, whether a term is a specialization of another term. Semantically similar to
+   * subsumes_term\2 in SWI-Prolog
    * 
-   * @param generic  the generic term
+   * @param generic the generic term
    * @param specific the more specific term
    * @return true if specific is a specification of generic, false otherwise.
    */
@@ -315,7 +321,7 @@ public class JPLFacade {
   public Map<String, String> unifiable(String a, String b) {
     String query = "unifiable(" + a + "," + b;
 
-    String unusedVariable = JPLFacade.findUnusedVariable(query);
+    String unusedVariable = JplFacade.findUnusedVariable(query);
     query += "," + unusedVariable + ")";
 
     SearchResult<Map<String, String>> result = this.iterativeDeepeningQueryWithoutTimeout(query);
@@ -345,7 +351,7 @@ public class JPLFacade {
   }
 
   /**
-   * Returns a new Prolog variable not yet occurring in the query
+   * Returns a new Prolog variable not yet occurring in the query.
    * 
    * @param queryString the query
    * @return an unused variable
@@ -368,12 +374,10 @@ public class JPLFacade {
   // replacementString
   // and adjust accordingly if that ever happens again.
   /**
-   * Finds out the values Prolog variables need to be replaced with for
-   * unification
+   * Finds out the values Prolog variables need to be replaced with for unification.
    * 
    * @param variable the variable containing the list of replacement
-   * @param map      a map containing the internal identifiers Prolog used for the
-   *                 variables
+   * @param map a map containing the internal identifiers Prolog used for the variables
    * @return a map containing the replacements
    */
   public static Map<String, String> parseReplacementMap(String variable, Map<String, String> map) {

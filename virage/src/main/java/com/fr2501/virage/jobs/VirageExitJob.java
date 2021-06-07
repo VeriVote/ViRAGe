@@ -4,7 +4,7 @@ import com.fr2501.virage.core.VirageUserInterface;
 
 /**
  * 
- * A {@link VirageJob} used to terminate the system-
+ * A {@link VirageJob} used to terminate the system.
  *
  */
 public class VirageExitJob extends VirageJobWithoutExplicitResult {

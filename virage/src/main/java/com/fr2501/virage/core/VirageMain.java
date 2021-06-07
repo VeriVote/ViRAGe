@@ -5,11 +5,11 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * 
- * The main entry point
+ * The main entry point.
  *
  */
 public class VirageMain {
-  private final static Logger logger = LogManager.getLogger(VirageMain.class);
+  private static final Logger logger = LogManager.getLogger(VirageMain.class);
                                                            
   public static void main(String[] args) {
     try {
@@ -17,8 +17,7 @@ public class VirageMain {
       Thread coreThread = new Thread(core, "core");
       coreThread.start();
 
-      while (true)
-        ;
+      while (true) {}
     } catch (Exception e) {
       logger.fatal("An unrecoverable error has occurred.", e);
       logger.fatal("The program will now terminate.");

@@ -1,14 +1,13 @@
 package com.fr2501.virage.types;
 
-import java.util.List;
-
 import com.fr2501.virage.prolog.PrologClause;
 import com.fr2501.virage.prolog.PrologPredicate;
+import java.util.List;
 
 /**
  * 
- * A composition rule stating different kinds of relations between components,
- * compositional structures and properties
+ * A composition rule stating different kinds of relations between components, compositional
+ * structures and properties.
  *
  */
 public class CompositionRule implements Comparable<CompositionRule> {
@@ -19,7 +18,7 @@ public class CompositionRule implements Comparable<CompositionRule> {
   public CompositionRule(String name, String origin, PrologClause clause) {
     this.name = name;
     this.origin = origin;
-    
+
     clause.anonymizeSingletons();
     this.clause = clause;
   }
@@ -51,7 +50,7 @@ public class CompositionRule implements Comparable<CompositionRule> {
     return res;
   }
 
-  public String toEPLString() {
+  public String toEplString() {
     String res = "";
 
     res += "% = " + this.origin + "\n";
@@ -63,8 +62,9 @@ public class CompositionRule implements Comparable<CompositionRule> {
 
   @Override
   public int compareTo(CompositionRule rule) {
-    if (this.equals(rule))
+    if (this.equals(rule)) {
       return 0;
+    }
 
     if (!this.getSuccedent().getName().equals(rule.getSuccedent().getName())) {
       return this.getSuccedent().getName().compareTo(rule.getSuccedent().getName());
@@ -91,28 +91,37 @@ public class CompositionRule implements Comparable<CompositionRule> {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     CompositionRule other = (CompositionRule) obj;
     if (clause == null) {
-      if (other.clause != null)
+      if (other.clause != null) {
         return false;
-    } else if (!clause.equals(other.clause))
+      }
+    } else if (!clause.equals(other.clause)) {
       return false;
+    }
     if (name == null) {
-      if (other.name != null)
+      if (other.name != null) {
         return false;
-    } else if (!name.equals(other.name))
+      }
+    } else if (!name.equals(other.name)) {
       return false;
+    }
     if (origin == null) {
-      if (other.origin != null)
+      if (other.origin != null) {
         return false;
-    } else if (!origin.equals(other.origin))
+      }
+    } else if (!origin.equals(other.origin)) {
       return false;
+    }
     return true;
   }
 }

@@ -11,7 +11,8 @@
 // */
 //public class ElectionDescriptionFactory {
 //  public static ElectionDescription getElectionDescriptionFromString(String codeString) {
-//    ElectionDescription result = new ElectionDescription("test", new Preference(), new CandidateList());
+//    ElectionDescription result = new ElectionDescription(
+//        "test", new Preference(), new CandidateList());
 //    result.setCode(codeString);
 //
 //    return result;
