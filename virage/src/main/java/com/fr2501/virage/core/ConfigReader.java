@@ -354,22 +354,18 @@ public class ConfigReader {
               value = line;
             }
           }
-
           if (value.equals("")) {
-            logger.error("$PLARCH is undefined as well.");
-            throw new ExternalSoftwareUnavailableException();
-          } else {
-            String tmp = value.split("=")[1];
-            tmp = tmp.substring(1,tmp.length()-2);
-            path = this.swiplHome + File.separator + "lib" + File.separator + tmp;
+              logger.error("$PLARCH is undefined as well.");
+              throw new ExternalSoftwareUnavailableException();
+          }
 
-            File file = new File(path);
-            if (!file.exists() || !file.isDirectory()) {
+          path = this.swiplHome + File.separator + "lib";
+          File file = new File(path);
+          if (!file.exists() || !file.isDirectory()) {
               logger.error("The computed path " + path + " is not a directory.");
               throw new ExternalSoftwareUnavailableException();
-            } else {
+          } else {
               logger.warn("Computed path: " + path);
-            }
           }
 
         } else {
