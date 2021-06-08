@@ -1,2 +1,2 @@
-mvn initialize exec:exec
+mvn process-resources exec:exec
 
