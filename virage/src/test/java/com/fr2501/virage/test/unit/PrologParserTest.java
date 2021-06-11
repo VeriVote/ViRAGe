@@ -27,72 +27,72 @@ public class PrologParserTest {
   @Test
   public void testEquals() {
     logger.info("testEquals()");
-    {
-      PrologClause clause1 = new PrologClause(new PrologPredicate("a"));
-      assertTrue(clause1.equals(clause1));
-    }
+      {
+        PrologClause clause1 = new PrologClause(new PrologPredicate("a"));
+        assertTrue(clause1.equals(clause1));
+      }
 
-    {
-      LinkedList<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
-      antecedents.add(new PrologPredicate("b"));
-      antecedents.add(new PrologPredicate("c"));
-      PrologClause clause2 = new PrologClause(new PrologPredicate("a"), antecedents);
-      assertTrue(clause2.equals(clause2));
-    }
+      {
+        LinkedList<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
+        antecedents.add(new PrologPredicate("b"));
+        antecedents.add(new PrologPredicate("c"));
+        PrologClause clause2 = new PrologClause(new PrologPredicate("a"), antecedents);
+        assertTrue(clause2.equals(clause2));
+      }
 
-    {
-      List<PrologPredicate> x = new LinkedList<PrologPredicate>();
-      x.add(new PrologPredicate("X"));
-      List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
-      xy.add(new PrologPredicate("X"));
-      xy.add(new PrologPredicate("Y"));
+      {
+        List<PrologPredicate> x = new LinkedList<PrologPredicate>();
+        x.add(new PrologPredicate("X"));
+        List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
+        xy.add(new PrologPredicate("X"));
+        xy.add(new PrologPredicate("Y"));
+  
+        PrologPredicate a = new PrologPredicate("a", xy);
+        PrologPredicate b = new PrologPredicate("b");
+        PrologPredicate c = new PrologPredicate("c", x);
+        PrologPredicate d = new PrologPredicate("d", xy);
+  
+        List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
+        antecedents.add(b);
+        antecedents.add(c);
+        antecedents.add(d);
+  
+        PrologClause clause3 = new PrologClause(a, antecedents);
+        assertTrue(clause3.equals(clause3));
+      }
 
-      PrologPredicate a = new PrologPredicate("a", xy);
-      PrologPredicate b = new PrologPredicate("b");
-      PrologPredicate c = new PrologPredicate("c", x);
-      PrologPredicate d = new PrologPredicate("d", xy);
-
-      List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
-      antecedents.add(b);
-      antecedents.add(c);
-      antecedents.add(d);
-
-      PrologClause clause3 = new PrologClause(a, antecedents);
-      assertTrue(clause3.equals(clause3));
-    }
-
-    {
-      List<PrologPredicate> x = new LinkedList<PrologPredicate>();
-      x.add(new PrologPredicate("X"));
-      List<PrologPredicate> y = new LinkedList<PrologPredicate>();
-      x.add(new PrologPredicate("Y"));
-      List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
-      xy.add(new PrologPredicate("X"));
-      xy.add(new PrologPredicate("Y"));
-      List<PrologPredicate> x1 = new LinkedList<PrologPredicate>();
-      x1.add(new PrologPredicate("X"));
-      x1.add(new PrologPredicate("1"));
-
-      PrologPredicate seq = new PrologPredicate("sequential_composition", xy);
-      PrologPredicate dli = new PrologPredicate("defer_lift_invariant", x);
-      PrologPredicate nel = new PrologPredicate("non_electing", x);
-      PrologPredicate ele = new PrologPredicate("electing", y);
-      PrologPredicate def = new PrologPredicate("defers", x1);
-
-      List<PrologPredicate> param = new LinkedList<PrologPredicate>();
-      param.add(seq);
-
-      PrologPredicate mono = new PrologPredicate("monotone", param);
-
-      List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
-      antecedents.add(dli);
-      antecedents.add(nel);
-      antecedents.add(ele);
-      antecedents.add(def);
-
-      PrologClause clause4 = new PrologClause(mono, antecedents);
-      assertTrue(clause4.equals(clause4));
-    }
+      {
+        List<PrologPredicate> x = new LinkedList<PrologPredicate>();
+        x.add(new PrologPredicate("X"));
+        List<PrologPredicate> y = new LinkedList<PrologPredicate>();
+        x.add(new PrologPredicate("Y"));
+        List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
+        xy.add(new PrologPredicate("X"));
+        xy.add(new PrologPredicate("Y"));
+        List<PrologPredicate> x1 = new LinkedList<PrologPredicate>();
+        x1.add(new PrologPredicate("X"));
+        x1.add(new PrologPredicate("1"));
+  
+        PrologPredicate seq = new PrologPredicate("sequential_composition", xy);
+        PrologPredicate dli = new PrologPredicate("defer_lift_invariant", x);
+        PrologPredicate nel = new PrologPredicate("non_electing", x);
+        PrologPredicate ele = new PrologPredicate("electing", y);
+        PrologPredicate def = new PrologPredicate("defers", x1);
+  
+        List<PrologPredicate> param = new LinkedList<PrologPredicate>();
+        param.add(seq);
+  
+        PrologPredicate mono = new PrologPredicate("monotone", param);
+  
+        List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
+        antecedents.add(dli);
+        antecedents.add(nel);
+        antecedents.add(ele);
+        antecedents.add(def);
+  
+        PrologClause clause4 = new PrologClause(mono, antecedents);
+        assertTrue(clause4.equals(clause4));
+      }
   }
 
   @Test

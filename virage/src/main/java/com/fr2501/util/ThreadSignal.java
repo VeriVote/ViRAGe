@@ -1,7 +1,6 @@
 package com.fr2501.util;
 
 /**
- * 
  * A simple mutex mechanism.
  *
  */

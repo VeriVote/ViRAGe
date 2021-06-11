@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * 
  * A parser for the extended Prolog format developed for representation of the modular framework.
  *
  */

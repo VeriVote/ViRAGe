@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
  * Wrapper class for all tasks to be completed by
  * {@link com.fr2501.virage.core.VirageCore}. Require a
  * {@link VirageUserInterface} as listener.

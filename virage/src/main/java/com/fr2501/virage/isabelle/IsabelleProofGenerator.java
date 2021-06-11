@@ -16,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
  * This class is meant to translate a single {@link CompositionProof} to
  * Isabelle syntax.
  *

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 
  * An {@link IsabelleEvent} raised whenever none of the concrete types fits the
  * event.
  *

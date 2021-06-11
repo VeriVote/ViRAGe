@@ -23,7 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
  * Simple implementation of the {@link CompositionAnalyzer}, using Prolog with
  * iterative deepening.
  *

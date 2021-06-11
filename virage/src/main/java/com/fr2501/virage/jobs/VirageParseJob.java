@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * 
  * A {@link VirageJob} used to parse an (E)PL file and pass it to its executing core.
  *
  */

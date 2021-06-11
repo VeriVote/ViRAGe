@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 
  * A simple data object to contain a single Prolog predicate and its parameters.
  *
  */

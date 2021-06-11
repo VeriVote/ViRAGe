@@ -9,7 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 
  * This class contains some useful utility functions for interaction with
  * Isabelle.
  *

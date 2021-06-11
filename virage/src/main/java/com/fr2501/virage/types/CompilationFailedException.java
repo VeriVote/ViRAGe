@@ -1,7 +1,6 @@
 package com.fr2501.virage.types;
 
 /**
- * 
  * An exception thrown if compilation of generated code fails.
  *
  */

@@ -7,7 +7,6 @@ import com.fr2501.virage.isabelle.IsabelleProofChecker;
 import java.io.File;
 
 /**
- * 
  * A {@link VirageJob} that invokes Isabelle to automatically attempt proof verification.
  *
  */

@@ -47,7 +47,7 @@ public class ScalaIsabelleFacade {
       new JavaStringConverter());
   private static final ListConverter<Tuple2<String, String>> t2LConv 
       = new ListConverter<Tuple2<String, String>>(
-      new Tuple2Converter<String, String>(sConv, sConv));
+          new Tuple2Converter<String, String>(sConv, sConv));
 
   private String sessionDir;
   private String sessionName;

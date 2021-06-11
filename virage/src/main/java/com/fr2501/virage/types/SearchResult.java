@@ -3,7 +3,6 @@ package com.fr2501.virage.types;
 import com.fr2501.virage.prolog.QueryState;
 
 /**
- * 
  * A class encapsulating the result of a search. Since searches can fail in
  * general, some wrapper is required.
  *

@@ -26,7 +26,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
  * This class connects ViRAGe to Isabelle and automatically invokes the Isabelle processes required
  * to attempt automatic proof verification. It is meant to be a singleton, as every instance would
  * spawn new processes.

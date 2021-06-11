@@ -1,7 +1,6 @@
 package com.fr2501.virage.types;
 
 /**
- * 
  * Typed and parameterized parts of the framework.
  *
  */

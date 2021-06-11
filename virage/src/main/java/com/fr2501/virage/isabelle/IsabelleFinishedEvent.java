@@ -3,7 +3,6 @@ package com.fr2501.virage.isabelle;
 import java.util.Map;
 
 /**
- * 
  * An {@link IsabelleEvent} raised when a command finishes (not necessarily
  * successful).
  *

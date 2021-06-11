@@ -6,7 +6,6 @@ import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import java.io.File;
 
 /**
- * 
  * A {@link VirageJob} used to invoke Isabelle code generation.
  *
  */

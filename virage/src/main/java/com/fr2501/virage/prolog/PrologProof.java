@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
  * Using the meta interpreter in src/java/main/resources, this class is able to make the Prolog
  * search process more transparent, exposing goals and subgoals for every proof step.
  *

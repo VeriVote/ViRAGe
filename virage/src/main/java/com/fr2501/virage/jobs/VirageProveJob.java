@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 
  * A {@link VirageJob} used to prove claims about properties of compositions.
  *
  */

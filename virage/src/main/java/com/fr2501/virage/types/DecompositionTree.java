@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 
  * A class for representing decomposition trees.
  *
  */
@@ -51,6 +50,7 @@ public class DecompositionTree {
    * Creates a DecompositionTree object from a string in bracket notation.
    * 
    * @param s the string
+   * 
    * @return a DecompositionTree representing s
    */
   public static DecompositionTree parseString(String s) {

@@ -1,7 +1,6 @@
 package com.fr2501.virage.prolog;
 
 /**
- * 
  * Saves which part of the extended Prolog file is currently handled.
  *
  */

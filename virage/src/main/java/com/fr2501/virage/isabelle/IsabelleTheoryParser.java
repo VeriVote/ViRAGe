@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
  * Very simple parser for Isabelle theories, nowhere near complete.
  *
  */

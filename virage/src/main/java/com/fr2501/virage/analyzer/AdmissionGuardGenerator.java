@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 
  * Generates a new Prolog file containing admission guards from a
  * given {@link FrameworkRepresentation}.
  *

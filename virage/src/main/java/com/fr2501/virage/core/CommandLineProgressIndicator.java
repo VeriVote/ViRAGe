@@ -24,6 +24,7 @@ public class CommandLineProgressIndicator extends ProgressIndicator {
       case 3:
         message = "\\";
         break;
+      default: break;
     }
 
     phase++;

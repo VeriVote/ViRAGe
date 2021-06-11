@@ -5,7 +5,6 @@ import com.fr2501.virage.prolog.PrologPredicate;
 import java.util.List;
 
 /**
- * 
  * A composition rule stating different kinds of relations between components, compositional
  * structures and properties.
  *

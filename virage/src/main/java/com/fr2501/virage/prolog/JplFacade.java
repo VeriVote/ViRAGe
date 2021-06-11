@@ -20,7 +20,6 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 
 /**
- * 
  * A class used to interface with JPL7.
  *
  */
@@ -41,8 +40,8 @@ public class JplFacade {
     if (!System.getenv().containsKey("LD_PRELOAD") || !System.getenv("LD_PRELOAD")
         .contains(ConfigReader.getInstance().getSwiplLib() + "libswipl.so")) {
       logger.error("libswipl.so has not been preloaded, JPL will not work properly.");
-      logger.error("\t Try setting \"value_for_ld_preload\" in " + 
-          ConfigReader.getInstance().getConfigPath() + " to " 
+      logger.error("\t Try setting \"value_for_ld_preload\" in "
+          + ConfigReader.getInstance().getConfigPath() + " to " 
           + ConfigReader.getInstance().getSwiplLib()
           + "libswipl.so\" and restart ViRAGe.");
 
@@ -99,7 +98,7 @@ public class JplFacade {
    * @param queryString the query
    * @param timeout the timeout
    * @return a {@link Map} containing the result. If no solution is found within timeout, an empty
-   * Map is returned. If no solution exists, return null.
+   *         Map is returned. If no solution exists, return null.
    * @throws PrologException if query is malformed.
    */
   public Map<String, String> simpleQueryWithTimeout(String queryString, long timeout)

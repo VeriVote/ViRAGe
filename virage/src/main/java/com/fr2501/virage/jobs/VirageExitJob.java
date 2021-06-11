@@ -3,7 +3,6 @@ package com.fr2501.virage.jobs;
 import com.fr2501.virage.core.VirageUserInterface;
 
 /**
- * 
  * A {@link VirageJob} used to terminate the system.
  *
  */

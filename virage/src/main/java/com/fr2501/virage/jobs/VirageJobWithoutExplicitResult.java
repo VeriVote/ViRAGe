@@ -3,7 +3,6 @@ package com.fr2501.virage.jobs;
 import com.fr2501.virage.core.VirageUserInterface;
 
 /**
- * 
  * A {@link VirageJob} without explicit result, only influences the system via
  * side effects.
  *

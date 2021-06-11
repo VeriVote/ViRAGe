@@ -28,7 +28,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
  * This class is used to engage the Isabelle Code Generation process and produce
  * Scala code.
  *
@@ -271,7 +270,7 @@ public class IsabelleCodeGenerator {
     this.codeReplacements = replacements;
   }
 
-   // TODO Should this become public?
+  // TODO Should this become public?
   @SuppressWarnings("unused")
   private String prepareTheoryFile(File theory, IsabelleCodeGenerationLanguage language)
       throws IOException {

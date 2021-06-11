@@ -3,7 +3,6 @@ package com.fr2501.virage.isabelle;
 import java.util.Map;
 
 /**
- * 
  * A class to represent the events raised by the Isabelle CLI.
  *
  */

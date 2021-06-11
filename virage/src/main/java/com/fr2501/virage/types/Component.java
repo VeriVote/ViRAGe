@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 
  * A component of the modular framework (e.g. composable modules, aggregators ...)
  *
  */

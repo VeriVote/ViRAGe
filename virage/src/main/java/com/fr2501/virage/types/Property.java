@@ -4,7 +4,6 @@ import com.fr2501.util.StringUtils;
 import java.util.List;
 
 /**
- * 
  * Represents a property defined in the modular framework.
  *
  */
@@ -36,6 +35,17 @@ public class Property implements Parameterized {
 
     return res;
   }
+  
+  public String getInstantiatedString(List<String> strings) {
+    if (strings.size() != this.parameters.size()) {
+      throw new IllegalArgumentException();
+    }
+
+    String res = this.name + "(" + StringUtils.printCollection(strings) + ")";
+
+    return res;
+  }
+
 
   public String getInstantiatedStringWithoutName(String string) {
     if (this.parameters.size() != 1) {
@@ -43,16 +53,6 @@ public class Property implements Parameterized {
     }
 
     String res = "(" + string + ")";
-
-    return res;
-  }
-
-  public String getInstantiatedString(List<String> strings) {
-    if (strings.size() != this.parameters.size()) {
-      throw new IllegalArgumentException();
-    }
-
-    String res = this.name + "(" + StringUtils.printCollection(strings) + ")";
 
     return res;
   }
@@ -66,7 +66,7 @@ public class Property implements Parameterized {
 
     return res;
   }
-
+  
   @Override
   public String toString() {
     String res = this.name + "(" + StringUtils.printCollection(this.parameters) + ")";

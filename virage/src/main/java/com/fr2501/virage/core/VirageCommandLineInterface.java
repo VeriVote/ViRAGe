@@ -27,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
  * A simple command line interface for ViRAGe.
  *
  */
@@ -400,12 +399,13 @@ public class VirageCommandLineInterface implements VirageUserInterface {
       String input = this.scanner.nextLine();
 
       switch (input) {
-      case "y":
-        returnValue = true;
-        break loop;
-      case "n":
-        returnValue = false;
-        break loop;
+        case "y":
+          returnValue = true;
+          break loop;
+        case "n":
+          returnValue = false;
+          break loop;
+        default: break;
       }
     }
 

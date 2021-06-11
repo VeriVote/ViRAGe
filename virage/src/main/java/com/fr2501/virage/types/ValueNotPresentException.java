@@ -1,7 +1,6 @@
 package com.fr2501.virage.types;
 
 /**
- * 
  * An exception that is raised whenever {@link SearchResult#getValue()} is
  * called illegaly.
  *

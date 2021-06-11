@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.List;
 
 /**
- * 
  * A {@link VirageJob} used to generate Isabelle code.
  *
  */

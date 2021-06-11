@@ -4,7 +4,6 @@ import com.fr2501.util.StringUtils;
 import java.util.List;
 
 /**
- * 
  * A compositional structure for the modular framework.
  *
  */

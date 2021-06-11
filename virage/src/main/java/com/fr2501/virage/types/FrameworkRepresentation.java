@@ -14,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
  * The data model required to represent the compositional framework as a whole
  * <p>
  * It is designed for the electoral module framework, but not at all limited to it.

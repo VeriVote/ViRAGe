@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
  * Observes an Isabelle client process and creates {@link IsabelleEvent}s if
  * necessary.
  *

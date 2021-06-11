@@ -3,7 +3,6 @@ package com.fr2501.virage.core;
 import com.fr2501.virage.jobs.VirageJob;
 
 /**
- * 
  * Interface specifying requirements for all user interfaces of ViRAGe.
  *
  */

@@ -26,7 +26,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
  * Generates a complete Isabelle theory file containing a module definition and (possibly) several
  * proofs.
  *
@@ -91,16 +90,16 @@ public class IsabelleTheoryGenerator {
     this.typedVariables = new HashMap<String, String>();
   }
 
-  public File generateTheoryFile(String composition, List<CompositionProof> proofs) {
-    return this.generateTheoryFile(composition, proofs, DEFAULT_PATH);
-  }
-
   protected Map<String, String> getTypedVariables() {
     return this.typedVariables;
   }
 
   protected FrameworkRepresentation getFramework() {
     return this.framework;
+  }
+  
+  public File generateTheoryFile(String composition, List<CompositionProof> proofs) {
+    return this.generateTheoryFile(composition, proofs, DEFAULT_PATH);
   }
 
   /**
@@ -110,8 +109,9 @@ public class IsabelleTheoryGenerator {
    * @param composition the composition
    * @param proofs proofs for all the claimed properties
    * @param outputPath a path to the folder to which the result shall be written. If path points to
-   * a file, this file will be overwritten and the name will most probably not correspond to the
-   * theory inside, so Isabelle won't be able to verify it.
+   *        a file, this file will be overwritten and the name will most 
+   *        probably not correspond to the
+   *        theory inside, so Isabelle won't be able to verify it.
    * @return the {@link File} containing the results
    */
   public File generateTheoryFile(String composition, List<CompositionProof> proofs,

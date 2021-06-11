@@ -19,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
  * A very simple implementation of the {@link ExtendedPrologParser}.
  *
  */
@@ -50,7 +49,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
    * @param path the path to the framework (required for compatibility reasons)
    * @return a {@link FrameworkRepresentation} of the input.
    * @throws MalformedEplFileException if the input does not follow the specification of the
-   * extended Prolog format.
+   *         extended Prolog format.
    */
   private FrameworkRepresentation parseFramework(List<String> representation, String path,
       boolean addDummies) throws MalformedEplFileException {
@@ -140,18 +139,18 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
   private void parseSection(FrameworkRepresentation framework, List<String> lines,
       ParserState state) throws MalformedEplFileException {
     switch (state) {
-    case COMPOSITION_TYPE:
-      this.parseCompositionTypeSection(framework, lines);
-      break;
-    case COMPOSABLE_MODULE:
-    case COMPOSITIONAL_STRUCTURE:
-    case PROPERTY:
-      this.parseSimpleSection(framework, lines, state);
-      break;
-    case COMPOSITION_RULE:
-      this.parseCompositionRuleSection(framework, lines);
-      break;
-    default: // no-op, invalid call.
+      case COMPOSITION_TYPE:
+        this.parseCompositionTypeSection(framework, lines);
+        break;
+      case COMPOSABLE_MODULE:
+      case COMPOSITIONAL_STRUCTURE:
+      case PROPERTY:
+        this.parseSimpleSection(framework, lines, state);
+        break;
+      case COMPOSITION_RULE:
+        this.parseCompositionRuleSection(framework, lines);
+        break;
+      default: // no-op, invalid call.
     }
   }
 
@@ -221,16 +220,16 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
       name = this.removeBracketExpression(name);
 
       switch (state) {
-      case COMPOSABLE_MODULE:
-        framework.add(new ComposableModule(type, name, parameters));
-        break;
-      case COMPOSITIONAL_STRUCTURE:
-        framework.add(new CompositionalStructure(name, parameters));
-        break;
-      case PROPERTY:
-        framework.add(new Property(name, parameters));
-        break;
-      default: // no-op, invalid call.
+        case COMPOSABLE_MODULE:
+          framework.add(new ComposableModule(type, name, parameters));
+          break;
+        case COMPOSITIONAL_STRUCTURE:
+          framework.add(new CompositionalStructure(name, parameters));
+          break;
+        case PROPERTY:
+          framework.add(new Property(name, parameters));
+          break;
+        default: // no-op, invalid call.
       }
     }
   }

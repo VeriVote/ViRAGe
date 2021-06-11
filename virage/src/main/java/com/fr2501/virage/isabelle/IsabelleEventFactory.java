@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 
  * A factory for Isabelle events, parses the Strings given by the Isabelle CLI.
  *
  */

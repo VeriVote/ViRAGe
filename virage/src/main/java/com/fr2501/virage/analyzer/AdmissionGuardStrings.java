@@ -1,7 +1,6 @@
 package com.fr2501.virage.analyzer;
 
 /**
- * 
  * Strings required for the classes implementing the admission guard mechanism.
  *
  */
