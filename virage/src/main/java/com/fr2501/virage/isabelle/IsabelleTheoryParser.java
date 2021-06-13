@@ -21,7 +21,7 @@ public class IsabelleTheoryParser {
   /**
    * Extracts all functions and definitions from a folder or a single file of
    * Isabelle theories and maps them to the file they originate from.
-   * 
+
    * @param path the path
    * @return a map containing all functions and definitions and their
    *         corresponding files
@@ -81,8 +81,8 @@ public class IsabelleTheoryParser {
 
   /**
    * This method returns a list of all imports in the given theory file.
-   * 
-   * @param theory the .thy-file
+
+   * @param theory the thy-file
    * @return a list of the imports
    * @throws IOException if reading the file is not possible
    */
@@ -116,7 +116,7 @@ public class IsabelleTheoryParser {
 
   /**
    * Extracts a definition from an Isabelle file.
-   * 
+
    * @param name   the name of the definition
    * @param theory the theory file
    * @return a String representing the definition

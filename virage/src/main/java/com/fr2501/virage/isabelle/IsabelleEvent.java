@@ -19,7 +19,7 @@ public abstract class IsabelleEvent {
 
   /**
    * Applies the effects of this event to its observer.
-   * 
+
    * @param observer The {@link IsabelleProofChecker} observing the event
    */
   public void applyEffects(IsabelleProofChecker observer) {

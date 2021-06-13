@@ -22,6 +22,12 @@ public class VirageGenerateJob
   private FrameworkRepresentation framework;
   private VirageSearchManager manager;
 
+  /**
+   * Simple constructor.
+
+   * @param issuer the issuing ui
+   * @param properties the properties
+   */
   public VirageGenerateJob(VirageUserInterface issuer, List<String> properties) {
     super(issuer);
 

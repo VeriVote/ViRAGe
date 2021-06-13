@@ -38,7 +38,7 @@ public class IsabelleClientObserver implements Runnable {
   /**
    * Starts a new IsabelleClientObserver. This is done because the object
    * reference is not really required within the calling application code.
-   * 
+
    * @param listener       the {@link IsabelleProofChecker} to be notified on
    *                       events
    * @param isabelleClient the Isabelle client process to be watched

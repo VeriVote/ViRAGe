@@ -9,6 +9,10 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Tests suite for {@link SimplePrologCompositionAnalyzer}.
+ *
+ */
 public class SimplePrologCompositionAnalyzerTest extends CompositionAnalyzerTest {
   private static final Logger logger = LogManager.getLogger(SimplePrologCompositionAnalyzer.class);
 

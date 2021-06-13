@@ -12,6 +12,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
+/**
+ * Test suite for {@link PrologParser}.
+ *
+ */
 public class PrologParserTest {
   private static final Logger logger = LogManager.getLogger(PrologParserTest.class);
 
@@ -62,22 +66,22 @@ public class PrologParserTest {
       }
 
       {
-        List<PrologPredicate> x = new LinkedList<PrologPredicate>();
+        final List<PrologPredicate> x = new LinkedList<PrologPredicate>();
         x.add(new PrologPredicate("X"));
-        List<PrologPredicate> y = new LinkedList<PrologPredicate>();
+        final List<PrologPredicate> y = new LinkedList<PrologPredicate>();
         x.add(new PrologPredicate("Y"));
-        List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
+        final List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
         xy.add(new PrologPredicate("X"));
         xy.add(new PrologPredicate("Y"));
-        List<PrologPredicate> x1 = new LinkedList<PrologPredicate>();
+        final List<PrologPredicate> x1 = new LinkedList<PrologPredicate>();
         x1.add(new PrologPredicate("X"));
         x1.add(new PrologPredicate("1"));
   
-        PrologPredicate seq = new PrologPredicate("sequential_composition", xy);
-        PrologPredicate dli = new PrologPredicate("defer_lift_invariant", x);
-        PrologPredicate nel = new PrologPredicate("non_electing", x);
-        PrologPredicate ele = new PrologPredicate("electing", y);
-        PrologPredicate def = new PrologPredicate("defers", x1);
+        final PrologPredicate seq = new PrologPredicate("sequential_composition", xy);
+        final PrologPredicate dli = new PrologPredicate("defer_lift_invariant", x);
+        final PrologPredicate nel = new PrologPredicate("non_electing", x);
+        final PrologPredicate ele = new PrologPredicate("electing", y);
+        final PrologPredicate def = new PrologPredicate("defers", x1);
   
         List<PrologPredicate> param = new LinkedList<PrologPredicate>();
         param.add(seq);
@@ -127,7 +131,7 @@ public class PrologParserTest {
   @Test
   public void parseComplexClause() {
     logger.info("parseComplexClause()");
-    String clause = "a(X,Y) :- b,c(X),d(X,Y).";
+    final String clause = "a(X,Y) :- b,c(X),d(X,Y).";
 
     List<PrologPredicate> x = new LinkedList<PrologPredicate>();
     x.add(new PrologPredicate("X"));
@@ -157,7 +161,7 @@ public class PrologParserTest {
   @Test
   public void parseRealClause() {
     logger.info("parseRealClause()");
-    String clause = "monotone(sequential_composition(X,Y)) "
+    final String clause = "monotone(sequential_composition(X,Y)) "
         + ":- defer_lift_invariant(X),non_electing(X),defers(X,1),electing(Y).";
 
     List<PrologPredicate> x = new LinkedList<PrologPredicate>();
@@ -171,11 +175,11 @@ public class PrologParserTest {
     x1.add(new PrologPredicate("X"));
     x1.add(new PrologPredicate("1"));
 
-    PrologPredicate seq = new PrologPredicate("sequential_composition", xy);
-    PrologPredicate dli = new PrologPredicate("defer_lift_invariant", x);
-    PrologPredicate nel = new PrologPredicate("non_electing", x);
-    PrologPredicate def = new PrologPredicate("defers", x1);
-    PrologPredicate ele = new PrologPredicate("electing", y);
+    final PrologPredicate seq = new PrologPredicate("sequential_composition", xy);
+    final PrologPredicate dli = new PrologPredicate("defer_lift_invariant", x);
+    final PrologPredicate nel = new PrologPredicate("non_electing", x);
+    final PrologPredicate def = new PrologPredicate("defers", x1);
+    final PrologPredicate ele = new PrologPredicate("electing", y);
 
     List<PrologPredicate> param = new LinkedList<PrologPredicate>();
     param.add(seq);

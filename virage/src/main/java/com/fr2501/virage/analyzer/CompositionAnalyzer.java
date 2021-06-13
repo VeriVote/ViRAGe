@@ -16,14 +16,14 @@ import java.util.List;
 public interface CompositionAnalyzer {
   /**
    * Sets the timeout in milliseconds for the implementations.
-   * 
+
    * @param millis timeout in milliseconds
    */
   public void setTimeout(long millis);
 
   /**
    * Checks whether a given composition satisfies the specified property set.
-   * 
+
    * @param composition the composition
    * @param properties  the property set
    * @return a List of {@link SearchResult}s, ordered according to the properties.
@@ -34,7 +34,7 @@ public interface CompositionAnalyzer {
 
   /**
    * Tries to derive a new composition satisfying the specified property set.
-   * 
+
    * @param properties the property set
    * @return a {@link SearchResult} containing the result
    */
@@ -43,7 +43,7 @@ public interface CompositionAnalyzer {
   /**
    * Derives the Prolog proof for a given claim. <b>May only be called on already
    * proven claims!</b>
-   * 
+
    * @param composition the composition to be used
    * @param properties  the properties that shall be proven to be satisfied by the
    *                    composition

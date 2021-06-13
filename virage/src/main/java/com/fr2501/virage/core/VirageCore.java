@@ -8,9 +8,7 @@ import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
-import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -50,6 +48,11 @@ public class VirageCore implements Runnable {
 
   private BlockingQueue<VirageJob<?>> jobs;
 
+  /**
+   * Initialises VirageCore with the given arguments.
+
+   * @param args the arguments
+   */
   public VirageCore(String[] args) {
     logger.info("Initialising VirageCore.");
 
@@ -83,12 +86,22 @@ public class VirageCore implements Runnable {
     return this.framework;
   }
 
+  /**
+   * Sets the core's {@link FrameworkRepresentation} and reinitializes its analyzers.
+
+   * @param framework the new {@link FrameworkRepresentation}
+   */
   public void setFrameworkRepresentation(FrameworkRepresentation framework) {
     this.framework = framework;
 
     this.initAnalyzers();
   }
 
+  /**
+   * Destroys the VirageCore and terminates ViRAGe.
+
+   * @param statusCode ViRAGe's exit code
+   */
   public void destroy(int statusCode) {
     if (this.checker != null) {
       this.checker.destroy();
@@ -134,7 +147,7 @@ public class VirageCore implements Runnable {
 
   /**
    * Adds a job to the queue, after ensuring its executability.
-   * 
+
    * @param job the job
    */
   public void submit(VirageJob<?> job) {

@@ -39,10 +39,10 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
   /**
    * Initializes a SimplePrologCompositionAnalyzer and consults the specified
    * framework.
-   * 
+
    * @param framework the framework
    * @throws IOException                          but should actually not
-   * @throws ExternalSoftwareUnavailableException
+   * @throws ExternalSoftwareUnavailableException if swipl is unavailable
    */
   public SimplePrologCompositionAnalyzer(FrameworkRepresentation framework)
       throws IOException, ExternalSoftwareUnavailableException {

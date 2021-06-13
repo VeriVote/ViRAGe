@@ -25,7 +25,7 @@ public class IsabelleEventFactory {
 
   /**
    * Creates an {@link IsabelleEvent} representing the event described within the given String.
-   * 
+
    * @param s the String given by the Isabelle client CLI
    * @return the corresponding event
    */

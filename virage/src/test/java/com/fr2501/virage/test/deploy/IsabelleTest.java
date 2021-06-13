@@ -6,6 +6,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
+/**
+ * Deployment test to check whether Isabelle is available.
+ *
+ */
 public class IsabelleTest {
   private static final Logger logger = LogManager.getLogger(IsabelleTest.class);
 

@@ -7,6 +7,10 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
 import org.junit.Test;
 
+/**
+ * Test suite for {@link IsabelleFrameworkExtractor}.
+ *
+ */
 public class IsabelleFrameworkExtractorTest {
   @Test
   public void simpleTest()

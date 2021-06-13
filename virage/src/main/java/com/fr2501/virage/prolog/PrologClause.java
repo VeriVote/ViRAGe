@@ -16,6 +16,12 @@ public class PrologClause {
     this.antecedents = antecedents;
   }
 
+  /**
+   * Simple constructor for clauses with a single antecedent.
+
+   * @param succedent the succedent
+   * @param antecedent the antecedent
+   */
   public PrologClause(PrologPredicate succedent, PrologPredicate antecedent) {
     this.succedent = succedent;
     this.antecedents = new LinkedList<PrologPredicate>();
@@ -24,7 +30,7 @@ public class PrologClause {
 
   /**
    * Creates a Prolog clause without any antecedents (i.e. a fact).
-   * 
+
    * @param fact the fact
    */
   public PrologClause(PrologPredicate fact) {
@@ -42,7 +48,7 @@ public class PrologClause {
 
   /**
    * Checks, whether a clause is a fact.
-   * 
+
    * @return true if {@code this} is a fact, false otherwise
    */
   public boolean isFact() {
@@ -116,6 +122,9 @@ public class PrologClause {
     return true;
   }
 
+  /**
+   * Replaces singleton variables with '_'.
+   */
   public void anonymizeSingletons() {
     List<PrologPredicate> allPreds = this.succedent.getAllChildren();
     for (PrologPredicate antecedent : this.antecedents) {

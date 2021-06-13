@@ -17,6 +17,14 @@ public class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult<File>
 
   private IsabelleTheoryGenerator generator;
 
+  /**
+   * Simple constructor.
+
+   * @param issuer the issuing ui
+   * @param composition the composition
+   * @param proofs the proofs
+   * @param outputPath the path for the generated theories
+   */
   public VirageIsabelleGenerateJob(VirageUserInterface issuer, String composition,
       List<CompositionProof> proofs, String outputPath) {
     super(issuer);

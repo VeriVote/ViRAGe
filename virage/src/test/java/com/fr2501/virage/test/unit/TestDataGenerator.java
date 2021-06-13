@@ -6,10 +6,19 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Creates different kinds of test data.
+ *
+ */
 public class TestDataGenerator {
   private FrameworkRepresentation framework;
   private List<Property> eligibleProperties;
 
+  /**
+   * Simple constructor.
+
+   * @param framework the framework
+   */
   public TestDataGenerator(FrameworkRepresentation framework) {
     this.framework = framework;
     this.eligibleProperties = new LinkedList<Property>();
@@ -29,6 +38,12 @@ public class TestDataGenerator {
     }
   }
 
+  /**
+   * Returns random sets of unary properties.
+
+   * @param amount size of the set to be generated
+   * @return the set of properties
+   */
   public List<Property> getRandomComposableModuleProperties(int amount) {
     if (amount > eligibleProperties.size()) {
       throw new IllegalArgumentException();
@@ -44,6 +59,11 @@ public class TestDataGenerator {
     return res;
   }
 
+  /**
+   * Returns the power set of unary properties within a compositional framework.
+
+   * @return all possible combinations of properties
+   */
   public List<List<Property>> getAllPossiblePropertySets() {
     List<List<Property>> res = new ArrayList<List<Property>>();
 

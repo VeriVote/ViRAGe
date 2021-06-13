@@ -9,7 +9,7 @@ package com.fr2501.virage.prolog;
 public class MalformedEplFileException extends Exception {
 
   /**
-   * 
+   * The UID.
    */
   private static final long serialVersionUID = 7924923965712847758L;
 

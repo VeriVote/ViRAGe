@@ -7,10 +7,20 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * A set of system utility functions.
+ *
+ */
 public class SystemUtils {
   private static Logger logger = LogManager.getRootLogger();
 
   // TODO This is terrible and I know it. "export" is not possible from Java?
+  /**
+   * A method to set environment variables on Unix systems.
+
+   * @param name the environment variable to be changed
+   * @param value the new value of said variable
+   */
   @SuppressWarnings("unchecked")
   public static void setUnixEnvironmentVariable(String name, String value) {
     logger.info("Attempting to change environment variable " + name + " to " + value);
@@ -24,8 +34,6 @@ public class SystemUtils {
 
       field.setAccessible(true);
       ((Map<String, String>) field.get(env)).put(name, value);
-
-      // TODO Check and notify
     } catch (NoSuchFieldException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -48,6 +56,12 @@ public class SystemUtils {
 
   // See
   // https://stackoverflow.com/questions/5419039/is-djava-library-path-equivalent-to-system-setpropertyjava-library-path
+  /**
+   * A method to add paths to LD_LIBRARY_PATH. If possible, do not use this.
+
+   * @param s the path to be added
+   * @throws IOException if adding s to LD_LIBRARY_PATH is not possible
+   */
   public static void addDirToLibraryPath(String s) throws IOException {
     try {
       // This enables the java.library.path to be modified at runtime

@@ -13,6 +13,12 @@ public class PrologPredicate {
   private int arity;
   private int depth;
 
+  /**
+   * Simple constructor.
+
+   * @param name the name
+   * @param parameters the parameters
+   */
   public PrologPredicate(String name, List<PrologPredicate> parameters) {
     this.name = name;
     this.parameters = parameters;
@@ -28,7 +34,7 @@ public class PrologPredicate {
 
   /**
    * Creates a predicate without any parameters (arity 0).
-   * 
+
    * @param name the name of the predicate
    */
   public PrologPredicate(String name) {
@@ -59,7 +65,7 @@ public class PrologPredicate {
 
   /**
    * Checks whether a PrologPredicate is a variable.
-   * 
+
    * @return true if this is a variable, false otherwise
    */
   public boolean isVariable() {
@@ -87,6 +93,11 @@ public class PrologPredicate {
     return res;
   }
 
+  /**
+   * Returns all children of a predicate.
+
+   * @return the children
+   */
   public List<PrologPredicate> getAllChildren() {
     List<PrologPredicate> res = new LinkedList<PrologPredicate>();
     res.add(this);

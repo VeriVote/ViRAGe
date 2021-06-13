@@ -13,6 +13,12 @@ public class DecompositionTree {
   private int arity;
   private List<DecompositionTree> children;
 
+  /**
+   * Simple constructor.
+
+   * @param label the label
+   * @param children the children
+   */
   public DecompositionTree(String label, List<DecompositionTree> children) {
     this.label = label;
     this.arity = children.size();
@@ -25,6 +31,12 @@ public class DecompositionTree {
     this(label, new LinkedList<DecompositionTree>());
   }
 
+  /**
+   * Simple constructor for trees with only one child.
+
+   * @param label the label
+   * @param child the child
+   */
   public DecompositionTree(String label, DecompositionTree child) {
     List<DecompositionTree> children = new LinkedList<DecompositionTree>();
     children.add(child);
@@ -48,7 +60,7 @@ public class DecompositionTree {
 
   /**
    * Creates a DecompositionTree object from a string in bracket notation.
-   * 
+
    * @param s the string
    * 
    * @return a DecompositionTree representing s

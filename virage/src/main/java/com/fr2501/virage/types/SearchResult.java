@@ -26,6 +26,8 @@ public class SearchResult<T> {
   }
 
   /**
+   * Simple getter.
+
    * @return the value
    * @throws ValueNotPresentException if no value is present
    */
@@ -41,6 +43,8 @@ public class SearchResult<T> {
   }
 
   /**
+   * Simple getter.
+
    * @return true if {@code this} has a value different from null, false otherwise
    */
   public boolean hasValue() {

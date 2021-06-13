@@ -44,7 +44,7 @@ public class IsabelleUtils {
    * This method tries, along with other things, to match Prolog predicates to
    * Isabelle entities. It is case-insensitive, so no two Isabelle entities may
    * share the same name with different capitalization.
-   * 
+
    * @param functionsAndDefinitions all functions and definitions given within the
    *                                current Isabelle folder
    * @param predicate               the predicate to be mapped
@@ -86,7 +86,7 @@ public class IsabelleUtils {
    * This method tries, along with other things, to match Prolog predicates to
    * Isabelle entities. It is case-insensitive, so no two Isabelle entities may
    * share the same name with different capitalization.
-   * 
+
    * @param functionsAndDefinitions all functions and definitions given within the
    *                                current Isabelle folder
    * @param predicate               the predicate to be mapped
@@ -102,7 +102,7 @@ public class IsabelleUtils {
   /**
    * Uses {@link IsabelleUtils#SIMPLE_TYPES} to determine whether the given type
    * is a simple Isabelle type.
-   * 
+
    * @param type the type
    * @return true if type is simple type, false otherwise
    */
@@ -118,7 +118,7 @@ public class IsabelleUtils {
 
   /**
    * Finds a new Isabelle variable not yet used within the given statement.
-   * 
+
    * @param statement the statement
    * @return a new variable ('x' if possible, otherwise tries 'x1', 'x2', ...)
    */

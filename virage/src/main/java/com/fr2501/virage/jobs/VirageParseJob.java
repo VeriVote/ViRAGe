@@ -16,6 +16,12 @@ public class VirageParseJob extends VirageJobWithExplicitResult<FrameworkReprese
 
   private File file;
 
+  /**
+   * Simple constructor.
+
+   * @param issuer the issuing ui 
+   * @param file the file
+   */
   public VirageParseJob(VirageUserInterface issuer, File file) {
     super(issuer);
 

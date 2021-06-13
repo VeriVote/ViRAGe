@@ -20,7 +20,7 @@ public class SimpleFileReader {
 
   /**
    * Reads the specified file line by line.
-   * 
+
    * @param file the file to be read.
    * @return a list containing the lines of that file.
    * @throws IOException if reading the file is not possible.
@@ -59,7 +59,7 @@ public class SimpleFileReader {
 
   /**
    * Reads the specified file.
-   * 
+
    * @param file the file to be read.
    * @return a String representing the contents of that file.
    * @throws IOException if reading the file is not possible.

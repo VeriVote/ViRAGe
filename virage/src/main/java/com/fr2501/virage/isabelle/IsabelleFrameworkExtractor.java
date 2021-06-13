@@ -22,18 +22,34 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Extracts a {@link FrameworkRepresentation} from an Isabelle session.
+ *
+ */
 public class IsabelleFrameworkExtractor {
   private Logger logger = LogManager.getRootLogger();
 
   private PrologParser parser;
   private List<String> prologStrings;
 
+  /**
+   * Simple constructor.
+   */
   public IsabelleFrameworkExtractor() {
     this.parser = new SimplePrologParser();
 
     this.prologStrings = new LinkedList<String>();
   }
 
+  /**
+   * Extracts a {@link FrameworkRepresentation} from an Isabelle session.
+
+   * @param sessionDir the directory of the session
+   * @param sessionName the name of the session
+   * @return a framework representation of the session
+   * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+   * @throws IsabelleBuildFailedException if the session build fails
+   */
   public FrameworkRepresentation extract(String sessionDir, String sessionName)
       throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
     ScalaIsabelleFacade facade = new ScalaIsabelleFacade(sessionDir, sessionName);
@@ -334,6 +350,13 @@ public class IsabelleFrameworkExtractor {
     return res;
   }
 
+  /**
+   * Finds the position of the closing bracket for the one at idx.
+
+   * @param s the string
+   * @param idx index of the opening bracket
+   * @return index of the closing bracket
+   */
   public int findMatchingBracket(String s, int idx) {
     int depth = 0;
 

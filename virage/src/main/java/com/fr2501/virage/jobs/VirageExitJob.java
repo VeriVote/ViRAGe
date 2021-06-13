@@ -9,6 +9,12 @@ import com.fr2501.virage.core.VirageUserInterface;
 public class VirageExitJob extends VirageJobWithoutExplicitResult {
   private int statusCode;
 
+  /**
+   * Simple constructor.
+
+   * @param issuer the issuer
+   * @param statusCode the intended exit code
+   */
   public VirageExitJob(VirageUserInterface issuer, int statusCode) {
     super(issuer);
 

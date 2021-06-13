@@ -18,7 +18,7 @@ public class SimpleFileWriter {
   /**
    * Writes Collection to file, with every item on its own line, creates file if
    * needed.
-   * 
+
    * @param path       the file to be written to
    * @param collection the collection
    */
@@ -42,7 +42,7 @@ public class SimpleFileWriter {
 
   /**
    * Writes String to file.
-   * 
+
    * @param path     the file to be written to
    * @param contents the String to be written to the file
    */

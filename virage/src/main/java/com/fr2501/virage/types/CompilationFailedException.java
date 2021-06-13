@@ -8,7 +8,7 @@ public class CompilationFailedException extends Exception {
   private String message;
 
   /**
-   * 
+   * The UID.
    */
   private static final long serialVersionUID = -3356300070323059173L;
 

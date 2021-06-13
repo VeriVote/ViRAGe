@@ -14,6 +14,12 @@ public class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<
 
   private String composition;
 
+  /**
+   * Simple constructor.
+
+   * @param issuer the issuing ui
+   * @param composition the composition
+   */
   public VirageIsabelleGenerateScalaJob(VirageUserInterface issuer, String composition) {
     super(issuer);
 

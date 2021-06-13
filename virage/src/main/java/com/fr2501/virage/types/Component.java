@@ -13,6 +13,13 @@ public class Component implements TypedAndParameterized {
   private String name;
   private List<ComponentType> parameters;
 
+  /**
+   * Simple constructor.
+
+   * @param type the type
+   * @param name the name
+   * @param parameters the parameters
+   */
   public Component(ComponentType type, String name, List<ComponentType> parameters) {
     this.type = type;
     this.name = name;
@@ -45,6 +52,11 @@ public class Component implements TypedAndParameterized {
     return res;
   }
 
+  /**
+   * Converts this to a string, omits type signatures of this and its parameters.
+
+   * @return a string representation of this
+   */
   public String toStringWithoutTypeSignature() {
     String res = this.name + "(" + StringUtils.printCollection(this.parameters) + ")";
 

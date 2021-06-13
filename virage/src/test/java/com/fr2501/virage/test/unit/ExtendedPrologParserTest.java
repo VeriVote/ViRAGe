@@ -13,6 +13,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
+/**
+ * Test suite for {@link ExtendedPrologParser}.
+ *
+ */
 public class ExtendedPrologParserTest {
   private Logger logger = LogManager.getLogger(ExtendedPrologParserTest.class);
 
@@ -34,6 +38,12 @@ public class ExtendedPrologParserTest {
 
   /*
    * @Test This test now depends heavily depends on the config file, so it is no longer meaningful.
+   */
+  /**
+   * Tests the loading process of a valid EPL file.
+
+   * @throws IOException if file interaction fails
+   * @throws MalformedEplFileException if the file violates the EPL format
    */
   public void loadValidFile() throws IOException, MalformedEplFileException {
     logger.info("loadValidFile()");

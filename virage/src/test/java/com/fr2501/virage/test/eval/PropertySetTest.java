@@ -19,16 +19,27 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Evaluation tests for {@link CompositionAnalyzer}s.
+ *
+ */
 public class PropertySetTest {
   private static final String FRAMEWORK_PATH = "src/test/resources/framework.pl";
 
   /* @Test */
+  /**
+   * Runs several analyzers on random queries.
+
+   * @throws IOException if file system interaction fails
+   * @throws MalformedEplFileException if the input file is not valid EPL
+   * @throws ExternalSoftwareUnavailableException if external software is missing
+   */
   public void analyzerEval()
       throws IOException, MalformedEplFileException, ExternalSoftwareUnavailableException {
     ExtendedPrologParser parser = new SimpleExtendedPrologParser();
     FrameworkRepresentation framework = parser.parseFramework(new File(FRAMEWORK_PATH), false);
 
-    TestDataGenerator generator = new TestDataGenerator(framework);
+    final TestDataGenerator generator = new TestDataGenerator(framework);
 
     long timeout = 10;
 

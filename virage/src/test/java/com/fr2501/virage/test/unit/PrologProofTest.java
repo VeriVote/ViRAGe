@@ -5,6 +5,10 @@ import static org.junit.Assert.assertTrue;
 import com.fr2501.virage.prolog.PrologProof;
 import org.junit.Test;
 
+/**
+ * Test suite for {@link PrologProof}.
+ *
+ */
 public class PrologProofTest {
   @Test
   public void testSmcMonotone() {

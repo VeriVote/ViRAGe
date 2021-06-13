@@ -13,7 +13,7 @@ public class StringUtils {
 
   /**
    * Removes whitespace from String.
-   * 
+
    * @param s the String
    * @return new String, s without whitespace
    */
@@ -23,7 +23,7 @@ public class StringUtils {
 
   /**
    * Creates a comma-separated String from a collection.
-   * 
+
    * @param c the collection
    * @return the String, empty if c is empty
    */
@@ -45,7 +45,7 @@ public class StringUtils {
 
   /**
    * Checks whether a String is a number.
-   * 
+
    * @param strNum the String to be checked
    * @return true if strNum represents a number, false otherwise.
    */
@@ -60,7 +60,7 @@ public class StringUtils {
 
   /**
    * Separates a String along a given separator, preserves ordering.
-   * 
+
    * @param separator the separator
    * @param string    the string to be separated
    * @return a list of the separated strings

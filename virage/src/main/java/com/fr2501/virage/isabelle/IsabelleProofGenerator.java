@@ -37,6 +37,12 @@ public class IsabelleProofGenerator {
 
   private IsabelleTheoryGenerator parent;
 
+  /**
+   * Simple constructor.
+
+   * @param parent the corresponding theory generator
+   * @param functionsAndDefinitions set of all functions and definitions in parent's session
+   */
   public IsabelleProofGenerator(IsabelleTheoryGenerator parent,
       Map<String, String> functionsAndDefinitions) {
     if (PROOF_TEMPLATE.equals("")) {
@@ -60,7 +66,7 @@ public class IsabelleProofGenerator {
   /**
    * Every IsabelleProofGenerator is attached to an
    * {@link IsabelleTheoryGenerator}, this method returns it.
-   * 
+
    * @return the parent
    */
   public IsabelleTheoryGenerator getParent() {
@@ -69,7 +75,7 @@ public class IsabelleProofGenerator {
 
   /**
    * Translates a {@link CompositionProof} into Isabelle syntax.
-   * 
+
    * @param proof the proof
    * @return a String representing the proof, readable by Isabelle
    */
@@ -80,8 +86,8 @@ public class IsabelleProofGenerator {
     String[] splits = proof.getGoal().split("\\(");
     String property = splits[0];
 
-    String theoremName = IsabelleTheoryGenerator.VAR_MODULE_NAME + "_" + property + ":";
-    String goal = property + " (" + IsabelleTheoryGenerator.VAR_MODULE_NAME + " "
+    final String theoremName = IsabelleTheoryGenerator.VAR_MODULE_NAME + "_" + property + ":";
+    final String goal = property + " (" + IsabelleTheoryGenerator.VAR_MODULE_NAME + " "
         + IsabelleTheoryGenerator.VAR_MODULE_PARAMETERS + ")";
 
     Set<String> assumptions = new HashSet<String>();

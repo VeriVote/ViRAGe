@@ -24,6 +24,13 @@ public class VirageAnalyzeJob
   private FrameworkRepresentation framework;
   private VirageSearchManager manager;
 
+  /**
+   * Simple constructor.
+
+   * @param issuer the issuer
+   * @param tree the tree
+   * @param properties the properties
+   */
   public VirageAnalyzeJob(VirageUserInterface issuer, String tree, List<String> properties) {
     super(issuer);
 

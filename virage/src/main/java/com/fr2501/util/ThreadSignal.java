@@ -15,6 +15,9 @@ public class ThreadSignal {
     this.finished = true;
   }
 
+  /**
+   * A blocking function that returns when this.finished is true.
+   */
   public void waitFor() {
     while (true) {
       synchronized (this) {

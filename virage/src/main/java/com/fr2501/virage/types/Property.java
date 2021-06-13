@@ -12,6 +12,12 @@ public class Property implements Parameterized {
   private int arity;
   private List<ComponentType> parameters;
 
+  /**
+   * Simple constructor.
+
+   * @param name the name
+   * @param parameters the parameters
+   */
   public Property(String name, List<ComponentType> parameters) {
     this.name = name;
     this.arity = parameters.size();
@@ -26,6 +32,12 @@ public class Property implements Parameterized {
     return this.arity;
   }
 
+  /**
+   * Instantiates a unary property with the given string.
+
+   * @param string the instantiation string
+   * @return the instantiated string
+   */
   public String getInstantiatedString(String string) {
     if (this.parameters.size() != 1) {
       throw new IllegalArgumentException();
@@ -36,6 +48,12 @@ public class Property implements Parameterized {
     return res;
   }
   
+  /**
+   * Instantiates a property with values in the given order.
+
+   * @param strings the parameters
+   * @return the instantiated string
+   */
   public String getInstantiatedString(List<String> strings) {
     if (strings.size() != this.parameters.size()) {
       throw new IllegalArgumentException();
@@ -46,7 +64,12 @@ public class Property implements Parameterized {
     return res;
   }
 
+  /**
+   * Instantiates a unary property with the given string, leaving out the property's name.
 
+   * @param string the instantiation string
+   * @return the instantiated string
+   */
   public String getInstantiatedStringWithoutName(String string) {
     if (this.parameters.size() != 1) {
       throw new IllegalArgumentException();
@@ -57,6 +80,12 @@ public class Property implements Parameterized {
     return res;
   }
 
+  /**
+   * Instantiates a property with values in the given order, leaving out the property's name.
+
+   * @param strings the parameters
+   * @return the instantiated string
+   */
   public String getInstantiatedStringWithoutName(List<String> strings) {
     if (strings.size() != this.parameters.size()) {
       throw new IllegalArgumentException();

@@ -9,7 +9,12 @@ import org.apache.logging.log4j.Logger;
  */
 public class VirageMain {
   private static final Logger logger = LogManager.getLogger(VirageMain.class);
-                                                           
+           
+  /**
+   * The main entry point for ViRAGe.
+
+   * @param args the command-line arguments
+   */
   public static void main(String[] args) {
     try {
       VirageCore core = new VirageCore(args);

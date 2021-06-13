@@ -24,7 +24,7 @@ public class AdmissionGuardGenerator {
 
   /**
    * Generates the file containing the admission guards.
-   * 
+
    * @return the file
    * @throws IOException but should actually not
    */

@@ -7,6 +7,10 @@ import org.apache.logging.log4j.Logger;
 import org.jpl7.JPL;
 import org.junit.Test;
 
+/**
+ * Deployment test to check JPL availability.
+ *
+ */
 public class Jpl7Test {
   private static final Logger logger = LogManager.getLogger(Jpl7Test.class);
 

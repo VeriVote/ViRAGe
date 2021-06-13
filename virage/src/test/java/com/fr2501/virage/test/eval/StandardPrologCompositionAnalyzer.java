@@ -15,6 +15,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A reference implementation of {@link CompositionAnalyzer} using default Prolog.
+ *
+ */
 public class StandardPrologCompositionAnalyzer implements CompositionAnalyzer {
   protected static final long DEFAULT_TIMEOUT = 10000;
   protected JplFacade facade;
@@ -22,6 +26,12 @@ public class StandardPrologCompositionAnalyzer implements CompositionAnalyzer {
 
   private long timeout;
 
+  /**
+   * Simple constructor.
+
+   * @param framework the framework
+   * @throws ExternalSoftwareUnavailableException if swipl is unavailable
+   */
   public StandardPrologCompositionAnalyzer(FrameworkRepresentation framework)
       throws ExternalSoftwareUnavailableException {
     this.framework = framework;

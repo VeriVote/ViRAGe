@@ -34,16 +34,24 @@ public class JplFacade {
     this(JplFacade.DEFAULT_TIMEOUT);
   }
 
+  /**
+   * Simple constructor.
+
+   * @param timeout query timeout
+   * @throws ExternalSoftwareUnavailableException if JPL is unavailable
+   */
   public JplFacade(long timeout) throws ExternalSoftwareUnavailableException {
     this.timeout = timeout;
 
     if (!System.getenv().containsKey("LD_PRELOAD") || !System.getenv("LD_PRELOAD")
         .contains(ConfigReader.getInstance().getSwiplLib() + "libswipl.so")) {
+
       logger.error("libswipl.so has not been preloaded, JPL will not work properly.");
-      logger.error("\t Try setting \"value_for_ld_preload\" in "
-          + ConfigReader.getInstance().getConfigPath() + " to " 
+      logger.error("\t Try setting \"value_for_ld_preload\" in \""
+          + ConfigReader.getInstance().getConfigPath() + "\" to \"" 
           + ConfigReader.getInstance().getSwiplLib()
           + "libswipl.so\" and restart ViRAGe.");
+      logger.error("The current value of LD_PRELOAD is \"" + System.getenv("LD_PRELOAD") + "\"");
 
       throw new ExternalSoftwareUnavailableException();
     }
@@ -71,7 +79,7 @@ public class JplFacade {
 
   /**
    * Consult a file so it becomes available within the JPL engine.
-   * 
+
    * @param path path to the file
    */
   public void consultFile(String path) {
@@ -79,6 +87,11 @@ public class JplFacade {
     q.hasSolution();
   }
 
+  /**
+   * Consult a file so it becomes available within the JPL engine.
+
+   * @param url the url of the file
+   */
   public void consultFile(URL url) {
     try {
       File dest = File.createTempFile("tmp_file_" + fileCounter, ".pl");
@@ -94,7 +107,7 @@ public class JplFacade {
 
   /**
    * Simple Prolog query, returns only the first result due to Prolog limitations.
-   * 
+
    * @param queryString the query
    * @param timeout the timeout
    * @return a {@link Map} containing the result. If no solution is found within timeout, an empty
@@ -139,7 +152,7 @@ public class JplFacade {
 
   /**
    * A query not containing variables, only asking for true or false, using default timeout.
-   * 
+
    * @param queryString the query
    * @return a SearchResult representing the result of the query
    */
@@ -149,7 +162,7 @@ public class JplFacade {
 
   /**
    * A query not containing variables, only asking for true or false, using default timeout.
-   * 
+
    * @param queryString the query
    * @param timeout the timeout
    * @return a SearchResult representing the result of the query
@@ -204,7 +217,7 @@ public class JplFacade {
 
   /**
    * A query containing variables, disables timeout for this query and resets it afterwards.
-   * 
+
    * @param queryString the query
    * @return a SearchResult representing the result of the query
    */
@@ -221,7 +234,7 @@ public class JplFacade {
 
   /**
    * A query containing variables, using default timeout.
-   * 
+
    * @param queryString the query
    * @return a SearchResult representing the result of the query
    */
@@ -231,7 +244,7 @@ public class JplFacade {
 
   /**
    * A query containing variables.
-   * 
+
    * @param queryString the query
    * @param timeout the timeout
    * @return a SearchResult representing the result of the query
@@ -288,7 +301,7 @@ public class JplFacade {
   /**
    * Checks, whether a term is a specialization of another term. Semantically similar to
    * subsumes_term\2 in SWI-Prolog
-   * 
+
    * @param generic the generic term
    * @param specific the more specific term
    * @return true if specific is a specification of generic, false otherwise.
@@ -311,7 +324,7 @@ public class JplFacade {
 
   /**
    * Semantically similar to unifiable\3 in SWI-Prolog.
-   * 
+
    * @param a first term
    * @param b second term
    * @return a map containing the replacements
@@ -351,7 +364,7 @@ public class JplFacade {
 
   /**
    * Returns a new Prolog variable not yet occurring in the query.
-   * 
+
    * @param queryString the query
    * @return an unused variable
    */
@@ -374,7 +387,7 @@ public class JplFacade {
   // and adjust accordingly if that ever happens again.
   /**
    * Finds out the values Prolog variables need to be replaced with for unification.
-   * 
+
    * @param variable the variable containing the list of replacement
    * @param map a map containing the internal identifiers Prolog used for the variables
    * @return a map containing the replacements

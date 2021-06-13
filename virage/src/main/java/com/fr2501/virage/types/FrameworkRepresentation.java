@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * The data model required to represent the compositional framework as a whole
- * <p>
  * It is designed for the electoral module framework, but not at all limited to it.
  *
  */
@@ -41,7 +40,12 @@ public class FrameworkRepresentation {
   /*
    * public FrameworkRepresentation() { this(null); }
    */
+  
+  /**
+   * Simple constructor.
 
+   * @param absolutePath path to the EPL file
+   */
   public FrameworkRepresentation(String absolutePath) {
     this.absolutePath = absolutePath;
 
@@ -119,7 +123,7 @@ public class FrameworkRepresentation {
 
   /**
    * Returns the {@link Property} with the given name.
-   * 
+
    * @param name the name
    * @return the {@link Property}, null if it does not exist.
    */
@@ -135,7 +139,7 @@ public class FrameworkRepresentation {
 
   /**
    * Returns the {@link ComposableModule} with the given name.
-   * 
+
    * @param name the name
    * @return the {@link ComposableModule}, null if it does not exist.
    */
@@ -151,7 +155,7 @@ public class FrameworkRepresentation {
 
   /**
    * Returns the {@link CompositionalStructure} with the given name.
-   * 
+
    * @param name the name
    * @return the {@link CompositionalStructure}, null if it does not exist.
    */
@@ -167,7 +171,7 @@ public class FrameworkRepresentation {
 
   /**
    * Returns the {@link Component} with the given name.
-   * 
+
    * @param name the name
    * @return the {@link Component}, null if it does not exist.
    */
@@ -189,7 +193,7 @@ public class FrameworkRepresentation {
 
   /**
    * Adds a @link{ComponentType} to the FrameworkRepresentation.
-   * 
+
    * @param ct the @link{ComponentType} to be added
    */
   public void add(ComponentType ct) {
@@ -199,7 +203,7 @@ public class FrameworkRepresentation {
   /**
    * Adds a @link{Component} to the FrameworkRepresentation. Performs type check without throwing
    * any exceptions.
-   * 
+
    * @param c the @link{Component} to be added
    */
   public void add(Component c) {
@@ -210,7 +214,7 @@ public class FrameworkRepresentation {
   /**
    * Adds a @link{ComposableModule} to the FrameworkRepresentation Performs type check without
    * throwing any exceptions.
-   * 
+
    * @param cm the @link{ComposableModule} to be added
    */
   public void add(ComposableModule cm) {
@@ -221,7 +225,7 @@ public class FrameworkRepresentation {
   /**
    * Adds a @link{CompositionalStructure} to the FrameworkRepresentation Performs type check without
    * throwing any exceptions.
-   * 
+
    * @param cs the @link{CompositionalStructure} to be added
    */
   public void add(CompositionalStructure cs) {
@@ -231,7 +235,7 @@ public class FrameworkRepresentation {
 
   /**
    * Adds a @link{CompositionRule} to the FrameworkRepresentation.
-   * 
+
    * @param cr the @link{ComposiotionRule} to be added
    */
   public void add(CompositionRule cr) {
@@ -254,7 +258,7 @@ public class FrameworkRepresentation {
   /**
    * Adds a {@link Property} to the FrameworkRepresentation Performs type check without throwing any
    * exceptions.
-   * 
+
    * @param p the {@link Property} to be added
    */
   public void add(Property p) {
@@ -262,6 +266,9 @@ public class FrameworkRepresentation {
     this.properties.add(p);
   }
 
+  /**
+   * Adds dummy rules (e.g. ($property)_intro) if these are required.
+   */
   public void addDummyRulesIfNecessary() {
     List<String> atomicTypeStrings = ConfigReader.getInstance().getAtomicTypes();
     this.atomicTypes = new LinkedList<ComponentType>();
@@ -303,6 +310,11 @@ public class FrameworkRepresentation {
     return this.sessionName;
   }
 
+  /**
+   * Creates an extensive string representation of this.
+
+   * @return the string representation
+   */
   public String toVerboseString() {
     String res = "";
 
@@ -345,6 +357,11 @@ public class FrameworkRepresentation {
     return res;
   }
 
+  /**
+   * Creates a string representation of this in the EPL format.
+
+   * @return the string representation
+   */
   public String toEplString() {
     Collections.sort(this.compositionRules);
 

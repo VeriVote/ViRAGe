@@ -18,6 +18,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test suite for {@link IsabelleTheoryGenerator}.
+ *
+ */
 public class IsabelleTheoryGeneratorTest {
   private static final String PATH = "src/test/resources/framework.pl";
   private static final String SMC = "sequential_composition(" + "loop_composition("
@@ -27,6 +31,13 @@ public class IsabelleTheoryGeneratorTest {
   private FrameworkRepresentation framework;
   private CompositionAnalyzer analyzer;
 
+  /**
+   * Initialization for the following tests.
+
+   * @throws IOException if file system interaction fails
+   * @throws MalformedEplFileException if the input file violates the EPL format
+   * @throws ExternalSoftwareUnavailableException if Isabelle or swipl is unavailable
+   */
   @Before
   public void init()
       throws IOException, MalformedEplFileException, ExternalSoftwareUnavailableException {
@@ -66,6 +77,9 @@ public class IsabelleTheoryGeneratorTest {
    * Test disabled after introduction of config.properties
    * 
    * @Test
+   */
+  /**
+   * Tests proof of condorcet_consistency for an elimination module.
    */
   public void testCondorcetProof() {
     List<Property> properties = new LinkedList<Property>();

@@ -9,23 +9,27 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
+/**
+ * Test suite for {@link DecompositionTree}.
+ *
+ */
 public class DecompositionTreeTest {
   private static final Logger logger = LogManager.getLogger(DecompositionTreeTest.class);
 
   @Test
   public void testConstruction() {
     logger.info("testConstruction()");
-    String tree = "root(b(c,d), e, f(g(h,i)))";
+    final String tree = "root(b(c,d), e, f(g(h,i)))";
 
-    DecompositionTree c = new DecompositionTree("c");
-    DecompositionTree d = new DecompositionTree("d");
+    final DecompositionTree c = new DecompositionTree("c");
+    final DecompositionTree d = new DecompositionTree("d");
     List<DecompositionTree> cd = new LinkedList<DecompositionTree>();
     cd.add(c);
     cd.add(d);
-    DecompositionTree b = new DecompositionTree("b", cd);
-    DecompositionTree e = new DecompositionTree("e");
-    DecompositionTree h = new DecompositionTree("h");
-    DecompositionTree i = new DecompositionTree("i");
+    final DecompositionTree b = new DecompositionTree("b", cd);
+    final DecompositionTree e = new DecompositionTree("e");
+    final DecompositionTree h = new DecompositionTree("h");
+    final DecompositionTree i = new DecompositionTree("i");
     List<DecompositionTree> hi = new LinkedList<DecompositionTree>();
     hi.add(h);
     hi.add(i);

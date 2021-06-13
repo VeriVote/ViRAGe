@@ -35,7 +35,7 @@ import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 
 /**
- * TODO
+ * A facade for scala-isabelle by Dominique Unruh.
  *
  */
 public class ScalaIsabelleFacade {
@@ -60,6 +60,14 @@ public class ScalaIsabelleFacade {
   private Setup setup;
   private Isabelle isabelle;
 
+  /**
+   * Simple constructor.
+
+   * @param sessionDir the session base directory
+   * @param sessionName the session name
+   * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+   * @throws IsabelleBuildFailedException if the build process fails
+   */
   public ScalaIsabelleFacade(String sessionDir, String sessionName)
       throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
     this.sessionDir = (new File(sessionDir).getAbsolutePath());
@@ -168,6 +176,9 @@ public class ScalaIsabelleFacade {
     }
   }
 
+  /**
+   * Extracts functions and definitions from a given framework in Isabelle.
+   */
   public void extractFunctionsAndDefinitions() {
     this.functionsAndDefinitions = new HashMap<String, Map<String, String>>();
 

@@ -1,5 +1,9 @@
 package com.fr2501.virage.core;
 
+/**
+ * A simple spinning bar to indicate progress on command line interfaces.
+ *
+ */
 public class CommandLineProgressIndicator extends ProgressIndicator {
   private int phase;
   private boolean hidden;
@@ -9,6 +13,9 @@ public class CommandLineProgressIndicator extends ProgressIndicator {
     this.hidden = false;
   }
 
+  /**
+   * Moves the indicator to its next state.
+   */
   public void advance() {
     String message = "";
     switch (this.phase) {

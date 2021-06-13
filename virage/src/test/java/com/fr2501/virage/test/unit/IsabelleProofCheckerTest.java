@@ -29,6 +29,10 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test suite for {@link IsabelleProofChecker}.
+ *
+ */
 public class IsabelleProofCheckerTest {
   private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTest.class);
 
@@ -44,6 +48,13 @@ public class IsabelleProofCheckerTest {
 
   private File file;
 
+  /**
+   * Initialization for the following tests.
+
+   * @throws IOException if file system interaction fails
+   * @throws MalformedEplFileException if the input file does not satisfy the EPL format
+   * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+   */
   @Before
   public void init()
       throws IOException, MalformedEplFileException, ExternalSoftwareUnavailableException {
@@ -54,6 +65,11 @@ public class IsabelleProofCheckerTest {
     this.generator = new IsabelleTheoryGenerator(THEORY_PATH, this.framework);
   }
 
+  /**
+   * Runs queries on several random property sets.
+
+   * @throws Exception if something goes wrong
+   */
   // @Test
   public void testRandomPropertySets() throws Exception {
     logger.info("testRandomPropertySets()");
@@ -150,11 +166,13 @@ public class IsabelleProofCheckerTest {
    * checker.destroy(); }
    */
 
-  /*
-   * Test disabled after introduction of config.properties
-   * 
-   * @Test
+  /**
+   * Runs an exemplary proof and check process.
+
+   * @throws IOException if file operations fail
+   * @throws InterruptedException if the process is interrupted
    */
+  //@Test
   public void smcTest() throws IOException, InterruptedException {
     List<Property> properties = new LinkedList<Property>();
     properties.add(this.framework.getProperty("electing"));

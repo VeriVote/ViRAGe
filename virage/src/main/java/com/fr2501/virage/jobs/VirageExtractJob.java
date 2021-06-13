@@ -9,10 +9,21 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
 import java.io.File;
 
+/**
+ * A {@link VirageJob} to extract a {@link FrameworkRepresentation} from an Isabelle session.
+ *
+ */
 public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepresentation> {
   private String sessionName;
   private String path;
 
+  /**
+   * Simple constructor.
+
+   * @param issuer the issuer
+   * @param path the path to the session
+   * @param sessionName the name of the session
+   */
   public VirageExtractJob(VirageUserInterface issuer, String path, String sessionName) {
     super(issuer);
 

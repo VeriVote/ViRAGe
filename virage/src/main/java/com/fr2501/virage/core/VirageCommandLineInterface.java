@@ -262,9 +262,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   }
 
   private VirageJob<?> createIsabelleQuery() {
-    String composition = this.requestCompositionString();
+    final String composition = this.requestCompositionString();
 
-    String propertyString = this.requestPropertyString();
+    final String propertyString = this.requestPropertyString();
 
     String defaultPath = "./target/generated-sources/";
     System.out.println(
@@ -387,7 +387,12 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     return compositionString;
   }
-
+ 
+  /**
+   * Requests confirmation from the user.
+   *
+   * @return true if user answers yes, false if user answers no
+   */
   public boolean requestConfirmation(String message) {
     this.clpi.hide();
 

@@ -27,6 +27,10 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Tests that each implementation of {@link CompositionAnalyzer} must pass.
+ *
+ */
 public abstract class CompositionAnalyzerTest {
   private static final Logger logger = LogManager.getLogger(CompositionAnalyzerTest.class);
 
@@ -37,6 +41,12 @@ public abstract class CompositionAnalyzerTest {
   protected abstract CompositionAnalyzer createInstance()
       throws IOException, ExternalSoftwareUnavailableException;
 
+  /**
+   * Performs setup for the following tests.
+
+   * @throws IOException if reading resources fails
+   * @throws MalformedEplFileException if the input file does not satisfy the EPL format
+   */
   @Before
   public void setup() throws IOException, MalformedEplFileException {
     ExtendedPrologParser parser = new SimpleExtendedPrologParser();

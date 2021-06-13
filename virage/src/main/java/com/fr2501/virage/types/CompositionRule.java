@@ -14,6 +14,13 @@ public class CompositionRule implements Comparable<CompositionRule> {
   private String origin;
   private PrologClause clause;
 
+  /**
+   * Simple constructor.
+
+   * @param name the name
+   * @param origin the origin
+   * @param clause the clause
+   */
   public CompositionRule(String name, String origin, PrologClause clause) {
     this.name = name;
     this.origin = origin;
@@ -49,6 +56,11 @@ public class CompositionRule implements Comparable<CompositionRule> {
     return res;
   }
 
+  /**
+   * Retrieves a representation of this in the EPL format.
+
+   * @return the string representation
+   */
   public String toEplString() {
     String res = "";
 

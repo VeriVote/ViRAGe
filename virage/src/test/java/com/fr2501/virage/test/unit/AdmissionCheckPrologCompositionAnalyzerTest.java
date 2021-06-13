@@ -5,6 +5,10 @@ import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import java.io.IOException;
 
+/**
+ * Tests for AdmissionCheckPrologCompositionAnalyzerTest.
+ *
+ */
 public class AdmissionCheckPrologCompositionAnalyzerTest extends CompositionAnalyzerTest {
   protected CompositionAnalyzer createInstance()
       throws IOException, ExternalSoftwareUnavailableException {

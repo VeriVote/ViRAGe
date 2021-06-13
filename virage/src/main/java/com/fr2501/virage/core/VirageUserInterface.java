@@ -15,7 +15,7 @@ public interface VirageUserInterface extends Runnable {
   /**
    * Used by {@link VirageJob} objects to notify the interface of changes in their
    * state.
-   * 
+
    * @param job the notifying job
    */
   public void notify(VirageJob<?> job);

@@ -64,6 +64,12 @@ public class IsabelleCodeGenerator {
   private static final String OPTION1_COMMENT = "OPTION1";
   private static final String OPTION2_COMMENT = "OPTION2";
 
+  /**
+   * Simple constructor that reads templates from resources.
+
+   * @param framework the framework representation to be used
+   * @throws IOException if template reading fails
+   */
   public IsabelleCodeGenerator(FrameworkRepresentation framework) throws IOException {
     this.framework = framework;
 
@@ -109,14 +115,14 @@ public class IsabelleCodeGenerator {
 
   /**
    * Invokes Isabelle's code generator to create code from a composition.
-   * 
+
    * @param composition the composition
    * @param language    the target language
    * @return a file containing the generated code
-   * @throws IOException
-   * @throws InterruptedException
-   * @throws IsabelleBuildFailedException
-   * @throws ExternalSoftwareUnavailableException 
+   * @throws IOException if file system interaction fails
+   * @throws InterruptedException if process is interrupted
+   * @throws IsabelleBuildFailedException if session build process fails
+   * @throws ExternalSoftwareUnavailableException  if Isabelle is unavailable
    */
   public File generateCode(String composition, IsabelleCodeGenerationLanguage language)
       throws IOException, InterruptedException, IsabelleBuildFailedException, 
@@ -135,14 +141,14 @@ public class IsabelleCodeGenerator {
 
   /**
    * Invokes Isabelle's code generator to generate code from a theory.
-   * 
+
    * @param theory   the theory file
    * @param language the target language
    * @return a file containing the generated code
-   * @throws IOException
-   * @throws InterruptedException
-   * @throws IsabelleBuildFailedException
-   * @throws ExternalSoftwareUnavailableException 
+   * @throws IOException if file system interaction fails
+   * @throws InterruptedException if process is interrupted
+   * @throws IsabelleBuildFailedException if session build process fails
+   * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
    */
   public File generateCode(File theory, IsabelleCodeGenerationLanguage language)
       throws IOException, InterruptedException, IsabelleBuildFailedException,
@@ -168,14 +174,14 @@ public class IsabelleCodeGenerator {
   /**
    * Creates an ad-hoc Isabelle session, invokes code generation, attempts to
    * compile the result and returns an executable jar file if possible.
-   * 
+
    * @param composition the composition to be translated to Scala code
    * @return an executable Scala-jar file
    * @throws IOException                  if file system interaction goes wrong
    * @throws InterruptedException         if processes are interrupted prematurely
    * @throws CompilationFailedException   if Scala compilation fails
    * @throws IsabelleBuildFailedException if Isabelle code generation fails
-   * @throws ExternalSoftwareUnavailableException 
+   * @throws ExternalSoftwareUnavailableException if Isabelle or Scala is unavailable
    */
   public File generateScalaCodeAndCompile(String composition)
       throws IOException, InterruptedException, CompilationFailedException, 
@@ -189,7 +195,7 @@ public class IsabelleCodeGenerator {
   /**
    * Creates an ad-hoc Isabelle session, invokes code generation, attempts to
    * compile the result and returns an executable jar file if possible.
-   * 
+
    * @param theory the theory file, containing exactly one definition, on which
    *               code generation shall take place
    * @return an executable Scala-jar file if possible
@@ -197,7 +203,7 @@ public class IsabelleCodeGenerator {
    * @throws InterruptedException         if processes are interrupted prematurely
    * @throws CompilationFailedException   if Scala compilation fails
    * @throws IsabelleBuildFailedException if Isabelle code generation fails
-   * @throws ExternalSoftwareUnavailableException 
+   * @throws ExternalSoftwareUnavailableException if Isabelle or Scala are unavailable
    */
   public File generateScalaCodeAndCompile(File theory)
       throws IOException, InterruptedException, CompilationFailedException,
@@ -375,7 +381,7 @@ public class IsabelleCodeGenerator {
 
   private File prepareVotingContext(String theoryName, String moduleName, File moduleFile,
       boolean setExplicitParameters) throws IOException {
-    File dir = moduleFile.getParentFile();
+    final File dir = moduleFile.getParentFile();
 
     SimpleFileReader reader = new SimpleFileReader();
     String code = reader.readFile(moduleFile);

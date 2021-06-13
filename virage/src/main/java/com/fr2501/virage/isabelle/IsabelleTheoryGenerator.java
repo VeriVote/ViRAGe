@@ -63,6 +63,12 @@ public class IsabelleTheoryGenerator {
     this(framework.getTheoryPath(), framework);
   }
 
+  /**
+   * Simple constructor.
+
+   * @param theoryPath the path of the generated theory
+   * @param framework the framework representation
+   */
   public IsabelleTheoryGenerator(String theoryPath, FrameworkRepresentation framework) {
     if (THEORY_TEMPLATE.equals("")) {
       InputStream theoryTemplateStream = this.getClass().getClassLoader()
@@ -105,7 +111,7 @@ public class IsabelleTheoryGenerator {
   /**
    * This method takes a Set of {@link CompositionProof} objects and a composition, translates this
    * information to Isabelle syntax and writes its result to a file.
-   * 
+
    * @param composition the composition
    * @param proofs proofs for all the claimed properties
    * @param outputPath a path to the folder to which the result shall be written. If path points to
@@ -120,8 +126,8 @@ public class IsabelleTheoryGenerator {
 
     this.typedVariables = new HashMap<String, String>();
 
-    String theoryName = THEORY_NAME + "_" + theoryCounter;
-    String moduleName = MODULE_NAME + "_" + theoryCounter;
+    final String theoryName = THEORY_NAME + "_" + theoryCounter;
+    final String moduleName = MODULE_NAME + "_" + theoryCounter;
     theoryCounter++;
 
     PrologPredicate proofPredicate = this.parser.parsePredicate(composition);
@@ -221,7 +227,7 @@ public class IsabelleTheoryGenerator {
 
   /**
    * Replaces variable symbols used by Prolog with those used by Isabelle.
-   * 
+
    * @param predicate the Prolog predicate
    */
   protected void replacePrologVariables(PrologPredicate predicate) {

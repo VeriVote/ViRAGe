@@ -22,6 +22,13 @@ public class VirageProveJob extends VirageJobWithExplicitResult<List<List<Compos
   private FrameworkRepresentation framework;
   private VirageSearchManager manager;
 
+  /**
+   * Simple constructor.
+
+   * @param issuer the issuing ui
+   * @param tree the tree
+   * @param properties the properties
+   */
   public VirageProveJob(VirageUserInterface issuer, String tree, List<String> properties) {
     super(issuer);
 

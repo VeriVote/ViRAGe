@@ -33,6 +33,12 @@ public class IsabelleProofStepGenerator {
   private PrologParser parser;
   private IsabelleProofGenerator parent;
 
+  /**
+   * Simple constructor.
+
+   * @param parent the corresponding proof generator
+   * @param functionsAndDefinitions set of all functions and definitions in parent's session
+   */
   public IsabelleProofStepGenerator(IsabelleProofGenerator parent,
       Map<String, String> functionsAndDefinitions) {
     if (PROOF_STEP_TEMPLATE.equals("")) {
@@ -55,12 +61,12 @@ public class IsabelleProofStepGenerator {
 
   /**
    * Translates a single {@link CompositionProof} step to Isabelle syntax.
-   * 
+
    * @param step the proof step
    * @return a String representing the step in Isabelle syntax
    */
   public String generateIsabelleProofStep(CompositionProof step) {
-    String goalId = step.getId();
+    final String goalId = step.getId();
 
     PrologPredicate predicate = this.parser.parsePredicate(step.getGoal());
     this.parent.getParent().replacePrologVariables(predicate);

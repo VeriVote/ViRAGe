@@ -16,6 +16,10 @@ import java.util.LinkedList;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * A test suite for {@link IsabelleCodeGenerator}.
+ *
+ */
 public class IsabelleCodeGeneratorTest {
   private static final String EPL_PATH = "src/test/resources/framework_new.pl";
   private static final String THEORY_PATH 
@@ -27,6 +31,12 @@ public class IsabelleCodeGeneratorTest {
   private FrameworkRepresentation framework;
   private IsabelleTheoryGenerator generator;
 
+  /**
+   * Initialization for the following tests.
+
+   * @throws IOException if file interaction fails
+   * @throws MalformedEplFileException if input file is not valid EPL
+   */
   @Before
   public void init() throws IOException, MalformedEplFileException {
     ExtendedPrologParser parser = new SimpleExtendedPrologParser();

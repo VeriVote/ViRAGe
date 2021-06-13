@@ -33,7 +33,7 @@ public class PrologProof {
 
   /**
    * Translates a String given by the meta interpreter to a PrologProof object.
-   * 
+
    * @param string the string
    * @return the PrologProof object
    */

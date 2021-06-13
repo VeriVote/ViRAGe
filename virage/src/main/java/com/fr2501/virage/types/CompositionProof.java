@@ -16,12 +16,25 @@ public class CompositionProof {
   private CompositionRule rule;
   private String id = "";
 
+  /**
+   * Simple constructor.
+
+   * @param goal the goal
+   * @param subgoals the subgoals
+   * @param rule the rule
+   */
   public CompositionProof(String goal, List<CompositionProof> subgoals, CompositionRule rule) {
     this.goal = goal;
     this.subgoals = subgoals;
     this.rule = rule;
   }
 
+  /**
+   * Simple constructor for a terminal proof step.
+
+   * @param goal the goal
+   * @param rule the rule
+   */
   public CompositionProof(String goal, CompositionRule rule) {
     this.goal = goal;
     this.subgoals = new LinkedList<CompositionProof>();
@@ -40,6 +53,11 @@ public class CompositionProof {
     return this.id;
   }
 
+  /**
+   * Assigns a unique id to each step of the proof.
+
+   * @param id the id
+   */
   public void setId(String id) {
     this.id = id;
 
@@ -52,6 +70,11 @@ public class CompositionProof {
     return this.rule.getName();
   }
 
+  /**
+   * Iterates the proof and returns its goals in depth-first order.
+
+   * @return the proof steps in depth-first order
+   */
   public List<CompositionProof> getAllStepsDepthFirst() {
     List<CompositionProof> res = new LinkedList<CompositionProof>();
 
@@ -64,6 +87,11 @@ public class CompositionProof {
     return res;
   }
 
+  /**
+   * Retrieves all {@link CompositionRule}s used in the proof.
+
+   * @return the composition rules
+   */
   public Set<CompositionRule> getAllCompositionRules() {
     Set<CompositionRule> res = new HashSet<CompositionRule>();
     res.add(rule);
@@ -75,6 +103,11 @@ public class CompositionProof {
     return res;
   }
 
+  /** 
+   * Returns origins of all rules used in the proof.
+
+   * @return all origins
+   */
   public Set<String> getAllOrigins() {
     Set<String> origins = new HashSet<String>();
 

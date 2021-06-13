@@ -13,6 +13,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpl7.JPL;
 
+/**
+ * A class to interact with a ViRAGe config file.
+ *
+ */
 public class ConfigReader {
   Logger logger = LogManager.getRootLogger();
 
@@ -50,6 +54,11 @@ public class ConfigReader {
     }
   }
 
+  /**
+   * Creates instance if necessary, otherwise just returns it.
+
+   * @return the instance
+   */
   public static ConfigReader getInstance() {
     if (instance == null) {
       instance = new ConfigReader();
@@ -58,6 +67,11 @@ public class ConfigReader {
     return instance;
   }
 
+  /**
+   * Reads the config.properties-file supplied to ViRAGe.
+
+   * @throws IOException if reading the file is impossible
+   */
   public void readConfigFile() throws IOException {
     this.properties = new Properties();
 
@@ -69,6 +83,10 @@ public class ConfigReader {
     this.properties.load(input);
   }
 
+  /**
+   * Checks whether all external software is available and prints
+   * the version numbers of said software.
+   */
   public void checkAvailabilityAndPrintVersions() {
     // SCALA
     try {
@@ -121,6 +139,12 @@ public class ConfigReader {
     System.out.println("JPL version " + JPL.version_string());  
   }
 
+  /**
+   * Simple getter.
+
+   * @return String representation of the isabelle executable
+   * @throws ExternalSoftwareUnavailableException if isabelle is unavailable
+   */
   public String getIsabelleExecutable() throws ExternalSoftwareUnavailableException {
     if (!this.isabelleAvailable) {
       throw new ExternalSoftwareUnavailableException();
@@ -137,6 +161,11 @@ public class ConfigReader {
     return this.readAndSplitList("isabelle_tactics");
   }
 
+  /**
+   * Returns the list of type synonyms defined in "type_synonyms".
+
+   * @return the list
+   */
   public List<Pair<String, String>> getTypeSynonyms() {
     List<Pair<String, String>> res = new LinkedList<Pair<String, String>>();
     List<String> typeSynonyms = this.readAndSplitList("type_synonyms");
@@ -178,6 +207,12 @@ public class ConfigReader {
     return this.scalacAvailable;
   }
 
+  /**
+   * Retrieves the path th the scalac executable, as defined in "scala_compiler".
+
+   * @return the string to the executable 
+   * @throws ExternalSoftwareUnavailableException if Scala is unavailable
+   */
   public String getScalaCompiler() throws ExternalSoftwareUnavailableException {
     if (!this.hasScalaCompiler()) {
       throw new ExternalSoftwareUnavailableException();
@@ -186,6 +221,12 @@ public class ConfigReader {
     return this.properties.getProperty("scala_compiler");
   }
 
+  /**
+   * Retrieves the path to $ISABELLE_HOME.
+
+   * @return the path
+   * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+   */
   public String getIsabelleHome() throws ExternalSoftwareUnavailableException {
     if (!this.isabelleAvailable) {
       throw new ExternalSoftwareUnavailableException();
@@ -217,6 +258,12 @@ public class ConfigReader {
     return (output.split("=")[1].trim());
   }
 
+  /**
+   * Retrieves the Isabelle session directory.
+
+   * @return the directory
+   * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+   */
   public String getIsabelleSessionDir() throws ExternalSoftwareUnavailableException {
     if (!this.isabelleAvailable) {
       throw new ExternalSoftwareUnavailableException();
@@ -272,7 +319,13 @@ public class ConfigReader {
   public boolean hasJpl() {
     return this.jplAvailable;
   }
+  
+  /**
+   * Retrieves the SWI-Prolog home directory.
 
+   * @return the directory
+   * @throws ExternalSoftwareUnavailableException if swipl is unavailable
+   */
   public String getSwiplHome() throws ExternalSoftwareUnavailableException {
     if (!this.swiplAvailable) {
       throw new ExternalSoftwareUnavailableException();
@@ -306,6 +359,12 @@ public class ConfigReader {
   }
 
   // TODO: De-spaghettize
+  /**
+   * Retrieves the SWI-Prolog library directory via "swipl --dump-runtime-variables".
+
+   * @return the directory
+   * @throws ExternalSoftwareUnavailableException if swipl is unavailable
+   */
   public String getSwiplLib() throws ExternalSoftwareUnavailableException {
     if (!this.swiplAvailable) {
       throw new ExternalSoftwareUnavailableException();

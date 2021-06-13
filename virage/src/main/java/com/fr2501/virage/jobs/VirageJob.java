@@ -31,7 +31,12 @@ public abstract class VirageJob<T> {
   private long timeFinished;
 
   int phase = 0;
+  
+  /**
+   * Simple constructor.
 
+   * @param issuer the issuing ui
+   */
   public VirageJob(VirageUserInterface issuer) {
     this.issuer = issuer;
     this.id = VirageJob.next_id;
@@ -45,7 +50,7 @@ public abstract class VirageJob<T> {
   /**
    * Runs the job and notifies its issuer on termination. Should only be ran after
    * checking isReadyToExecute(), otherwise behaviour is undefined.
-   * 
+
    * @param core the executing core
    */
   public void execute(VirageCore core) {
@@ -65,7 +70,7 @@ public abstract class VirageJob<T> {
 
   /**
    * The actual implementation of the job's functionality.
-   * 
+
    * @throws Exception which will be caught by the
    *                   {@link com.fr2501.virage.core.VirageCore} object
    */
@@ -79,7 +84,7 @@ public abstract class VirageJob<T> {
 
   /**
    * Sets the current state, also updates the timestamps if applicable.
-   * 
+
    * @param state the new state
    */
   public void setState(VirageJobState state) {

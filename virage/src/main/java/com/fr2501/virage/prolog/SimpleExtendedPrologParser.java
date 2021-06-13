@@ -27,6 +27,9 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
   private final PrologParser prologParser;
   private final Logger logger = LogManager.getLogger(SimpleExtendedPrologParser.class);
 
+  /**
+   * Simple constructor.
+   */
   public SimpleExtendedPrologParser() {
     logger.info("Initialising SimpleExtendedPrologParser.");
 
@@ -44,7 +47,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
   /**
    * This method does the actual parsing.
-   * 
+
    * @param representation a line-by-line representation of the extended Prolog file.
    * @param path the path to the framework (required for compatibility reasons)
    * @return a {@link FrameworkRepresentation} of the input.

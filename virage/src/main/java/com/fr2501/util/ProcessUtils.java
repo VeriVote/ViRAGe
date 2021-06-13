@@ -16,7 +16,7 @@ public class ProcessUtils {
    * Executes a terminating command and logs it outputs, stderr foing to
    * logger.warn(), stdout to logger.info(). <b>Does not return if the command is
    * non-terminating!</b>
-   * 
+
    * @param command the command to be executed (as is, i.e. the String has to
    *                contain all parameters etc.)
    * @return the exit code (usually 0 on success, but depending on the command)
@@ -49,7 +49,7 @@ public class ProcessUtils {
    * Executes a terminating command and prints its output to
    * System.out/System.err, respectively. <b>Does not return if the command is
    * non-terminating!</b>
-   * 
+
    * @param command the command to be executed (as is, i.e. the String has to
    *                contain all parameters etc.)
    * @return the exit code (usually 0 on success, but depending on the command)
@@ -78,6 +78,17 @@ public class ProcessUtils {
     return status;
   }
 
+  /**
+   * Executes a terminating command and prints its output to
+   * System.out/System.err, respectively. <b>Does not return if the command is
+   * non-terminating!</b>
+
+   * @param command the command to be executed (as is, i.e. the String has to
+   *                contain all parameters etc.)
+   * @return a Pair of strings representing stdout and stderr of the process
+   * @throws IOException          if reading the outputs fails
+   * @throws InterruptedException if command execution is interrupted
+   */
   public static Pair<String, String> runTerminatingProcess(String command) throws IOException, 
       InterruptedException {
     logger.info("Running command: " + command);
