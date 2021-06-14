@@ -274,7 +274,7 @@ public class VirageCore implements Runnable {
       //  }
   }
 
-  public String getVersion() {
+  public static String getVersion() {
     return _VERSION;
   }
 }

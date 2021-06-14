@@ -57,27 +57,9 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
   private FrameworkRepresentation parseFramework(List<String> representation, String path,
       boolean addDummies) throws MalformedEplFileException {
     FrameworkRepresentation framework = new FrameworkRepresentation(path);
+    framework.setTheoryPath("undefined");
+    
     ParserState state = ParserState.STARTING;
-
-    if (representation.get(0).contains(ExtendedPrologStrings.THEORY_PATH_PREFIX)) {
-      String line = representation.get(0);
-
-      if (line.contains(" - ")) {
-        String[] splits = line.split(" - ");
-
-        line = splits[0];
-        framework.setSessionName(splits[1]);
-      }
-
-      line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
-      line = line.replace(ExtendedPrologStrings.COMMENT, "");
-      line = StringUtils.removeWhitespace(line);
-
-      framework.setTheoryPath(line);
-      representation.remove(0);
-    } else {
-      framework.setTheoryPath(ExtendedPrologStrings.UNDEFINED);
-    }
 
     List<String> compositionTypeSection = new LinkedList<String>();
     List<String> composableModuleSection = new LinkedList<String>();
@@ -90,6 +72,24 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
       // Skip comments
       if (currentLine.startsWith("%%")) {
+        continue;
+      }
+      
+      if (currentLine.contains(ExtendedPrologStrings.THEORY_PATH_PREFIX)) {
+        String line = currentLine;
+
+        if (line.contains(" - ")) {
+          String[] splits = line.split(" - ");
+
+          line = splits[0];
+          framework.setSessionName(splits[1]);
+        }
+
+        line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
+        line = line.replace(ExtendedPrologStrings.COMMENT, "");
+        line = StringUtils.removeWhitespace(line);
+
+        framework.setTheoryPath(line);
         continue;
       }
 
