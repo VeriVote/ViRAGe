@@ -51,7 +51,7 @@ public class JplFacade {
           + ConfigReader.getInstance().getConfigPath() + "\" to \"" 
           + ConfigReader.getInstance().getSwiplLib()
           + "libswipl.so\" and restart ViRAGe.");
-      logger.error("The current value of LD_PRELOAD is \"" + System.getenv("LD_PRELOAD") + "\"");
+      logger.error("The current value of LD_PRELOAD is \"" + System.getenv("LD_PRELOAD") + "\".");
 
       throw new ExternalSoftwareUnavailableException();
     }

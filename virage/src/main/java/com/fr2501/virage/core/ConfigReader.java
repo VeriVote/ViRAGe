@@ -9,6 +9,13 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpl7.JPL;
@@ -44,6 +51,8 @@ public class ConfigReader {
   private Properties properties;
 
   private static ConfigReader instance;
+  
+  private File configFile;
 
   private ConfigReader() {
     try {
@@ -76,9 +85,9 @@ public class ConfigReader {
     this.properties = new Properties();
 
     InputStream input = this.getClass().getClassLoader().getResourceAsStream("config.properties");
-    File file = new File(
+    this.configFile = new File(
         this.getClass().getClassLoader().getResource("config.properties").getFile());
-    this.configPath = file.getAbsolutePath();
+    this.configPath = this.configFile.getAbsolutePath();
 
     this.properties.load(input);
   }
@@ -432,5 +441,21 @@ public class ConfigReader {
 
   public String getConfigPath() {
     return this.configPath;
+  }
+  
+  public void updateValueForLdPreload(String newValue) {
+    Parameters params = new Parameters();
+    FileBasedConfigurationBuilder<FileBasedConfiguration> builder 
+        = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
+        PropertiesConfiguration.class)
+            .configure(params.properties().setFileName(this.configPath));
+    Configuration config;
+    try {
+      config = builder.getConfiguration();
+      config.setProperty("value_for_ld_preload", newValue);
+      builder.save();
+    } catch (ConfigurationException e) {
+      logger.error("Updating \"value_for_ld_preload\" failed.");
+    }
   }
 }

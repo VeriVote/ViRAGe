@@ -8,6 +8,7 @@ import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -191,6 +192,19 @@ public class VirageCore implements Runnable {
       this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
     } catch (Exception e) {
       logger.error("Initialising CompositionAnalyzers failed. Is JPL installed?");
+      
+      if (this.ui.requestConfirmation("Shall \"value_for_ld_preload\" be updated automatically?")) {
+        try {
+          ConfigReader.getInstance().updateValueForLdPreload(
+              ConfigReader.getInstance().getSwiplLib() + "libswipl.so");
+          if (this.ui.requestConfirmation("A restart is required. Terminate ViRAGe now?")) {
+            System.exit(0);
+          }
+        } catch (ExternalSoftwareUnavailableException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+      }
 
       if (!this.ui.requestConfirmation(
           "ViRAGe is in an unsafe state, possibly due to JPL not being installed correctly. "
