@@ -191,7 +191,7 @@ public class VirageCore implements Runnable {
       // this.searchManager.addAnalyzer(new SBMCCompositionAnalyzer(framework));
       this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
     } catch (Exception e) {
-      logger.error("Initialising CompositionAnalyzers failed. Is JPL installed?");
+      logger.error("Initialising CompositionAnalyzers failed. Are SWI-Prolog and JPL installed?");
       
       if (this.ui.requestConfirmation("Shall \"value_for_ld_preload\" be updated automatically?")) {
         try {

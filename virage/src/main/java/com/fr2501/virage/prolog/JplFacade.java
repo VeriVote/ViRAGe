@@ -60,10 +60,8 @@ public class JplFacade {
       JPL.init();
     } catch (UnsatisfiedLinkError e) {
       logger.error(
-          "Unable to locate shared objects. "
-          + "Please make sure that they are contained within LD_LIBRARY_PATH.");
-      logger.error("\t Try running \"export LD_LIBRARY_PATH="
-          + ConfigReader.getInstance().getSwiplLib() + "\" and restarting ViRAGe.");
+          "Unable to locate libjpl.so. Is JPL installed?\n" 
+          + "Make sure that \"swi-prolog-java\" is installed if you are on Ubuntu/Debian.");
 
       throw new ExternalSoftwareUnavailableException();
     }

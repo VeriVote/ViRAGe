@@ -245,12 +245,11 @@ public abstract class CompositionAnalyzerTest {
     // Prolog variable names are not always the same.
     String proofString = proof.get(0).toString().replaceAll("_[0-9]+", "R");
 
-    String reference = ": monotonicity(sequential_composition(pass_module(1,R),elect_module)) "
-        + "by seq_comp_mono\n"
-        + " : defer_lift_invariance(pass_module(1,R)) by pass_mod_dl_inv\n"
-        + " : non_electing(pass_module(1,R)) by pass_mod_non_electing\n"
-        + " : defers(1,pass_module(1,R)) by pass_one_mod_def_one\n"
-        + " : electing(elect_module) by elect_mod_electing";
+    String reference = ": monotonicity(sequential_composition(pass_module(1,R),elect_module)) by seq_comp_mono\n"
+        + "\t: defer_lift_invariance(pass_module(1,R)) by pass_mod_dl_inv\n"
+        + "\t: non_electing(pass_module(1,R)) by pass_mod_non_electing\n"
+        + "\t: defers(1,pass_module(1,R)) by pass_one_mod_def_one\n"
+        + "\t: electing(elect_module) by elect_mod_electing";
     logger.debug(proofString);
     assertTrue(proofString.equals(reference));
   }
