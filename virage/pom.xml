@@ -159,7 +159,8 @@
 					<mainClass>com.fr2501.virage.core.VirageMain</mainClass>
 					<environmentVariables>
 						<LD_PRELOAD>${value_for_ld_preload}</LD_PRELOAD>
-						<AAA>${scala_compiler}</AAA>
+						<LD_LIBRARY_PATH>/usr/lib/swi-prolog/amd64/</LD_LIBRARY_PATH>
+						<SWI_HOME_DIR>/usr/lib/swi-prolog/</SWI_HOME_DIR>
 					</environmentVariables>
 					<executable>java</executable>
 					<arguments>
