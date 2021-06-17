@@ -66,6 +66,8 @@ public class JplFacade {
     }
 
     try {
+      JPL.setTraditional();
+      
       JPL.init();
     } catch (UnsatisfiedLinkError e) {
       logger.error(System.getenv("SWI_HOME_DIR"));
