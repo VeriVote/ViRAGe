@@ -1,5 +1,6 @@
 package com.fr2501.virage.core;
 
+import com.fr2501.util.SystemUtils;
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
@@ -23,6 +24,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jpl7.JPLException;
 
 /**
  * The main application.
@@ -60,7 +62,7 @@ public class VirageCore implements Runnable {
     this.args = args;
     this.jobs = new LinkedBlockingQueue<VirageJob<?>>();
     
-    this.initEnvironment();
+    //this.initEnvironment();
   }
 
   public ExtendedPrologParser getExtendedPrologParser() {
@@ -164,8 +166,6 @@ public class VirageCore implements Runnable {
   }
 
   private void init(String[] args) throws ParseException {
-    this.initEnvironment();
-
     this.parseCommandLine(args);
 
     // Initialise UserInterface
@@ -184,13 +184,15 @@ public class VirageCore implements Runnable {
   }
 
   private void initAnalyzers() {
+    boolean unsafeState = false;
+    
     try {
       // this.searchManager.addAnalyzer(new
       // SimplePrologCompositionAnalyzer(framework));
       this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
       // this.searchManager.addAnalyzer(new SBMCCompositionAnalyzer(framework));
       this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
-    } catch (Exception e) {
+    } catch (IOException | ExternalSoftwareUnavailableException e) {
       logger.error("Initialising CompositionAnalyzers failed. Are SWI-Prolog and JPL installed?");
       
       if (this.ui.requestConfirmation("Shall \"value_for_ld_preload\" be updated automatically?")) {
@@ -206,6 +208,13 @@ public class VirageCore implements Runnable {
         }
       }
 
+      unsafeState = true;
+    } catch (JPLException e) {
+      logger.error("SWI-Prolog appears to be outdated. Please refer to ViRAGe's readme.", e);
+      unsafeState = true;
+    }
+    
+    if (unsafeState) {
       if (!this.ui.requestConfirmation(
           "ViRAGe is in an unsafe state, possibly due to JPL not being installed correctly. "
               + "Do you want to continue?")) {
@@ -251,27 +260,47 @@ public class VirageCore implements Runnable {
   }
 
   private void initEnvironment() {
-      //    SystemUtils.setUnixEnvironmentVariable(
-      //    "SWI_HOME_DIR", ConfigReader.getInstance().getSwiplHome());
-      //    
-      //    SystemUtils.setUnixEnvironmentVariable(
-      //    "LD_LIBRARY_PATH", ConfigReader.getInstance().getSwiplLib());
-      //    try {
-      //      SystemUtils.addDirToLibraryPath(ConfigReader.getInstance().getSwiplHome() + "lib/");
-      //    } catch (IOException e) {
-      //      // TODO Auto-generated catch block
-      //      e.printStackTrace();
-      //    }
-      //
-      //    String classPath = "";
-      //    if (System.getenv().containsKey("CLASSPATH")) {
-      //      classPath = System.getenv("CLASSPATH") + ";";
-      //    }
-      //
-      //    if (!classPath.contains("jpl.jar")) {
-      //      classPath += ConfigReader.getInstance().getSwiplHome() + "/lib/jpl.jar";
-      //      SystemUtils.setUnixEnvironmentVariable("CLASSPATH", classPath);
-      //  }
+    try {
+      SystemUtils.setUnixEnvironmentVariable("SWI_HOME_DIR",
+          ConfigReader.getInstance().getSwiplHome());
+    } catch (ExternalSoftwareUnavailableException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+
+    try {
+      SystemUtils.setUnixEnvironmentVariable("LD_LIBRARY_PATH",
+          ConfigReader.getInstance().getSwiplLib());
+    } catch (ExternalSoftwareUnavailableException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+    try {
+      try {
+        SystemUtils.addDirToLibraryPath(ConfigReader.getInstance().getSwiplHome() + "lib/");
+      } catch (ExternalSoftwareUnavailableException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    String classPath = "";
+    if (System.getenv().containsKey("CLASSPATH")) {
+      classPath = System.getenv("CLASSPATH") + ";";
+    }
+
+    if (!classPath.contains("jpl.jar")) {
+      try {
+        classPath += ConfigReader.getInstance().getSwiplHome() + "/lib/jpl.jar";
+      } catch (ExternalSoftwareUnavailableException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      SystemUtils.setUnixEnvironmentVariable("CLASSPATH", classPath);
+    }
   }
 
   public static String getVersion() {

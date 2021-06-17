@@ -47,7 +47,7 @@ public class SimplePrologParser implements PrologParser {
   }
 
   @Override
-  public PrologPredicate parsePredicate(String string) {
+  public PrologPredicate parsePredicate(String string) {    
     if (string.equals("")) {
       throw new IllegalArgumentException();
     }
@@ -95,6 +95,11 @@ public class SimplePrologParser implements PrologParser {
 
     if (level != 0) {
       throw new IllegalArgumentException();
+    }
+    
+    // Workaround to avoid problems from superfluous brackets.
+    if (name.equals("")) {
+      return parameters.get(0);
     }
 
     return new PrologPredicate(name, parameters);

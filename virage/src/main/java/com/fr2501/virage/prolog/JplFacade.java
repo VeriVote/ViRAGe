@@ -14,10 +14,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpl7.Atom;
+import org.jpl7.Compound;
 import org.jpl7.JPL;
 import org.jpl7.PrologException;
 import org.jpl7.Query;
 import org.jpl7.Term;
+import org.jpl7.Variable;
 
 /**
  * A class used to interface with JPL7.
@@ -27,6 +29,8 @@ public class JplFacade {
   private static final Logger logger = LogManager.getLogger(JplFacade.class);
   private static final long DEFAULT_TIMEOUT = 10000;
   private long timeout;
+  
+  private PrologParser parser;
 
   private static int fileCounter = 0;
 
@@ -42,9 +46,14 @@ public class JplFacade {
    */
   public JplFacade(long timeout) throws ExternalSoftwareUnavailableException {
     this.timeout = timeout;
+    this.parser = new SimplePrologParser();
+    
+    if (!ConfigReader.getInstance().hasJpl()) {
+      throw new ExternalSoftwareUnavailableException();
+    }
 
     if (!System.getenv().containsKey("LD_PRELOAD") || !System.getenv("LD_PRELOAD")
-        .contains(ConfigReader.getInstance().getSwiplLib() + "libswipl.so")) {
+        .contains("libswipl.so")) {
 
       logger.error("libswipl.so has not been preloaded, JPL will not work properly.");
       logger.error("\t Try setting \"value_for_ld_preload\" in \""
@@ -59,12 +68,20 @@ public class JplFacade {
     try {
       JPL.init();
     } catch (UnsatisfiedLinkError e) {
+      logger.error(System.getenv("SWI_HOME_DIR"));
+      logger.error(System.getenv("LD_LIBRARY_PATH"));
+      logger.error(System.getenv("CLASSPATH"));
+      
       logger.error(
           "Unable to locate libjpl.so. Is JPL installed?\n" 
-          + "Make sure that \"swi-prolog-java\" is installed if you are on Ubuntu/Debian.");
+          + "Make sure that \"swi-prolog-java\" is installed if you are on Ubuntu/Debian.", e);
 
       throw new ExternalSoftwareUnavailableException();
     }
+    
+    logger.error(System.getenv("SWI_HOME_DIR"));
+    logger.error(System.getenv("LD_LIBRARY_PATH"));
+    logger.error(System.getenv("CLASSPATH"));
   }
 
   public void setTimeout(long timeout) {
@@ -116,9 +133,11 @@ public class JplFacade {
       throws PrologException {
     float timeoutInSeconds = ((float) timeout) / 1000.0f;
 
-    String actualQuery = "call_with_time_limit(" + timeoutInSeconds + ",(" + queryString + "))";
+    String actualQuery = "call_with_time_limit(" + timeoutInSeconds + "," + "(" + queryString + ")" + ")";
+    
+    Term term = this.stringToTerm(actualQuery);
 
-    Query query = new Query(actualQuery);
+    Query query = new Query(term);
 
     try {
       if (query.hasMoreSolutions()) {
@@ -174,7 +193,7 @@ public class JplFacade {
     while (System.currentTimeMillis() < endTime) {
       logger.debug("Current maxDepth: " + maxDepth);
       long remainingTime = endTime - System.currentTimeMillis();
-      String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + ","
+      String actualQuery = "call_with_depth_limit(" + "(" + queryString + ")" + "," + maxDepth + ","
           + unusedVariable + ")";
 
       Map<String, String> result = new HashMap<String, String>();
@@ -257,7 +276,7 @@ public class JplFacade {
     while (System.currentTimeMillis() < endTime) {
       logger.debug("Current maxDepth: " + maxDepth);
       long remainingTime = endTime - System.currentTimeMillis();
-      String actualQuery = "call_with_depth_limit((" + queryString + ")," + maxDepth + ","
+      String actualQuery = "call_with_depth_limit(" + "(" + queryString + ")" + "," + maxDepth + ","
           + unusedVariable + ")";
 
       Map<String, String> result = new HashMap<String, String>();
@@ -434,5 +453,39 @@ public class JplFacade {
     }
 
     return result;
+  }
+  
+  // This is required to ensure compatibility when using older versions of SWI-Prolog.
+  // The up-to-date version of JPL and SWI-Prolog would allow using Query(String).
+  private Term stringToTerm(PrologPredicate pred) {
+    if (pred.getArity() == 0) {
+      if (pred.isVariable()) {
+        return new Variable(pred.getName());
+      } else if (StringUtils.isNumeric(pred.getName())) {
+        if (pred.getName().contains(".")) {
+          return new org.jpl7.Float(Double.parseDouble(pred.getName()));
+        } else {
+          return new org.jpl7.Integer(Integer.parseInt(pred.getName()));
+        }
+      } else {
+        return new Atom(pred.getName());
+      }
+    } else {
+      // Compound
+      String name = pred.getName();
+      
+      Term[] children = new Term[pred.getArity()];
+      for (int i = 0; i < pred.getArity(); i++) {
+        children[i] = this.stringToTerm(pred.getParameters().get(i));
+      }
+      
+      return new Compound(name, children);
+    }
+  }
+  
+  private Term stringToTerm(String predicate) {
+    PrologPredicate pred = this.parser.parsePredicate(predicate);
+    
+    return this.stringToTerm(pred);
   }
 }
