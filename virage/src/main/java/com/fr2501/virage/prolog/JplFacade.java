@@ -56,10 +56,9 @@ public class JplFacade {
         .contains("libswipl.so")) {
 
       logger.error("libswipl.so has not been preloaded, JPL will not work properly.");
-      logger.error("\t Try setting \"value_for_ld_preload\" in \""
-          + ConfigReader.getInstance().getConfigPath() + "\" to \"" 
-          + ConfigReader.getInstance().getSwiplLib()
-          + "libswipl.so\" and restart ViRAGe.");
+      logger.error("\t Please check \"value_for_ld_preload\" in \""
+          + ConfigReader.getInstance().getConfigPath() + "\"" 
+          + ", make sure that it points to libswipl.so and restart ViRAGe.");
       logger.error("The current value of LD_PRELOAD is \"" + System.getenv("LD_PRELOAD") + "\".");
 
       throw new ExternalSoftwareUnavailableException();
@@ -70,20 +69,17 @@ public class JplFacade {
       
       JPL.init();
     } catch (UnsatisfiedLinkError e) {
-      logger.error(System.getenv("SWI_HOME_DIR"));
-      logger.error(System.getenv("LD_LIBRARY_PATH"));
-      logger.error(System.getenv("CLASSPATH"));
-      
       logger.error(
-          "Unable to locate libjpl.so. Is JPL installed?\n" 
-          + "Make sure that \"swi-prolog-java\" is installed if you are on Ubuntu/Debian.", e);
+          "Unable to locate JPL libraries. Is JPL installed?\n" 
+          + "Make sure that \"swi-prolog-java\" is installed if you are on Ubuntu/Debian.");
+      logger.error("Also make sure that \"value_for_ld_library_path\" in " 
+          + ConfigReader.getInstance().getConfigPath() 
+          + " points to the directory containing libjpl.so.");
+      logger.error("The current value of LD_LIBRARY_PATH is \"" 
+          + System.getenv("LD_LIBRARY_PATH") + "\".");
 
-      throw new ExternalSoftwareUnavailableException();
+      throw e;
     }
-    
-    logger.error(System.getenv("SWI_HOME_DIR"));
-    logger.error(System.getenv("LD_LIBRARY_PATH"));
-    logger.error(System.getenv("CLASSPATH"));
   }
 
   public void setTimeout(long timeout) {
@@ -135,7 +131,8 @@ public class JplFacade {
       throws PrologException {
     float timeoutInSeconds = ((float) timeout) / 1000.0f;
 
-    String actualQuery = "call_with_time_limit(" + timeoutInSeconds + "," + "(" + queryString + ")" + ")";
+    String actualQuery = "call_with_time_limit(" 
+        + timeoutInSeconds + "," + "(" + queryString + ")" + ")";
     
     Term term = this.stringToTerm(actualQuery);
 

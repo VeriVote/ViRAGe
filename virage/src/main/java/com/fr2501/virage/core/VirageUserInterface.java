@@ -22,5 +22,7 @@ public interface VirageUserInterface extends Runnable {
   
   public boolean requestConfirmation(String message);
   
+  public String requestString(String message);
+  
   public ProgressIndicator spawnProgressIndicator();
 }

@@ -58,7 +58,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     LocalDateTime now = LocalDateTime.now();
-    System.out.println("# Version " + core.getVersion() + ", Timestamp: " + dtf.format(now));
+    System.out.println("# Version " + VirageCore.getVersion() + ", Timestamp: " + dtf.format(now));
     System.out.println("# Using " + ConfigReader.getInstance().getConfigPath() + ".");
 
     this.printSeparator();
@@ -418,7 +418,15 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     return returnValue;
   }
 
+  @Override
   public ProgressIndicator spawnProgressIndicator() {
     return this.clpi;
+  }
+
+  @Override
+  public String requestString(String message) {
+    System.out.println(message);
+    
+    return this.scanner.nextLine();
   }
 }

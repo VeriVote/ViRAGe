@@ -192,20 +192,31 @@ public class VirageCore implements Runnable {
       this.searchManager.addAnalyzer(new AdmissionCheckPrologCompositionAnalyzer(framework));
       // this.searchManager.addAnalyzer(new SBMCCompositionAnalyzer(framework));
       this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(), framework);
-    } catch (IOException | ExternalSoftwareUnavailableException e) {
+    } catch (IOException e) {
+      logger.error(e);
+      
+      unsafeState = true;
+    } catch (UnsatisfiedLinkError e) {
       logger.error("Initialising CompositionAnalyzers failed. Are SWI-Prolog and JPL installed?");
       
-      if (this.ui.requestConfirmation("Shall \"value_for_ld_preload\" be updated automatically?")) {
-        try {
-          ConfigReader.getInstance().updateValueForLdPreload(
-              ConfigReader.getInstance().getSwiplLib() + "libswipl.so");
-          if (this.ui.requestConfirmation("A restart is required. Terminate ViRAGe now?")) {
-            System.exit(0);
-          }
-        } catch (ExternalSoftwareUnavailableException e1) {
-          // TODO Auto-generated catch block
-          e1.printStackTrace();
-        }
+      logger.error("This might be due to wrong configuration of LD_LIBRARY_PATH.");
+      
+      String newValue = this.ui.requestString("Please input the correct value of LD_LIBRARY_PATH "
+          + "or leave empty to keep the current one.");
+      if (!newValue.isEmpty()) {
+        ConfigReader.getInstance().updateValueForLdLibraryPath(newValue);
+      }
+
+      unsafeState = true;
+    } catch (ExternalSoftwareUnavailableException e) {
+      logger.error("Initialising CompositionAnalyzers failed. Are SWI-Prolog and JPL installed?");
+      
+      logger.error("This might be due to wrong configuration of LD_PRELOAD.");
+      
+      String newValue = this.ui.requestString("Please input the correct value of LD_PRELOAD "
+          + "or leave empty to keep the current one.");
+      if (!newValue.isEmpty()) {
+        ConfigReader.getInstance().updateValueForLdPreload(newValue);
       }
 
       unsafeState = true;

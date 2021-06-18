@@ -444,6 +444,14 @@ public class ConfigReader {
   }
   
   public void updateValueForLdPreload(String newValue) {
+    this.updateValue("value_for_ld_preload", newValue);
+  }
+  
+  public void updateValueForLdLibraryPath(String newValue) {
+    this.updateValue("value_for_ld_library_path", newValue);
+  }
+  
+  private void updateValue(String name, String newValue) {
     Parameters params = new Parameters();
     FileBasedConfigurationBuilder<FileBasedConfiguration> builder 
         = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
@@ -452,10 +460,10 @@ public class ConfigReader {
     Configuration config;
     try {
       config = builder.getConfiguration();
-      config.setProperty("value_for_ld_preload", newValue);
+      config.setProperty(name, newValue);
       builder.save();
     } catch (ConfigurationException e) {
-      logger.error("Updating \"value_for_ld_preload\" failed.");
+      logger.error("Updating \"" + name + "\" failed.");
     }
   }
 }
