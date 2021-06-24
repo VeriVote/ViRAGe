@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.jpl7.Atom;
 import org.jpl7.Compound;
 import org.jpl7.JPL;
+import org.jpl7.JPLException;
 import org.jpl7.PrologException;
 import org.jpl7.Query;
 import org.jpl7.Term;
