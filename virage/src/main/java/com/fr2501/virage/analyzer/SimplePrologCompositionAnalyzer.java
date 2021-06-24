@@ -166,7 +166,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 
       // Disabling timeout as these queries are typically fast
       long oldTimeout = this.facade.getTimeout();
-      this.facade.setTimeout(Long.MAX_VALUE / 2);
+      this.facade.setTimeout(Integer.MAX_VALUE / 2);
       SearchResult<Map<String, String>> result = this.facade.iterativeDeepeningQuery(query);
       this.facade.setTimeout(oldTimeout);
 

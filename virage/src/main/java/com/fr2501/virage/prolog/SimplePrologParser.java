@@ -3,6 +3,8 @@ package com.fr2501.virage.prolog;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fr2501.util.StringUtils;
+
 /**
  * A simple implementation of the {@link PrologParser} interface.
  *
@@ -51,6 +53,7 @@ public class SimplePrologParser implements PrologParser {
     if (string.equals("")) {
       throw new IllegalArgumentException();
     }
+    
     String name = "";
     List<PrologPredicate> parameters = new LinkedList<PrologPredicate>();
     String currentPredicate = "";
@@ -95,11 +98,6 @@ public class SimplePrologParser implements PrologParser {
 
     if (level != 0) {
       throw new IllegalArgumentException();
-    }
-    
-    // Workaround to avoid problems from superfluous brackets.
-    if (name.equals("")) {
-      return parameters.get(0);
     }
 
     return new PrologPredicate(name, parameters);

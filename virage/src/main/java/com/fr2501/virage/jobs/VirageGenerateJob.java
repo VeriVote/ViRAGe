@@ -1,5 +1,6 @@
 package com.fr2501.virage.jobs;
 
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
@@ -56,5 +57,33 @@ public class VirageGenerateJob
   @Override
   public boolean externalSoftwareAvailable() {
     return (ConfigReader.getInstance().hasJpl());
+  }
+
+  @Override
+  public String presentConcreteResult() {
+    String prop = "properties";
+    if (this.properties.size() == 1) {
+      prop = "property";
+    }
+
+    List<String> results = new LinkedList<String>();
+    for (SearchResult<DecompositionTree> tree : this.result) {
+      if (tree.hasValue()) {
+        results.add(tree.getValue().toString());
+      }
+    }
+
+    if (results.isEmpty()) {
+      return "No composition found with " + prop + " "
+          + StringUtils.printCollection(this.properties) + ".";
+    }
+    
+    return "Generated " + StringUtils.printCollection(results) + " with " + prop + " "
+        + StringUtils.printCollection(this.properties) + ".";
+  }
+
+  @Override
+  public String getDescription() {
+    return "Generating Composition ...";
   }
 }

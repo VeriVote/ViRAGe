@@ -1,5 +1,6 @@
 package com.fr2501.virage.jobs;
 
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
@@ -58,5 +59,23 @@ public class VirageProveJob extends VirageJobWithExplicitResult<List<List<Compos
   @Override
   public boolean externalSoftwareAvailable() {
     return (ConfigReader.getInstance().hasJpl());
+  }
+
+  @Override
+  public String presentConcreteResult() {
+    String prop = "properties";
+    if (this.properties.size() == 1) {
+      prop = "property";
+    }
+    
+    String res = "Proof found. " + this.tree.toString() + " satisfies the " + prop + " "
+        + StringUtils.printCollection(this.properties) + ".";
+    
+    return res;
+  }
+
+  @Override
+  public String getDescription() {
+    return "Searching proof ...";
   }
 }

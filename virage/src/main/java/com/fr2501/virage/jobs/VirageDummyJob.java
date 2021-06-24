@@ -23,4 +23,14 @@ public class VirageDummyJob extends VirageJobWithoutExplicitResult {
     return true;
   }
 
+  @Override
+  public String presentConcreteResult() {
+    return "Nothing.";
+  }
+
+  @Override
+  public String getDescription() {
+    return "Dummy job ...";
+  }
+
 }

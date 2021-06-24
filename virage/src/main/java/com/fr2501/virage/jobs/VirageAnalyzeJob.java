@@ -1,5 +1,6 @@
 package com.fr2501.virage.jobs;
 
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
@@ -26,7 +27,7 @@ public class VirageAnalyzeJob
 
   /**
    * Simple constructor.
-
+   * 
    * @param issuer the issuer
    * @param tree the tree
    * @param properties the properties
@@ -60,5 +61,36 @@ public class VirageAnalyzeJob
   @Override
   public boolean externalSoftwareAvailable() {
     return (ConfigReader.getInstance().hasJpl());
+  }
+
+  @Override
+  public String presentConcreteResult() {
+    String prop = "properties";
+    if (this.properties.size() == 1) {
+      prop = "property";
+    }
+
+    boolean hasProperties = false;
+    for (List<SearchResult<BooleanWithUncertainty>> resultList : this.result) {
+      for (SearchResult<BooleanWithUncertainty> result : resultList) {
+        if (result.hasValue() && result.getValue() == BooleanWithUncertainty.TRUE) {
+          hasProperties = true;
+          break;
+        }
+      }
+    }
+
+    if (hasProperties) {
+      return this.tree.toString() + " has the " + prop + " "
+          + StringUtils.printCollection(properties) + "";
+    } else {
+      return this.tree.toString() + " cannot be shown to have the " + prop + " "
+          + StringUtils.printCollection(properties) + "";
+    }
+  }
+
+  @Override
+  public String getDescription() {
+    return "Analyzing a composition ...";
   }
 }

@@ -45,4 +45,14 @@ public class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult<File>
   public boolean externalSoftwareAvailable() {
     return true;
   }
+
+  @Override
+  public String presentConcreteResult() {
+    return "Generated theory file at " + this.outputPath + ".";
+  }
+
+  @Override
+  public String getDescription() {
+    return "Generating Isabelle theory ...";
+  }
 }

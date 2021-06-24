@@ -223,7 +223,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
   @Override
   public void notify(VirageJob<?> job) {
-    System.out.println(job.toString());
+    System.out.println(job.presentResult() + "\n");
   }
 
   private VirageGenerateJob createGenerationQuery() {
@@ -428,5 +428,15 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     System.out.println(message);
     
     return this.scanner.nextLine();
+  }
+  
+  @Override
+  public void displayMessage(String message) {
+    System.out.println(message);
+  }
+
+  @Override
+  public void displayError(String message) {
+    System.err.println(message);
   }
 }

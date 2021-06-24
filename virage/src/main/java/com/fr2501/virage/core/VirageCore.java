@@ -132,6 +132,9 @@ public class VirageCore implements Runnable {
         VirageJob<?> job;
         try {
           job = this.jobs.take();
+          
+          this.ui.displayMessage("---------- " + job.getDescription());
+          
           job.execute(this);
         } catch (Exception e) {
           logger.error("An error occured.", e);
@@ -197,26 +200,40 @@ public class VirageCore implements Runnable {
       
       unsafeState = true;
     } catch (UnsatisfiedLinkError e) {
-      logger.error("Initialising CompositionAnalyzers failed. Are SWI-Prolog and JPL installed?");
+      this.ui.displayError("SWI-Prolog library directory could not be located.");
       
-      logger.error("This might be due to wrong configuration of LD_LIBRARY_PATH.");
-      
-      String newValue = this.ui.requestString("Please input the correct value of LD_LIBRARY_PATH "
-          + "or leave empty to keep the current one.");
-      if (!newValue.isEmpty()) {
-        ConfigReader.getInstance().updateValueForLdLibraryPath(newValue);
+      String newValue;
+      try {
+        newValue = this.ui.requestString("Please input the path to the SWI-Prolog "
+            + "library directory.\n" 
+            + "The typical value is \"" + ConfigReader.getInstance().getSwiplLib() 
+            + "\", but it might differ on your system.");
+        
+        if (!newValue.isEmpty()) {
+          ConfigReader.getInstance().updateValueForLdLibraryPath(newValue);
+        }
+      } catch (ExternalSoftwareUnavailableException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
       }
 
       unsafeState = true;
     } catch (ExternalSoftwareUnavailableException e) {
-      logger.error("Initialising CompositionAnalyzers failed. Are SWI-Prolog and JPL installed?");
+      this.ui.displayError("libswipl.so could not be located.");
       
-      logger.error("This might be due to wrong configuration of LD_PRELOAD.");
-      
-      String newValue = this.ui.requestString("Please input the correct value of LD_PRELOAD "
-          + "or leave empty to keep the current one.");
-      if (!newValue.isEmpty()) {
-        ConfigReader.getInstance().updateValueForLdPreload(newValue);
+      String newValue;
+      try {
+        newValue = this.ui.requestString("Please input the path to libswipl.so.\n" 
+            + "Typical values are \"/usr/lib/libswipl.so\" or \"" 
+            + ConfigReader.getInstance().getSwiplLib() + "/libswipl.so\""
+            + ", but it might differ on your system.");
+        
+        if (!newValue.isEmpty()) {
+          ConfigReader.getInstance().updateValueForLdPreload(newValue);
+        }
+      } catch (ExternalSoftwareUnavailableException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
       }
 
       unsafeState = true;
@@ -226,9 +243,8 @@ public class VirageCore implements Runnable {
     }
     
     if (unsafeState) {
-      if (!this.ui.requestConfirmation(
-          "ViRAGe is in an unsafe state, possibly due to JPL not being installed correctly. "
-              + "Do you want to continue?")) {
+      if (this.ui.requestConfirmation(
+          "A restart is required for the changes to take effect. Restart now?")) {
         System.exit(0);
       }
     }

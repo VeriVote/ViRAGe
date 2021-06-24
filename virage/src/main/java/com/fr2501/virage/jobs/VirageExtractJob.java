@@ -50,4 +50,14 @@ public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepre
   public boolean externalSoftwareAvailable() {
     return (ConfigReader.getInstance().hasIsabelle());
   }
+
+  @Override
+  public String presentConcreteResult() {
+    return "Extracted (E)PL file " + this.result.getAbsolutePath() + " from " + this.path + ".";
+  }
+
+  @Override
+  public String getDescription() {
+    return "Extracting (E)PL file ...";
+  }
 }

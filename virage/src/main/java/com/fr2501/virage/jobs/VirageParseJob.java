@@ -46,4 +46,15 @@ public class VirageParseJob extends VirageJobWithExplicitResult<FrameworkReprese
   public boolean externalSoftwareAvailable() {
     return true;
   }
+
+  @Override
+  public String presentConcreteResult() {
+    return "Successfully parsed (E)PL file at " + this.file.getAbsolutePath() + ".";
+    // TODO Display components?
+  }
+
+  @Override
+  public String getDescription() {
+    return "Parsing (E)PL file ...";
+  }
 }

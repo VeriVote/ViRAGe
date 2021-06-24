@@ -1,6 +1,7 @@
 package com.fr2501.virage.jobs;
 
 
+import com.fr2501.util.SystemUtils;
 import com.fr2501.virage.core.ProgressIndicator;
 import com.fr2501.virage.core.VirageCore;
 import com.fr2501.virage.core.VirageUserInterface;
@@ -21,6 +22,8 @@ public abstract class VirageJob<T> {
 
   protected VirageCore executingCore;
   protected VirageJobState state;
+  
+  protected String errorMessage = "";
 
   private static long next_id = 0;
 
@@ -142,4 +145,31 @@ public abstract class VirageJob<T> {
 
     return res;
   }
+  
+  public String presentResult() {
+    String res = "";
+    
+    float timeInMs = (float) (timeFinished - timeStarted);
+    float timeInS = timeInMs / (float) 1000;
+    
+    res += "Started at " + SystemUtils.getTime() + ".\n";
+    res += "Job ran for " + String.format(
+        "%.2f", timeInS)
+        + " seconds.\n"; 
+    
+    if (this.state == VirageJobState.FINISHED) {
+      res += this.presentConcreteResult() + "\n";
+    } else {
+      res += "Something went wrong while executing this job.\n";
+      res += this.errorMessage;
+    }
+    
+    res += "----------";
+    
+    return res;
+  }
+  
+  public abstract String presentConcreteResult();
+  
+  public abstract String getDescription();
 }

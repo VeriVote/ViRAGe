@@ -3,9 +3,13 @@ package com.fr2501.util;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.fr2501.virage.core.VirageCore;
 
 /**
  * A set of system utility functions.
@@ -86,5 +90,12 @@ public class SystemUtils {
     } catch (NoSuchFieldException e) {
       throw new IOException("Failed to get field handle to set library path");
     }
+  }
+  
+  public static String getTime() {
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    LocalDateTime now = LocalDateTime.now();
+    
+    return dtf.format(now);
   }
 }

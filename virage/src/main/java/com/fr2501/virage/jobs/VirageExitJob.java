@@ -30,4 +30,14 @@ public class VirageExitJob extends VirageJobWithoutExplicitResult {
   public boolean externalSoftwareAvailable() {
     return true;
   }
+
+  @Override
+  public String presentConcreteResult() {
+    return "Terminated with exit code " + this.statusCode + ".";
+  }
+
+  @Override
+  public String getDescription() {
+    return "Terminating ...";
+  }
 }

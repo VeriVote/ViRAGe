@@ -33,6 +33,8 @@ public class JplFacade {
   private PrologParser parser;
 
   private static int fileCounter = 0;
+  
+  private boolean compatibilityMode = false;
 
   public JplFacade() throws ExternalSoftwareUnavailableException {
     this(JplFacade.DEFAULT_TIMEOUT);
@@ -43,8 +45,9 @@ public class JplFacade {
 
    * @param timeout query timeout
    * @throws ExternalSoftwareUnavailableException if JPL is unavailable
+   * @throws UnsatisfiedLinkError if SWI-Prolog library directory is not in LD_LIBRARY_PATH
    */
-  public JplFacade(long timeout) throws ExternalSoftwareUnavailableException {
+  public JplFacade(long timeout) throws ExternalSoftwareUnavailableException, UnsatisfiedLinkError {
     this.timeout = timeout;
     this.parser = new SimplePrologParser();
     
@@ -55,12 +58,6 @@ public class JplFacade {
     if (!System.getenv().containsKey("LD_PRELOAD") || !System.getenv("LD_PRELOAD")
         .contains("libswipl.so")) {
 
-      logger.error("libswipl.so has not been preloaded, JPL will not work properly.");
-      logger.error("\t Please check \"value_for_ld_preload\" in \""
-          + ConfigReader.getInstance().getConfigPath() + "\"" 
-          + ", make sure that it points to libswipl.so and restart ViRAGe.");
-      logger.error("The current value of LD_PRELOAD is \"" + System.getenv("LD_PRELOAD") + "\".");
-
       throw new ExternalSoftwareUnavailableException();
     }
 
@@ -69,16 +66,18 @@ public class JplFacade {
       
       JPL.init();
     } catch (UnsatisfiedLinkError e) {
-      logger.error(
-          "Unable to locate JPL libraries. Is JPL installed?\n" 
-          + "Make sure that \"swi-prolog-java\" is installed if you are on Ubuntu/Debian.");
-      logger.error("Also make sure that \"value_for_ld_library_path\" in " 
-          + ConfigReader.getInstance().getConfigPath() 
-          + " points to the directory containing libjpl.so.");
-      logger.error("The current value of LD_LIBRARY_PATH is \"" 
-          + System.getenv("LD_LIBRARY_PATH") + "\".");
-
+      // Unnecessary catch, but added for clarity.
+      // This happens when LD_LIBRARY_PATH does not contain the SWI-Prolog library directory.
       throw e;
+    }
+    
+    try {
+      Query compatQuery = new Query("subsumes_term(X,Y)");
+      compatQuery.hasSolution();
+    } catch (PrologException e) {
+      logger.warn("Outdated version of SWI-Prolog detected. " 
+          + "ViRAGe attempts to run in compatibility mode, but results might be unexpected.");
+      this.compatibilityMode = true;
     }
   }
 
@@ -134,9 +133,7 @@ public class JplFacade {
     String actualQuery = "call_with_time_limit(" 
         + timeoutInSeconds + "," + "(" + queryString + ")" + ")";
     
-    Term term = this.stringToTerm(actualQuery);
-
-    Query query = new Query(term);
+    Query query = this.constructQuery(actualQuery);
 
     try {
       if (query.hasMoreSolutions()) {
@@ -240,7 +237,7 @@ public class JplFacade {
   public SearchResult<Map<String, String>> iterativeDeepeningQueryWithoutTimeout(
       String queryString) {
     long oldTimeout = this.timeout;
-    this.timeout = Long.MAX_VALUE / 2;
+    this.timeout = Integer.MAX_VALUE / 2;
 
     SearchResult<Map<String, String>> res = this.iterativeDeepeningQuery(queryString);
 
@@ -470,6 +467,15 @@ public class JplFacade {
         return new Atom(pred.getName());
       }
     } else {
+      if (pred.getName().isEmpty()) {
+        try {
+          return Term.textToTerm(pred.toString());
+        } catch (PrologException e) {
+          logger.error("The JPL/SWI-Prolog compatibility workaround cannot handle this query.");
+          throw new IllegalArgumentException();
+        }
+      }
+      
       // Compound
       String name = pred.getName();
       
@@ -486,5 +492,15 @@ public class JplFacade {
     PrologPredicate pred = this.parser.parsePredicate(predicate);
     
     return this.stringToTerm(pred);
+  }
+  
+  private Query constructQuery(String queryString) {
+    if (this.compatibilityMode) {
+      Term term = this.stringToTerm(queryString);
+      
+      return new Query(term);
+    } else {
+      return new Query(queryString);
+    }
   }
 }

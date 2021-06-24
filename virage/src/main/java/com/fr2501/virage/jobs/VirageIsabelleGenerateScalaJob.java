@@ -38,4 +38,14 @@ public class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<
     return (ConfigReader.getInstance().hasIsabelle()
         && ConfigReader.getInstance().hasScalaCompiler());
   }
+
+  @Override
+  public String presentConcreteResult() {
+    return "Created executable JAR file at " + this.result + ".";
+  }
+
+  @Override
+  public String getDescription() {
+    return "Generating and compiling Scala code ...";
+  }
 }

@@ -40,4 +40,14 @@ public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Bo
     return (ConfigReader.getInstance().hasIsabelle());
   }
 
+  @Override
+  public String presentConcreteResult() {
+    return "Isabelle theory " + this.file.getAbsolutePath() + " was verified automatically.";
+  }
+
+  @Override
+  public String getDescription() {
+    return "Verifying Isabelle theory ...";
+  }
+
 }
