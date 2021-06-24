@@ -74,7 +74,7 @@ public class JplFacade {
     try {
       Query compatQuery = new Query("subsumes_term(X,Y)");
       compatQuery.hasSolution();
-    } catch (PrologException e) {
+    } catch (JPLException e) {
       logger.warn("Outdated version of SWI-Prolog detected. " 
           + "ViRAGe attempts to run in compatibility mode, but results might be unexpected.");
       this.compatibilityMode = true;
