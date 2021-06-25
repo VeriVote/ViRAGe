@@ -46,6 +46,10 @@ public class VirageSearchManager {
    */
   public List<List<SearchResult<BooleanWithUncertainty>>> analyzeComposition(
       DecompositionTree composition, List<Property> properties) {
+    if (this.analyzers.isEmpty()) {
+      throw new IllegalStateException("No analyzers available.");
+    }
+    
     // TODO Parallelize.
     List<List<SearchResult<BooleanWithUncertainty>>> results 
         = new LinkedList<List<SearchResult<BooleanWithUncertainty>>>();
@@ -69,6 +73,10 @@ public class VirageSearchManager {
    */
   public List<List<CompositionProof>> proveClaims(DecompositionTree composition,
       List<Property> properties) {
+    if (this.analyzers.isEmpty()) {
+      throw new IllegalStateException("No analyzers available.");
+    }
+    
     // TODO Parallelize.
     List<List<CompositionProof>> results = new LinkedList<List<CompositionProof>>();
 
@@ -88,6 +96,10 @@ public class VirageSearchManager {
    * @return a list of results, ordered in the same way as the analyzers
    */
   public List<SearchResult<DecompositionTree>> generateComposition(List<Property> properties) {
+    if (this.analyzers.isEmpty()) {
+      throw new IllegalStateException("No analyzers available.");
+    }
+    
     // TODO Parallelize.
     List<SearchResult<DecompositionTree>> results 
         = new LinkedList<SearchResult<DecompositionTree>>();

@@ -24,8 +24,6 @@ public interface VirageUserInterface extends Runnable {
   
   public String requestString(String message);
   
-  public ProgressIndicator spawnProgressIndicator();
-  
   public void displayMessage(String message);
   
   public void displayError(String message);

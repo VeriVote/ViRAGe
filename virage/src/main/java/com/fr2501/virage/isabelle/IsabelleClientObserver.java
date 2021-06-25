@@ -31,7 +31,7 @@ public class IsabelleClientObserver implements Runnable {
     this.stderrReader = new BufferedReader(
         new InputStreamReader(this.isabelleClient.getErrorStream()));
 
-    Thread thread = new Thread(this, "isa_obs");
+    Thread thread = new Thread(this, "Isabelle Console Output");
     thread.start();
   }
 

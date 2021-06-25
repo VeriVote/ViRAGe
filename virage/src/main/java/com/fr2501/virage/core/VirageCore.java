@@ -61,8 +61,6 @@ public class VirageCore implements Runnable {
 
     this.args = args;
     this.jobs = new LinkedBlockingQueue<VirageJob<?>>();
-    
-    //this.initEnvironment();
   }
 
   public ExtendedPrologParser getExtendedPrologParser() {
@@ -283,50 +281,6 @@ public class VirageCore implements Runnable {
       formatter.printHelp("ViRAGe", options);
 
       throw e;
-    }
-  }
-
-  private void initEnvironment() {
-    try {
-      SystemUtils.setUnixEnvironmentVariable("SWI_HOME_DIR",
-          ConfigReader.getInstance().getSwiplHome());
-    } catch (ExternalSoftwareUnavailableException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
-
-    try {
-      SystemUtils.setUnixEnvironmentVariable("LD_LIBRARY_PATH",
-          ConfigReader.getInstance().getSwiplLib());
-    } catch (ExternalSoftwareUnavailableException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
-    try {
-      try {
-        SystemUtils.addDirToLibraryPath(ConfigReader.getInstance().getSwiplHome() + "lib/");
-      } catch (ExternalSoftwareUnavailableException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
-    String classPath = "";
-    if (System.getenv().containsKey("CLASSPATH")) {
-      classPath = System.getenv("CLASSPATH") + ";";
-    }
-
-    if (!classPath.contains("jpl.jar")) {
-      try {
-        classPath += ConfigReader.getInstance().getSwiplHome() + "/lib/jpl.jar";
-      } catch (ExternalSoftwareUnavailableException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      SystemUtils.setUnixEnvironmentVariable("CLASSPATH", classPath);
     }
   }
 

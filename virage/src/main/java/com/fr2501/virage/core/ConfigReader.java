@@ -6,8 +6,10 @@ import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.configuration2.Configuration;
@@ -90,6 +92,16 @@ public class ConfigReader {
     this.configPath = this.configFile.getAbsolutePath();
 
     this.properties.load(input);
+  }
+  
+  public Map<String, String> getAllProperties() {
+    Map<String, String> result = new HashMap<String, String>();
+    
+    for (Object prop : this.properties.keySet()) {
+      result.put(prop.toString(), this.properties.getProperty(prop.toString()));
+    }
+    
+    return result;
   }
 
   /**
@@ -444,11 +456,11 @@ public class ConfigReader {
   }
   
   public void updateValueForLdPreload(String newValue) {
-    this.updateValue("value_for_ld_preload", newValue);
+    this.updateValue("libswipl_path", newValue);
   }
   
   public void updateValueForLdLibraryPath(String newValue) {
-    this.updateValue("value_for_ld_library_path", newValue);
+    this.updateValue("path_to_swipl_libraries", newValue);
   }
   
   private void updateValue(String name, String newValue) {

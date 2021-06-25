@@ -64,7 +64,8 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
   public SearchResult<DecompositionTree> generateComposition(List<Property> properties) {
     for (Property property : properties) {
       if (property.getArity() != 1) {
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("For now, only unary "
+            + "properties can be used in queries.");
       }
     }
 

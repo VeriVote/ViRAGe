@@ -141,17 +141,28 @@ public class JplFacade {
 
     try {
       if (query.hasMoreSolutions()) {
-        Map<String, Term> solution = query.nextSolution();
-        Map<String, String> result = new HashMap<String, String>();
+        try {
+          Map<String, Term> solution = query.nextSolution();
 
-        for (String key : solution.keySet()) {
-          String termString = solution.get(key).toString();
+          Map<String, String> result = new HashMap<String, String>();
 
-          result.put(key, termString);
+          for (String key : solution.keySet()) {
+            String termString = solution.get(key).toString();
 
-        }
+            result.put(key, termString);
 
-        return result;
+          }
+
+          return result;
+        } catch (JPLException e) {
+          if (this.compatibilityMode) {
+            logger.error("The JPL/SWI-Prolog compatibility mode was unable to handle this query."
+                + "Please consider upgrading to SWI-Prolog 8.X.");
+            
+            throw e;
+          }
+        } 
+
       } else {
         // No solution exists
         return null;
@@ -159,12 +170,13 @@ public class JplFacade {
     } catch (PrologException e) {
       if (!e.getMessage().equals("PrologException: time_limit_exceeded")) {
         logger.error("A Prolog error occured.");
-        logger.error(e);
         throw e;
       }
 
       return new HashMap<String, String>();
     }
+    
+    throw new IllegalArgumentException();
   }
 
   /**

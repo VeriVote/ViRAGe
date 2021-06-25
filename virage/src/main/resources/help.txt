@@ -1,0 +1,34 @@
+---------------
+- ViRAGe help -
+---------------
+
+ViRAGe is a tool for analysis and generation of voting rules. It is also capable of generating executable implementations of those rules in Scala. Furthermore, claims it makes about whether or not some rule satisfies given social choice properties can oftentimes be fully automatically proven within Isabelle.
+
+---------------
+
+Required Software: 	SWI-Prolog 8.X (A compatibility mode exists for older versions, but using that is not recommended, as it tends to be unstable.)
+			JPL (added automatically via maven)
+
+Optional Software: 	Isabelle 
+			texlive (if documentation for Isabelle sessions is to be generated)
+			scalac
+
+The setup of SWI-Prolog/JPL is not trivial. ViRAGe tries to guide you along the way, but in case of trouble please refer to the installation manual at https://jpl7.org.
+
+---------------
+
+ViRAGe is based on the theory of Compositional Frameworks.
+
+When invoking ViRAGe, you have to supply such a framework. This can be done either in form of an (E)PL file or as a session within Isabelle. In the second case, ViRAGe is able to extract the framework from the session automatically and generates an (E)PL file for further use and modification.
+
+---------------
+
+The main user prompt of ViRAGe offers 5 different operations, these can be selected by typing the corresponding letter.
+
+	- (g)	Generate a voting rule satisfying some given properties.
+	- (a)	Check whether a given voting rule satisfies some given properties.
+	- (p) 	Generate a proof tree showing that a voting rule satisfies some properties (if it does).
+	- (I)	Generate an Isabelle theory file containing a formal proof, showing that a voting rule satisfies some properties. This can be checked automatically.
+	- (S)	Create an executable Scala implementation of a voting rule using Isabelle's code generator.
+
+---------------

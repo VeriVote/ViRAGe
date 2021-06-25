@@ -13,16 +13,27 @@ import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.jobs.VirageParseJob;
 import com.fr2501.virage.jobs.VirageProveJob;
+import com.fr2501.virage.types.Component;
+import com.fr2501.virage.types.ComposableModule;
 import com.fr2501.virage.types.CompositionProof;
+import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,7 +70,17 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     LocalDateTime now = LocalDateTime.now();
     System.out.println("# Version " + VirageCore.getVersion() + ", Timestamp: " + dtf.format(now));
-    System.out.println("# Using " + ConfigReader.getInstance().getConfigPath() + ".");
+    System.out.println("# If you need help, type \"help\", \"h\" or \"?\".");
+    
+    this.printSeparator();
+    
+    System.out.println("# Reading configuration from " 
+        + ConfigReader.getInstance().getConfigPath() + ".");
+    System.out.println("#");
+    
+    for (String s : ConfigReader.getInstance().getAllProperties().keySet()) {
+      System.out.println("# " + s + ": " + ConfigReader.getInstance().getAllProperties().get(s));
+    }
 
     this.printSeparator();
 
@@ -96,17 +117,16 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     boolean firstTry = true;
 
     while (true) {
-      System.out.println("Please input the path to an EPL file or an Isabelle root directory. "
-          + "(default: " + defaultPath + ")");
-      if (ConfigReader.getInstance().hasPathToRootFile() && firstTry) {
-        System.out.println(
-            "Configuration option \"path_to_root_file\" " + "is specified and will be used.");
-
+      if (ConfigReader.getInstance().hasPathToRootFile() && firstTry &&
+          this.requestConfirmation("Configuration option \"path_to_root_file\" " 
+                + "is specified as \"" + ConfigReader.getInstance().getPathToRootFile() + "\". " 
+                + "Use this directory to load a compositional framework?")) {
         path = ConfigReader.getInstance().getPathToRootFile();
 
         firstTry = false;
       } else {
-        path = this.scanner.nextLine();
+        path = this.requestString("Please input the path to an (E)PL file or "
+            + "an Isabelle ROOT file. (default: " + defaultPath + ")");
       }
 
       if (path.equals("")) {
@@ -119,9 +139,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     while (true) {
-      System.out.println("Do you want to (g)enerate a composition, (a)nalyze one, "
+      String arg = this.requestString("Do you want to (g)enerate a composition, (a)nalyze one, "
           + "(p)rove a claim,\n" + "generate (I)sabelle code or generate (S)cala code?");
-      String arg = this.scanner.nextLine();
 
       VirageJob<?> job = null;
 
@@ -136,10 +155,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         job = this.createIsabelleQuery();
       } else if (arg.equals("S")) {
         job = this.createCodeGenerationQuery();
-      } else if (arg.equals("exit")) {
-        job = new VirageExitJob(this, 0);
-        this.core.submit(job);
-        return;
       } else {
         System.out.println("Please try again.");
         continue;
@@ -166,7 +181,10 @@ public class VirageCommandLineInterface implements VirageUserInterface {
           if (child.getAbsolutePath().endsWith(".pl")) {
             while (true) {
               boolean conf = this.requestConfirmation(
-                  "EPL file " + child.getAbsolutePath() + " found. " + "Do you want to use it?");
+                  "(E)PL file \"" + child.getAbsolutePath() + "\" found. " + "Do you want to "
+                      + "skip generation and use this file instead? This saves time if no " 
+                      + "changes to the Isabelle theories were made since the file was "
+                      + "created.");
 
               if (conf) {
                 return this.extractAndOrParseFramework(child.getAbsolutePath());
@@ -180,22 +198,24 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
       if (!ConfigReader.getInstance().hasIsabelle()) {
         System.out
-            .println("Isabelle is not available. Please install or supply an EPL-file directly.");
+            .println("Isabelle is not available. Please install or supply an (E)PL-file directly.");
 
         return null;
       }
 
       String sessionName;
-      System.out.println("Please input the name of the session within this directory.");
-      if (ConfigReader.getInstance().hasSessionName()) {
-        System.out.println("Configuration option \"session_name\" is specified and will be used.");
+      if (ConfigReader.getInstance().hasSessionName()
+          && this.requestConfirmation("Configuration option \"session_name\" is specified " 
+              + "as \"" + ConfigReader.getInstance().getSessionName() 
+              + "\". Is this value correct?")) {
 
         sessionName = ConfigReader.getInstance().getSessionName();
 
-        System.out.println("Extracting framework from session \"" + sessionName + "\" at " + path
+        this.displayMessage("Extracting framework from session \"" + sessionName + "\" at " + path
             + ".\n" + "This might take some time.");
-      } else {
-        sessionName = this.scanner.nextLine();
+      } else {        
+        sessionName = this.requestString("Please input the name of "
+            + "the session within this directory.");
       }
 
       VirageExtractJob extractJob = new VirageExtractJob(this, path, sessionName);
@@ -213,6 +233,15 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     this.core.submit(parseJob);
     parseJob.waitFor();
+    
+    // Unelegant, but prevents race condition where user prompt is printed
+    // before the result.
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 
     if (!parseJob.getState().equals(VirageJobState.FINISHED)) {
       return null;
@@ -267,21 +296,17 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     final String propertyString = this.requestPropertyString();
 
     String defaultPath = "./target/generated-sources/";
-    System.out.println(
-        "Please specify a directory for the generated theory file. (default: " + defaultPath + ")");
-    String outputPath = this.scanner.nextLine();
+    String outputPath = this.requestString("Please specify a directory for the "
+        + "generated theory file. (default: " + defaultPath + ")");
     if (outputPath.equals("")) {
       outputPath = defaultPath;
     }
 
     boolean verify = true;
     while (true) {
-      System.out.println("Shall the resulting theory file be verified automatially? [(y)es/(n)o]");
-      String verifyString = this.scanner.nextLine();
-
-      if (verifyString.equals("y")) {
+      if (this.requestConfirmation("Shall the resulting theory file be verified automatically?")) {
         break;
-      } else if (verifyString.equals("n")) {
+      } else {
         verify = false;
         break;
       }
@@ -327,10 +352,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   private String requestPropertyString() {
     FrameworkRepresentation framework = this.core.getFrameworkRepresentation();
 
-    System.out.println(
-        "Please input the desired properties (separated by ',') "
-        + "or leave empty to display available properties.");
-    String propertiesString = this.scanner.nextLine();
+    String propertiesString = this.requestString("Please input the desired "
+        + "properties (separated by ',') or leave empty to display available properties.");
 
     boolean invalid = false;
 
@@ -349,9 +372,16 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     if (propertiesString.isEmpty() || invalid) {
-      System.out.println(
-          "Available properties: " + StringUtils.printCollection(framework.getProperties()));
+      List<String> sortedProps = new ArrayList<String>();
+      for (Property p : this.core.getFrameworkRepresentation().getProperties()) {
+        sortedProps.add("\t" + p.toString() + "\n");
+      }
+      Collections.sort(sortedProps);
 
+      for (String s : sortedProps) {
+        System.out.print(s);
+      }
+      
       return this.requestPropertyString();
     }
 
@@ -362,10 +392,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     FrameworkRepresentation framework = this.core.getFrameworkRepresentation();
     boolean invalid = false;
 
-    System.out.println(
-        "Please input a composition (in Prolog format) "
+    String compositionString = this.requestString("Please input a composition (in Prolog format) "
         + "or leave empty to display available components.");
-    String compositionString = this.scanner.nextLine();
 
     if (!compositionString.isEmpty()) {
       try {
@@ -378,9 +406,21 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     if (compositionString.isEmpty() || invalid) {
-      System.out
-          .println("Available components: " + StringUtils.printCollection(framework.getComponents())
-              + "," + StringUtils.printCollection(framework.getCompositionalStructures()));
+      List<String> sortedStrings = new ArrayList<String>();
+      for (Component c : this.core.getFrameworkRepresentation().getComponents()) {
+        sortedStrings.add("\t" + c.toString() + "\n");
+      }
+      for (ComposableModule c : this.core.getFrameworkRepresentation().getComposableModules()) {
+        sortedStrings.add("\t" + c.toString() + "\n");
+      }
+      for (CompositionalStructure c : 
+          this.core.getFrameworkRepresentation().getCompositionalStructures()) {
+        sortedStrings.add("\t" + c.toString() + "\n");
+      }
+      Collections.sort(sortedStrings);
+      for (String s : sortedStrings) {
+        System.out.print(s);
+      }
 
       return this.requestCompositionString();
     }
@@ -399,9 +439,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     boolean returnValue;
 
     loop: while (true) {
-      System.out.println(message + " (y/n)");
-
-      String input = this.scanner.nextLine();
+      String input = this.requestString(message + " (y/n)");
 
       switch (input) {
         case "y":
@@ -419,15 +457,33 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   }
 
   @Override
-  public ProgressIndicator spawnProgressIndicator() {
-    return this.clpi;
-  }
-
-  @Override
   public String requestString(String message) {
-    System.out.println(message);
-    
-    return this.scanner.nextLine();
+    while (true) {
+      System.out.println(message);
+      
+      String input = this.scanner.nextLine();
+
+      switch (input) {
+        case "?":
+        case "h":
+        case "help":
+          this.displayHelp();
+          break;
+        case "exit":
+          this.core.submit(new VirageExitJob(this, 0));
+          try {
+            Thread.sleep(10000);
+          } catch (InterruptedException e) {
+            // NO-OP
+          } finally {
+            this.displayMessage("Graceful exit was impossible. Terminating anyways.");
+            System.exit(-1);
+          }
+          break;
+        default:
+          return input;
+      }
+    }
   }
   
   @Override
@@ -438,5 +494,18 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   @Override
   public void displayError(String message) {
     System.err.println(message);
+  }
+  
+  public void displayHelp() {   
+    InputStream helpStream = this.getClass().getClassLoader()
+        .getResourceAsStream("help.txt");
+    StringWriter writer = new StringWriter();
+    try {
+      IOUtils.copy(helpStream, writer, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      logger.error("Something went wrong.", e);
+      e.printStackTrace();
+    }
+    System.out.println(writer.toString());
   }
 }
