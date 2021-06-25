@@ -99,6 +99,11 @@ public class SimplePrologParser implements PrologParser {
     if (level != 0) {
       throw new IllegalArgumentException();
     }
+    
+    // Set of superfluous brackets
+    if(name.isEmpty() && parameters.size() == 1) {
+      return parameters.get(0);
+    }
 
     return new PrologPredicate(name, parameters);
   }

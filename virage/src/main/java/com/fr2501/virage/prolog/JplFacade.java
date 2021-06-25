@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -77,7 +79,8 @@ public class JplFacade {
       compatQuery.hasSolution();
     } catch (JPLException e) {
       logger.warn("Outdated version of SWI-Prolog detected. " 
-          + "ViRAGe attempts to run in compatibility mode, but results might be unexpected.");
+          + "ViRAGe attempts to run in compatibility mode, but results might be unexpected. "
+          + "Please consider upgrading to SWI-Prolog 8.X to avoid this in the future.");
       this.compatibilityMode = true;
     }
   }
@@ -469,16 +472,22 @@ public class JplFacade {
       }
     } else {
       if (pred.getName().isEmpty()) {
-        try {
+        return this.buildConjunction(StringUtils.printCollection(pred.getParameters()));
+        
+        /*try {
           return Term.textToTerm(pred.toString());
-        } catch (PrologException e) {
+        } catch (JPLException e) {
           logger.error("The JPL/SWI-Prolog compatibility workaround cannot handle this query.");
           throw new IllegalArgumentException();
-        }
+        }*/
       }
       
       // Compound
       String name = pred.getName();
+      
+      if(name.isEmpty()) {
+        name = ",";
+      }
       
       Term[] children = new Term[pred.getArity()];
       for (int i = 0; i < pred.getArity(); i++) {
@@ -503,5 +512,49 @@ public class JplFacade {
     } else {
       return new Query(queryString);
     }
+  }
+  
+  private Term buildConjunction(String string) {
+    while(string.startsWith("(") && string.endsWith(")")) {
+      string = string.substring(0,string.length()-1);
+    }
+    
+    List<String> predicates = new LinkedList<String>();
+    
+    int level = 0;
+    int nextStart = 0;
+    for(int i=0; i<string.length(); i++) {
+      char cur = string.charAt(i);
+      
+      switch(cur) {
+      case '(': level++; break;
+      case ')': level--; break;
+      case ',': if(level == 0) {
+        predicates.add(string.substring(nextStart, i));
+        nextStart = i+1;
+      }
+      }
+    }
+    predicates.add(string.substring(nextStart,string.length()));
+    
+    List<Term> terms = new LinkedList<Term>();
+    for(String pred: predicates) {
+      terms.add(this.stringToTerm(pred));
+    }
+    
+    int predCount = terms.size();
+    
+    if(predCount == 1) {
+      return terms.get(0);
+    }
+    
+    Compound toReturn = new Compound(",", 
+        new Term[] { terms.get(predCount - 2), terms.get(predCount - 1) });
+    
+    for(int i=predCount-3; i>0; i--) {
+      toReturn = new Compound(",", new Term[] {terms.get(i), toReturn});
+    }
+    
+    return toReturn;
   }
 }
