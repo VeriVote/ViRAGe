@@ -120,7 +120,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
       if (ConfigReader.getInstance().hasPathToRootFile() && firstTry &&
           this.requestConfirmation("Configuration option \"path_to_root_file\" " 
                 + "is specified as \"" + ConfigReader.getInstance().getPathToRootFile() + "\". " 
-                + "Use this directory to load a compositional framework?")) {
+                + "Use this Isabelle session to load a compositional framework?")) {
         path = ConfigReader.getInstance().getPathToRootFile();
 
         firstTry = false;
@@ -173,6 +173,10 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     VirageParseJob parseJob;
 
     if (!path.endsWith(".pl")) {
+      if (path.endsWith("ROOT")) {
+        path = path.substring(0, path.length() - "ROOT".length());
+      }
+      
       File file = new File(path);
       if (file.isDirectory()) {
         File[] files = file.listFiles();
