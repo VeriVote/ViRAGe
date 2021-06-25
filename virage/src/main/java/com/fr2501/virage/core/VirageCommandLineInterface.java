@@ -304,7 +304,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     boolean verify = true;
     while (true) {
-      if (this.requestConfirmation("Shall the resulting theory file be verified automatically?")) {
+      if (this.requestConfirmation("Shall the resulting theory file be verified automaticexitally?")) {
         break;
       } else {
         verify = false;
