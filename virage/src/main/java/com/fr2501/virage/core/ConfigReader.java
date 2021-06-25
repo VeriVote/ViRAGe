@@ -407,8 +407,6 @@ public class ConfigReader {
         }
 
         if (value.equals("")) {
-          logger.warn("SWI-Prolog runtime variable $PLLIBDIR is missing. "
-              + "Attempting to compute it from $PLBASE and $PLARCH, but that might be wrong.");
 
           for (String line : lines) {
             if (line.startsWith("PLARCH")) {
@@ -423,15 +421,6 @@ public class ConfigReader {
             String tmp = value.split("=")[1];
             tmp = tmp.substring(1, tmp.length() - 2);
             path = this.swiplHome + File.separator + "lib" + File.separator + tmp;
-
-            File file = new File(path);
-            if (!file.exists() || !file.isDirectory()) {
-              logger.error("The computed path " + path + " is not a directory.");
-              throw new ExternalSoftwareUnavailableException();
-            } else {
-              logger.warn("Computed path: " + path 
-                  + ". This should contain both libswipl.so and libjpl.so");
-            }
           }
 
         } else {
