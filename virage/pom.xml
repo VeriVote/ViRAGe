@@ -158,8 +158,8 @@
 				<configuration>
 					<mainClass>com.fr2501.virage.core.VirageMain</mainClass>
 					<environmentVariables>
-						<LD_PRELOAD>${libswipl_path}</LD_PRELOAD>
-						<LD_LIBRARY_PATH>${path_to_swipl_libraries}</LD_LIBRARY_PATH>
+						<LD_PRELOAD>${SWI_PROLOG_LIBSWIPL_PATH}</LD_PRELOAD>
+						<LD_LIBRARY_PATH>${SWI_PROLOG_LIBRARIES_PATH}</LD_LIBRARY_PATH>
 					</environmentVariables>
 					<executable>java</executable>
 					<arguments>

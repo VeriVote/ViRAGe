@@ -78,8 +78,15 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         + ConfigReader.getInstance().getConfigPath() + ".");
     System.out.println("#");
     
+    List<String> propertyNames = new LinkedList<String>();
     for (String s : ConfigReader.getInstance().getAllProperties().keySet()) {
-      System.out.println("# " + s + ": " + ConfigReader.getInstance().getAllProperties().get(s));
+      propertyNames.add(s);
+    }
+    Collections.sort(propertyNames);
+    
+    for (String s : propertyNames) {
+      System.out.println(("# " + s.toUpperCase() + ":\n#\t" 
+          + ConfigReader.getInstance().getAllProperties().get(s)).replaceAll(";", ";\n#\t"));
     }
 
     this.printSeparator();
@@ -118,7 +125,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     while (true) {
       if (ConfigReader.getInstance().hasPathToRootFile() && firstTry &&
-          this.requestConfirmation("Configuration option \"path_to_root_file\" " 
+          this.requestConfirmation("Configuration option \"ISABELLE_PATH_TO_ROOT_FILE\" " 
                 + "is specified as \"" + ConfigReader.getInstance().getPathToRootFile() + "\". " 
                 + "Use this Isabelle session to load a compositional framework?")) {
         path = ConfigReader.getInstance().getPathToRootFile();
@@ -209,7 +216,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
       String sessionName;
       if (ConfigReader.getInstance().hasSessionName()
-          && this.requestConfirmation("Configuration option \"session_name\" is specified " 
+          && this.requestConfirmation("Configuration option \"ISABELLE_SESSION_NAME\" is specified " 
               + "as \"" + ConfigReader.getInstance().getSessionName() 
               + "\". Is this value correct?")) {
 
@@ -393,7 +400,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   }
 
   private String requestCompositionString() {
-    FrameworkRepresentation framework = this.core.getFrameworkRepresentation();
     boolean invalid = false;
 
     String compositionString = this.requestString("Please input a composition (in Prolog format) "
@@ -463,7 +469,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   @Override
   public String requestString(String message) {
     while (true) {
-      System.out.println(message);
+      System.out.print(message + "\n?- ");
       
       String input = this.scanner.nextLine();
 

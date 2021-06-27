@@ -35,8 +35,7 @@ public class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<
 
   @Override
   public boolean externalSoftwareAvailable() {
-    return (ConfigReader.getInstance().hasIsabelle()
-        && ConfigReader.getInstance().hasScalaCompiler());
+    return (ConfigReader.getInstance().hasIsabelle());
   }
 
   @Override

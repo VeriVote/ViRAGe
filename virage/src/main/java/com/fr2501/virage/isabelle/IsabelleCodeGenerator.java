@@ -28,8 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * This class is used to engage the Isabelle Code Generation process and produce
- * Scala code.
+ * This class is used to engage the Isabelle Code Generation process and produce Scala code.
  *
  */
 public class IsabelleCodeGenerator {
@@ -66,7 +65,7 @@ public class IsabelleCodeGenerator {
 
   /**
    * Simple constructor that reads templates from resources.
-
+   * 
    * @param framework the framework representation to be used
    * @throws IOException if template reading fails
    */
@@ -115,20 +114,20 @@ public class IsabelleCodeGenerator {
 
   /**
    * Invokes Isabelle's code generator to create code from a composition.
-
+   * 
    * @param composition the composition
-   * @param language    the target language
+   * @param language the target language
    * @return a file containing the generated code
    * @throws IOException if file system interaction fails
    * @throws InterruptedException if process is interrupted
    * @throws IsabelleBuildFailedException if session build process fails
-   * @throws ExternalSoftwareUnavailableException  if Isabelle is unavailable
+   * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
    */
   public File generateCode(String composition, IsabelleCodeGenerationLanguage language)
-      throws IOException, InterruptedException, IsabelleBuildFailedException, 
-          ExternalSoftwareUnavailableException {
-    File theory = this.generator.generateTheoryFile(
-        composition, new LinkedList<CompositionProof>());
+      throws IOException, InterruptedException, IsabelleBuildFailedException,
+      ExternalSoftwareUnavailableException {
+    File theory = this.generator.generateTheoryFile(composition,
+        new LinkedList<CompositionProof>());
 
     return this.generateCode(theory, language);
   }
@@ -141,8 +140,8 @@ public class IsabelleCodeGenerator {
 
   /**
    * Invokes Isabelle's code generator to generate code from a theory.
-
-   * @param theory   the theory file
+   * 
+   * @param theory the theory file
    * @param language the target language
    * @return a file containing the generated code
    * @throws IOException if file system interaction fails
@@ -150,10 +149,9 @@ public class IsabelleCodeGenerator {
    * @throws IsabelleBuildFailedException if session build process fails
    * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
    */
-  public File generateCode(File theory, IsabelleCodeGenerationLanguage language)
-      throws IOException, InterruptedException, IsabelleBuildFailedException,
-      ExternalSoftwareUnavailableException {
-    //String moduleName = this.prepareTheoryFile(theory, language);
+  public File generateCode(File theory, IsabelleCodeGenerationLanguage language) throws IOException,
+      InterruptedException, IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+    // String moduleName = this.prepareTheoryFile(theory, language);
 
     String theoryName = theory.getName().substring(0,
         theory.getName().length() - (IsabelleUtils.FILE_EXTENSION.length()));
@@ -172,36 +170,36 @@ public class IsabelleCodeGenerator {
   }
 
   /**
-   * Creates an ad-hoc Isabelle session, invokes code generation, attempts to
-   * compile the result and returns an executable jar file if possible.
-
+   * Creates an ad-hoc Isabelle session, invokes code generation, attempts to compile the result and
+   * returns an executable jar file if possible.
+   * 
    * @param composition the composition to be translated to Scala code
    * @return an executable Scala-jar file
-   * @throws IOException                  if file system interaction goes wrong
-   * @throws InterruptedException         if processes are interrupted prematurely
-   * @throws CompilationFailedException   if Scala compilation fails
+   * @throws IOException if file system interaction goes wrong
+   * @throws InterruptedException if processes are interrupted prematurely
+   * @throws CompilationFailedException if Scala compilation fails
    * @throws IsabelleBuildFailedException if Isabelle code generation fails
    * @throws ExternalSoftwareUnavailableException if Isabelle or Scala is unavailable
    */
   public File generateScalaCodeAndCompile(String composition)
-      throws IOException, InterruptedException, CompilationFailedException, 
+      throws IOException, InterruptedException, CompilationFailedException,
       IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
-    File theory = this.generator.generateTheoryFile(
-        composition, new LinkedList<CompositionProof>());
+    File theory = this.generator.generateTheoryFile(composition,
+        new LinkedList<CompositionProof>());
 
     return this.generateScalaCodeAndCompile(theory);
   }
 
   /**
-   * Creates an ad-hoc Isabelle session, invokes code generation, attempts to
-   * compile the result and returns an executable jar file if possible.
-
-   * @param theory the theory file, containing exactly one definition, on which
-   *               code generation shall take place
+   * Creates an ad-hoc Isabelle session, invokes code generation, attempts to compile the result and
+   * returns an executable jar file if possible.
+   * 
+   * @param theory the theory file, containing exactly one definition, on which code generation
+   * shall take place
    * @return an executable Scala-jar file if possible
-   * @throws IOException                  if file system interaction goes wrong
-   * @throws InterruptedException         if processes are interrupted prematurely
-   * @throws CompilationFailedException   if Scala compilation fails
+   * @throws IOException if file system interaction goes wrong
+   * @throws InterruptedException if processes are interrupted prematurely
+   * @throws CompilationFailedException if Scala compilation fails
    * @throws IsabelleBuildFailedException if Isabelle code generation fails
    * @throws ExternalSoftwareUnavailableException if Isabelle or Scala are unavailable
    */
@@ -222,42 +220,32 @@ public class IsabelleCodeGenerator {
 
     String jarPath = codeFile.getParent() + File.separator + moduleName + ".jar";
 
-    if (ConfigReader.getInstance().hasScalaCompiler()) {
-      int status;
-      try {
-        status = ProcessUtils.runTerminatingProcessAndLogOutput(ConfigReader.getInstance()
-            .getScalaCompiler() + " "
-            + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath() + " -d "
-            + jarPath);
+    int status;
+    status = ProcessUtils
+        .runTerminatingProcessAndLogOutput(ConfigReader.getInstance().getIsabelleExecutable()
+            + " scalac " + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath()
+            + " -d " + jarPath);
 
-        if (status != 0) {
-          // Implicit values did not work, try setting them explicitly.
-          votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile, true);
-  
-          status = ProcessUtils.runTerminatingProcessAndLogOutput(ConfigReader.getInstance()
-              .getScalaCompiler() + " "
-              + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath() + " -d "
-              + jarPath);
-  
-          if (status != 0) {
-            logger.error("Generated Scala code could not be compiled. "
-                          + "ViRAGe requires at least Scala 2.13.0 to work properly. "
-                          + "Please check and update accordingly.");
-            throw new CompilationFailedException("Generated Scala code could not be compiled.");
-          }
-        }
-          
-      } catch (ExternalSoftwareUnavailableException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+    if (status != 0) {
+      // Implicit values did not work, try setting them explicitly.
+      votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile, true);
+
+      status = ProcessUtils
+          .runTerminatingProcessAndLogOutput(ConfigReader.getInstance().getIsabelleExecutable()
+              + " scalac " + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath()
+              + " -d " + jarPath);
+
+      if (status != 0) {
+        logger.error("Generated Scala code could not be compiled. "
+            + "ViRAGe requires at least Scala 2.13.0 to work properly. "
+            + "Please check and update accordingly.");
+        throw new CompilationFailedException("Generated Scala code could not be compiled.");
       }
-
-      logger.info("Scala compilation was successful. The jar file can be found at " + jarPath);
-
-      return new File(jarPath);
     }
 
-    throw new CompilationFailedException("No Scala compiler specified.");
+    logger.info("Scala compilation was successful. The jar file can be found at " + jarPath);
+
+    return new File(jarPath);
   }
 
   private void initCodeReplacements() throws IOException {
@@ -354,8 +342,7 @@ public class IsabelleCodeGenerator {
     String theoryPath = new File(this.framework.getTheoryPath()).getCanonicalPath();
 
     String isabelleCommand = ConfigReader.getInstance().getIsabelleExecutable() + " build -e -D "
-        + generatedPath + " -D " + theoryPath + " -o quick_and_dirty -b "
-        + sessionName;
+        + generatedPath + " -D " + theoryPath + " -o quick_and_dirty -b " + sessionName;
 
     int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
 
@@ -366,8 +353,7 @@ public class IsabelleCodeGenerator {
     }
 
     String codePath = generatedPath + File.separator + "export" + File.separator + sessionName + "."
-        + theoryName
-        + File.separator + "code" + File.separator;
+        + theoryName + File.separator + "code" + File.separator;
     File codeDir = new File(codePath);
     File[] generatedFiles = codeDir.listFiles();
 

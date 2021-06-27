@@ -31,15 +31,13 @@ public class ConfigReader {
 
   private static final String LIST_SEPARATOR = ";";
 
-  private static final String SCALA_COMPILER = "scala_compiler";
-  private static final String ISABELLE_BIN = "isabelle_bin";
-  private static final String SWIPL_BIN = "swipl_bin";
+  private static final String ISABELLE_BIN = "ISABELLE_EXECUTABLE";
+  private static final String SWIPL_BIN = "SWI_PROLOG_EXECUTABLE";
 
   private static final String INSTALL_PLEASE = 
       "Please install if necessary and check config.properties!";
 
   private boolean isabelleAvailable = true;
-  private boolean scalacAvailable = true;
   private boolean swiplAvailable = true;
   private boolean jplAvailable = true;
 
@@ -109,24 +107,14 @@ public class ConfigReader {
    * the version numbers of said software.
    */
   public void checkAvailabilityAndPrintVersions() {
-    // SCALA
-    try {
-      ProcessUtils.runTerminatingProcessAndPrintOutput(
-          this.properties.get(SCALA_COMPILER) + " -version");
-    } catch (IOException e) {
-      logger.warn("No Scala compiler found! " + INSTALL_PLEASE 
-          + " (relevant option: scala_compiler)");
-      this.scalacAvailable = false;
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
+    // JAVA
+    System.out.println("Java version " + System.getProperty("java.version"));
+    
     // ISABELLE
     try {
       ProcessUtils.runTerminatingProcessAndPrintOutput(this.getIsabelleExecutable() + " version");
     } catch (IOException e) {
-      logger.warn("Isabelle not found! " + INSTALL_PLEASE + " (relevant option: isabelle_bin)");
+      logger.warn("Isabelle not found! " + INSTALL_PLEASE + " (relevant option: ISABELLE_EXECUTABLE)");
       this.isabelleAvailable = false;
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
@@ -141,7 +129,7 @@ public class ConfigReader {
       ProcessUtils.runTerminatingProcessAndPrintOutput(
           this.properties.get(SWIPL_BIN) + " --version");
     } catch (IOException e) {
-      logger.warn("SWI-Prolog not found! " + INSTALL_PLEASE + " (relevant options: swipl_bin)");
+      logger.warn("SWI-Prolog not found! " + INSTALL_PLEASE + " (relevant options: SWI_PROLOG_EXECUTABLE)");
       this.swiplAvailable = false;
       this.jplAvailable = false;
     } catch (InterruptedException e) {
@@ -179,17 +167,17 @@ public class ConfigReader {
   }
 
   public List<String> getIsabelleTactics() {
-    return this.readAndSplitList("isabelle_tactics");
+    return this.readAndSplitList("ISABELLE_TACTICS");
   }
 
   /**
-   * Returns the list of type synonyms defined in "type_synonyms".
+   * Returns the list of type synonyms defined in "SESSION_SPECIFIC_TYPE_SYNONYMS".
 
    * @return the list
    */
   public List<Pair<String, String>> getTypeSynonyms() {
     List<Pair<String, String>> res = new LinkedList<Pair<String, String>>();
-    List<String> typeSynonyms = this.readAndSplitList("type_synonyms");
+    List<String> typeSynonyms = this.readAndSplitList("SESSION_SPECIFIC_TYPE_SYNONYMS");
 
     for (String synonym : typeSynonyms) {
       String[] splits = synonym.split("->");
@@ -205,7 +193,7 @@ public class ConfigReader {
   }
 
   public List<String> getAtomicTypes() {
-    return this.readAndSplitList("atomic_types");
+    return this.readAndSplitList("SESSION_SPECIFIC_ATOMIC_TYPES");
   }
 
   private List<String> readAndSplitList(String key) {
@@ -221,25 +209,7 @@ public class ConfigReader {
   }
 
   public List<String> getAdditionalProperties() {
-    return this.readAndSplitList("additional_properties");
-  }
-
-  public boolean hasScalaCompiler() {
-    return this.scalacAvailable;
-  }
-
-  /**
-   * Retrieves the path th the scalac executable, as defined in "scala_compiler".
-
-   * @return the string to the executable 
-   * @throws ExternalSoftwareUnavailableException if Scala is unavailable
-   */
-  public String getScalaCompiler() throws ExternalSoftwareUnavailableException {
-    if (!this.hasScalaCompiler()) {
-      throw new ExternalSoftwareUnavailableException();
-    }
-
-    return this.properties.getProperty("scala_compiler");
+    return this.readAndSplitList("SESSION_SPECIFIC_ASSUMPTIONS");
   }
 
   /**
@@ -322,19 +292,19 @@ public class ConfigReader {
   }
 
   public boolean hasPathToRootFile() {
-    return this.properties.containsKey("path_to_root_file");
+    return this.properties.containsKey("ISABELLE_PATH_TO_ROOT_FILE");
   }
 
   public String getPathToRootFile() {
-    return this.properties.getProperty("path_to_root_file");
+    return this.properties.getProperty("ISABELLE_PATH_TO_ROOT_FILE");
   }
 
   public boolean hasSessionName() {
-    return this.properties.containsKey("session_name");
+    return this.properties.containsKey("ISABELLE_SESSION_NAME");
   }
 
   public String getSessionName() {
-    return this.properties.getProperty("session_name");
+    return this.properties.getProperty("ISABELLE_SESSION_NAME");
   }
 
   public boolean hasJpl() {
@@ -445,11 +415,11 @@ public class ConfigReader {
   }
   
   public void updateValueForLdPreload(String newValue) {
-    this.updateValue("libswipl_path", newValue);
+    this.updateValue("SWI_PROLOG_LIBSWIPL_PATH", newValue);
   }
   
   public void updateValueForLdLibraryPath(String newValue) {
-    this.updateValue("path_to_swipl_libraries", newValue);
+    this.updateValue("SWI_PROLOG_LIBRARIES_PATH", newValue);
   }
   
   private void updateValue(String name, String newValue) {
