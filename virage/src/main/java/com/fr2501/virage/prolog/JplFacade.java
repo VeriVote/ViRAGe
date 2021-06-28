@@ -80,7 +80,7 @@ public class JplFacade {
     } catch (JPLException e) {
       logger.warn("Outdated version of SWI-Prolog detected. " 
           + "ViRAGe attempts to run in compatibility mode, but results might be unexpected. "
-          + "Please consider upgrading to SWI-Prolog 8.X to avoid this in the future.");
+          + "Please consider upgrading to SWI-Prolog 8.0.0 or newer to avoid this in the future.");
       this.compatibilityMode = true;
     }
   }

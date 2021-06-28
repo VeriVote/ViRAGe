@@ -34,9 +34,6 @@ public class ConfigReader {
   private static final String ISABELLE_BIN = "ISABELLE_EXECUTABLE";
   private static final String SWIPL_BIN = "SWI_PROLOG_EXECUTABLE";
 
-  private static final String INSTALL_PLEASE = 
-      "Please install if necessary and check config.properties!";
-
   private boolean isabelleAvailable = true;
   private boolean swiplAvailable = true;
   private boolean jplAvailable = true;
@@ -114,7 +111,7 @@ public class ConfigReader {
     try {
       ProcessUtils.runTerminatingProcessAndPrintOutput(this.getIsabelleExecutable() + " version");
     } catch (IOException e) {
-      logger.warn("Isabelle not found! " + INSTALL_PLEASE + " (relevant option: ISABELLE_EXECUTABLE)");
+      System.out.println("Isabelle: NOT FOUND");
       this.isabelleAvailable = false;
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
@@ -129,7 +126,7 @@ public class ConfigReader {
       ProcessUtils.runTerminatingProcessAndPrintOutput(
           this.properties.get(SWIPL_BIN) + " --version");
     } catch (IOException e) {
-      logger.warn("SWI-Prolog not found! " + INSTALL_PLEASE + " (relevant options: SWI_PROLOG_EXECUTABLE)");
+      System.out.println("SWI-Prolog: NOT FOUND");
       this.swiplAvailable = false;
       this.jplAvailable = false;
     } catch (InterruptedException e) {

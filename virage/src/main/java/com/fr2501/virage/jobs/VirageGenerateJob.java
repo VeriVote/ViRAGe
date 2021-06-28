@@ -78,7 +78,8 @@ public class VirageGenerateJob
           + StringUtils.printCollection(this.properties) + ".";
     }
     
-    return "Generated " + StringUtils.printCollection(results) + " with " + prop + " "
+    return "Generated the " + this.properties.get(0).getParameters().get(0).getName() 
+        + " \"" + StringUtils.printCollection(results) + "\" with the " + prop + " "
         + StringUtils.printCollection(this.properties) + ".";
   }
 

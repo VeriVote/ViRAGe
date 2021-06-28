@@ -127,13 +127,13 @@ public class VirageCommandLineInterface implements VirageUserInterface {
       if (ConfigReader.getInstance().hasPathToRootFile() && firstTry &&
           this.requestConfirmation("Configuration option \"ISABELLE_PATH_TO_ROOT_FILE\" " 
                 + "is specified as \"" + ConfigReader.getInstance().getPathToRootFile() + "\". " 
-                + "Use this Isabelle session to load a compositional framework?")) {
+                + "Do you want to use this Isabelle session to generate an (E)PL file?")) {
         path = ConfigReader.getInstance().getPathToRootFile();
 
         firstTry = false;
       } else {
         path = this.requestString("Please input the path to an (E)PL file or "
-            + "an Isabelle ROOT file. (default: " + defaultPath + ")");
+            + "an Isabelle ROOT file. (Press ENTER for default: " + defaultPath + ")");
       }
 
       if (path.equals("")) {
@@ -147,7 +147,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     while (true) {
       String arg = this.requestString("Do you want to (g)enerate a composition, (a)nalyze one, "
-          + "(p)rove a claim,\n" + "generate (I)sabelle code or generate (S)cala code?");
+          + "(p)rove a claim,\n" + "generate (I)sabelle proofs or generate (S)cala code?");
 
       VirageJob<?> job = null;
 
@@ -209,7 +209,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
       if (!ConfigReader.getInstance().hasIsabelle()) {
         System.out
-            .println("Isabelle is not available. Please install or supply an (E)PL-file directly.");
+            .println("Isabelle is not available. "
+                + "Please install Isabelle or supply an (E)PL-file directly.");
 
         return null;
       }
@@ -222,7 +223,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
         sessionName = ConfigReader.getInstance().getSessionName();
 
-        this.displayMessage("Extracting framework from session \"" + sessionName + "\" at " + path
+        this.displayMessage("Extracting (E)PL file from session \"" + sessionName + "\" at " + path
             + ".\n" + "This might take some time.");
       } else {        
         sessionName = this.requestString("Please input the name of "
@@ -308,7 +309,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     String defaultPath = "./target/generated-sources/";
     String outputPath = this.requestString("Please specify a directory for the "
-        + "generated theory file. (default: " + defaultPath + ")");
+        + "generated theory file. (Press ENTER for default: " + defaultPath + ")");
     if (outputPath.equals("")) {
       outputPath = defaultPath;
     }
@@ -365,6 +366,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     String propertiesString = this.requestString("Please input the desired "
         + "properties (separated by ',') or leave empty to display available properties.");
+    
+    propertiesString = StringUtils.removeWhitespace(propertiesString);
 
     boolean invalid = false;
 
@@ -385,7 +388,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     if (propertiesString.isEmpty() || invalid) {
       List<String> sortedProps = new ArrayList<String>();
       for (Property p : this.core.getFrameworkRepresentation().getProperties()) {
-        sortedProps.add("\t" + p.toString() + "\n");
+        if (p.getArity() == 1) {
+          sortedProps.add("\t" + p.getName() + "\n");
+        }
       }
       Collections.sort(sortedProps);
 
@@ -404,6 +409,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     String compositionString = this.requestString("Please input a composition (in Prolog format) "
         + "or leave empty to display available components.");
+    
+    compositionString = StringUtils.removeWhitespace(compositionString);
 
     if (!compositionString.isEmpty()) {
       try {
@@ -517,5 +524,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
       e.printStackTrace();
     }
     System.out.println(writer.toString());
+    
+    this.requestString("Press ENTER to leave help and return to previous state.");
   }
 }

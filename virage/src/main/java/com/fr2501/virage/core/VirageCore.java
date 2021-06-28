@@ -205,7 +205,7 @@ public class VirageCore implements Runnable {
         newValue = this.ui.requestString("Please input the path to the SWI-Prolog "
             + "library directory.\n" 
             + "The typical value is \"" + ConfigReader.getInstance().getSwiplLib() 
-            + "\", but it might differ on your system.");
+            + "\", but this might differ on your system.");
         
         if (!newValue.isEmpty()) {
           ConfigReader.getInstance().updateValueForLdLibraryPath(newValue);
@@ -224,7 +224,7 @@ public class VirageCore implements Runnable {
         newValue = this.ui.requestString("Please input the path to libswipl.so.\n" 
             + "Typical values are \"/usr/lib/libswipl.so\" or \"" 
             + ConfigReader.getInstance().getSwiplLib() + "/libswipl.so\""
-            + ", but it might differ on your system.");
+            + ", but this might differ on your system.");
         
         if (!newValue.isEmpty()) {
           ConfigReader.getInstance().updateValueForLdPreload(newValue);
