@@ -110,6 +110,8 @@ public class ConfigReader {
     // ISABELLE
     try {
       ProcessUtils.runTerminatingProcessAndPrintOutput(this.getIsabelleExecutable() + " version");
+      ProcessUtils.runTerminatingProcessAndPrintOutput(this.getIsabelleExecutable() 
+          + " scalac -version");
     } catch (IOException e) {
       System.out.println("Isabelle: NOT FOUND");
       this.isabelleAvailable = false;
