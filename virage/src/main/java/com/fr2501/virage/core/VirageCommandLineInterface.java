@@ -476,7 +476,10 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   @Override
   public String requestString(String message) {
     while (true) {
-      System.out.print(message + "\n?- ");
+      System.out.println(message);
+      // This appears to conflict with mvn exec:exec,
+      // see https://github.com/mojohaus/exec-maven-plugin/issues/159.
+      // System.out.print("?- \n");
       
       String input = this.scanner.nextLine();
 
