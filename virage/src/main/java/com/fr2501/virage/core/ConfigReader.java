@@ -474,6 +474,19 @@ public class ConfigReader {
     this.updateValue("SWI_PROLOG_LIBRARIES_PATH", newValue);
   }
   
+  public String getDefaultOutputPath() {
+    String defaultPath = "./target/generated-sources/";
+    
+    String configValue = (String) this.properties.getOrDefault(
+        "SYSTEM_DEFAULT_OUTPUT_PATH", "./target/generated-sources/");
+    
+    if (configValue.isEmpty()) {
+      return defaultPath;
+    } else {
+      return configValue;
+    }
+  }
+  
   private void updateValue(String name, String newValue) {
     Parameters params = new Parameters();
     FileBasedConfigurationBuilder<FileBasedConfiguration> builder 

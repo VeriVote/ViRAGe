@@ -86,7 +86,7 @@ public class ScalaIsabelleFacade {
 
     try {
       this.isabelle = new Isabelle(setup);
-    } catch (/* IsabelleBuild */Exception e) {
+    } catch (/* IsabelleBuildFailed */Exception e) {
       logger.error("Building session " + sessionName + "failed. Restarting ViRAGe or building"
           + " the session manually within Isabelle might help. If the session is supposed"
           + " to generate documentation, texlive is required!");

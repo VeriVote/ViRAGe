@@ -307,7 +307,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     final String propertyString = this.requestPropertyString();
 
-    String defaultPath = "./target/generated-sources/";
+    String defaultPath = ConfigReader.getInstance().getDefaultOutputPath();
     String outputPath = this.requestString("Please specify a directory for the "
         + "generated theory file. (Press ENTER for default: " + defaultPath + ")");
     if (outputPath.equals("")) {
