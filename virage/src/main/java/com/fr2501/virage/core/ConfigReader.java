@@ -166,7 +166,7 @@ public class ConfigReader {
   }
 
   public List<String> getIsabelleTactics() {
-    return this.readAndSplitList("ISABELLE_TACTICS");
+    return this.readAndSplitList(this.properties.getProperty("ISABELLE_TACTICS"));
   }
 
   /**
@@ -176,9 +176,14 @@ public class ConfigReader {
    */
   public List<Pair<String, String>> getTypeSynonyms() {
     List<Pair<String, String>> res = new LinkedList<Pair<String, String>>();
-    List<String> typeSynonyms = this.readAndSplitList("SESSION_SPECIFIC_TYPE_SYNONYMS");
+    
+    String prop = this.properties.getProperty("SESSION_SPECIFIC_TYPE_SYNONYMS");
+    prop = this.replaceTypeAliases(prop);
+    List<String> typeSynonyms = this.readAndSplitList(prop);
 
     for (String synonym : typeSynonyms) {
+      synonym = this.replaceTypeAliases(synonym);
+      
       String[] splits = synonym.split("->");
 
       if (splits.length != 2) {
@@ -192,11 +197,13 @@ public class ConfigReader {
   }
 
   public List<String> getAtomicTypes() {
-    return this.readAndSplitList("SESSION_SPECIFIC_ATOMIC_TYPES");
+    String prop = this.properties.getProperty("SESSION_SPECIFIC_ATOMIC_TYPES");
+    prop = this.replaceTypeAliases(prop);
+    
+    return this.readAndSplitList(prop);
   }
 
-  private List<String> readAndSplitList(String key) {
-    String list = (String) this.properties.get(key);
+  private List<String> readAndSplitList(String list) {
     String[] splits = list.split(LIST_SEPARATOR);
 
     List<String> result = new LinkedList<String>();
@@ -208,7 +215,10 @@ public class ConfigReader {
   }
 
   public List<String> getAdditionalProperties() {
-    return this.readAndSplitList("SESSION_SPECIFIC_ASSUMPTIONS");
+    String prop = this.properties.getProperty("SESSION_SPECIFIC_ASSUMPTIONS");
+    prop = this.replaceTypeAliases(prop);
+    
+    return this.readAndSplitList(prop);
   }
 
   /**
@@ -310,6 +320,36 @@ public class ConfigReader {
     return this.jplAvailable;
   }
   
+  private boolean hasTypeAliases() {
+    return this.properties.containsKey("SESSION_SPECIFIC_TYPE_ALIASES");
+  }
+
+  private String replaceTypeAliases(String s) {
+    if (!this.hasTypeAliases()) {
+      return s;
+    }
+
+    List<String> replacements = this.readAndSplitList(
+        this.properties.getProperty("SESSION_SPECIFIC_TYPE_ALIASES"));
+
+    Map<String, String> replMap = new HashMap<String, String>();
+
+    for (String repl : replacements) {
+      String[] parts = repl.split("->");
+      if (parts.length != 2) {
+        throw new IllegalArgumentException();
+      }
+
+      replMap.put(parts[0], parts[1]);
+    }
+
+    for (String alias : replMap.keySet()) {
+      s = s.replaceAll(alias, replMap.get(alias));
+    }
+
+    return s;
+  }
+
   /**
    * Retrieves the SWI-Prolog home directory.
 
