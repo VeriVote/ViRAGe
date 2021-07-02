@@ -223,7 +223,7 @@ public class VirageCore implements Runnable {
       try {
         newValue = this.ui.requestString("Please input the path to libswipl.so.\n" 
             + "Typical values are \"/usr/lib/libswipl.so\" or \"" 
-            + ConfigReader.getInstance().getSwiplLib() + "/libswipl.so\""
+            + ConfigReader.getInstance().getSwiplLib() + "libswipl.so\""
             + ", but this might differ on your system.");
         
         if (!newValue.isEmpty()) {

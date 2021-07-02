@@ -375,7 +375,12 @@ public class ConfigReader {
         }
 
         String path = value.split("=")[1];
+        
         this.swiplHome = path.substring(1, path.length() - 2);
+        
+        if (!this.swiplHome.endsWith(File.separator)) {
+          this.swiplHome = this.swiplHome + File.separator;
+        }
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -384,8 +389,8 @@ public class ConfigReader {
         e.printStackTrace();
       }
     }
-
-    return this.swiplHome + File.separator;
+    
+    return this.swiplHome;
   }
 
   // TODO: De-spaghettize
@@ -429,14 +434,22 @@ public class ConfigReader {
           } else {
             String tmp = value.split("=")[1];
             tmp = tmp.substring(1, tmp.length() - 2);
-            path = this.swiplHome + File.separator + "lib" + File.separator + tmp;
+            path = this.swiplHome + "lib" + File.separator + tmp;
           }
 
         } else {
           path = path.substring(1, path.length() - 2);
         }
+        
+        while (path.contains(File.separator + File.separator)) {
+          path = path.replace(File.separator + File.separator, File.separator);
+        }
+        
+        if (!path.endsWith(File.separator)) {
+          path = path + File.separator;
+        }
 
-        this.swiplLib = path + File.separator;
+        this.swiplLib = path;
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
