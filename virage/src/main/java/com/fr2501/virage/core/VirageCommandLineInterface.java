@@ -19,6 +19,7 @@ import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.InvalidConfigVersionException;
 import com.fr2501.virage.types.Property;
 import java.io.File;
 import java.io.IOException;
@@ -62,6 +63,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
   protected VirageCommandLineInterface(VirageCore core) {
     logger.info("Initialising VirageCommandLineInterface.");
+    
+    this.scanner = new Scanner(System.in);
+    this.core = core;
 
     this.printSeparator();
     System.out.println(BANNER);
@@ -75,8 +79,36 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     this.printSeparator();
     
     System.out.println("# Reading configuration from " 
-        + ConfigReader.getInstance().getConfigPath() + ".");
+        + ConfigReader.getConfigPath() + ".");
     System.out.println("#");
+    
+    try {
+      ConfigReader.getInstance().readConfigFile(false);
+    } catch (InvalidConfigVersionException e) {
+      System.out.println("# " + e.getMessage());
+      if (this.requestConfirmation("# ViRAGe can replace the config file with an up-to-date one. " 
+          + "Your old config file will be moved to \"old_config.properties\", and as many settings "
+          + "as possible will be transferred. "
+          + "Do you want to let ViRAGe perform this operation?")) {
+        try {
+          try {
+            ConfigReader.getInstance().readConfigFile(true);
+          } catch (InvalidConfigVersionException e1) {
+            // NO-OP, this cannot happen.
+            // readConfigFile(true) overwrites the old config.
+          }
+        } catch (IOException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+      } else {
+        
+      }
+     
+    } catch (IOException e) {
+      // TODO
+      e.printStackTrace();
+    }
     
     List<String> propertyNames = new LinkedList<String>();
     for (String s : ConfigReader.getInstance().getAllProperties().keySet()) {
@@ -94,9 +126,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     ConfigReader.getInstance().checkAvailabilityAndPrintVersions();
 
     this.printSeparator();
-
-    this.scanner = new Scanner(System.in);
-    this.core = core;
 
     this.clpi = new CommandLineProgressIndicator();
   }
@@ -451,8 +480,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
    * @return true if user answers yes, false if user answers no
    */
   public boolean requestConfirmation(String message) {
-    this.clpi.hide();
-
     boolean returnValue;
 
     loop: while (true) {
@@ -469,12 +496,15 @@ public class VirageCommandLineInterface implements VirageUserInterface {
       }
     }
 
-    this.clpi.show();
     return returnValue;
   }
 
   @Override
   public String requestString(String message) {
+    if(this.clpi != null) {
+      this.clpi.hide();
+    }
+    
     while (true) {
       System.out.println(message);
       // This appears to conflict with mvn exec:exec,
@@ -501,6 +531,10 @@ public class VirageCommandLineInterface implements VirageUserInterface {
           }
           break;
         default:
+          if (this.clpi != null) {
+            this.clpi.show();
+          }
+          
           return input;
       }
     }

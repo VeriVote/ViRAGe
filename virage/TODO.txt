@@ -38,3 +38,6 @@ optionally run jobs in parallel on CLI
 document program states
 run on different sessions to see behavior
 only compile scala code twice if the second run might work
+
+=== FINISHED
+move config to a reasonable place (URGENT!!!)

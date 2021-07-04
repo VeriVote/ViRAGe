@@ -2,10 +2,18 @@ package com.fr2501.virage.core;
 
 import com.fr2501.util.Pair;
 import com.fr2501.util.ProcessUtils;
+import com.fr2501.util.SimpleFileReader;
+import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
+import com.fr2501.virage.types.InvalidConfigVersionException;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +26,7 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpl7.JPL;
@@ -33,6 +42,9 @@ public class ConfigReader {
 
   private static final String ISABELLE_BIN = "ISABELLE_EXECUTABLE";
   private static final String SWIPL_BIN = "SWI_PROLOG_EXECUTABLE";
+  
+  private static String CONFIG_PATH;
+  private static String VIRAGE_FOLDER_PATH;
 
   private boolean isabelleAvailable = true;
   private boolean swiplAvailable = true;
@@ -43,75 +55,133 @@ public class ConfigReader {
   private String swiplLib;
   private String isabelleSessionDir;
 
-  private String configPath;
-
   private Properties properties;
 
   private static ConfigReader instance;
-  
-  private File configFile;
 
-  private ConfigReader() {
-    try {
-      this.readConfigFile();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
+  private File configFile;
 
   /**
    * Creates instance if necessary, otherwise just returns it.
-
+   * 
    * @return the instance
    */
   public static ConfigReader getInstance() {
     if (instance == null) {
       instance = new ConfigReader();
     }
+    
+    VIRAGE_FOLDER_PATH = System.getProperty("user.home") 
+        + File.separator + ".virage" + File.separator;
+    CONFIG_PATH = VIRAGE_FOLDER_PATH + "config.properties";
 
     return instance;
+  }
+  
+  public static String getConfigPath() {
+    VIRAGE_FOLDER_PATH = System.getProperty("user.home") 
+        + File.separator + ".virage" + File.separator;
+    CONFIG_PATH = VIRAGE_FOLDER_PATH + "config.properties";
+    
+    return CONFIG_PATH;
   }
 
   /**
    * Reads the config.properties-file supplied to ViRAGe.
-
+   * 
    * @throws IOException if reading the file is impossible
    */
-  public void readConfigFile() throws IOException {
+  public void readConfigFile(boolean overwriteIfNecessary)
+      throws IOException {
     this.properties = new Properties();
 
-    InputStream input = this.getClass().getClassLoader().getResourceAsStream("config.properties");
-    this.configFile = new File(
-        this.getClass().getClassLoader().getResource("config.properties").getFile());
-    this.configPath = this.configFile.getAbsolutePath();
+    File virageDir = new File(VIRAGE_FOLDER_PATH);
+    this.configFile = new File(CONFIG_PATH);
+    if (!this.configFile.exists()) {
+      virageDir.mkdir();
+      this.configFile.createNewFile();
+      this.copyConfigToExpectedPath();
+    }
 
-    this.properties.load(input);
+    Properties proposedProperties = new Properties();
+
+    InputStream input = new FileInputStream(this.configFile);
+
+    proposedProperties.load(input);
+
+    if (proposedProperties.containsKey("VIRAGE_CONFIG_VERSION") && proposedProperties
+        .getProperty("VIRAGE_CONFIG_VERSION").equals(VirageCore.getVersion())) {
+      this.properties = proposedProperties;
+    } else {
+      if (overwriteIfNecessary) {
+        this.copyConfigToExpectedPath();
+      } else {
+        throw new InvalidConfigVersionException("Expected config version " + VirageCore.getVersion()
+            + ", found " + proposedProperties.getProperty("VIRAGE_CONFIG_VERSION") + ".");
+      }
+    }
+
+    this.properties.load(new FileInputStream(this.configFile));
   }
-  
+
+  public void copyConfigToExpectedPath() throws IOException {
+    SimpleFileReader reader = new SimpleFileReader();
+    SimpleFileWriter writer = new SimpleFileWriter();
+    
+    File oldPropertiesFile = new File(VIRAGE_FOLDER_PATH + "old_config.properties");
+    if (!oldPropertiesFile.exists()) {
+      oldPropertiesFile.createNewFile();
+    }
+    
+    writer.writeToFile(oldPropertiesFile.getAbsolutePath(), reader.readFile(this.configFile));
+    
+    Properties oldProperties = new Properties();
+    oldProperties.load(new FileInputStream(oldPropertiesFile));
+    
+    InputStream configFromResourcesStream = this.getClass().getClassLoader()
+        .getResourceAsStream("config.properties");
+    StringWriter stringWriter = new StringWriter();
+    IOUtils.copy(configFromResourcesStream, stringWriter, StandardCharsets.UTF_8);
+    
+    writer.writeToFile(this.configFile.getAbsolutePath(), stringWriter.toString());
+    
+    Properties newProperties = new Properties();
+    newProperties.load(new FileInputStream(this.configFile));
+    
+    for (Object o : oldProperties.keySet()) {
+      if (o.toString().equals("VIRAGE_CONFIG_VERSION")) {
+        continue;
+      }
+      
+      if (newProperties.keySet().contains(o)) {
+        this.updateValue(o.toString(), oldProperties.getProperty(o.toString()));
+      }
+    }
+  }
+
   public Map<String, String> getAllProperties() {
     Map<String, String> result = new HashMap<String, String>();
-    
+
     for (Object prop : this.properties.keySet()) {
       result.put(prop.toString(), this.properties.getProperty(prop.toString()));
     }
-    
+
     return result;
   }
 
   /**
-   * Checks whether all external software is available and prints
-   * the version numbers of said software.
+   * Checks whether all external software is available and prints the version numbers of said
+   * software.
    */
   public void checkAvailabilityAndPrintVersions() {
     // JAVA
     System.out.println("Java version " + System.getProperty("java.version"));
-    
+
     // ISABELLE
     try {
       ProcessUtils.runTerminatingProcessAndPrintOutput(this.getIsabelleExecutable() + " version");
-      ProcessUtils.runTerminatingProcessAndPrintOutput(this.getIsabelleExecutable() 
-          + " scalac -version");
+      ProcessUtils
+          .runTerminatingProcessAndPrintOutput(this.getIsabelleExecutable() + " scalac -version");
     } catch (IOException e) {
       System.out.println("Isabelle: NOT FOUND");
       this.isabelleAvailable = false;
@@ -125,8 +195,8 @@ public class ConfigReader {
 
     // SWIPL
     try {
-      ProcessUtils.runTerminatingProcessAndPrintOutput(
-          this.properties.get(SWIPL_BIN) + " --version");
+      ProcessUtils
+          .runTerminatingProcessAndPrintOutput(this.properties.get(SWIPL_BIN) + " --version");
     } catch (IOException e) {
       System.out.println("SWI-Prolog: NOT FOUND");
       this.swiplAvailable = false;
@@ -144,12 +214,12 @@ public class ConfigReader {
       this.swiplAvailable = false;
     }
 
-    System.out.println("JPL version " + JPL.version_string());  
+    System.out.println("JPL version " + JPL.version_string());
   }
 
   /**
    * Simple getter.
-
+   * 
    * @return String representation of the isabelle executable
    * @throws ExternalSoftwareUnavailableException if isabelle is unavailable
    */
@@ -171,19 +241,19 @@ public class ConfigReader {
 
   /**
    * Returns the list of type synonyms defined in "SESSION_SPECIFIC_TYPE_SYNONYMS".
-
+   * 
    * @return the list
    */
   public List<Pair<String, String>> getTypeSynonyms() {
     List<Pair<String, String>> res = new LinkedList<Pair<String, String>>();
-    
+
     String prop = this.properties.getProperty("SESSION_SPECIFIC_TYPE_SYNONYMS");
     prop = this.replaceTypeAliases(prop);
     List<String> typeSynonyms = this.readAndSplitList(prop);
 
     for (String synonym : typeSynonyms) {
       synonym = this.replaceTypeAliases(synonym);
-      
+
       String[] splits = synonym.split("->");
 
       if (splits.length != 2) {
@@ -199,7 +269,7 @@ public class ConfigReader {
   public List<String> getAtomicTypes() {
     String prop = this.properties.getProperty("SESSION_SPECIFIC_ATOMIC_TYPES");
     prop = this.replaceTypeAliases(prop);
-    
+
     return this.readAndSplitList(prop);
   }
 
@@ -217,13 +287,13 @@ public class ConfigReader {
   public List<String> getAdditionalProperties() {
     String prop = this.properties.getProperty("SESSION_SPECIFIC_ASSUMPTIONS");
     prop = this.replaceTypeAliases(prop);
-    
+
     return this.readAndSplitList(prop);
   }
 
   /**
    * Retrieves the path to $ISABELLE_HOME.
-
+   * 
    * @return the path
    * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
    */
@@ -250,17 +320,18 @@ public class ConfigReader {
     return this.isabelleHome;
   }
 
-  private String computeIsabelleHome() throws IOException, 
-      InterruptedException, ExternalSoftwareUnavailableException {
-    String output = ProcessUtils.runTerminatingProcess(
-        this.getIsabelleExecutable() + " getenv ISABELLE_HOME").getFirstValue();
+  private String computeIsabelleHome()
+      throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
+    String output = ProcessUtils
+        .runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME")
+        .getFirstValue();
 
     return (output.split("=")[1].trim());
   }
 
   /**
    * Retrieves the Isabelle session directory.
-
+   * 
    * @return the directory
    * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
    */
@@ -294,8 +365,9 @@ public class ConfigReader {
 
   private String computeIsabelleSessionDir()
       throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
-    String output = ProcessUtils.runTerminatingProcess(
-        this.getIsabelleExecutable() + " getenv ISABELLE_HOME_USER").getFirstValue();
+    String output = ProcessUtils
+        .runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME_USER")
+        .getFirstValue();
 
     return (output.split("=")[1].trim());
   }
@@ -319,7 +391,7 @@ public class ConfigReader {
   public boolean hasJpl() {
     return this.jplAvailable;
   }
-  
+
   private boolean hasTypeAliases() {
     return this.properties.containsKey("SESSION_SPECIFIC_TYPE_ALIASES");
   }
@@ -329,8 +401,8 @@ public class ConfigReader {
       return s;
     }
 
-    List<String> replacements = this.readAndSplitList(
-        this.properties.getProperty("SESSION_SPECIFIC_TYPE_ALIASES"));
+    List<String> replacements = this
+        .readAndSplitList(this.properties.getProperty("SESSION_SPECIFIC_TYPE_ALIASES"));
 
     Map<String, String> replMap = new HashMap<String, String>();
 
@@ -352,7 +424,7 @@ public class ConfigReader {
 
   /**
    * Retrieves the SWI-Prolog home directory.
-
+   * 
    * @return the directory
    * @throws ExternalSoftwareUnavailableException if swipl is unavailable
    */
@@ -364,8 +436,9 @@ public class ConfigReader {
     if (this.swiplHome == null) {
       try {
         String output = ProcessUtils
-            .runTerminatingProcess(this.properties.getProperty(SWIPL_BIN) 
-                + " --dump-runtime-variables").getFirstValue();
+            .runTerminatingProcess(
+                this.properties.getProperty(SWIPL_BIN) + " --dump-runtime-variables")
+            .getFirstValue();
         String[] lines = output.split("\n");
         String value = "";
         for (String line : lines) {
@@ -375,9 +448,9 @@ public class ConfigReader {
         }
 
         String path = value.split("=")[1];
-        
+
         this.swiplHome = path.substring(1, path.length() - 2);
-        
+
         if (!this.swiplHome.endsWith(File.separator)) {
           this.swiplHome = this.swiplHome + File.separator;
         }
@@ -389,14 +462,14 @@ public class ConfigReader {
         e.printStackTrace();
       }
     }
-    
+
     return this.swiplHome;
   }
 
   // TODO: De-spaghettize
   /**
    * Retrieves the SWI-Prolog library directory via "swipl --dump-runtime-variables".
-
+   * 
    * @return the directory
    * @throws ExternalSoftwareUnavailableException if swipl is unavailable
    */
@@ -408,8 +481,9 @@ public class ConfigReader {
     if (this.swiplLib == null) {
       try {
         String output = ProcessUtils
-            .runTerminatingProcess(this.properties.getProperty(SWIPL_BIN) 
-                + " --dump-runtime-variables").getFirstValue();
+            .runTerminatingProcess(
+                this.properties.getProperty(SWIPL_BIN) + " --dump-runtime-variables")
+            .getFirstValue();
         String[] lines = output.split("\n");
         String value = "";
         String path = "";
@@ -440,11 +514,11 @@ public class ConfigReader {
         } else {
           path = path.substring(1, path.length() - 2);
         }
-        
+
         while (path.contains(File.separator + File.separator)) {
           path = path.replace(File.separator + File.separator, File.separator);
         }
-        
+
         if (!path.endsWith(File.separator)) {
           path = path + File.separator;
         }
@@ -462,37 +536,31 @@ public class ConfigReader {
     return this.swiplLib;
   }
 
-  public String getConfigPath() {
-    return this.configPath;
-  }
-  
   public void updateValueForLdPreload(String newValue) {
     this.updateValue("SWI_PROLOG_LIBSWIPL_PATH", newValue);
   }
-  
+
   public void updateValueForLdLibraryPath(String newValue) {
     this.updateValue("SWI_PROLOG_LIBRARIES_PATH", newValue);
   }
-  
+
   public String getDefaultOutputPath() {
     String defaultPath = "./target/generated-sources/";
-    
-    String configValue = (String) this.properties.getOrDefault(
-        "SYSTEM_DEFAULT_OUTPUT_PATH", "./target/generated-sources/");
-    
+
+    String configValue = (String) this.properties.getOrDefault("SYSTEM_DEFAULT_OUTPUT_PATH",
+        "./target/generated-sources/");
+
     if (configValue.isEmpty()) {
       return defaultPath;
     } else {
       return configValue;
     }
   }
-  
+
   private void updateValue(String name, String newValue) {
     Parameters params = new Parameters();
-    FileBasedConfigurationBuilder<FileBasedConfiguration> builder 
-        = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
-        PropertiesConfiguration.class)
-            .configure(params.properties().setFileName(this.configPath));
+    FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
+        PropertiesConfiguration.class).configure(params.properties().setFileName(CONFIG_PATH));
     Configuration config;
     try {
       config = builder.getConfiguration();
