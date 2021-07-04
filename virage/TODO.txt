@@ -10,14 +10,12 @@ re-add "?-" or ">" if possible
 do not overwrite framework.pl, or at least ask first!
 sanitize inputs
 check necessity of log messages
-more transparent "parsing (E)PL message"
 display types instead of Prolog variables in the end
 add possibility to check all available properties at once
 omit anonymous variables and fill automatically
 
 === Miscellaneous
 document and rework the (E)PL format (URGENT!!!)
-add license (MIT?)
 experiment with snap on Ubuntu
 interactively launch scala and generate test instances
 optionally run jobs in parallel on CLI
@@ -41,3 +39,5 @@ endless loop on Isabelle startup (URGENT!!!)
 "successfully verified" instead of "automatically"
 improve (E)PL generation message
 check Prolog files at version display
+more transparent "parsing (E)PL message"
+add license (MIT?)
