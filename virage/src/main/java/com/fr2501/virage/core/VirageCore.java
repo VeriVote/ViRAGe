@@ -204,7 +204,8 @@ public class VirageCore implements Runnable {
       try {
         newValue = this.ui.requestString("Please input the path to the SWI-Prolog "
             + "library directory.\n" 
-            + "The typical value is \"" + ConfigReader.getInstance().getSwiplLib() 
+            + "For your setup of SWI-Prolog, the typical value is \"" 
+            + ConfigReader.getInstance().getSwiplLib() 
             + "\", but this might differ on your system.");
         
         if (!newValue.isEmpty()) {
@@ -222,7 +223,7 @@ public class VirageCore implements Runnable {
       String newValue;
       try {
         newValue = this.ui.requestString("Please input the path to libswipl.so.\n" 
-            + "Typical values are \"/usr/lib/libswipl.so\" or \"" 
+            + "For your setup of SWI-Prolog, typical values are \"/usr/lib/libswipl.so\" or \"" 
             + ConfigReader.getInstance().getSwiplLib() + "libswipl.so\""
             + ", but this might differ on your system.");
         
@@ -241,20 +242,23 @@ public class VirageCore implements Runnable {
     }
     
     if (unsafeState) {
-      if (this.ui.requestConfirmation(
-          "A restart is required for the changes to take effect. Restart now?")) {
-        System.exit(0);
-      }
+      this.ui.displayMessage("A restart is required for the changes to take effect.\n" 
+           + "Please restart ViRAGe after it terminated.");
+      System.exit(0);
     }
 
     if (ConfigReader.getInstance().hasIsabelle()) {
-      this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(),
-          framework.getTheoryPath());
-      this.checker.setSolvers(ConfigReader.getInstance().getIsabelleTactics());
       try {
+        this.checker = IsabelleProofChecker.getInstance(framework.getSessionName(),
+            framework.getTheoryPath());
+        this.checker.setSolvers(ConfigReader.getInstance().getIsabelleTactics());
+      
         this.codeGenerator = new IsabelleCodeGenerator(this.framework);
       } catch (IOException e) {
         // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (ExternalSoftwareUnavailableException e) {
+        // TODO
         e.printStackTrace();
       }
     }

@@ -80,6 +80,8 @@ public class JplFacade {
     } catch (JPLException e) {
       logger.warn("Outdated version of SWI-Prolog detected. " 
           + "ViRAGe attempts to run in compatibility mode, but results might be unexpected. "
+          + "Especially, queries that result in Prolog terms containing variables will "
+          + "always fail.\n"
           + "Please consider upgrading to SWI-Prolog 8.0.0 or newer to avoid this in the future.");
       this.compatibilityMode = true;
     }
@@ -156,8 +158,8 @@ public class JplFacade {
           return result;
         } catch (JPLException e) {
           if (this.compatibilityMode) {
-            logger.error("The JPL/SWI-Prolog compatibility mode was unable to handle this query."
-                + "Please consider upgrading to SWI-Prolog 8.X.");
+            logger.error("The JPL/SWI-Prolog compatibility mode was unable to handle this query. "
+                + "Please consider upgrading at least to SWI-Prolog 8.0.0.");
             
             throw e;
           }

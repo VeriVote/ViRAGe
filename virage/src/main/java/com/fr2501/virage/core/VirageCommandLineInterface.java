@@ -13,11 +13,13 @@ import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.jobs.VirageParseJob;
 import com.fr2501.virage.jobs.VirageProveJob;
+import com.fr2501.virage.prolog.JplFacade;
 import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComposableModule;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.DecompositionTree;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.InvalidConfigVersionException;
 import com.fr2501.virage.types.Property;
@@ -37,6 +39,7 @@ import java.util.Scanner;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.common.returnsreceiver.qual.This;
 
 /**
  * A simple command line interface for ViRAGe.
@@ -75,12 +78,19 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     LocalDateTime now = LocalDateTime.now();
     System.out.println("# Version " + VirageCore.getVersion() + ", Timestamp: " + dtf.format(now));
     System.out.println("# If you need help, type \"help\", \"h\" or \"?\".");
+    System.out.println("# To exit ViRAGe, type \"exit\".");
+    
+    this.printSeparator();
+    
+    System.out.println("# ViRAGe is a tool to generate voting rules and automatically ");
+    System.out.println("# reason about their social choice properties.");
     
     this.printSeparator();
     
     System.out.println("# Reading configuration from " 
         + ConfigReader.getConfigPath() + ".");
     System.out.println("#");
+    System.out.println("# The following settings were found: ");
     
     try {
       ConfigReader.getInstance().readConfigFile(false);
@@ -102,7 +112,12 @@ public class VirageCommandLineInterface implements VirageUserInterface {
           e1.printStackTrace();
         }
       } else {
+        System.out.println("# ViRAGe is in an unsafe state as you "
+            + "loaded an outdated configuration.");
         
+        if (!this.requestConfirmation("Do you want to continue anyways?")) {
+          this.core.submit(new VirageExitJob(this, 0));
+        }
       }
      
     } catch (IOException e) {
@@ -116,14 +131,92 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     }
     Collections.sort(propertyNames);
     
+    String lastPrefix = "";
     for (String s : propertyNames) {
+      if (!lastPrefix.equals(s.split("_")[0])) {
+        System.out.println("#");
+        lastPrefix = s.split("_")[0];
+      }
+      
       System.out.println(("# " + s.toUpperCase() + ":\n#\t" 
           + ConfigReader.getInstance().getAllProperties().get(s)).replaceAll(";", ";\n#\t"));
     }
+    
+    if (this.requestConfirmation("# Do you want to edit these settings? "
+        + "This will open the configuration " 
+        + "file in a text editor and require a restart of ViRAGe.")) {
 
+      try {
+        this.displayMessage("# If ViRAGe freezes without opening an editor, "
+            + "please try another one by setting \"SYSTEM_TEXT_EDITOR\" in "
+            + ConfigReader.getConfigPath() + ". At the moment, only windowed "
+            + "editors (mousepad, ...) are supported, not in-terminal ones "
+            + "(nano, vim, ...).");
+        
+        ConfigReader.getInstance().openConfigFileForEditing();
+        
+        this.displayMessage("# Please restart ViRAGe for the changes to take effect.");
+        
+        System.exit(0);
+      } catch (ExternalSoftwareUnavailableException e) {
+        this.displayMessage("# No text editor available. Please set the configuration option "
+            + "\"SYSTEM_TEXT_EDITOR\" or the environment variable \"EDITOR\".");
+      }
+    }
+    
     this.printSeparator();
 
-    ConfigReader.getInstance().checkAvailabilityAndPrintVersions();
+    this.displayMessage("# " + ConfigReader.getInstance().
+        checkAvailabilityAndGetVersions().replace("\n", "\n# "));
+    
+    boolean unsafeState = false;
+    try {
+      JplFacade facade = new JplFacade();
+    } catch (ExternalSoftwareUnavailableException e) {
+      this.displayError("libswipl.so could not be located.");
+      
+      String newValue;
+      try {
+        newValue = this.requestString("Please input the path to libswipl.so.\n" 
+            + "For your setup of SWI-Prolog, typical values are \"/usr/lib/libswipl.so\" or \"" 
+            + ConfigReader.getInstance().getSwiplLib() + "libswipl.so\""
+            + ", but this might differ on your system.");
+        
+        if (!newValue.isEmpty()) {
+          ConfigReader.getInstance().updateValueForLdPreload(newValue);
+        }
+      } catch (ExternalSoftwareUnavailableException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+      }
+
+      unsafeState = true;
+    } catch (UnsatisfiedLinkError e) {
+      this.displayError("SWI-Prolog library directory could not be located.");
+
+      String newValue;
+      try {
+        newValue = this.requestString("Please input the path to the SWI-Prolog "
+            + "library directory.\n" + "For your setup of SWI-Prolog, the typical value is \""
+            + ConfigReader.getInstance().getSwiplLib()
+            + "\", but this might differ on your system.");
+
+        if (!newValue.isEmpty()) {
+          ConfigReader.getInstance().updateValueForLdLibraryPath(newValue);
+        }
+      } catch (ExternalSoftwareUnavailableException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+      }
+
+      unsafeState = true;
+    }
+    
+    if (unsafeState) {
+      this.displayMessage("A restart is required for the changes to take effect. "
+          + "Please restart ViRAGe after it terminated.");
+      System.exit(0);
+    }
 
     this.printSeparator();
 
@@ -222,7 +315,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             while (true) {
               boolean conf = this.requestConfirmation(
                   "(E)PL file \"" + child.getAbsolutePath() + "\" found. " + "Do you want to "
-                      + "skip generation and use this file instead? This saves time if no " 
+                      + "skip (E)PL generation and use this file instead? This saves time if no " 
                       + "changes to the Isabelle theories were made since the file was "
                       + "created.");
 
@@ -246,7 +339,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
       String sessionName;
       if (ConfigReader.getInstance().hasSessionName()
-          && this.requestConfirmation("Configuration option \"ISABELLE_SESSION_NAME\" is specified " 
+          && this.requestConfirmation("Configuration option "
+              + "\"ISABELLE_SESSION_NAME\" is specified " 
               + "as \"" + ConfigReader.getInstance().getSessionName() 
               + "\". Is this value correct?")) {
 
@@ -271,7 +365,10 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     } else {
       parseJob = new VirageParseJob(this, new File(path));
     }
-
+    
+    this.displayMessage("The following operation might take some time, "
+        + "especially when ViRAGe is run with previously "
+        + "un-built Isabelle sessions.");
     this.core.submit(parseJob);
     parseJob.waitFor();
     
@@ -482,26 +579,22 @@ public class VirageCommandLineInterface implements VirageUserInterface {
   public boolean requestConfirmation(String message) {
     boolean returnValue;
 
-    loop: while (true) {
+    while (true) {
       String input = this.requestString(message + " (y/n)");
-
-      switch (input) {
-        case "y":
-          returnValue = true;
-          break loop;
-        case "n":
-          returnValue = false;
-          break loop;
-        default: break;
+      
+      if (input.startsWith("y")) {
+        return true;
+      } else if (input.startsWith("n")) {
+        return false;
       }
+      
+      System.out.println("Please try again.");
     }
-
-    return returnValue;
   }
 
   @Override
   public String requestString(String message) {
-    if(this.clpi != null) {
+    if (this.clpi != null) {
       this.clpi.hide();
     }
     

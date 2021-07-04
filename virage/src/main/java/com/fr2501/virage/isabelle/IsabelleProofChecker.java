@@ -59,10 +59,16 @@ public class IsabelleProofChecker {
   boolean finished = false;
   IsabelleEvent lastEvent;
 
-  private IsabelleProofChecker(String sessionName, String theoryPath) {
+  private IsabelleProofChecker(String sessionName, String theoryPath) 
+      throws ExternalSoftwareUnavailableException {
     this.runtime = Runtime.getRuntime();
 
     this.solvers = ConfigReader.getInstance().getIsabelleTactics();
+    
+    // Use scala-isabelle to build the session, as my own solution
+    // might not terminate when session build fails.
+    ScalaIsabelleFacade.buildSession(theoryPath, sessionName);
+    
 
     try {
       // TODO: Remove quick_and_dirty as soon as possible (or make optional?)
@@ -118,8 +124,10 @@ public class IsabelleProofChecker {
    * @param sessionName a name for the session to be created
    * @param theoryPath the path to the theory folder
    * @return the instance
+   * @throws ExternalSoftwareUnavailableException 
    */
-  public static IsabelleProofChecker getInstance(String sessionName, String theoryPath) {
+  public static IsabelleProofChecker getInstance(String sessionName, String theoryPath) 
+      throws ExternalSoftwareUnavailableException {
     if (instance == null || instance.sessionName == null
         || !instance.sessionName.equals(sessionName) || !instance.theoryPath.equals(theoryPath)) {
       instance = new IsabelleProofChecker(sessionName, theoryPath);

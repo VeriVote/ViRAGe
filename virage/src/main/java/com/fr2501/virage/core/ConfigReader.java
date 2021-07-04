@@ -173,17 +173,20 @@ public class ConfigReader {
    * Checks whether all external software is available and prints the version numbers of said
    * software.
    */
-  public void checkAvailabilityAndPrintVersions() {
+  public String checkAvailabilityAndGetVersions() {
+    String res = "External dependency versions:\n\n";
+    
     // JAVA
-    System.out.println("Java version " + System.getProperty("java.version"));
+    res += "Java: \t\t" + System.getProperty("java.version") + "\n";
 
     // ISABELLE
     try {
-      ProcessUtils.runTerminatingProcessAndPrintOutput(this.getIsabelleExecutable() + " version");
-      ProcessUtils
-          .runTerminatingProcessAndPrintOutput(this.getIsabelleExecutable() + " scalac -version");
+      res += "Isabelle: \t\t" + ProcessUtils.runTerminatingProcess(
+          this.getIsabelleExecutable() + " version").getFirstValue();
+      res += "Isabelle scala: \t" + ProcessUtils.runTerminatingProcess(
+          this.getIsabelleExecutable() + " scalac -version").getFirstValue();
     } catch (IOException e) {
-      System.out.println("Isabelle: NOT FOUND");
+      res += ("Isabelle: \t\tNOT FOUND\n");
       this.isabelleAvailable = false;
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
@@ -195,10 +198,10 @@ public class ConfigReader {
 
     // SWIPL
     try {
-      ProcessUtils
-          .runTerminatingProcessAndPrintOutput(this.properties.get(SWIPL_BIN) + " --version");
+      res += "SWI-Prolog: \t\t" + ProcessUtils.runTerminatingProcess(
+          this.properties.get(SWIPL_BIN) + " --version").getFirstValue();
     } catch (IOException e) {
-      System.out.println("SWI-Prolog: NOT FOUND");
+      System.out.println("SWI-Prolog: NOT FOUND\n");
       this.swiplAvailable = false;
       this.jplAvailable = false;
     } catch (InterruptedException e) {
@@ -214,7 +217,9 @@ public class ConfigReader {
       this.swiplAvailable = false;
     }
 
-    System.out.println("JPL version " + JPL.version_string());
+    res += ("JPL: \t\t\t" + JPL.version_string());
+    
+    return res;
   }
 
   /**
@@ -568,6 +573,30 @@ public class ConfigReader {
       builder.save();
     } catch (ConfigurationException e) {
       logger.error("Updating \"" + name + "\" failed.");
+    }
+  }
+  
+  public void openConfigFileForEditing() throws ExternalSoftwareUnavailableException {
+    String editorExecutable = "";
+    
+    if (this.properties.containsKey("SYSTEM_TEXT_EDITOR") 
+        && !this.properties.getProperty("SYSTEM_TEXT_EDITOR").toString().isEmpty()) {
+      editorExecutable = this.properties.getProperty("SYSTEM_TEXT_EDITOR");
+    } else if (System.getenv().containsKey("EDITOR")
+        && !System.getenv().get("EDITOR").isEmpty()) {
+      editorExecutable = System.getenv().get("EDITOR");
+    } else {
+      throw new ExternalSoftwareUnavailableException();
+    }
+    
+    try {
+      Process process = new ProcessBuilder(editorExecutable, this.configFile.getAbsolutePath())
+          .directory(null).start();
+      process.waitFor();
+    } catch (IOException e) {
+      throw new ExternalSoftwareUnavailableException();
+    } catch (InterruptedException e) {
+      throw new ExternalSoftwareUnavailableException();
     }
   }
 }

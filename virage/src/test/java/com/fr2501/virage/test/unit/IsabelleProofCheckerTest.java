@@ -130,7 +130,7 @@ public class IsabelleProofCheckerTest {
 
   // Takes long, not performed by default.
   @Test
-  public void simpleFrameworkTest() throws IOException, InterruptedException {
+  public void simpleFrameworkTest() throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
     List<Property> properties = new LinkedList<Property>();
     properties.add(this.framework.getProperty("electing"));
 
@@ -171,9 +171,10 @@ public class IsabelleProofCheckerTest {
 
    * @throws IOException if file operations fail
    * @throws InterruptedException if the process is interrupted
+   * @throws ExternalSoftwareUnavailableException 
    */
   //@Test
-  public void smcTest() throws IOException, InterruptedException {
+  public void smcTest() throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
     List<Property> properties = new LinkedList<Property>();
     properties.add(this.framework.getProperty("electing"));
     properties.add(this.framework.getProperty("monotonicity"));

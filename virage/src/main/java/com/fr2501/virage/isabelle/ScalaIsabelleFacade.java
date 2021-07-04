@@ -94,6 +94,21 @@ public class ScalaIsabelleFacade {
     }
     this.init();
   }
+  
+  public static void buildSession(String sessionDir, String sessionName) 
+      throws ExternalSoftwareUnavailableException {
+    List<Path> sessionDirs = new LinkedList<Path>();
+    sessionDirs.add(Path.of(new File(sessionDir).getAbsolutePath()));
+    
+    Setup setup = new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()), sessionName,
+        new Some<Path>(Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
+        Path.of(sessionDir),
+        JavaConverters.asScalaIteratorConverter(sessionDirs.iterator()).asScala().toSeq(), true,
+        null);
+    
+    Isabelle isabelle = new Isabelle(setup);
+    isabelle.destroy();
+  }
 
   public Set<String> getTheoryNames() {
     return theoryNames;

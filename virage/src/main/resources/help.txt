@@ -11,20 +11,43 @@ Command:		Purpose:
  "help", "h", "?"	 display this message
  "exit"			 terminate ViRAGe
 
-ViRAGe is a tool for analysis and generation of voting rules. It is also capable of generating executable implementations of voting rules in Scala. Furthermore, the claims about whether some rule satisfies given social choice properties is backed by formal composition rules within the theorem prover Isabelle/HOL and their composition and the proof for the claim can in many cases be generated fully automatically within Isabelle/HOL.
+ViRAGe is a tool for analysis and generation of voting rules. It 
+is also capable of generating executable implementations of voting 
+rules in Scala. Furthermore, the claims about whether some rule 
+satisfies given social choice properties is backed by formal 
+composition rules within the theorem prover Isabelle/HOL and their 
+composition and the proof for the claim can in many cases be 
+generated fully automatically within Isabelle/HOL.
 
-Required Software: 	SWI-Prolog 8.X (A compatibility mode exists for older versions, but using this mode is not recommended, as its stability cannot be guaranteed.)
+Required Software: 	SWI-Prolog 8.X (A compatibility mode exists 
+			for older versions, but using this mode is 
+			not recommended, as its stability cannot be 
+			guaranteed.)
 			JPL (added automatically via maven)
 Optional Software: 	Isabelle/HOL
-			texlive (for generating the documentation and proofs within Isabelle/HOL)
-The SWI-Prolog/JPL setup is not trivial. ViRAGe tries to give guidance along the way, but in case of further problems, please refer to the installation manual at https://jpl7.org.
+			texlive (for generating the documentation and 
+			proofs within Isabelle/HOL)
+The SWI-Prolog/JPL setup is not trivial. ViRAGe tries to give guidance 
+along the way, but in case of further problems, please refer to the 
+installation manual at https://jpl7.org.
 
-ViRAGe is based on a Compositional Framework theory. When invoking ViRAGe, such a framework must be supplied. This can be either done via an (E)PL file or via an Isabelle/HOL session. When providing an Isabelle/HOL session, ViRAGe is able to automatically extract a framework from the given session and then generates an (E)PL file for further use and modification.
+ViRAGe is based on a Compositional Framework theory. When invoking 
+ViRAGe, such a framework must be supplied. This can be either done 
+via an (E)PL file or via an Isabelle/HOL session. When providing an 
+Isabelle/HOL session, ViRAGe is able to automatically extract a 
+framework from the given session and then generates an (E)PL file for 
+further use and modification.
 
-The main user prompt in ViRAGe offers to choose between five operations, which can be selected by typing the corresponding letter as follows.
+The main user prompt in ViRAGe offers to choose between five operations, 
+which can be selected by typing the corresponding letter as follows.
 	- g	Generate a voting rule satisfying some given properties.
-	- a	Check whether a given voting rule satisfies some given properties.
-	- p 	Generate a proof tree showing that a voting rule satisfies some properties (if it does).
-    - I	Generate an Isabelle/HOL theory file with a formal proof, proving that a voting rule satisfies some properties. This can be checked automatically by ViRAGe.
-	- S	Create an executable Scala implementation of a voting rule using the native code generation within Isabelle/HOL.
+	- a	Check whether a given voting rule satisfies some given 
+		properties.
+	- p 	Generate a proof tree showing that a voting rule satisfies 
+		some properties (if it does).
+    	- I	Generate an Isabelle/HOL theory file with a formal proof, 
+		proving that a voting rule satisfies some properties. This 
+		can be checked automatically by ViRAGe.
+	- S	Create an executable Scala implementation of a voting rule 
+		using the native code generation within Isabelle/HOL.
 

@@ -42,7 +42,13 @@ public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Bo
 
   @Override
   public String presentConcreteResult() {
-    return "Isabelle theory " + this.file.getAbsolutePath() + " was verified automatically.";
+    if (this.result.getFirstValue()) {
+      return "Isabelle theory " + this.result.getSecondValue().getAbsolutePath() 
+          + " was verified successfully.";
+    } else {
+      return "Verification of Isabelle theory " + this.result.getSecondValue().getAbsolutePath() 
+          + " failed.";
+    }
   }
 
   @Override

@@ -6,26 +6,12 @@ improve exec:exec section
 check lifecycle, add compile or find something more elegant
 
 === Improve UI
-endless loop on Isabelle startup (URGENT!!!)
 re-add "?-" or ">" if possible
 do not overwrite framework.pl, or at least ask first!
-remove 8.x
-display purpose description + exit command at startup
-new lines between sections
-"these values were read from the configuration"
-improve version displays
-improve (E)PL generation message
 sanitize inputs
-force restart
-more options for yes/no, only check first letter?
-check Prolog files at version display
-"typical value on your system"
-line breaks in help
 check necessity of log messages
-auto-open config in system text editor
 more transparent "parsing (E)PL message"
 display types instead of Prolog variables in the end
-"successfully verified" instead of "automatically"
 add possibility to check all available properties at once
 omit anonymous variables and fill automatically
 
@@ -41,3 +27,17 @@ only compile scala code twice if the second run might work
 
 === FINISHED
 move config to a reasonable place (URGENT!!!)
+line breaks in help
+display purpose description + exit command at startup
+more options for yes/no, only check first letter?
+"typical value on your system"
+remove 8.x
+new lines between sections
+force restart
+"these values were read from the configuration"
+improve version displays
+auto-open config in system text editor (RUDIMENTARY)
+endless loop on Isabelle startup (URGENT!!!)
+"successfully verified" instead of "automatically"
+improve (E)PL generation message
+check Prolog files at version display

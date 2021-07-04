@@ -94,6 +94,7 @@ public class VirageParseJob extends VirageJobWithExplicitResult<FrameworkReprese
 
   @Override
   public String getDescription() {
-    return "Parsing (E)PL file ...";
+    return "Parsing (E)PL file and invoking the Isabelle session within it ...";
+
   }
 }

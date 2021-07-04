@@ -4,7 +4,7 @@ import com.fr2501.virage.core.VirageUserInterface;
 
 /**
  * A {@link VirageJob} that does nothing, can be used if something goes wrong
- * while creating the actual job, but something still has to be returned.
+ * while creating the actual job, but a return value is still required.
  *
  */
 public class VirageDummyJob extends VirageJobWithoutExplicitResult {
@@ -24,13 +24,18 @@ public class VirageDummyJob extends VirageJobWithoutExplicitResult {
   }
 
   @Override
+  public String presentResult() {
+    return "";
+  }
+  
+  @Override
   public String presentConcreteResult() {
-    return "Nothing.";
+    return "";
   }
 
   @Override
   public String getDescription() {
-    return "Dummy job ...";
+    return "";
   }
 
 }
