@@ -234,8 +234,9 @@ public class FrameworkRepresentation {
 
    * @param cs the @link{CompositionalStructure} to be added
    */
+  @Deprecated
   public void add(CompositionalStructure cs) {
-    this.checkTypes(cs);
+    //this.checkTypes(cs);
     this.compositionalStructures.add(cs);
   }
 

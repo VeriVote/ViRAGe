@@ -60,6 +60,19 @@ public class ConfigReader {
   private static ConfigReader instance;
 
   private File configFile;
+  
+  private ConfigReader() {
+    VIRAGE_FOLDER_PATH = System.getProperty("user.home") 
+        + File.separator + ".virage" + File.separator;
+    CONFIG_PATH = VIRAGE_FOLDER_PATH + "config.properties";
+    
+    // This is only to ensure unit-tests are working.
+    try {
+      this.readConfigFile(false);
+    } catch (Exception e) {
+      // Nothing to be done
+    }
+  }
 
   /**
    * Creates instance if necessary, otherwise just returns it.
@@ -71,10 +84,6 @@ public class ConfigReader {
       instance = new ConfigReader();
     }
     
-    VIRAGE_FOLDER_PATH = System.getProperty("user.home") 
-        + File.separator + ".virage" + File.separator;
-    CONFIG_PATH = VIRAGE_FOLDER_PATH + "config.properties";
-
     return instance;
   }
   
