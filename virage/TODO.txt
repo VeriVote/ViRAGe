@@ -1,10 +1,5 @@
-=== Fix POM
-improve exec:exec section
-"general release-readiness" -> see BEAST
-
 === Improve UI
-re-add "?-" or ">" if possible
-do not overwrite framework.pl, or at least ask first!
+re-add "?-" or ">" if possible (I still think that this does not work while using exec:exec)
 sanitize inputs
 check necessity of log messages
 display types instead of Prolog variables in the end
@@ -44,3 +39,6 @@ document and rework the (E)PL format (URGENT!!!) (Rudimentary, but the most urge
 check versions
 remove tabs
 check lifecycle, add compile or find something more elegant
+improve exec:exec section (Is it actually that bad? See first example at https://www.mojohaus.org/exec-maven-plugin/examples/example-exec-for-java-programs.html)
+do not overwrite framework.pl, or at least ask first!
+"general release-readiness" -> see BEAST (Was that everything?)
