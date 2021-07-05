@@ -11,6 +11,8 @@ import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.IsabelleBuildFailedException;
+
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -259,6 +261,9 @@ public class VirageCore implements Runnable {
         e.printStackTrace();
       } catch (ExternalSoftwareUnavailableException e) {
         // TODO
+        e.printStackTrace();
+      } catch (IsabelleBuildFailedException e) {
+        // TODO Auto-generated catch block
         e.printStackTrace();
       }
     }

@@ -227,7 +227,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
           framework.add(new ComposableModule(type, name, parameters));
           break;
         case COMPOSITIONAL_STRUCTURE:
-          framework.add(new CompositionalStructure(name, parameters));
+          framework.add(new CompositionalStructure(name, type, parameters));
           break;
         case PROPERTY:
           framework.add(new Property(name, parameters));

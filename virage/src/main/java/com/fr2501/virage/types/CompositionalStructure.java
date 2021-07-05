@@ -7,13 +7,15 @@ import java.util.List;
  * A compositional structure for the modular framework.
  *
  */
-public class CompositionalStructure implements Parameterized {
+public class CompositionalStructure implements TypedAndParameterized {
   private String name;
   private List<ComponentType> parameters;
+  private ComponentType type;
 
-  public CompositionalStructure(String name, List<ComponentType> parameters) {
+  public CompositionalStructure(String name, ComponentType type, List<ComponentType> parameters) {
     this.name = name;
     this.parameters = parameters;
+    this.type = type;
   }
 
   public String getName() {
@@ -27,8 +29,14 @@ public class CompositionalStructure implements Parameterized {
 
   @Override
   public String toString() {
-    String res = this.name + "(" + StringUtils.printCollection(this.parameters) + ")";
+    String res = "(" + this.type + ") " + this.name 
+        + "(" + StringUtils.printCollection(this.parameters) + ")";
 
     return res;
+  }
+
+  @Override
+  public ComponentType getType() {
+    return this.type;
   }
 }

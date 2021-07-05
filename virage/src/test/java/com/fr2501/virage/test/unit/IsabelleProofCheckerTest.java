@@ -18,6 +18,7 @@ import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
+import com.fr2501.virage.types.IsabelleBuildFailedException;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 import java.io.File;
@@ -130,7 +131,7 @@ public class IsabelleProofCheckerTest {
 
   // Takes long, not performed by default.
   @Test
-  public void simpleFrameworkTest() throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
+  public void simpleFrameworkTest() throws IOException, InterruptedException, ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
     List<Property> properties = new LinkedList<Property>();
     properties.add(this.framework.getProperty("electing"));
 
@@ -172,9 +173,10 @@ public class IsabelleProofCheckerTest {
    * @throws IOException if file operations fail
    * @throws InterruptedException if the process is interrupted
    * @throws ExternalSoftwareUnavailableException 
+   * @throws IsabelleBuildFailedException 
    */
   //@Test
-  public void smcTest() throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
+  public void smcTest() throws IOException, InterruptedException, ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
     List<Property> properties = new LinkedList<Property>();
     properties.add(this.framework.getProperty("electing"));
     properties.add(this.framework.getProperty("monotonicity"));

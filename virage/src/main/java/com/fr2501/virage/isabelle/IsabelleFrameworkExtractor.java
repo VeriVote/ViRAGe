@@ -108,10 +108,10 @@ public class IsabelleFrameworkExtractor {
           Property prop = new Property(compName, params);
           framework.add(prop);
         } else {
-          if (params.contains(compReturnType)) {
-            CompositionalStructure struct = new CompositionalStructure(compName, params);
+          /* if (params.contains(compReturnType)) {
+            CompositionalStructure struct = new CompositionalStructure(compName, compReturnType, params);
             framework.add(struct);
-          } else {
+          } else */ {
             Component res = new Component(compReturnType, compName, params);
             framework.add(res);
           }

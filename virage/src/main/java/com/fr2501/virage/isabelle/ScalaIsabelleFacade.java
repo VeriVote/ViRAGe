@@ -58,7 +58,7 @@ public class ScalaIsabelleFacade {
   private Map<String, Map<String, String>> functionsAndDefinitions;
 
   private Setup setup;
-  private Isabelle isabelle;
+  private static Isabelle isabelle;
 
   /**
    * Simple constructor.
@@ -85,9 +85,9 @@ public class ScalaIsabelleFacade {
         null);
 
     try {
-      this.isabelle = new Isabelle(setup);
+      isabelle = new Isabelle(setup);
     } catch (/* IsabelleBuildFailed */Exception e) {
-      logger.error("Building session " + sessionName + "failed. Restarting ViRAGe or building"
+      logger.error("Building session " + sessionName + " failed. Restarting ViRAGe or building"
           + " the session manually within Isabelle might help. If the session is supposed"
           + " to generate documentation, texlive is required!");
       throw new IsabelleBuildFailedException();
@@ -96,7 +96,12 @@ public class ScalaIsabelleFacade {
   }
   
   public static void buildSession(String sessionDir, String sessionName) 
-      throws ExternalSoftwareUnavailableException {
+      throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+    
+    if(isabelle != null) {
+      return;
+    }
+    
     List<Path> sessionDirs = new LinkedList<Path>();
     sessionDirs.add(Path.of(new File(sessionDir).getAbsolutePath()));
     
@@ -106,8 +111,16 @@ public class ScalaIsabelleFacade {
         JavaConverters.asScalaIteratorConverter(sessionDirs.iterator()).asScala().toSeq(), true,
         null);
     
-    Isabelle isabelle = new Isabelle(setup);
-    isabelle.destroy();
+    try {
+      Isabelle isabelle = new Isabelle(setup);
+      isabelle.destroy();
+    } catch (/* IsabelleBuildFailed */Exception e) {
+      logger.error("Building session " + sessionName + " failed. Restarting ViRAGe or building"
+          + " the session manually within Isabelle might help. If the session is supposed"
+          + " to generate documentation, texlive is required!");
+      throw new IsabelleBuildFailedException();
+    }
+
   }
 
   public Set<String> getTheoryNames() {

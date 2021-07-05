@@ -390,13 +390,10 @@ public class FrameworkRepresentation {
     res += "%\n";
 
     res += "% === composable_module\n";
-
     res += "%% This area is deprecated and therefore intentionally empty.\n";
 
     res += "% === compositional_structure\n";
-    for (CompositionalStructure structure : this.compositionalStructures) {
-      res += "% " + structure.toString() + "\n";
-    }
+    res += "%% This area is deprecated and therefore intentionally empty.\n";
 
     res += "%\n";
 

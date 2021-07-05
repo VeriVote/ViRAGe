@@ -15,7 +15,7 @@ add possibility to check all available properties at once
 omit anonymous variables and fill automatically
 
 === Miscellaneous
-document and rework the (E)PL format (URGENT!!!)
+document and rework the (E)PL format (this time for real)
 experiment with snap on Ubuntu
 interactively launch scala and generate test instances
 optionally run jobs in parallel on CLI
@@ -34,10 +34,11 @@ new lines between sections
 force restart
 "these values were read from the configuration"
 improve version displays
-auto-open config in system text editor (RUDIMENTARY)
+auto-open config in system text editor (only "windowed" editors supported for now)
 endless loop on Isabelle startup (URGENT!!!)
 "successfully verified" instead of "automatically"
 improve (E)PL generation message
 check Prolog files at version display
 more transparent "parsing (E)PL message"
 add license (MIT?)
+document and rework the (E)PL format (URGENT!!!) (Rudimentary, but the most urgent problem (indistinguishable types for compositional structures) is solved)

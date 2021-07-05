@@ -60,7 +60,7 @@ public class IsabelleProofChecker {
   IsabelleEvent lastEvent;
 
   private IsabelleProofChecker(String sessionName, String theoryPath) 
-      throws ExternalSoftwareUnavailableException {
+      throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
     this.runtime = Runtime.getRuntime();
 
     this.solvers = ConfigReader.getInstance().getIsabelleTactics();
@@ -125,9 +125,10 @@ public class IsabelleProofChecker {
    * @param theoryPath the path to the theory folder
    * @return the instance
    * @throws ExternalSoftwareUnavailableException 
+   * @throws IsabelleBuildFailedException 
    */
   public static IsabelleProofChecker getInstance(String sessionName, String theoryPath) 
-      throws ExternalSoftwareUnavailableException {
+      throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
     if (instance == null || instance.sessionName == null
         || !instance.sessionName.equals(sessionName) || !instance.theoryPath.equals(theoryPath)) {
       instance = new IsabelleProofChecker(sessionName, theoryPath);
