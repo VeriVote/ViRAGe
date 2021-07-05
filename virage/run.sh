@@ -1,2 +1,2 @@
-mvn process-resources exec:exec
+mvn compile exec:exec
 

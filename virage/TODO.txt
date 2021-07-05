@@ -1,9 +1,6 @@
 === Fix POM
-check versions
-remove tabs
 improve exec:exec section
 "general release-readiness" -> see BEAST
-check lifecycle, add compile or find something more elegant
 
 === Improve UI
 re-add "?-" or ">" if possible
@@ -44,3 +41,6 @@ check Prolog files at version display
 more transparent "parsing (E)PL message"
 add license (MIT?)
 document and rework the (E)PL format (URGENT!!!) (Rudimentary, but the most urgent problem (indistinguishable types for compositional structures) is solved)
+check versions
+remove tabs
+check lifecycle, add compile or find something more elegant
