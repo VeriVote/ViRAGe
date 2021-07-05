@@ -249,13 +249,14 @@ public class VirageCommandLineInterface implements VirageUserInterface {
       if (ConfigReader.getInstance().hasPathToRootFile() && firstTry &&
           this.requestConfirmation("Configuration option \"ISABELLE_PATH_TO_ROOT_FILE\" " 
                 + "is specified as \"" + ConfigReader.getInstance().getPathToRootFile() + "\". " 
-                + "Do you want to use this Isabelle session to generate an (E)PL file?")) {
+                + "Do you want to use this Isabelle ROOT file to generate an (E)PL file?")) {
         path = ConfigReader.getInstance().getPathToRootFile();
 
         firstTry = false;
       } else {
         path = this.requestString("Please input the path to an (E)PL file or "
-            + "an Isabelle ROOT file. (Press ENTER for default: " + defaultPath + ")");
+            + "an Isabelle ROOT file containing exactly one session specification. "
+            + "(Press ENTER for default: " + defaultPath + ")");
       }
 
       if (path.equals("")) {
@@ -313,11 +314,17 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         outer: for (File child : files) {
           if (child.getAbsolutePath().endsWith(".pl")) {
             while (true) {
-              boolean conf = this.requestConfirmation(
-                  "(E)PL file \"" + child.getAbsolutePath() + "\" found. " + "Do you want to "
-                      + "skip (E)PL generation and use this file instead? This saves time if no " 
-                      + "changes to the Isabelle theories were made since the file was "
-                      + "created.");
+              String confString = "(E)PL file \"" + child.getAbsolutePath() + "\" found. "
+                  + "Do you want to "
+                  + "skip (E)PL generation and use this file instead? This saves time if no "
+                  + "changes to the Isabelle theories were made since the file was " + "created.\n";
+              
+              if (child.getAbsolutePath().endsWith(File.separator + "framework.pl")) {
+                confString += "CAREFUL: If you choose \"no\", the previous file will "
+                    + "be OVERWRITTEN!";
+              }
+              
+              boolean conf = this.requestConfirmation(confString);
 
               if (conf) {
                 return this.extractAndOrParseFramework(child.getAbsolutePath());
@@ -342,7 +349,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
           && this.requestConfirmation("Configuration option "
               + "\"ISABELLE_SESSION_NAME\" is specified " 
               + "as \"" + ConfigReader.getInstance().getSessionName() 
-              + "\". Is this value correct?")) {
+              + "\". Is this the name of the session specified within the given ROOT file?")) {
 
         sessionName = ConfigReader.getInstance().getSessionName();
 
@@ -577,8 +584,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
    * @return true if user answers yes, false if user answers no
    */
   public boolean requestConfirmation(String message) {
-    boolean returnValue;
-
     while (true) {
       String input = this.requestString(message + " (y/n)");
       
@@ -600,11 +605,12 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     
     while (true) {
       System.out.println(message);
-      // This appears to conflict with mvn exec:exec,
+      // Set background to white and text to black to signal input opportunity.
+      // ">" would be nicer, but this appears to conflict with mvn exec:exec,
       // see https://github.com/mojohaus/exec-maven-plugin/issues/159.
-      // System.out.print("?- \n");
-      
+      System.out.println("\u001B[47m\u001B[30m");
       String input = this.scanner.nextLine();
+      System.out.print("\u001B[0m\n");
 
       switch (input) {
         case "?":

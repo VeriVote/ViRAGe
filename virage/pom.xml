@@ -8,8 +8,19 @@
   <groupId>com.fr2501.virage</groupId>
   <artifactId>ViRAGe</artifactId>
   <version>0.1.0</version>
-
+  
+  <packaging>jar</packaging>
   <name>ViRAGe</name>
+  <description>
+    ViRAGe is a tool to generate voting rules
+    and automatically reason about their
+    social choice properties.
+  </description>
+  <url>https://github.com/VeriVote/ViRAGe</url>
+  <organization>
+    <name>Karlsruhe Institute of Technology (KIT)</name>
+    <url>https://www.kit.edu</url>
+  </organization>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,7 +36,6 @@
       <url>https://jitpack.io</url>
     </repository>
   </repositories>
-
 
   <dependencies>
     <dependency>
@@ -84,7 +94,6 @@
       <artifactId>commons-beanutils</artifactId>
       <version>1.9.4</version>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -135,7 +144,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>properties-maven-plugin</artifactId>
@@ -157,7 +165,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
