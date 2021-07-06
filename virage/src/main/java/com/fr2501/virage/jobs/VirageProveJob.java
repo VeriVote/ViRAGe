@@ -16,66 +16,66 @@ import java.util.List;
  *
  */
 public class VirageProveJob extends VirageJobWithExplicitResult<List<List<CompositionProof>>> {
-  private List<String> propertyStrings;
-  private List<Property> properties;
-  private DecompositionTree tree;
+    private List<String> propertyStrings;
+    private List<Property> properties;
+    private DecompositionTree tree;
 
-  private FrameworkRepresentation framework;
-  private VirageSearchManager manager;
+    private FrameworkRepresentation framework;
+    private VirageSearchManager manager;
 
-  /**
-   * Simple constructor.
+    /**
+     * Simple constructor.
+     * 
+     * @param issuer the issuing ui
+     * @param tree the tree
+     * @param properties the properties
+     */
+    public VirageProveJob(VirageUserInterface issuer, String tree, List<String> properties) {
+        super(issuer);
 
-   * @param issuer the issuing ui
-   * @param tree the tree
-   * @param properties the properties
-   */
-  public VirageProveJob(VirageUserInterface issuer, String tree, List<String> properties) {
-    super(issuer);
-
-    this.tree = DecompositionTree.parseString(tree);
-    this.propertyStrings = properties;
-  }
-
-  @Override
-  public void concreteExecute() {
-    this.framework = this.executingCore.getFrameworkRepresentation();
-    this.manager = this.executingCore.getSearchManager();
-
-    this.properties = new LinkedList<Property>();
-
-    for (String s : this.propertyStrings) {
-      this.properties.add(this.framework.getProperty(s));
+        this.tree = DecompositionTree.parseString(tree);
+        this.propertyStrings = properties;
     }
 
-    this.result = this.manager.proveClaims(tree, properties);
-  }
+    @Override
+    public void concreteExecute() {
+        this.framework = this.executingCore.getFrameworkRepresentation();
+        this.manager = this.executingCore.getSearchManager();
 
-  @Override
-  public List<List<CompositionProof>> getResult() {
-    return this.result;
-  }
+        this.properties = new LinkedList<Property>();
 
-  @Override
-  public boolean externalSoftwareAvailable() {
-    return (ConfigReader.getInstance().hasJpl());
-  }
+        for (String s : this.propertyStrings) {
+            this.properties.add(this.framework.getProperty(s));
+        }
 
-  @Override
-  public String presentConcreteResult() {
-    String prop = "properties";
-    if (this.properties.size() == 1) {
-      prop = "property";
+        this.result = this.manager.proveClaims(tree, properties);
     }
-    
-    String res = "Proof found. " + this.tree.toString() + " satisfies the " + prop + " "
-        + StringUtils.printCollection(this.properties) + ".";
-    
-    return res;
-  }
 
-  @Override
-  public String getDescription() {
-    return "Searching proof ...";
-  }
+    @Override
+    public List<List<CompositionProof>> getResult() {
+        return this.result;
+    }
+
+    @Override
+    public boolean externalSoftwareAvailable() {
+        return (ConfigReader.getInstance().hasJpl());
+    }
+
+    @Override
+    public String presentConcreteResult() {
+        String prop = "properties";
+        if (this.properties.size() == 1) {
+            prop = "property";
+        }
+
+        String res = "Proof found. " + this.tree.toString() + " satisfies the " + prop + " "
+                + StringUtils.printCollection(this.properties) + ".";
+
+        return res;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Searching proof ...";
+    }
 }

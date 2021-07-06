@@ -1,0 +1,110 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Borda{\isacharunderscore}{\kern0pt}Rule}%
+%
+\isadelimdocument
+\isanewline
+%
+\endisadelimdocument
+%
+\isatagdocument
+\isanewline
+%
+\isamarkupchapter{Voting Rules%
+}
+\isamarkuptrue%
+%
+\isamarkupsection{Borda Rule%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Borda{\isacharunderscore}{\kern0pt}Rule\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Compositional{\isacharunderscore}{\kern0pt}Framework{\isacharslash}{\kern0pt}Components{\isacharslash}{\kern0pt}Composites{\isacharslash}{\kern0pt}Composite{\isacharunderscore}{\kern0pt}Elimination{\isacharunderscore}{\kern0pt}Modules{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Compositional{\isacharunderscore}{\kern0pt}Framework{\isacharslash}{\kern0pt}Components{\isacharslash}{\kern0pt}Composites{\isacharslash}{\kern0pt}Composite{\isacharunderscore}{\kern0pt}Structures{\isachardoublequoteclose}\isanewline
+\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+This is the Borda rule. On each ballot, each alternative is assigned a score
+that depends on how many alternatives are ranked below. The sum of all such
+scores for an alternative is hence called their Borda score. The alternative
+with the highest Borda score is elected.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Definition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{fun}\isamarkupfalse%
+\ borda{\isacharunderscore}{\kern0pt}rule\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}borda{\isacharunderscore}{\kern0pt}rule\ A\ p\ {\isacharequal}{\kern0pt}\ elector\ borda\ A\ p{\isachardoublequoteclose}\isanewline
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/verifiedVotingRuleConstruction/theories/Voting_Rules/Borda_Rule.thy%:%
+%:%6=3%:%
+%:%11=4%:%
+%:%13=7%:%
+%:%17=9%:%
+%:%33=11%:%
+%:%34=11%:%
+%:%35=12%:%
+%:%36=13%:%
+%:%37=14%:%
+%:%38=15%:%
+%:%47=18%:%
+%:%48=19%:%
+%:%49=20%:%
+%:%50=21%:%
+%:%59=23%:%
+%:%69=25%:%
+%:%70=25%:%
+%:%71=26%:%
+%:%74=27%:%
+%:%79=28%:%

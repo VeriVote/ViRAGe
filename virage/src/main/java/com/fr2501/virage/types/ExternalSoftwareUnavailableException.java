@@ -6,9 +6,9 @@ package com.fr2501.virage.types;
  */
 public class ExternalSoftwareUnavailableException extends Exception {
 
-  /**
-   * The UID.
-   */
-  private static final long serialVersionUID = -1132797693751368811L;
+    /**
+     * The UID.
+     */
+    private static final long serialVersionUID = -1132797693751368811L;
 
 }

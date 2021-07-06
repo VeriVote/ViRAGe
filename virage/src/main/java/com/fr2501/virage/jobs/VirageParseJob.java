@@ -20,81 +20,75 @@ import java.util.List;
  *
  */
 public class VirageParseJob extends VirageJobWithExplicitResult<FrameworkRepresentation> {
-  private ExtendedPrologParser parser;
+    private ExtendedPrologParser parser;
 
-  private File file;
+    private File file;
 
-  /**
-   * Simple constructor.
+    /**
+     * Simple constructor.
+     * 
+     * @param issuer the issuing ui
+     * @param file the file
+     */
+    public VirageParseJob(VirageUserInterface issuer, File file) {
+        super(issuer);
 
-   * @param issuer the issuing ui 
-   * @param file the file
-   */
-  public VirageParseJob(VirageUserInterface issuer, File file) {
-    super(issuer);
-
-    this.file = file;
-  }
-
-  @Override
-  public void concreteExecute() throws IOException, MalformedEplFileException {
-    this.parser = this.executingCore.getExtendedPrologParser();
-
-    this.result = this.parser.parseFramework(this.file, true);
-    this.executingCore.setFrameworkRepresentation(this.result);
-
-  }
-
-  @Override
-  public FrameworkRepresentation getResult() {
-    return this.result;
-  }
-
-  @Override
-  public boolean externalSoftwareAvailable() {
-    return true;
-  }
-
-  @Override
-  public String presentConcreteResult() {
-    String res = "Successfully loaded (E)PL file at " + this.file.getAbsolutePath() + ".\n";
-    
-    /*res += "\n";
-    
-    res += "Properties: \n";
-    
-    List<Property> sortedProps = new ArrayList<Property>();
-    sortedProps.addAll(this.result.getProperties());
-    Collections.sort(sortedProps, (Property a, Property b) -> a.getName().compareTo(b.getName()));
-    for (Property p : sortedProps) {
-      res += "\t" + p.getName() + "/" + p.getArity() + "\n";
+        this.file = file;
     }
-    
-    res += "\n";
-    
-    res += "Components: \n";
-    
-    List<String> sortedStrings = new ArrayList<String>();
-    for (Component c : this.result.getComponents()) {
-      sortedStrings.add("\t" + c.getName() + "/" + c.getParameters().size() + "\n");
-    }
-    for (ComposableModule c : this.result.getComposableModules()) {
-      sortedStrings.add("\t" + c.getName() + "/" + c.getParameters().size() + "\n");
-    }
-    for (CompositionalStructure c : this.result.getCompositionalStructures()) {
-      sortedStrings.add("\t" + c.getName() + "/" + c.getParameters().size() + "\n");
-    }
-    Collections.sort(sortedStrings);
-    for (String s : sortedStrings) {
-      res += s;
-    }*/
-    
-    return res;
-  }
 
-  @Override
-  public String getDescription() {
-    return "Parsing (E)PL file and invoking the Isabelle session within it ...";
+    @Override
+    public void concreteExecute() throws IOException, MalformedEplFileException {
+        this.parser = this.executingCore.getExtendedPrologParser();
 
-  }
+        this.result = this.parser.parseFramework(this.file, true);
+        this.executingCore.setFrameworkRepresentation(this.result);
+
+    }
+
+    @Override
+    public FrameworkRepresentation getResult() {
+        return this.result;
+    }
+
+    @Override
+    public boolean externalSoftwareAvailable() {
+        return true;
+    }
+
+    @Override
+    public String presentConcreteResult() {
+        String res = "Successfully loaded (E)PL file at " + this.file.getAbsolutePath() + ".\n";
+
+        /*
+         * res += "\n";
+         * 
+         * res += "Properties: \n";
+         * 
+         * List<Property> sortedProps = new ArrayList<Property>();
+         * sortedProps.addAll(this.result.getProperties()); Collections.sort(sortedProps, (Property
+         * a, Property b) -> a.getName().compareTo(b.getName())); for (Property p : sortedProps) {
+         * res += "\t" + p.getName() + "/" + p.getArity() + "\n"; }
+         * 
+         * res += "\n";
+         * 
+         * res += "Components: \n";
+         * 
+         * List<String> sortedStrings = new ArrayList<String>(); for (Component c :
+         * this.result.getComponents()) { sortedStrings.add("\t" + c.getName() + "/" +
+         * c.getParameters().size() + "\n"); } for (ComposableModule c :
+         * this.result.getComposableModules()) { sortedStrings.add("\t" + c.getName() + "/" +
+         * c.getParameters().size() + "\n"); } for (CompositionalStructure c :
+         * this.result.getCompositionalStructures()) { sortedStrings.add("\t" + c.getName() + "/" +
+         * c.getParameters().size() + "\n"); } Collections.sort(sortedStrings); for (String s :
+         * sortedStrings) { res += s; }
+         */
+
+        return res;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Parsing (E)PL file and invoking the Isabelle session within it ...";
+
+    }
 }

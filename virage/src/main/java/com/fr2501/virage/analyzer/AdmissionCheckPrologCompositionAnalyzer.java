@@ -16,91 +16,88 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Simple implementation of the {@link CompositionAnalyzer}, using Prolog with
- * iterative deepening.
+ * Simple implementation of the {@link CompositionAnalyzer}, using Prolog with iterative deepening.
  *
  */
 public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologCompositionAnalyzer {
-  private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
 
-  /**
-   * Initializes a SimplePrologCompositionAnalyzer and consults the specified
-   * framework.
+    /**
+     * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
+     * 
+     * @param framework the framework
+     * @throws IOException but should actually not
+     * @throws ExternalSoftwareUnavailableException if SWI-Prolog is unavailable
+     */
+    public AdmissionCheckPrologCompositionAnalyzer(FrameworkRepresentation framework)
+            throws IOException, ExternalSoftwareUnavailableException {
+        super(framework);
 
-   * @param framework the framework
-   * @throws IOException                          but should actually not
-   * @throws ExternalSoftwareUnavailableException if SWI-Prolog is unavailable
-   */
-  public AdmissionCheckPrologCompositionAnalyzer(FrameworkRepresentation framework)
-      throws IOException, ExternalSoftwareUnavailableException {
-    super(framework);
-
-    logger.info("Initialising AdmissionCheckPrologCompositionAnalyzer");
-  }
-
-  @Override
-  protected void consultKnowledgeBase() {
-    super.consultKnowledgeBase();
-
-    AdmissionGuardGenerator generator = new AdmissionGuardGenerator(this.framework);
-
-    File admissionGuards;
-    try {
-      admissionGuards = generator.createAdmissionGuardFile();
-
-      this.facade.consultFile(admissionGuards.getAbsolutePath());
-
-      if (!loadedMetaInterpreter) {
-        this.facade.consultFile(this.getClass().getClassLoader()
-            .getResource("meta_interpreter.pl"));
-        loadedMetaInterpreter = true;
-      }
-    } catch (IOException e) {
-      logger.error("An error occured.", e);
-    }
-  }
-
-  @Override
-  public SearchResult<DecompositionTree> generateComposition(List<Property> properties) {
-    for (Property property : properties) {
-      if (property.getArity() != 1) {
-        throw new IllegalArgumentException("For now, only unary "
-            + "properties can be used in queries.");
-      }
+        logger.info("Initialising AdmissionCheckPrologCompositionAnalyzer");
     }
 
-    // Safety measure to ensure all properties talking about the same element.
-    List<String> admitStrings = new LinkedList<String>();
-    List<String> propertyStrings = new LinkedList<String>();
-    for (Property property : properties) {
-      admitStrings.add(AdmissionGuardStrings.ADMITS + property.getInstantiatedString("X"));
-      propertyStrings
-          .add(property.getName() + AdmissionGuardStrings.SUFFIX 
-              + property.getInstantiatedStringWithoutName("X"));
+    @Override
+    protected void consultKnowledgeBase() {
+        super.consultKnowledgeBase();
+
+        AdmissionGuardGenerator generator = new AdmissionGuardGenerator(this.framework);
+
+        File admissionGuards;
+        try {
+            admissionGuards = generator.createAdmissionGuardFile();
+
+            this.facade.consultFile(admissionGuards.getAbsolutePath());
+
+            if (!loadedMetaInterpreter) {
+                this.facade.consultFile(
+                        this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
+                loadedMetaInterpreter = true;
+            }
+        } catch (IOException e) {
+            logger.error("An error occured.", e);
+        }
     }
-    admitStrings.addAll(propertyStrings);
 
-    String query = StringUtils.printCollection(admitStrings);
+    @Override
+    public SearchResult<DecompositionTree> generateComposition(List<Property> properties) {
+        for (Property property : properties) {
+            if (property.getArity() != 1) {
+                throw new IllegalArgumentException(
+                        "For now, only unary " + "properties can be used in queries.");
+            }
+        }
 
-    SearchResult<Map<String, String>> result = this.facade.iterativeDeepeningQuery(query);
+        // Safety measure to ensure all properties talking about the same element.
+        List<String> admitStrings = new LinkedList<String>();
+        List<String> propertyStrings = new LinkedList<String>();
+        for (Property property : properties) {
+            admitStrings.add(AdmissionGuardStrings.ADMITS + property.getInstantiatedString("X"));
+            propertyStrings.add(property.getName() + AdmissionGuardStrings.SUFFIX
+                    + property.getInstantiatedStringWithoutName("X"));
+        }
+        admitStrings.addAll(propertyStrings);
 
-    Map<String, String> resultMap = null;
-    if (result.hasValue()) {
-      try {
-        resultMap = result.getValue();
-      } catch (ValueNotPresentException e) {
-        // This should never happen.
-        logger.warn("This should not have happened.");
-        logger.warn(e);
-      }
+        String query = StringUtils.printCollection(admitStrings);
 
-      String solution = resultMap.get("X");
-      DecompositionTree solutionTree = new DecompositionTree(solution);
+        SearchResult<Map<String, String>> result = this.facade.iterativeDeepeningQuery(query);
 
-      return new SearchResult<DecompositionTree>(result.getState(), solutionTree);
-    } else {
-      return new SearchResult<DecompositionTree>(result.getState(), null);
+        Map<String, String> resultMap = null;
+        if (result.hasValue()) {
+            try {
+                resultMap = result.getValue();
+            } catch (ValueNotPresentException e) {
+                // This should never happen.
+                logger.warn("This should not have happened.");
+                logger.warn(e);
+            }
+
+            String solution = resultMap.get("X");
+            DecompositionTree solutionTree = new DecompositionTree(solution);
+
+            return new SearchResult<DecompositionTree>(result.getState(), solutionTree);
+        } else {
+            return new SearchResult<DecompositionTree>(result.getState(), null);
+        }
     }
-  }
 
 }

@@ -35,171 +35,174 @@ import org.junit.Test;
  *
  */
 public class IsabelleProofCheckerTest {
-  private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTest.class);
+    private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTest.class);
 
-  private static final String EPL_PATH = "src/test/resources/framework.pl";
-  private static final String THEORY_PATH = "src/test/resources/old_theories";
-  private static final String SMC = "sequential_composition(" + "loop_composition("
-      + "parallel_composition(" + "sequential_composition(" + "pass_module(2,_),"
-      + "sequential_composition(" + "revision_composition(" + "plurality)," + "pass_module(1,_))),"
-      + "drop_module(2,_)," + "max_aggregator)," + "defer_equal_condition(1))," + "elect_module)";
-  private FrameworkRepresentation framework;
-  private CompositionAnalyzer analyzer;
-  private IsabelleTheoryGenerator generator;
+    private static final String EPL_PATH = "src/test/resources/framework.pl";
+    private static final String THEORY_PATH = "src/test/resources/old_theories";
+    private static final String SMC = "sequential_composition(" + "loop_composition("
+            + "parallel_composition(" + "sequential_composition(" + "pass_module(2,_),"
+            + "sequential_composition(" + "revision_composition(" + "plurality),"
+            + "pass_module(1,_)))," + "drop_module(2,_)," + "max_aggregator),"
+            + "defer_equal_condition(1))," + "elect_module)";
+    private FrameworkRepresentation framework;
+    private CompositionAnalyzer analyzer;
+    private IsabelleTheoryGenerator generator;
 
-  private File file;
+    private File file;
 
-  /**
-   * Initialization for the following tests.
+    /**
+     * Initialization for the following tests.
+     * 
+     * @throws IOException if file system interaction fails
+     * @throws MalformedEplFileException if the input file does not satisfy the EPL format
+     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     */
+    @Before
+    public void init()
+            throws IOException, MalformedEplFileException, ExternalSoftwareUnavailableException {
+        ExtendedPrologParser parser = new SimpleExtendedPrologParser();
+        this.framework = parser.parseFramework(new File(EPL_PATH), false);
 
-   * @throws IOException if file system interaction fails
-   * @throws MalformedEplFileException if the input file does not satisfy the EPL format
-   * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
-   */
-  @Before
-  public void init()
-      throws IOException, MalformedEplFileException, ExternalSoftwareUnavailableException {
-    ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-    this.framework = parser.parseFramework(new File(EPL_PATH), false);
+        this.analyzer = new SimplePrologCompositionAnalyzer(this.framework);
+        this.generator = new IsabelleTheoryGenerator(THEORY_PATH, this.framework);
+    }
 
-    this.analyzer = new SimplePrologCompositionAnalyzer(this.framework);
-    this.generator = new IsabelleTheoryGenerator(THEORY_PATH, this.framework);
-  }
+    /**
+     * Runs queries on several random property sets.
+     * 
+     * @throws Exception if something goes wrong
+     */
+    // @Test
+    public void testRandomPropertySets() throws Exception {
+        logger.info("testRandomPropertySets()");
+        final int _runs = 3;
+        final int _timeout = 10;
 
-  /**
-   * Runs queries on several random property sets.
+        int success = 0;
+        int timeout = 0;
+        int failure = 0;
+        int error = 0;
 
-   * @throws Exception if something goes wrong
-   */
-  // @Test
-  public void testRandomPropertySets() throws Exception {
-    logger.info("testRandomPropertySets()");
-    final int _runs = 3;
-    final int _timeout = 10;
+        CompositionAnalyzer analyzer = new AdmissionCheckPrologCompositionAnalyzer(this.framework);
+        analyzer.setTimeout(_timeout);
 
-    int success = 0;
-    int timeout = 0;
-    int failure = 0;
-    int error = 0;
+        IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(),
+                framework.getTheoryPath());
 
-    CompositionAnalyzer analyzer = new AdmissionCheckPrologCompositionAnalyzer(this.framework);
-    analyzer.setTimeout(_timeout);
+        for (int i = 0; i < _runs; i++) {
+            int amount = (int) (5 * Math.random()) + 1;
 
-    IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(),
-        framework.getTheoryPath());
+            TestDataGenerator generator = new TestDataGenerator(this.framework);
+            List<Property> properties = generator.getRandomComposableModuleProperties(amount);
 
-    for (int i = 0; i < _runs; i++) {
-      int amount = (int) (5 * Math.random()) + 1;
+            logger.debug("Query: " + StringUtils.printCollection(properties));
 
-      TestDataGenerator generator = new TestDataGenerator(this.framework);
-      List<Property> properties = generator.getRandomComposableModuleProperties(amount);
+            SearchResult<DecompositionTree> result = analyzer.generateComposition(properties);
 
-      logger.debug("Query: " + StringUtils.printCollection(properties));
+            if (result.hasValue()) {
+                success++;
+                logger.debug("Result: " + result.getValue().toString());
 
-      SearchResult<DecompositionTree> result = analyzer.generateComposition(properties);
-
-      if (result.hasValue()) {
-        success++;
-        logger.debug("Result: " + result.getValue().toString());
-
-        proveClaims(properties, result.getValue().toString());
-        checker.verifyTheoryFile(this.file, this.framework);
-      } else {
-        if (result.getState() == QueryState.TIMEOUT) {
-          timeout++;
-          logger.debug("Query timed out.");
-        } else if (result.getState() == QueryState.FAILED) {
-          failure++;
-          logger.debug("No solution exists.");
-        } else if (result.getState() == QueryState.ERROR) {
-          error++;
-          logger.error("An error occured");
+                proveClaims(properties, result.getValue().toString());
+                checker.verifyTheoryFile(this.file, this.framework);
+            } else {
+                if (result.getState() == QueryState.TIMEOUT) {
+                    timeout++;
+                    logger.debug("Query timed out.");
+                } else if (result.getState() == QueryState.FAILED) {
+                    failure++;
+                    logger.debug("No solution exists.");
+                } else if (result.getState() == QueryState.ERROR) {
+                    error++;
+                    logger.error("An error occured");
+                }
+            }
         }
-      }
+
+        logger.debug("\nSucceeded:\t" + success + "\nFailed:\t\t" + failure + "\nTimed out:\t"
+                + timeout + "\nErrors:\t\t" + error);
+
+        if (failure == 100 || success == 100 || timeout == 100) {
+            logger.warn("A highly unlikely result occured in the test.\n"
+                    + "This might happen by (a very small) chance, so rerunning the test might help.\n"
+                    + "If the problem persists, something has gone wrong.");
+            fail();
+        }
     }
 
-    logger.debug("\nSucceeded:\t" + success + "\nFailed:\t\t" + failure + "\nTimed out:\t" + timeout
-        + "\nErrors:\t\t" + error);
+    // Takes long, not performed by default.
+    @Test
+    public void simpleFrameworkTest() throws IOException, InterruptedException,
+            ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+        List<Property> properties = new LinkedList<Property>();
+        properties.add(this.framework.getProperty("electing"));
 
-    if (failure == 100 || success == 100 || timeout == 100) {
-      logger.warn("A highly unlikely result occured in the test.\n"
-          + "This might happen by (a very small) chance, so rerunning the test might help.\n"
-          + "If the problem persists, something has gone wrong.");
-      fail();
+        proveClaims(properties, "elect_module");
+
+        IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(),
+                framework.getTheoryPath());
+        Pair<Boolean, File> result = checker.verifyTheoryFile(this.file, this.framework);
+        assertTrue(result.getFirstValue());
+        this.file = result.getSecondValue();
+
+        // Should work twice in a row, second one much faster.
+        assertTrue(checker.verifyTheoryFile(this.file, this.framework).getFirstValue());
+        checker.destroy();
     }
-  }
 
-  // Takes long, not performed by default.
-  @Test
-  public void simpleFrameworkTest() throws IOException, InterruptedException, ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
-    List<Property> properties = new LinkedList<Property>();
-    properties.add(this.framework.getProperty("electing"));
+    // Takes long, not performed by default.
+    // Currently, no such module is known for the reworked framework, so test fails.
+    /*
+     * @Test public void worksWithBlastButNotWithSimpTest() throws IOException, InterruptedException
+     * { List<Property> properties = new LinkedList<Property>();
+     * properties.add(this.framework.getProperty("non_electing"));
+     * 
+     * proveClaims(properties, "parallel_composition(elect_module,elect_module,max_aggregator)");
+     * 
+     * IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(),
+     * framework.getTheoryPath()); Pair<Boolean,File> result = checker.verifyTheoryFile(this.file,
+     * this.framework); assertTrue(result.getFirstValue()); this.file = result.getSecondValue();
+     * 
+     * // Should work twice in a row, second one much faster.
+     * assertTrue(checker.verifyTheoryFile(this.file, this.framework).getFirstValue());
+     * 
+     * checker.destroy(); }
+     */
 
-    proveClaims(properties, "elect_module");
+    /**
+     * Runs an exemplary proof and check process.
+     * 
+     * @throws IOException if file operations fail
+     * @throws InterruptedException if the process is interrupted
+     * @throws ExternalSoftwareUnavailableException
+     * @throws IsabelleBuildFailedException
+     */
+    // @Test
+    public void smcTest() throws IOException, InterruptedException,
+            ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+        List<Property> properties = new LinkedList<Property>();
+        properties.add(this.framework.getProperty("electing"));
+        properties.add(this.framework.getProperty("monotonicity"));
 
-    IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(),
-        framework.getTheoryPath());
-    Pair<Boolean, File> result = checker.verifyTheoryFile(this.file, this.framework);
-    assertTrue(result.getFirstValue());
-    this.file = result.getSecondValue();
+        proveClaims(properties, SMC);
 
-    // Should work twice in a row, second one much faster.
-    assertTrue(checker.verifyTheoryFile(this.file, this.framework).getFirstValue());
-    checker.destroy();
-  }
+        IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(),
+                framework.getTheoryPath());
 
-  // Takes long, not performed by default.
-  // Currently, no such module is known for the reworked framework, so test fails.
-  /*
-   * @Test public void worksWithBlastButNotWithSimpTest() throws IOException, InterruptedException {
-   * List<Property> properties = new LinkedList<Property>();
-   * properties.add(this.framework.getProperty("non_electing"));
-   * 
-   * proveClaims(properties, "parallel_composition(elect_module,elect_module,max_aggregator)");
-   * 
-   * IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(),
-   * framework.getTheoryPath()); Pair<Boolean,File> result = checker.verifyTheoryFile(this.file,
-   * this.framework); assertTrue(result.getFirstValue()); this.file = result.getSecondValue();
-   * 
-   * // Should work twice in a row, second one much faster.
-   * assertTrue(checker.verifyTheoryFile(this.file, this.framework).getFirstValue());
-   * 
-   * checker.destroy(); }
-   */
+        Pair<Boolean, File> result = checker.verifyTheoryFile(this.file, this.framework);
+        assertTrue(result.getFirstValue());
+        this.file = result.getSecondValue();
 
-  /**
-   * Runs an exemplary proof and check process.
+        // Should work twice in a row, second one much faster.
+        assertTrue(checker.verifyTheoryFile(this.file, this.framework).getFirstValue());
 
-   * @throws IOException if file operations fail
-   * @throws InterruptedException if the process is interrupted
-   * @throws ExternalSoftwareUnavailableException 
-   * @throws IsabelleBuildFailedException 
-   */
-  //@Test
-  public void smcTest() throws IOException, InterruptedException, ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
-    List<Property> properties = new LinkedList<Property>();
-    properties.add(this.framework.getProperty("electing"));
-    properties.add(this.framework.getProperty("monotonicity"));
+        checker.destroy();
+    }
 
-    proveClaims(properties, SMC);
+    protected void proveClaims(List<Property> properties, String composition) {
+        List<CompositionProof> proofs = analyzer.proveClaims(new DecompositionTree(composition),
+                properties);
 
-    IsabelleProofChecker checker = IsabelleProofChecker.getInstance(framework.getSessionName(),
-        framework.getTheoryPath());
-
-    Pair<Boolean, File> result = checker.verifyTheoryFile(this.file, this.framework);
-    assertTrue(result.getFirstValue());
-    this.file = result.getSecondValue();
-
-    // Should work twice in a row, second one much faster.
-    assertTrue(checker.verifyTheoryFile(this.file, this.framework).getFirstValue());
-
-    checker.destroy();
-  }
-
-  protected void proveClaims(List<Property> properties, String composition) {
-    List<CompositionProof> proofs = analyzer.proveClaims(new DecompositionTree(composition),
-        properties);
-
-    this.file = generator.generateTheoryFile(composition, proofs);
-  }
+        this.file = generator.generateTheoryFile(composition, proofs);
+    }
 }

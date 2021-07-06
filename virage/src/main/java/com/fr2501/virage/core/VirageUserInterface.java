@@ -7,24 +7,23 @@ import com.fr2501.virage.jobs.VirageJob;
  *
  */
 public interface VirageUserInterface extends Runnable {
-  /**
-   * Similar to run(), but invokes its own {@link Thread} object and starts it.
-   */
-  public void launch();
+    /**
+     * Similar to run(), but invokes its own {@link Thread} object and starts it.
+     */
+    public void launch();
 
-  /**
-   * Used by {@link VirageJob} objects to notify the interface of changes in their
-   * state.
+    /**
+     * Used by {@link VirageJob} objects to notify the interface of changes in their state.
+     * 
+     * @param job the notifying job
+     */
+    public void notify(VirageJob<?> job);
 
-   * @param job the notifying job
-   */
-  public void notify(VirageJob<?> job);
-  
-  public boolean requestConfirmation(String message);
-  
-  public String requestString(String message);
-  
-  public void displayMessage(String message);
-  
-  public void displayError(String message);
+    public boolean requestConfirmation(String message);
+
+    public String requestString(String message);
+
+    public void displayMessage(String message);
+
+    public void displayError(String message);
 }

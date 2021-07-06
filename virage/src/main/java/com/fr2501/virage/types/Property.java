@@ -8,137 +8,137 @@ import java.util.List;
  *
  */
 public class Property implements Parameterized {
-  private String name;
-  private int arity;
-  private List<ComponentType> parameters;
+    private String name;
+    private int arity;
+    private List<ComponentType> parameters;
 
-  /**
-   * Simple constructor.
-
-   * @param name the name
-   * @param parameters the parameters
-   */
-  public Property(String name, List<ComponentType> parameters) {
-    this.name = name;
-    this.arity = parameters.size();
-    this.parameters = parameters;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-
-  public int getArity() {
-    return this.arity;
-  }
-
-  /**
-   * Instantiates a unary property with the given string.
-
-   * @param string the instantiation string
-   * @return the instantiated string
-   */
-  public String getInstantiatedString(String string) {
-    if (this.parameters.size() != 1) {
-      throw new IllegalArgumentException();
+    /**
+     * Simple constructor.
+     * 
+     * @param name the name
+     * @param parameters the parameters
+     */
+    public Property(String name, List<ComponentType> parameters) {
+        this.name = name;
+        this.arity = parameters.size();
+        this.parameters = parameters;
     }
 
-    String res = this.name + "(" + string + ")";
-
-    return res;
-  }
-  
-  /**
-   * Instantiates a property with values in the given order.
-
-   * @param strings the parameters
-   * @return the instantiated string
-   */
-  public String getInstantiatedString(List<String> strings) {
-    if (strings.size() != this.parameters.size()) {
-      throw new IllegalArgumentException();
+    public String getName() {
+        return this.name;
     }
 
-    String res = this.name + "(" + StringUtils.printCollection(strings) + ")";
-
-    return res;
-  }
-
-  /**
-   * Instantiates a unary property with the given string, leaving out the property's name.
-
-   * @param string the instantiation string
-   * @return the instantiated string
-   */
-  public String getInstantiatedStringWithoutName(String string) {
-    if (this.parameters.size() != 1) {
-      throw new IllegalArgumentException();
+    public int getArity() {
+        return this.arity;
     }
 
-    String res = "(" + string + ")";
+    /**
+     * Instantiates a unary property with the given string.
+     * 
+     * @param string the instantiation string
+     * @return the instantiated string
+     */
+    public String getInstantiatedString(String string) {
+        if (this.parameters.size() != 1) {
+            throw new IllegalArgumentException();
+        }
 
-    return res;
-  }
+        String res = this.name + "(" + string + ")";
 
-  /**
-   * Instantiates a property with values in the given order, leaving out the property's name.
-
-   * @param strings the parameters
-   * @return the instantiated string
-   */
-  public String getInstantiatedStringWithoutName(List<String> strings) {
-    if (strings.size() != this.parameters.size()) {
-      throw new IllegalArgumentException();
+        return res;
     }
 
-    String res = "(" + StringUtils.printCollection(strings) + ")";
+    /**
+     * Instantiates a property with values in the given order.
+     * 
+     * @param strings the parameters
+     * @return the instantiated string
+     */
+    public String getInstantiatedString(List<String> strings) {
+        if (strings.size() != this.parameters.size()) {
+            throw new IllegalArgumentException();
+        }
 
-    return res;
-  }
-  
-  @Override
-  public String toString() {
-    String res = this.name + "(" + StringUtils.printCollection(this.parameters) + ")";
+        String res = this.name + "(" + StringUtils.printCollection(strings) + ")";
 
-    return res;
-  }
+        return res;
+    }
 
-  @Override
-  public List<ComponentType> getParameters() {
-    return this.parameters;
-  }
+    /**
+     * Instantiates a unary property with the given string, leaving out the property's name.
+     * 
+     * @param string the instantiation string
+     * @return the instantiated string
+     */
+    public String getInstantiatedStringWithoutName(String string) {
+        if (this.parameters.size() != 1) {
+            throw new IllegalArgumentException();
+        }
 
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + arity;
-    result = prime * result + ((name == null) ? 0 : name.hashCode());
-    return result;
-  }
+        String res = "(" + string + ")";
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
+        return res;
     }
-    if (obj == null) {
-      return false;
+
+    /**
+     * Instantiates a property with values in the given order, leaving out the property's name.
+     * 
+     * @param strings the parameters
+     * @return the instantiated string
+     */
+    public String getInstantiatedStringWithoutName(List<String> strings) {
+        if (strings.size() != this.parameters.size()) {
+            throw new IllegalArgumentException();
+        }
+
+        String res = "(" + StringUtils.printCollection(strings) + ")";
+
+        return res;
     }
-    if (getClass() != obj.getClass()) {
-      return false;
+
+    @Override
+    public String toString() {
+        String res = this.name + "(" + StringUtils.printCollection(this.parameters) + ")";
+
+        return res;
     }
-    Property other = (Property) obj;
-    if (arity != other.arity) {
-      return false;
+
+    @Override
+    public List<ComponentType> getParameters() {
+        return this.parameters;
     }
-    if (name == null) {
-      if (other.name != null) {
-        return false;
-      }
-    } else if (!name.equals(other.name)) {
-      return false;
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + arity;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
     }
-    return true;
-  }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Property other = (Property) obj;
+        if (arity != other.arity) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        return true;
+    }
 }

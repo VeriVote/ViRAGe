@@ -10,8 +10,8 @@ import java.io.IOException;
  *
  */
 public class AdmissionCheckPrologCompositionAnalyzerTest extends CompositionAnalyzerTest {
-  protected CompositionAnalyzer createInstance()
-      throws IOException, ExternalSoftwareUnavailableException {
-    return new AdmissionCheckPrologCompositionAnalyzer(this.framework);
-  }
+    protected CompositionAnalyzer createInstance()
+            throws IOException, ExternalSoftwareUnavailableException {
+        return new AdmissionCheckPrologCompositionAnalyzer(this.framework);
+    }
 }

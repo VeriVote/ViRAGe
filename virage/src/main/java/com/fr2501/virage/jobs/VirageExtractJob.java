@@ -14,50 +14,50 @@ import java.io.File;
  *
  */
 public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepresentation> {
-  private String sessionName;
-  private String path;
+    private String sessionName;
+    private String path;
 
-  /**
-   * Simple constructor.
+    /**
+     * Simple constructor.
+     * 
+     * @param issuer the issuer
+     * @param path the path to the session
+     * @param sessionName the name of the session
+     */
+    public VirageExtractJob(VirageUserInterface issuer, String path, String sessionName) {
+        super(issuer);
 
-   * @param issuer the issuer
-   * @param path the path to the session
-   * @param sessionName the name of the session
-   */
-  public VirageExtractJob(VirageUserInterface issuer, String path, String sessionName) {
-    super(issuer);
+        this.sessionName = sessionName;
+        this.path = path;
+    }
 
-    this.sessionName = sessionName;
-    this.path = path;
-  }
+    @Override
+    protected void concreteExecute()
+            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+        IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
+        FrameworkRepresentation framework = extractor.extract(this.path, this.sessionName);
+        framework.setTheoryPath(this.path);
+        framework.setSessionName(this.sessionName);
 
-  @Override
-  protected void concreteExecute()
-      throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
-    IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
-    FrameworkRepresentation framework = extractor.extract(this.path, this.sessionName);
-    framework.setTheoryPath(this.path);
-    framework.setSessionName(this.sessionName);
+        File frameworkFile = new File(this.path + File.separator + "framework.pl");
+        SimpleFileWriter writer = new SimpleFileWriter();
+        writer.writeToFile(frameworkFile.getAbsolutePath(), framework.toEplString());
 
-    File frameworkFile = new File(this.path + File.separator + "framework.pl");
-    SimpleFileWriter writer = new SimpleFileWriter();
-    writer.writeToFile(frameworkFile.getAbsolutePath(), framework.toEplString());
+        this.result = framework;
+    }
 
-    this.result = framework;
-  }
+    @Override
+    public boolean externalSoftwareAvailable() {
+        return (ConfigReader.getInstance().hasIsabelle());
+    }
 
-  @Override
-  public boolean externalSoftwareAvailable() {
-    return (ConfigReader.getInstance().hasIsabelle());
-  }
+    @Override
+    public String presentConcreteResult() {
+        return "Extracted (E)PL file " + this.result.getAbsolutePath() + " from " + this.path + ".";
+    }
 
-  @Override
-  public String presentConcreteResult() {
-    return "Extracted (E)PL file " + this.result.getAbsolutePath() + " from " + this.path + ".";
-  }
-
-  @Override
-  public String getDescription() {
-    return "Extracting (E)PL file ...";
-  }
+    @Override
+    public String getDescription() {
+        return "Extracting (E)PL file ...";
+    }
 }

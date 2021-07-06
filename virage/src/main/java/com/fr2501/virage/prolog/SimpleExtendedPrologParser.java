@@ -23,347 +23,348 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class SimpleExtendedPrologParser implements ExtendedPrologParser {
-  SimpleFileReader fileReader;
-  private final PrologParser prologParser;
-  private final Logger logger = LogManager.getLogger(SimpleExtendedPrologParser.class);
+    SimpleFileReader fileReader;
+    private final PrologParser prologParser;
+    private final Logger logger = LogManager.getLogger(SimpleExtendedPrologParser.class);
 
-  /**
-   * Simple constructor.
-   */
-  public SimpleExtendedPrologParser() {
-    logger.info("Initialising SimpleExtendedPrologParser.");
+    /**
+     * Simple constructor.
+     */
+    public SimpleExtendedPrologParser() {
+        logger.info("Initialising SimpleExtendedPrologParser.");
 
-    this.fileReader = new SimpleFileReader();
-    this.prologParser = new SimplePrologParser();
-  }
+        this.fileReader = new SimpleFileReader();
+        this.prologParser = new SimplePrologParser();
+    }
 
-  @Override
-  public FrameworkRepresentation parseFramework(File file, boolean addDummies)
-      throws IOException, MalformedEplFileException {
-    List<String> framework = this.fileReader.readFileByLine(file);
+    @Override
+    public FrameworkRepresentation parseFramework(File file, boolean addDummies)
+            throws IOException, MalformedEplFileException {
+        List<String> framework = this.fileReader.readFileByLine(file);
 
-    return this.parseFramework(framework, file.getAbsolutePath(), addDummies);
-  }
+        return this.parseFramework(framework, file.getAbsolutePath(), addDummies);
+    }
 
-  /**
-   * This method does the actual parsing.
+    /**
+     * This method does the actual parsing.
+     * 
+     * @param representation a line-by-line representation of the extended Prolog file.
+     * @param path the path to the framework (required for compatibility reasons)
+     * @return a {@link FrameworkRepresentation} of the input.
+     * @throws MalformedEplFileException if the input does not follow the specification of the
+     * extended Prolog format.
+     */
+    private FrameworkRepresentation parseFramework(List<String> representation, String path,
+            boolean addDummies) throws MalformedEplFileException {
+        FrameworkRepresentation framework = new FrameworkRepresentation(path);
+        framework.setTheoryPath("undefined");
 
-   * @param representation a line-by-line representation of the extended Prolog file.
-   * @param path the path to the framework (required for compatibility reasons)
-   * @return a {@link FrameworkRepresentation} of the input.
-   * @throws MalformedEplFileException if the input does not follow the specification of the
-   *         extended Prolog format.
-   */
-  private FrameworkRepresentation parseFramework(List<String> representation, String path,
-      boolean addDummies) throws MalformedEplFileException {
-    FrameworkRepresentation framework = new FrameworkRepresentation(path);
-    framework.setTheoryPath("undefined");
-    
-    ParserState state = ParserState.STARTING;
+        ParserState state = ParserState.STARTING;
 
-    List<String> compositionTypeSection = new LinkedList<String>();
-    List<String> composableModuleSection = new LinkedList<String>();
-    List<String> compositionalStructureSection = new LinkedList<String>();
-    List<String> propertySection = new LinkedList<String>();
-    List<String> compositionRuleSection = new LinkedList<String>();
+        List<String> compositionTypeSection = new LinkedList<String>();
+        List<String> composableModuleSection = new LinkedList<String>();
+        List<String> compositionalStructureSection = new LinkedList<String>();
+        List<String> propertySection = new LinkedList<String>();
+        List<String> compositionRuleSection = new LinkedList<String>();
 
-    for (int lineNumber = 0; lineNumber < representation.size(); lineNumber++) {
-      String currentLine = representation.get(lineNumber);
+        for (int lineNumber = 0; lineNumber < representation.size(); lineNumber++) {
+            String currentLine = representation.get(lineNumber);
 
-      // Skip comments
-      if (currentLine.startsWith("%%")) {
-        continue;
-      }
-      
-      if (currentLine.contains(ExtendedPrologStrings.THEORY_PATH_PREFIX)) {
-        String line = currentLine;
+            // Skip comments
+            if (currentLine.startsWith("%%")) {
+                continue;
+            }
 
-        if (line.contains(" - ")) {
-          String[] splits = line.split(" - ");
+            if (currentLine.contains(ExtendedPrologStrings.THEORY_PATH_PREFIX)) {
+                String line = currentLine;
 
-          line = splits[0];
-          framework.setSessionName(splits[1]);
+                if (line.contains(" - ")) {
+                    String[] splits = line.split(" - ");
+
+                    line = splits[0];
+                    framework.setSessionName(splits[1]);
+                }
+
+                line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
+                line = line.replace(ExtendedPrologStrings.COMMENT, "");
+                line = StringUtils.removeWhitespace(line);
+
+                framework.setTheoryPath(line);
+                continue;
+            }
+
+            // Remove Prolog comment markings, they are not necessary any more.
+            currentLine = currentLine.replace("% ", "");
+            currentLine = currentLine.replace("%", "");
+
+            // Skip empty lines. (Careful: currentLine is not actually sanitized after
+            // this!)
+            if (this.sanitizeLine(currentLine).equals("")) {
+                continue;
+            }
+
+            state = this.newState(currentLine, state);
+
+            switch (state) {
+            case COMPOSITION_TYPE:
+                compositionTypeSection.add(currentLine);
+                break;
+            case COMPOSABLE_MODULE:
+                composableModuleSection.add(currentLine);
+                break;
+            case COMPOSITIONAL_STRUCTURE:
+                compositionalStructureSection.add(currentLine);
+                break;
+            case PROPERTY:
+                propertySection.add(currentLine);
+                break;
+            case COMPOSITION_RULE:
+                compositionRuleSection.add(currentLine);
+                break;
+            default: // no-op, invalid call.
+            }
         }
 
-        line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
-        line = line.replace(ExtendedPrologStrings.COMMENT, "");
-        line = StringUtils.removeWhitespace(line);
+        this.parseSection(framework, compositionTypeSection, ParserState.COMPOSITION_TYPE);
+        this.parseSection(framework, composableModuleSection, ParserState.COMPOSABLE_MODULE);
+        this.parseSection(framework, compositionalStructureSection,
+                ParserState.COMPOSITIONAL_STRUCTURE);
+        this.parseSection(framework, propertySection, ParserState.PROPERTY);
+        this.parseSection(framework, compositionRuleSection, ParserState.COMPOSITION_RULE);
 
-        framework.setTheoryPath(line);
-        continue;
-      }
+        if (addDummies) {
+            framework.addDummyRulesIfNecessary();
+        }
 
-      // Remove Prolog comment markings, they are not necessary any more.
-      currentLine = currentLine.replace("% ", "");
-      currentLine = currentLine.replace("%", "");
+        return framework;
+    }
 
-      // Skip empty lines. (Careful: currentLine is not actually sanitized after
-      // this!)
-      if (this.sanitizeLine(currentLine).equals("")) {
-        continue;
-      }
+    private void parseSection(FrameworkRepresentation framework, List<String> lines,
+            ParserState state) throws MalformedEplFileException {
+        if (lines.isEmpty()) {
+            return;
+        }
 
-      state = this.newState(currentLine, state);
-
-      switch (state) {
+        switch (state) {
         case COMPOSITION_TYPE:
-          compositionTypeSection.add(currentLine);
-          break;
+            this.parseCompositionTypeSection(framework, lines);
+            break;
         case COMPOSABLE_MODULE:
-          composableModuleSection.add(currentLine);
-          break;
         case COMPOSITIONAL_STRUCTURE:
-          compositionalStructureSection.add(currentLine);
-          break;
         case PROPERTY:
-          propertySection.add(currentLine);
-          break;
+            this.parseSimpleSection(framework, lines, state);
+            break;
         case COMPOSITION_RULE:
-          compositionRuleSection.add(currentLine);
-          break;
+            this.parseCompositionRuleSection(framework, lines);
+            break;
         default: // no-op, invalid call.
-      }
+        }
     }
 
-    this.parseSection(framework, compositionTypeSection, ParserState.COMPOSITION_TYPE);
-    this.parseSection(framework, composableModuleSection, ParserState.COMPOSABLE_MODULE);
-    this.parseSection(framework, compositionalStructureSection,
-        ParserState.COMPOSITIONAL_STRUCTURE);
-    this.parseSection(framework, propertySection, ParserState.PROPERTY);
-    this.parseSection(framework, compositionRuleSection, ParserState.COMPOSITION_RULE);
+    private void parseCompositionTypeSection(FrameworkRepresentation framework, List<String> lines)
+            throws MalformedEplFileException {
+        ComponentType currentType = null;
 
-    if (addDummies) {
-      framework.addDummyRulesIfNecessary();
+        // Starting at 1, because first line has to be the header by construction.
+        for (int i = 1; i < lines.size(); i++) {
+            String currentLine = lines.get(i);
+
+            if (currentLine.startsWith("==")) {
+                // New type.
+                currentLine = this.sanitizeLine(currentLine);
+                currentType = new ComponentType(currentLine);
+                framework.add(currentType);
+            } else {
+                // New Instance of given type.
+                if (currentType == null) {
+                    logger.error("No type defined for \"" + currentLine + "\".");
+                    throw new MalformedEplFileException();
+                }
+
+                currentLine = this.sanitizeLine(currentLine);
+
+                List<ComponentType> parameters = this.extractParameters(currentLine);
+                currentLine = this.removeBracketExpression(currentLine);
+
+                framework.add(new Component(currentType, currentLine, parameters));
+            }
+        }
     }
 
-    return framework;
-  }
+    private void parseSimpleSection(FrameworkRepresentation framework, List<String> lines,
+            ParserState state) throws MalformedEplFileException {
+        String header = lines.get(0);
+        ComponentType type = null;
 
-  private void parseSection(FrameworkRepresentation framework, List<String> lines,
-      ParserState state) throws MalformedEplFileException {
-    if(lines.isEmpty()) {
-      return;
-    }
-    
-    switch (state) {
-      case COMPOSITION_TYPE:
-        this.parseCompositionTypeSection(framework, lines);
-        break;
-      case COMPOSABLE_MODULE:
-      case COMPOSITIONAL_STRUCTURE:
-      case PROPERTY:
-        this.parseSimpleSection(framework, lines, state);
-        break;
-      case COMPOSITION_RULE:
-        this.parseCompositionRuleSection(framework, lines);
-        break;
-      default: // no-op, invalid call.
-    }
-  }
+        // Composable modules are the core component of the framework, the type shall be
+        // renameable.
+        if (state == ParserState.COMPOSABLE_MODULE) {
+            String[] splits = header.split("-");
 
-  private void parseCompositionTypeSection(FrameworkRepresentation framework, List<String> lines)
-      throws MalformedEplFileException {
-    ComponentType currentType = null;
+            if (splits.length > 1) {
+                if (splits.length == 2) {
+                    // Alias is defined, this shall be a type.
+                    String typeString = this.sanitizeLine(splits[1]);
+                    type = new ComponentType(typeString);
+                    framework.setAlias(typeString);
+                } else {
+                    logger.error("Malformed header: \"" + lines.get(0) + "\"");
+                    throw new MalformedEplFileException();
+                }
+            } else {
+                // Default type.
+                type = new ComponentType(ExtendedPrologStrings.COMPOSABLE_MODULE);
+            }
 
-    // Starting at 1, because first line has to be the header by construction.
-    for (int i = 1; i < lines.size(); i++) {
-      String currentLine = lines.get(i);
-
-      if (currentLine.startsWith("==")) {
-        // New type.
-        currentLine = this.sanitizeLine(currentLine);
-        currentType = new ComponentType(currentLine);
-        framework.add(currentType);
-      } else {
-        // New Instance of given type.
-        if (currentType == null) {
-          logger.error("No type defined for \"" + currentLine + "\".");
-          throw new MalformedEplFileException();
+            framework.add(type);
         }
 
-        currentLine = this.sanitizeLine(currentLine);
+        // Starting at 1 due to header.
+        for (int i = 1; i < lines.size(); i++) {
+            String name = lines.get(i);
 
-        List<ComponentType> parameters = this.extractParameters(currentLine);
-        currentLine = this.removeBracketExpression(currentLine);
+            List<ComponentType> parameters = this.extractParameters(name);
+            name = this.removeBracketExpression(name);
 
-        framework.add(new Component(currentType, currentLine, parameters));
-      }
+            switch (state) {
+            case COMPOSABLE_MODULE:
+                framework.add(new ComposableModule(type, name, parameters));
+                break;
+            case COMPOSITIONAL_STRUCTURE:
+                framework.add(new CompositionalStructure(name, type, parameters));
+                break;
+            case PROPERTY:
+                framework.add(new Property(name, parameters));
+                break;
+            default: // no-op, invalid call.
+            }
+        }
     }
-  }
 
-  private void parseSimpleSection(FrameworkRepresentation framework, List<String> lines,
-      ParserState state) throws MalformedEplFileException {
-    String header = lines.get(0);
-    ComponentType type = null;
+    private void parseCompositionRuleSection(FrameworkRepresentation framework, List<String> lines)
+            throws MalformedEplFileException {
+        String origin = "";
+        String name = "";
+        String prologString = "";
 
-    // Composable modules are the core component of the framework, the type shall be
-    // renameable.
-    if (state == ParserState.COMPOSABLE_MODULE) {
-      String[] splits = header.split("-");
+        // Starting at 1, because of header.
+        for (int i = 1; i < lines.size(); i++) {
+            String currentLine = lines.get(i);
 
-      if (splits.length > 1) {
-        if (splits.length == 2) {
-          // Alias is defined, this shall be a type.
-          String typeString = this.sanitizeLine(splits[1]);
-          type = new ComponentType(typeString);
-          framework.setAlias(typeString);
+            if (origin.equals("")) {
+                // No origin.
+                if (!currentLine.startsWith("=")) {
+                    logger.error("No origin specified for: \"" + currentLine + "\"");
+                    throw new MalformedEplFileException();
+                } else {
+                    origin = this.sanitizeLine(currentLine);
+                    continue;
+                }
+            } else {
+                if (name.equals("")) {
+                    // No name.
+                    name = this.sanitizeLine(currentLine);
+                    continue;
+                } else {
+                    // Origin and name set, looking for Prolog clause now.
+                    prologString += currentLine;
+
+                    if (currentLine.contains(".")) {
+                        // Clause finished. Start Prolog Parser.
+
+                        PrologClause clause = this.prologParser.parseSingleClause(prologString);
+                        framework.add(new CompositionRule(name, origin, clause));
+
+                        origin = "";
+                        name = "";
+                        prologString = "";
+                    }
+                }
+            }
+        }
+    }
+
+    private List<ComponentType> extractParameters(String component)
+            throws MalformedEplFileException {
+        List<ComponentType> res = new LinkedList<ComponentType>();
+
+        if (!component.contains("(") || component.endsWith("()")) {
+            // No parameters.
+            return res;
+        }
+
+        // Opening, but no closing bracket.
+        if (!component.contains(")")) {
+            logger.error("Opening, but no closing bracket on: \"" + component + "\"");
+            throw new MalformedEplFileException();
+        }
+
+        String regex = "\\(.*\\)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(component);
+
+        if (matcher.find()) {
+            String parameterString = matcher.group();
+
+            // Remove whitespace.
+            parameterString = parameterString.replace(" ", "");
+            // Get rid of parentheses.
+            parameterString = parameterString.substring(1, parameterString.length() - 1);
+
+            String[] parameters = parameterString.split(",");
+            for (int i = 0; i < parameters.length; i++) {
+                res.add(new ComponentType(parameters[i]));
+            }
         } else {
-          logger.error("Malformed header: \"" + lines.get(0) + "\"");
-          throw new MalformedEplFileException();
+            // This should never happen.
+            throw new MalformedEplFileException();
         }
-      } else {
-        // Default type.
-        type = new ComponentType(ExtendedPrologStrings.COMPOSABLE_MODULE);
-      }
 
-      framework.add(type);
+        return res;
     }
 
-    // Starting at 1 due to header.
-    for (int i = 1; i < lines.size(); i++) {
-      String name = lines.get(i);
+    private String removeBracketExpression(String string) {
+        String regex = "\\(.*\\)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(string);
 
-      List<ComponentType> parameters = this.extractParameters(name);
-      name = this.removeBracketExpression(name);
-
-      switch (state) {
-        case COMPOSABLE_MODULE:
-          framework.add(new ComposableModule(type, name, parameters));
-          break;
-        case COMPOSITIONAL_STRUCTURE:
-          framework.add(new CompositionalStructure(name, type, parameters));
-          break;
-        case PROPERTY:
-          framework.add(new Property(name, parameters));
-          break;
-        default: // no-op, invalid call.
-      }
-    }
-  }
-
-  private void parseCompositionRuleSection(FrameworkRepresentation framework, List<String> lines)
-      throws MalformedEplFileException {
-    String origin = "";
-    String name = "";
-    String prologString = "";
-
-    // Starting at 1, because of header.
-    for (int i = 1; i < lines.size(); i++) {
-      String currentLine = lines.get(i);
-
-      if (origin.equals("")) {
-        // No origin.
-        if (!currentLine.startsWith("=")) {
-          logger.error("No origin specified for: \"" + currentLine + "\"");
-          throw new MalformedEplFileException();
-        } else {
-          origin = this.sanitizeLine(currentLine);
-          continue;
+        if (matcher.find()) {
+            String parameterString = matcher.group();
+            // Remove parameters from component for simpler processing in calling method.
+            string = string.replace(parameterString, "");
         }
-      } else {
-        if (name.equals("")) {
-          // No name.
-          name = this.sanitizeLine(currentLine);
-          continue;
-        } else {
-          // Origin and name set, looking for Prolog clause now.
-          prologString += currentLine;
 
-          if (currentLine.contains(".")) {
-            // Clause finished. Start Prolog Parser.
+        return string;
+    }
 
-            PrologClause clause = this.prologParser.parseSingleClause(prologString);
-            framework.add(new CompositionRule(name, origin, clause));
-
-            origin = "";
-            name = "";
-            prologString = "";
-          }
+    private ParserState newState(String line, ParserState oldState) {
+        if (line.contains(ExtendedPrologStrings.COMPOSITION_TYPE_HEADER)) {
+            return ParserState.COMPOSITION_TYPE;
         }
-      }
-    }
-  }
 
-  private List<ComponentType> extractParameters(String component) throws MalformedEplFileException {
-    List<ComponentType> res = new LinkedList<ComponentType>();
+        if (line.contains(ExtendedPrologStrings.COMPOSABLE_MODULE_HEADER)) {
+            return ParserState.COMPOSABLE_MODULE;
+        }
 
-    if (!component.contains("(") || component.endsWith("()")) {
-      // No parameters.
-      return res;
-    }
+        if (line.contains(ExtendedPrologStrings.COMPOSITIONAL_STRUCTURE_HEADER)) {
+            return ParserState.COMPOSITIONAL_STRUCTURE;
+        }
 
-    // Opening, but no closing bracket.
-    if (!component.contains(")")) {
-      logger.error("Opening, but no closing bracket on: \"" + component + "\"");
-      throw new MalformedEplFileException();
-    }
+        if (line.contains(ExtendedPrologStrings.PROPERTY_HEADER)) {
+            return ParserState.PROPERTY;
+        }
 
-    String regex = "\\(.*\\)";
-    Pattern pattern = Pattern.compile(regex);
-    Matcher matcher = pattern.matcher(component);
+        if (line.contains(ExtendedPrologStrings.COMPOSITION_RULE_HEADER)) {
+            return ParserState.COMPOSITION_RULE;
+        }
 
-    if (matcher.find()) {
-      String parameterString = matcher.group();
-
-      // Remove whitespace.
-      parameterString = parameterString.replace(" ", "");
-      // Get rid of parentheses.
-      parameterString = parameterString.substring(1, parameterString.length() - 1);
-
-      String[] parameters = parameterString.split(",");
-      for (int i = 0; i < parameters.length; i++) {
-        res.add(new ComponentType(parameters[i]));
-      }
-    } else {
-      // This should never happen.
-      throw new MalformedEplFileException();
+        return oldState;
     }
 
-    return res;
-  }
+    private String sanitizeLine(String line) {
+        String res = line.replaceAll("=", "");
+        res = StringUtils.removeWhitespace(res);
 
-  private String removeBracketExpression(String string) {
-    String regex = "\\(.*\\)";
-    Pattern pattern = Pattern.compile(regex);
-    Matcher matcher = pattern.matcher(string);
-
-    if (matcher.find()) {
-      String parameterString = matcher.group();
-      // Remove parameters from component for simpler processing in calling method.
-      string = string.replace(parameterString, "");
+        return res;
     }
-
-    return string;
-  }
-
-  private ParserState newState(String line, ParserState oldState) {
-    if (line.contains(ExtendedPrologStrings.COMPOSITION_TYPE_HEADER)) {
-      return ParserState.COMPOSITION_TYPE;
-    }
-
-    if (line.contains(ExtendedPrologStrings.COMPOSABLE_MODULE_HEADER)) {
-      return ParserState.COMPOSABLE_MODULE;
-    }
-
-    if (line.contains(ExtendedPrologStrings.COMPOSITIONAL_STRUCTURE_HEADER)) {
-      return ParserState.COMPOSITIONAL_STRUCTURE;
-    }
-
-    if (line.contains(ExtendedPrologStrings.PROPERTY_HEADER)) {
-      return ParserState.PROPERTY;
-    }
-
-    if (line.contains(ExtendedPrologStrings.COMPOSITION_RULE_HEADER)) {
-      return ParserState.COMPOSITION_RULE;
-    }
-
-    return oldState;
-  }
-
-  private String sanitizeLine(String line) {
-    String res = line.replaceAll("=", "");
-    res = StringUtils.removeWhitespace(res);
-
-    return res;
-  }
 }

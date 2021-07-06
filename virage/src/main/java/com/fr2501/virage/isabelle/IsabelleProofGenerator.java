@@ -16,138 +16,139 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * This class is meant to translate a single {@link CompositionProof} to
- * Isabelle syntax.
+ * This class is meant to translate a single {@link CompositionProof} to Isabelle syntax.
  *
  */
 public class IsabelleProofGenerator {
-  private static final Logger logger = LogManager.getLogger(IsabelleProofGenerator.class);
-  private static String PROOF_TEMPLATE = "";
+    private static final Logger logger = LogManager.getLogger(IsabelleProofGenerator.class);
+    private static String PROOF_TEMPLATE = "";
 
-  private static final String VAR_THEOREM_NAME = "$THEOREM_NAME";
-  private static final String VAR_GOAL = "$GOAL";
-  private static final String VAR_PROOF_STEPS = "$PROOF_STEPS";
-  private static final String VAR_SUBGOAL_IDS = "$SUBGOAL_IDS";
-  private static final String VAR_ASSUMPTIONS = "$ASSUMPTIONS";
+    private static final String VAR_THEOREM_NAME = "$THEOREM_NAME";
+    private static final String VAR_GOAL = "$GOAL";
+    private static final String VAR_PROOF_STEPS = "$PROOF_STEPS";
+    private static final String VAR_SUBGOAL_IDS = "$SUBGOAL_IDS";
+    private static final String VAR_ASSUMPTIONS = "$ASSUMPTIONS";
 
-  private static final String TRUE = "true";
+    private static final String TRUE = "true";
 
-  private IsabelleProofStepGenerator generator;
-  private Map<String, String> functionsAndDefinitions;
+    private IsabelleProofStepGenerator generator;
+    private Map<String, String> functionsAndDefinitions;
 
-  private IsabelleTheoryGenerator parent;
+    private IsabelleTheoryGenerator parent;
 
-  /**
-   * Simple constructor.
+    /**
+     * Simple constructor.
+     * 
+     * @param parent the corresponding theory generator
+     * @param functionsAndDefinitions set of all functions and definitions in parent's session
+     */
+    public IsabelleProofGenerator(IsabelleTheoryGenerator parent,
+            Map<String, String> functionsAndDefinitions) {
+        if (PROOF_TEMPLATE.equals("")) {
+            InputStream proofTemplateStream = this.getClass().getClassLoader()
+                    .getResourceAsStream("proof.template");
+            StringWriter writer = new StringWriter();
+            try {
+                IOUtils.copy(proofTemplateStream, writer, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                logger.error("Something went wrong.", e);
+                e.printStackTrace();
+            }
+            PROOF_TEMPLATE = writer.toString();
+        }
 
-   * @param parent the corresponding theory generator
-   * @param functionsAndDefinitions set of all functions and definitions in parent's session
-   */
-  public IsabelleProofGenerator(IsabelleTheoryGenerator parent,
-      Map<String, String> functionsAndDefinitions) {
-    if (PROOF_TEMPLATE.equals("")) {
-      InputStream proofTemplateStream = this.getClass().getClassLoader()
-          .getResourceAsStream("proof.template");
-      StringWriter writer = new StringWriter();
-      try {
-        IOUtils.copy(proofTemplateStream, writer, StandardCharsets.UTF_8);
-      } catch (IOException e) {
-        logger.error("Something went wrong.", e);
-        e.printStackTrace();
-      }
-      PROOF_TEMPLATE = writer.toString();
+        this.functionsAndDefinitions = functionsAndDefinitions;
+        this.generator = new IsabelleProofStepGenerator(this, this.functionsAndDefinitions);
+        this.parent = parent;
     }
 
-    this.functionsAndDefinitions = functionsAndDefinitions;
-    this.generator = new IsabelleProofStepGenerator(this, this.functionsAndDefinitions);
-    this.parent = parent;
-  }
+    /**
+     * Every IsabelleProofGenerator is attached to an {@link IsabelleTheoryGenerator}, this method
+     * returns it.
+     * 
+     * @return the parent
+     */
+    public IsabelleTheoryGenerator getParent() {
+        return this.parent;
+    }
 
-  /**
-   * Every IsabelleProofGenerator is attached to an
-   * {@link IsabelleTheoryGenerator}, this method returns it.
+    /**
+     * Translates a {@link CompositionProof} into Isabelle syntax.
+     * 
+     * @param proof the proof
+     * @return a String representing the proof, readable by Isabelle
+     */
+    public String generateIsabelleProof(CompositionProof proof) {
+        proof.setId("0");
 
-   * @return the parent
-   */
-  public IsabelleTheoryGenerator getParent() {
-    return this.parent;
-  }
+        // A bit hacky
+        String[] splits = proof.getGoal().split("\\(");
+        String property = splits[0];
 
-  /**
-   * Translates a {@link CompositionProof} into Isabelle syntax.
+        final String theoremName = IsabelleTheoryGenerator.VAR_MODULE_NAME + "_" + property + ":";
+        final String goal = property + " (" + IsabelleTheoryGenerator.VAR_MODULE_NAME + " "
+                + IsabelleTheoryGenerator.VAR_MODULE_PARAMETERS + ")";
 
-   * @param proof the proof
-   * @return a String representing the proof, readable by Isabelle
-   */
-  public String generateIsabelleProof(CompositionProof proof) {
-    proof.setId("0");
+        Set<String> assumptions = new HashSet<String>();
+        String proofSteps = "";
+        for (CompositionProof subgoal : proof.getAllStepsDepthFirst()) {
+            if (subgoal.getAllCompositionRules().size() == 1) {
+                CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
 
-    // A bit hacky
-    String[] splits = proof.getGoal().split("\\(");
-    String property = splits[0];
+                // TODO Don't just continue, but collect assumptions.
+                if (rule.getOrigin().equals("generated")) {
+                    Property p = this.parent.getFramework()
+                            .getProperty(rule.getSuccedent().getName());
 
-    final String theoremName = IsabelleTheoryGenerator.VAR_MODULE_NAME + "_" + property + ":";
-    final String goal = property + " (" + IsabelleTheoryGenerator.VAR_MODULE_NAME + " "
-        + IsabelleTheoryGenerator.VAR_MODULE_PARAMETERS + ")";
+                    String newAssumptions = "\"" + rule.getSuccedent().getName() + " ";
+                    for (ComponentType child : p.getParameters()) {
+                        // Only parameters defined within the module definition can be referenced,
+                        // so if
+                        // any others
+                        // occur, we skip.
+                        if (!this.getParent().getTypedVariables().containsKey(child.getName())) {
+                            break;
+                        }
 
-    Set<String> assumptions = new HashSet<String>();
-    String proofSteps = "";
-    for (CompositionProof subgoal : proof.getAllStepsDepthFirst()) {
-      if (subgoal.getAllCompositionRules().size() == 1) {
-        CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
+                        newAssumptions += this.getParent().getTypedVariables().get(child.getName())
+                                + " ";
 
-        // TODO Don't just continue, but collect assumptions.
-        if (rule.getOrigin().equals("generated")) {
-          Property p = this.parent.getFramework().getProperty(rule.getSuccedent().getName());
+                        newAssumptions += "\"";
+                        assumptions.add(newAssumptions);
+                    }
 
-          String newAssumptions = "\"" + rule.getSuccedent().getName() + " ";
-          for (ComponentType child : p.getParameters()) {
-            // Only parameters defined within the module definition can be referenced, so if
-            // any others
-            // occur, we skip.
-            if (!this.getParent().getTypedVariables().containsKey(child.getName())) {
-              break;
+                    // This is important to not add subgoal-ids of these "virtual" goals.
+                    continue;
+                }
             }
 
-            newAssumptions += this.getParent().getTypedVariables().get(child.getName()) + " ";
-
-            newAssumptions += "\"";
-            assumptions.add(newAssumptions);
-          }
-
-          // This is important to not add subgoal-ids of these "virtual" goals.
-          continue;
+            proofSteps += this.generator.generateIsabelleProofStep(subgoal);
         }
-      }
 
-      proofSteps += this.generator.generateIsabelleProofStep(subgoal);
+        if (assumptions.isEmpty()) {
+            assumptions.add(TRUE);
+        }
+
+        String assumptionString = "";
+        for (String s : assumptions) {
+            assumptionString += s + "\n\t";
+        }
+
+        String subgoalIds = "0";
+
+        return this.replaceVariables(theoremName, goal, proofSteps, subgoalIds, assumptionString);
     }
 
-    if (assumptions.isEmpty()) {
-      assumptions.add(TRUE);
+    private String replaceVariables(String theoremName, String goal, String proofSteps,
+            String subgoalIds, String assumptions) {
+        String res = PROOF_TEMPLATE;
+
+        res = res.replace(VAR_THEOREM_NAME, theoremName);
+        res = res.replace(VAR_GOAL, goal);
+        res = res.replace(VAR_PROOF_STEPS, proofSteps);
+        res = res.replace(VAR_SUBGOAL_IDS, subgoalIds);
+        res = res.replace(VAR_ASSUMPTIONS, assumptions);
+
+        return res;
     }
-
-    String assumptionString = "";
-    for (String s : assumptions) {
-      assumptionString += s + "\n\t";
-    }
-
-    String subgoalIds = "0";
-
-    return this.replaceVariables(theoremName, goal, proofSteps, subgoalIds, assumptionString);
-  }
-
-  private String replaceVariables(String theoremName, String goal, String proofSteps,
-      String subgoalIds,
-      String assumptions) {
-    String res = PROOF_TEMPLATE;
-
-    res = res.replace(VAR_THEOREM_NAME, theoremName);
-    res = res.replace(VAR_GOAL, goal);
-    res = res.replace(VAR_PROOF_STEPS, proofSteps);
-    res = res.replace(VAR_SUBGOAL_IDS, subgoalIds);
-    res = res.replace(VAR_ASSUMPTIONS, assumptions);
-
-    return res;
-  }
 }

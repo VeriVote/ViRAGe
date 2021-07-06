@@ -23,79 +23,80 @@ import org.junit.Test;
  *
  */
 public class IsabelleTheoryGeneratorTest {
-  private static final String PATH = "src/test/resources/framework.pl";
-  private static final String SMC = "sequential_composition(" + "loop_composition("
-      + "parallel_composition(" + "sequential_composition(" + "pass_module(2,_),"
-      + "sequential_composition(" + "revision_composition(" + "plurality)," + "pass_module(1,_))),"
-      + "drop_module(2,_)," + "max_aggregator)," + "defer_equal_condition(1))," + "elect_module)";
-  private FrameworkRepresentation framework;
-  private CompositionAnalyzer analyzer;
+    private static final String PATH = "src/test/resources/framework.pl";
+    private static final String SMC = "sequential_composition(" + "loop_composition("
+            + "parallel_composition(" + "sequential_composition(" + "pass_module(2,_),"
+            + "sequential_composition(" + "revision_composition(" + "plurality),"
+            + "pass_module(1,_)))," + "drop_module(2,_)," + "max_aggregator),"
+            + "defer_equal_condition(1))," + "elect_module)";
+    private FrameworkRepresentation framework;
+    private CompositionAnalyzer analyzer;
 
-  /**
-   * Initialization for the following tests.
+    /**
+     * Initialization for the following tests.
+     * 
+     * @throws IOException if file system interaction fails
+     * @throws MalformedEplFileException if the input file violates the EPL format
+     * @throws ExternalSoftwareUnavailableException if Isabelle or swipl is unavailable
+     */
+    @Before
+    public void init()
+            throws IOException, MalformedEplFileException, ExternalSoftwareUnavailableException {
+        ExtendedPrologParser parser = new SimpleExtendedPrologParser();
+        this.framework = parser.parseFramework(new File(PATH), false);
 
-   * @throws IOException if file system interaction fails
-   * @throws MalformedEplFileException if the input file violates the EPL format
-   * @throws ExternalSoftwareUnavailableException if Isabelle or swipl is unavailable
-   */
-  @Before
-  public void init()
-      throws IOException, MalformedEplFileException, ExternalSoftwareUnavailableException {
-    ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-    this.framework = parser.parseFramework(new File(PATH), false);
+        this.analyzer = new SimplePrologCompositionAnalyzer(this.framework);
+    }
 
-    this.analyzer = new SimplePrologCompositionAnalyzer(this.framework);
-  }
+    @Test
+    public void testSmcProof() {
+        List<Property> properties = new LinkedList<Property>();
+        properties.add(this.framework.getProperty("monotonicity"));
+        properties.add(this.framework.getProperty("electing"));
 
-  @Test
-  public void testSmcProof() {
-    List<Property> properties = new LinkedList<Property>();
-    properties.add(this.framework.getProperty("monotonicity"));
-    properties.add(this.framework.getProperty("electing"));
+        proveClaims(properties, SMC);
+    }
 
-    proveClaims(properties, SMC);
-  }
+    @Test
+    public void testVerySimpleProof() {
+        List<Property> properties = new LinkedList<Property>();
+        properties.add(this.framework.getProperty("electing"));
 
-  @Test
-  public void testVerySimpleProof() {
-    List<Property> properties = new LinkedList<Property>();
-    properties.add(this.framework.getProperty("electing"));
+        proveClaims(properties, "elect_module");
+    }
 
-    proveClaims(properties, "elect_module");
-  }
+    @Test
+    public void testSimpleProof() {
+        List<Property> properties = new LinkedList<Property>();
+        properties.add(this.framework.getProperty("electing"));
+        properties.add(this.framework.getProperty("monotonicity"));
 
-  @Test
-  public void testSimpleProof() {
-    List<Property> properties = new LinkedList<Property>();
-    properties.add(this.framework.getProperty("electing"));
-    properties.add(this.framework.getProperty("monotonicity"));
+        proveClaims(properties, "sequential_composition(pass_module(1,_),elect_module)");
+    }
 
-    proveClaims(properties, "sequential_composition(pass_module(1,_),elect_module)");
-  }
+    /*
+     * Test disabled after introduction of config.properties
+     * 
+     * @Test
+     */
+    /**
+     * Tests proof of condorcet_consistency for an elimination module.
+     */
+    public void testCondorcetProof() {
+        List<Property> properties = new LinkedList<Property>();
+        properties.add(this.framework.getProperty("condorcet_consistency"));
 
-  /*
-   * Test disabled after introduction of config.properties
-   * 
-   * @Test
-   */
-  /**
-   * Tests proof of condorcet_consistency for an elimination module.
-   */
-  public void testCondorcetProof() {
-    List<Property> properties = new LinkedList<Property>();
-    properties.add(this.framework.getProperty("condorcet_consistency"));
+        proveClaims(properties,
+                "sequential_composition(elimination_module(copeland_score,max,less), elect_module)");
+    }
 
-    proveClaims(properties,
-        "sequential_composition(elimination_module(copeland_score,max,less), elect_module)");
-  }
+    protected void proveClaims(List<Property> properties, String composition) {
+        List<CompositionProof> proofs = analyzer.proveClaims(new DecompositionTree(composition),
+                properties);
 
-  protected void proveClaims(List<Property> properties, String composition) {
-    List<CompositionProof> proofs = analyzer.proveClaims(new DecompositionTree(composition),
-        properties);
+        IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator(
+                "src/test/resources/theories/", this.framework);
 
-    IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator("src/test/resources/theories/",
-        this.framework);
-
-    generator.generateTheoryFile(composition, proofs);
-  }
+        generator.generateTheoryFile(composition, proofs);
+    }
 }

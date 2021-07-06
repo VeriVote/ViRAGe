@@ -1,3 +1,19 @@
+=== maven stuff
+jar?
+module?
+
+=== Refactoring
+checkstyle (mvn checkstyle:checkstyle)!
+VCLI constructor
+
+=== (E)PL
+document
+add explaining constants to (E)PL
+(E)PL keywords caps-lock
+generated -> requirement
+timezone
+add ROOT to path
+
 === Improve UI
 sanitize inputs
 check necessity of log messages
@@ -5,9 +21,17 @@ display types instead of Prolog variables in the end
 add possibility to check all available properties at once
 omit anonymous variables and fill automatically
 do not display atomic properties
+empty variables -> not set
+remove \n before colour
+explain that libswipl.so is a SWI-Prolog library
+explicitly request libjpl.so
+check existence of these files
+scala via isabelle instead of isabelle scala
+wider header in help, uniform width
+"isabelle session within it"
+display list of files instead of asking 100 times
 
 === Miscellaneous
-document the (E)PL format
 experiment with snap on Ubuntu
 interactively launch scala and generate test instances
 optionally run jobs in parallel on CLI
@@ -16,6 +40,14 @@ run on different sessions to see behavior
 only compile scala code twice if the second run might work
 cross-verification of Scala and C programs
 add more C snippets
+branch cleanup
+include jEdit (or find some other solution? xdg-open?)
+termination of text editor (exit codes? descendants?)
+rename config.properties
+execute VirageExitJob immediately
+timestamp in config
+consistency check via keySet instead of version check
+check why scala-isabelle requires a name
 
 === FINISHED
 move config to a reasonable place (URGENT!!!)

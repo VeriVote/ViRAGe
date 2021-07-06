@@ -17,80 +17,80 @@ import java.util.List;
  *
  */
 public class VirageAnalyzeJob
-    extends VirageJobWithExplicitResult<List<List<SearchResult<BooleanWithUncertainty>>>> {
-  private List<String> propertyStrings;
-  private List<Property> properties;
-  private DecompositionTree tree;
+        extends VirageJobWithExplicitResult<List<List<SearchResult<BooleanWithUncertainty>>>> {
+    private List<String> propertyStrings;
+    private List<Property> properties;
+    private DecompositionTree tree;
 
-  private FrameworkRepresentation framework;
-  private VirageSearchManager manager;
+    private FrameworkRepresentation framework;
+    private VirageSearchManager manager;
 
-  /**
-   * Simple constructor.
-   * 
-   * @param issuer the issuer
-   * @param tree the tree
-   * @param properties the properties
-   */
-  public VirageAnalyzeJob(VirageUserInterface issuer, String tree, List<String> properties) {
-    super(issuer);
+    /**
+     * Simple constructor.
+     * 
+     * @param issuer the issuer
+     * @param tree the tree
+     * @param properties the properties
+     */
+    public VirageAnalyzeJob(VirageUserInterface issuer, String tree, List<String> properties) {
+        super(issuer);
 
-    this.tree = DecompositionTree.parseString(tree);
-    this.propertyStrings = properties;
-  }
-
-  @Override
-  public void concreteExecute() {
-    this.framework = this.executingCore.getFrameworkRepresentation();
-    this.manager = this.executingCore.getSearchManager();
-
-    this.properties = new LinkedList<Property>();
-
-    for (String s : this.propertyStrings) {
-      this.properties.add(this.framework.getProperty(s));
+        this.tree = DecompositionTree.parseString(tree);
+        this.propertyStrings = properties;
     }
 
-    this.result = this.manager.analyzeComposition(tree, properties);
-  }
+    @Override
+    public void concreteExecute() {
+        this.framework = this.executingCore.getFrameworkRepresentation();
+        this.manager = this.executingCore.getSearchManager();
 
-  @Override
-  public List<List<SearchResult<BooleanWithUncertainty>>> getResult() {
-    return this.result;
-  }
+        this.properties = new LinkedList<Property>();
 
-  @Override
-  public boolean externalSoftwareAvailable() {
-    return (ConfigReader.getInstance().hasJpl());
-  }
-
-  @Override
-  public String presentConcreteResult() {
-    String prop = "properties";
-    if (this.properties.size() == 1) {
-      prop = "property";
-    }
-
-    boolean hasProperties = false;
-    for (List<SearchResult<BooleanWithUncertainty>> resultList : this.result) {
-      for (SearchResult<BooleanWithUncertainty> result : resultList) {
-        if (result.hasValue() && result.getValue() == BooleanWithUncertainty.TRUE) {
-          hasProperties = true;
-          break;
+        for (String s : this.propertyStrings) {
+            this.properties.add(this.framework.getProperty(s));
         }
-      }
+
+        this.result = this.manager.analyzeComposition(tree, properties);
     }
 
-    if (hasProperties) {
-      return this.tree.toString() + " has the " + prop + " "
-          + StringUtils.printCollection(properties) + "";
-    } else {
-      return this.tree.toString() + " cannot be shown to have the " + prop + " "
-          + StringUtils.printCollection(properties) + "";
+    @Override
+    public List<List<SearchResult<BooleanWithUncertainty>>> getResult() {
+        return this.result;
     }
-  }
 
-  @Override
-  public String getDescription() {
-    return "Analyzing a composition ...";
-  }
+    @Override
+    public boolean externalSoftwareAvailable() {
+        return (ConfigReader.getInstance().hasJpl());
+    }
+
+    @Override
+    public String presentConcreteResult() {
+        String prop = "properties";
+        if (this.properties.size() == 1) {
+            prop = "property";
+        }
+
+        boolean hasProperties = false;
+        for (List<SearchResult<BooleanWithUncertainty>> resultList : this.result) {
+            for (SearchResult<BooleanWithUncertainty> result : resultList) {
+                if (result.hasValue() && result.getValue() == BooleanWithUncertainty.TRUE) {
+                    hasProperties = true;
+                    break;
+                }
+            }
+        }
+
+        if (hasProperties) {
+            return this.tree.toString() + " has the " + prop + " "
+                    + StringUtils.printCollection(properties) + "";
+        } else {
+            return this.tree.toString() + " cannot be shown to have the " + prop + " "
+                    + StringUtils.printCollection(properties) + "";
+        }
+    }
+
+    @Override
+    public String getDescription() {
+        return "Analyzing a composition ...";
+    }
 }

@@ -5,5 +5,5 @@ package com.fr2501.virage.isabelle;
  *
  */
 public enum IsabelleCodeGenerationLanguage {
-  Scala, OCaml, SML, Haskell
+    Scala, OCaml, SML, Haskell
 }

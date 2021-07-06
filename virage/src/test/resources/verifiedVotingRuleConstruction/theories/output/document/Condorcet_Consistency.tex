@@ -1,0 +1,63 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Condorcet{\isacharunderscore}{\kern0pt}Consistency}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Condorcet{\isacharunderscore}{\kern0pt}Consistency\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Compositional{\isacharunderscore}{\kern0pt}Framework{\isacharslash}{\kern0pt}Components{\isacharslash}{\kern0pt}Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ condorcet{\isacharunderscore}{\kern0pt}consistency\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}condorcet{\isacharunderscore}{\kern0pt}consistency\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ A\ p\ w{\isachardot}{\kern0pt}\ condorcet{\isacharunderscore}{\kern0pt}winner\ A\ p\ w\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}m\ A\ p\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}e\ {\isasymin}\ A{\isachardot}{\kern0pt}\ condorcet{\isacharunderscore}{\kern0pt}winner\ A\ p\ e{\isacharbraceright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ A\ {\isacharminus}{\kern0pt}\ {\isacharparenleft}{\kern0pt}elect\ m\ A\ p{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/verifiedVotingRuleConstruction/theories/Social_Choice_Properties/Condorcet_Consistency.thy%:%
+%:%10=1%:%
+%:%11=1%:%
+%:%12=2%:%
+%:%13=3%:%
+%:%14=4%:%
+%:%19=4%:%
+%:%22=5%:%
+%:%23=6%:%
+%:%24=6%:%
+%:%25=7%:%
+%:%31=13%:%
+%:%34=14%:%
+%:%39=15%:%

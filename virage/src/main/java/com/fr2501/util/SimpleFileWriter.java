@@ -12,54 +12,53 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class SimpleFileWriter {
-  private FileWriter writer;
-  private static final Logger logger = LogManager.getLogger(SimpleFileWriter.class.getName());
+    private FileWriter writer;
+    private static final Logger logger = LogManager.getLogger(SimpleFileWriter.class.getName());
 
-  /**
-   * Writes Collection to file, with every item on its own line, creates file if
-   * needed.
+    /**
+     * Writes Collection to file, with every item on its own line, creates file if needed.
+     * 
+     * @param path the file to be written to
+     * @param collection the collection
+     */
+    public void writeToFile(String path, Collection<?> collection) {
+        try {
+            this.writer = new FileWriter(new File(path).getCanonicalFile());
 
-   * @param path       the file to be written to
-   * @param collection the collection
-   */
-  public void writeToFile(String path, Collection<?> collection) {
-    try {
-      this.writer = new FileWriter(new File(path).getCanonicalFile());
-
-      for (Object o : collection) {
-        writer.write(o.toString() + "\n");
-      }
-    } catch (IOException e) {
-      logger.error("Writing to " + path + " was impossible.");
-    } finally {
-      try {
-        this.writer.close();
-      } catch (IOException e) {
-        logger.warn("Closing the FileWriter was impossible.");
-      }
+            for (Object o : collection) {
+                writer.write(o.toString() + "\n");
+            }
+        } catch (IOException e) {
+            logger.error("Writing to " + path + " was impossible.");
+        } finally {
+            try {
+                this.writer.close();
+            } catch (IOException e) {
+                logger.warn("Closing the FileWriter was impossible.");
+            }
+        }
     }
-  }
 
-  /**
-   * Writes String to file.
+    /**
+     * Writes String to file.
+     * 
+     * @param path the file to be written to
+     * @param contents the String to be written to the file
+     */
+    public void writeToFile(String path, String contents) {
+        try {
+            File file = new File(path).getCanonicalFile();
 
-   * @param path     the file to be written to
-   * @param contents the String to be written to the file
-   */
-  public void writeToFile(String path, String contents) {
-    try {
-      File file = new File(path).getCanonicalFile();
-
-      this.writer = new FileWriter(file);
-      this.writer.write(contents);
-    } catch (IOException e) {
-      logger.error("Writing to " + path + " was impossible.");
-    } finally {
-      try {
-        this.writer.close();
-      } catch (IOException e) {
-        logger.warn("Closing the FileWriter was impossible.");
-      }
+            this.writer = new FileWriter(file);
+            this.writer.write(contents);
+        } catch (IOException e) {
+            logger.error("Writing to " + path + " was impossible.");
+        } finally {
+            try {
+                this.writer.close();
+            } catch (IOException e) {
+                logger.warn("Closing the FileWriter was impossible.");
+            }
+        }
     }
-  }
 }

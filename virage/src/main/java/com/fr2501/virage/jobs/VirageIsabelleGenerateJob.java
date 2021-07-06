@@ -11,48 +11,49 @@ import java.util.List;
  *
  */
 public class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult<File> {
-  private String composition;
-  private List<CompositionProof> proofs;
-  private String outputPath;
+    private String composition;
+    private List<CompositionProof> proofs;
+    private String outputPath;
 
-  private IsabelleTheoryGenerator generator;
+    private IsabelleTheoryGenerator generator;
 
-  /**
-   * Simple constructor.
+    /**
+     * Simple constructor.
+     * 
+     * @param issuer the issuing ui
+     * @param composition the composition
+     * @param proofs the proofs
+     * @param outputPath the path for the generated theories
+     */
+    public VirageIsabelleGenerateJob(VirageUserInterface issuer, String composition,
+            List<CompositionProof> proofs, String outputPath) {
+        super(issuer);
 
-   * @param issuer the issuing ui
-   * @param composition the composition
-   * @param proofs the proofs
-   * @param outputPath the path for the generated theories
-   */
-  public VirageIsabelleGenerateJob(VirageUserInterface issuer, String composition,
-      List<CompositionProof> proofs, String outputPath) {
-    super(issuer);
+        this.composition = composition;
+        this.proofs = proofs;
+        this.outputPath = outputPath;
+    }
 
-    this.composition = composition;
-    this.proofs = proofs;
-    this.outputPath = outputPath;
-  }
+    @Override
+    protected void concreteExecute() throws Exception {
+        this.generator = this.executingCore.getIsabelleTheoryGenerator();
 
-  @Override
-  protected void concreteExecute() throws Exception {
-    this.generator = this.executingCore.getIsabelleTheoryGenerator();
+        this.result = this.generator.generateTheoryFile(this.composition, this.proofs,
+                this.outputPath);
+    }
 
-    this.result = this.generator.generateTheoryFile(this.composition, this.proofs, this.outputPath);
-  }
+    @Override
+    public boolean externalSoftwareAvailable() {
+        return true;
+    }
 
-  @Override
-  public boolean externalSoftwareAvailable() {
-    return true;
-  }
+    @Override
+    public String presentConcreteResult() {
+        return "Generated theory file at " + this.outputPath + ".";
+    }
 
-  @Override
-  public String presentConcreteResult() {
-    return "Generated theory file at " + this.outputPath + ".";
-  }
-
-  @Override
-  public String getDescription() {
-    return "Generating Isabelle theory ...";
-  }
+    @Override
+    public String getDescription() {
+        return "Generating Isabelle theory ...";
+    }
 }

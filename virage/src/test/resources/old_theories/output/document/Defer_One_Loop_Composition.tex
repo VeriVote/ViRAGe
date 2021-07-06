@@ -1,0 +1,130 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Defer{\isacharunderscore}{\kern0pt}One{\isacharunderscore}{\kern0pt}Loop{\isacharunderscore}{\kern0pt}Composition}%
+%
+\isadelimdocument
+\isanewline
+%
+\endisadelimdocument
+%
+\isatagdocument
+\isanewline
+\isanewline
+%
+\isamarkupsection{Defer One Loop Composition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Defer{\isacharunderscore}{\kern0pt}One{\isacharunderscore}{\kern0pt}Loop{\isacharunderscore}{\kern0pt}Composition\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}Basic{\isacharunderscore}{\kern0pt}Modules{\isacharslash}{\kern0pt}Component{\isacharunderscore}{\kern0pt}Types{\isacharslash}{\kern0pt}Defer{\isacharunderscore}{\kern0pt}Equal{\isacharunderscore}{\kern0pt}Condition{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ Loop{\isacharunderscore}{\kern0pt}Composition\isanewline
+\ \ \ \ \ \ \ \ \ \ Elect{\isacharunderscore}{\kern0pt}Composition\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+This is a family of loop compositions. It uses the same module in sequence
+until either no new decisions are made or only one alternative is remaining
+in the defer-set. The second family herein uses the above family and
+subsequently elects the remaining alternative.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Definition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{fun}\isamarkupfalse%
+\ iter\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}iter\ m\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}let\ t\ {\isacharequal}{\kern0pt}\ defer{\isacharunderscore}{\kern0pt}equal{\isacharunderscore}{\kern0pt}condition\ {\isadigit{1}}\ in\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}m\ {\isasymcirclearrowleft}\isactrlsub t{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{abbreviation}\isamarkupfalse%
+\ defer{\isacharunderscore}{\kern0pt}one{\isacharunderscore}{\kern0pt}loop\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isachardoublequoteopen}{\isacharunderscore}{\kern0pt}{\isasymcirclearrowleft}\isactrlsub {\isasymexists}\isactrlsub {\isacharbang}{\kern0pt}\isactrlsub d{\isachardoublequoteclose}\ {\isadigit{5}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}m\ {\isasymcirclearrowleft}\isactrlsub {\isasymexists}\isactrlsub {\isacharbang}{\kern0pt}\isactrlsub d\ {\isasymequiv}\ iter\ m{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{fun}\isamarkupfalse%
+\ iterelect\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}iterelect\ m\ {\isacharequal}{\kern0pt}\ elector\ {\isacharparenleft}{\kern0pt}m\ {\isasymcirclearrowleft}\isactrlsub {\isasymexists}\isactrlsub {\isacharbang}{\kern0pt}\isactrlsub d{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/old_theories/Compositional_Structures/Defer_One_Loop_Composition.thy%:%
+%:%6=3%:%
+%:%11=4%:%
+%:%12=5%:%
+%:%14=8%:%
+%:%30=10%:%
+%:%31=10%:%
+%:%32=11%:%
+%:%33=12%:%
+%:%34=13%:%
+%:%35=14%:%
+%:%44=17%:%
+%:%45=18%:%
+%:%46=19%:%
+%:%47=20%:%
+%:%56=22%:%
+%:%66=24%:%
+%:%67=24%:%
+%:%68=25%:%
+%:%70=27%:%
+%:%71=28%:%
+%:%72=29%:%
+%:%73=29%:%
+%:%74=30%:%
+%:%75=31%:%
+%:%76=32%:%
+%:%77=33%:%
+%:%78=34%:%
+%:%79=34%:%
+%:%80=35%:%
+%:%83=36%:%
+%:%88=37%:%

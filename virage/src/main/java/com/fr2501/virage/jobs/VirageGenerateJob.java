@@ -16,75 +16,75 @@ import java.util.List;
  *
  */
 public class VirageGenerateJob
-    extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
-  private List<String> propertyStrings;
-  private List<Property> properties;
+        extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
+    private List<String> propertyStrings;
+    private List<Property> properties;
 
-  private FrameworkRepresentation framework;
-  private VirageSearchManager manager;
+    private FrameworkRepresentation framework;
+    private VirageSearchManager manager;
 
-  /**
-   * Simple constructor.
+    /**
+     * Simple constructor.
+     * 
+     * @param issuer the issuing ui
+     * @param properties the properties
+     */
+    public VirageGenerateJob(VirageUserInterface issuer, List<String> properties) {
+        super(issuer);
 
-   * @param issuer the issuing ui
-   * @param properties the properties
-   */
-  public VirageGenerateJob(VirageUserInterface issuer, List<String> properties) {
-    super(issuer);
-
-    this.propertyStrings = properties;
-  }
-
-  @Override
-  public void concreteExecute() {
-    this.framework = this.executingCore.getFrameworkRepresentation();
-    this.manager = this.executingCore.getSearchManager();
-
-    this.properties = new LinkedList<Property>();
-
-    for (String s : this.propertyStrings) {
-      this.properties.add(this.framework.getProperty(s));
+        this.propertyStrings = properties;
     }
 
-    this.result = this.manager.generateComposition(properties);
-  }
+    @Override
+    public void concreteExecute() {
+        this.framework = this.executingCore.getFrameworkRepresentation();
+        this.manager = this.executingCore.getSearchManager();
 
-  @Override
-  public List<SearchResult<DecompositionTree>> getResult() {
-    return this.result;
-  }
+        this.properties = new LinkedList<Property>();
 
-  @Override
-  public boolean externalSoftwareAvailable() {
-    return (ConfigReader.getInstance().hasJpl());
-  }
+        for (String s : this.propertyStrings) {
+            this.properties.add(this.framework.getProperty(s));
+        }
 
-  @Override
-  public String presentConcreteResult() {
-    String prop = "properties";
-    if (this.properties.size() == 1) {
-      prop = "property";
+        this.result = this.manager.generateComposition(properties);
     }
 
-    List<String> results = new LinkedList<String>();
-    for (SearchResult<DecompositionTree> tree : this.result) {
-      if (tree.hasValue()) {
-        results.add(tree.getValue().toString());
-      }
+    @Override
+    public List<SearchResult<DecompositionTree>> getResult() {
+        return this.result;
     }
 
-    if (results.isEmpty()) {
-      return "No composition found with " + prop + " "
-          + StringUtils.printCollection(this.properties) + ".";
+    @Override
+    public boolean externalSoftwareAvailable() {
+        return (ConfigReader.getInstance().hasJpl());
     }
-    
-    return "Generated the " + this.properties.get(0).getParameters().get(0).getName() 
-        + " \"" + StringUtils.printCollection(results) + "\" with the " + prop + " "
-        + StringUtils.printCollection(this.properties) + ".";
-  }
 
-  @Override
-  public String getDescription() {
-    return "Generating Composition ...";
-  }
+    @Override
+    public String presentConcreteResult() {
+        String prop = "properties";
+        if (this.properties.size() == 1) {
+            prop = "property";
+        }
+
+        List<String> results = new LinkedList<String>();
+        for (SearchResult<DecompositionTree> tree : this.result) {
+            if (tree.hasValue()) {
+                results.add(tree.getValue().toString());
+            }
+        }
+
+        if (results.isEmpty()) {
+            return "No composition found with " + prop + " "
+                    + StringUtils.printCollection(this.properties) + ".";
+        }
+
+        return "Generated the " + this.properties.get(0).getParameters().get(0).getName() + " \""
+                + StringUtils.printCollection(results) + "\" with the " + prop + " "
+                + StringUtils.printCollection(this.properties) + ".";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Generating Composition ...";
+    }
 }

@@ -1,0 +1,272 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Drop{\isacharunderscore}{\kern0pt}Module}%
+%
+\isadelimdocument
+\isanewline
+%
+\endisadelimdocument
+%
+\isatagdocument
+\isanewline
+\isanewline
+%
+\isamarkupsection{Drop Module%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Drop{\isacharunderscore}{\kern0pt}Module\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+This is a family of electoral modules. For a natural number n and a
+lexicon (linear order) r of all alternatives, the according drop module
+rejects the lexicographically first n alternatives (from A) and
+defers the rest.
+It is primarily used as counterpart to the pass module in a
+parallel composition, in order to segment the alternatives into
+two groups.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Definition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{fun}\isamarkupfalse%
+\ drop{\isacharunderscore}{\kern0pt}module\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}nat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Preference{\isacharunderscore}{\kern0pt}Relation\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}drop{\isacharunderscore}{\kern0pt}module\ n\ r\ A\ p\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}a\ {\isasymin}\ A{\isachardot}{\kern0pt}\ card{\isacharparenleft}{\kern0pt}above\ {\isacharparenleft}{\kern0pt}limit\ A\ r{\isacharparenright}{\kern0pt}\ a{\isacharparenright}{\kern0pt}\ {\isasymle}\ n{\isacharbraceright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}a\ {\isasymin}\ A{\isachardot}{\kern0pt}\ card{\isacharparenleft}{\kern0pt}above\ {\isacharparenleft}{\kern0pt}limit\ A\ r{\isacharparenright}{\kern0pt}\ a{\isacharparenright}{\kern0pt}\ {\isachargreater}{\kern0pt}\ n{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Soundness%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{theorem}\isamarkupfalse%
+\ drop{\isacharunderscore}{\kern0pt}mod{\isacharunderscore}{\kern0pt}sound{\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ order{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}linear{\isacharunderscore}{\kern0pt}order\ r{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}electoral{\isacharunderscore}{\kern0pt}module\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isacommand{let}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}mod\ {\isacharequal}{\kern0pt}\ {\isachardoublequoteopen}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isachardoublequoteclose}\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}a\ {\isasymin}\ A{\isachardot}{\kern0pt}\ a\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}x\ {\isasymin}\ A{\isachardot}{\kern0pt}\ card{\isacharparenleft}{\kern0pt}above\ {\isacharparenleft}{\kern0pt}limit\ A\ r{\isacharparenright}{\kern0pt}\ x{\isacharparenright}{\kern0pt}\ {\isasymle}\ n{\isacharbraceright}{\kern0pt}\ {\isasymor}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ a\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}x\ {\isasymin}\ A{\isachardot}{\kern0pt}\ card{\isacharparenleft}{\kern0pt}above\ {\isacharparenleft}{\kern0pt}limit\ A\ r{\isacharparenright}{\kern0pt}\ x{\isacharparenright}{\kern0pt}\ {\isachargreater}{\kern0pt}\ n{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ {\isacharbraceleft}{\kern0pt}a\ {\isasymin}\ A{\isachardot}{\kern0pt}\ card{\isacharparenleft}{\kern0pt}above\ {\isacharparenleft}{\kern0pt}limit\ A\ r{\isacharparenright}{\kern0pt}\ a{\isacharparenright}{\kern0pt}\ {\isasymle}\ n{\isacharbraceright}{\kern0pt}\ {\isasymunion}\isanewline
+\ \ \ \ \ \ \ \ {\isacharbraceleft}{\kern0pt}a\ {\isasymin}\ A{\isachardot}{\kern0pt}\ card{\isacharparenleft}{\kern0pt}above\ {\isacharparenleft}{\kern0pt}limit\ A\ r{\isacharparenright}{\kern0pt}\ a{\isacharparenright}{\kern0pt}\ {\isachargreater}{\kern0pt}\ n{\isacharbraceright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ A{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ {\isadigit{0}}{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ set{\isacharunderscore}{\kern0pt}equals{\isacharunderscore}{\kern0pt}partition\ A\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r\ A\ p{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}a\ {\isasymin}\ A{\isachardot}{\kern0pt}\ {\isasymnot}{\isacharparenleft}{\kern0pt}a\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}x\ {\isasymin}\ A{\isachardot}{\kern0pt}\ card{\isacharparenleft}{\kern0pt}above\ {\isacharparenleft}{\kern0pt}limit\ A\ r{\isacharparenright}{\kern0pt}\ x{\isacharparenright}{\kern0pt}\ {\isasymle}\ n{\isacharbraceright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ a\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}x\ {\isasymin}\ A{\isachardot}{\kern0pt}\ card{\isacharparenleft}{\kern0pt}above\ {\isacharparenleft}{\kern0pt}limit\ A\ r{\isacharparenright}{\kern0pt}\ x{\isacharparenright}{\kern0pt}\ {\isachargreater}{\kern0pt}\ n{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ {\isacharbraceleft}{\kern0pt}a\ {\isasymin}\ A{\isachardot}{\kern0pt}\ card{\isacharparenleft}{\kern0pt}above\ {\isacharparenleft}{\kern0pt}limit\ A\ r{\isacharparenright}{\kern0pt}\ a{\isacharparenright}{\kern0pt}\ {\isasymle}\ n{\isacharbraceright}{\kern0pt}\ {\isasyminter}\isanewline
+\ \ \ \ \ \ \ \ {\isacharbraceleft}{\kern0pt}a\ {\isasymin}\ A{\isachardot}{\kern0pt}\ card{\isacharparenleft}{\kern0pt}above\ {\isacharparenleft}{\kern0pt}limit\ A\ r{\isacharparenright}{\kern0pt}\ a{\isacharparenright}{\kern0pt}\ {\isachargreater}{\kern0pt}\ n{\isacharbraceright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ {\isadigit{1}}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\ disjoint{\isadigit{3}}\ {\isacharparenleft}{\kern0pt}{\isacharquery}{\kern0pt}mod\ A\ p{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{from}\isamarkupfalse%
+\ {\isadigit{0}}\ {\isadigit{1}}\ \isacommand{have}\isamarkupfalse%
+\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ well{\isacharunderscore}{\kern0pt}formed\ A\ {\isacharparenleft}{\kern0pt}{\isacharquery}{\kern0pt}mod\ A\ p{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ well{\isacharunderscore}{\kern0pt}formed\ A\ {\isacharparenleft}{\kern0pt}{\isacharquery}{\kern0pt}mod\ A\ p{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ electoral{\isacharunderscore}{\kern0pt}modI\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ metis\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/verifiedVotingRuleConstruction/theories/Compositional_Framework/Components/Basic_Modules/Drop_Module.thy%:%
+%:%6=3%:%
+%:%11=4%:%
+%:%12=5%:%
+%:%14=8%:%
+%:%30=10%:%
+%:%31=10%:%
+%:%32=11%:%
+%:%33=12%:%
+%:%42=15%:%
+%:%43=16%:%
+%:%44=17%:%
+%:%45=18%:%
+%:%46=19%:%
+%:%47=20%:%
+%:%48=21%:%
+%:%57=23%:%
+%:%67=25%:%
+%:%68=25%:%
+%:%69=26%:%
+%:%79=31%:%
+%:%89=33%:%
+%:%90=33%:%
+%:%91=34%:%
+%:%92=35%:%
+%:%99=36%:%
+%:%100=36%:%
+%:%101=37%:%
+%:%102=37%:%
+%:%103=38%:%
+%:%104=38%:%
+%:%105=39%:%
+%:%107=41%:%
+%:%108=42%:%
+%:%109=42%:%
+%:%110=43%:%
+%:%111=43%:%
+%:%112=44%:%
+%:%114=46%:%
+%:%115=47%:%
+%:%116=47%:%
+%:%117=48%:%
+%:%118=48%:%
+%:%119=49%:%
+%:%120=50%:%
+%:%121=51%:%
+%:%122=51%:%
+%:%123=52%:%
+%:%124=52%:%
+%:%125=53%:%
+%:%127=55%:%
+%:%128=56%:%
+%:%129=56%:%
+%:%130=57%:%
+%:%131=57%:%
+%:%132=58%:%
+%:%134=60%:%
+%:%135=61%:%
+%:%136=61%:%
+%:%137=62%:%
+%:%138=62%:%
+%:%139=63%:%
+%:%140=63%:%
+%:%141=64%:%
+%:%142=64%:%
+%:%143=64%:%
+%:%144=65%:%
+%:%145=66%:%
+%:%146=67%:%
+%:%147=67%:%
+%:%148=68%:%
+%:%149=68%:%
+%:%150=69%:%
+%:%151=70%:%
+%:%152=71%:%
+%:%153=71%:%
+%:%154=72%:%
+%:%155=72%:%
+%:%156=73%:%
+%:%157=73%:%
+%:%158=74%:%
+%:%159=74%:%
+%:%160=75%:%
+%:%166=75%:%
+%:%171=76%:%
+%:%176=77%:%

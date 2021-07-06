@@ -16,101 +16,100 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class VirageSearchManager {
-  private static final Logger logger = LogManager.getLogger(VirageSearchManager.class);
-  private List<CompositionAnalyzer> analyzers;
+    private static final Logger logger = LogManager.getLogger(VirageSearchManager.class);
+    private List<CompositionAnalyzer> analyzers;
 
-  /**
-   * Simple constructor.
-   */
-  public VirageSearchManager() {
-    logger.info("Initialising VirageSearchManager.");
+    /**
+     * Simple constructor.
+     */
+    public VirageSearchManager() {
+        logger.info("Initialising VirageSearchManager.");
 
-    this.analyzers = new LinkedList<CompositionAnalyzer>();
-  }
-
-  /**
-   * Adds an analyzer to the manager.
-
-   * @param analyzer the analyzer
-   */
-  public void addAnalyzer(CompositionAnalyzer analyzer) {
-    this.analyzers.add(analyzer);
-  }
-
-  /**
-   * Calls {@link CompositionAnalyzer#analyzeComposition} on all its analyzers.
-
-   * @param composition the decomposition tree
-   * @param properties the desired property set
-   * @return a list of results, ordered in the same way as the analyzers
-   */
-  public List<List<SearchResult<BooleanWithUncertainty>>> analyzeComposition(
-      DecompositionTree composition, List<Property> properties) {
-    if (this.analyzers.isEmpty()) {
-      throw new IllegalStateException("No analyzers available.");
-    }
-    
-    // TODO Parallelize.
-    List<List<SearchResult<BooleanWithUncertainty>>> results 
-        = new LinkedList<List<SearchResult<BooleanWithUncertainty>>>();
-
-    for (int i = 0; i < this.analyzers.size(); i++) {
-      List<SearchResult<BooleanWithUncertainty>> result = this.analyzers.get(i)
-          .analyzeComposition(composition, properties);
-      results.add(result);
-      logger.debug(result);
+        this.analyzers = new LinkedList<CompositionAnalyzer>();
     }
 
-    return results;
-  }
-
-  /**
-   * Calls {@link CompositionAnalyzer#proveClaims} on all its analyzers.
-
-   * @param composition the decomposition tree
-   * @param properties the proposed property set
-   * @return a list of results, ordered in the same way as the analyzers
-   */
-  public List<List<CompositionProof>> proveClaims(DecompositionTree composition,
-      List<Property> properties) {
-    if (this.analyzers.isEmpty()) {
-      throw new IllegalStateException("No analyzers available.");
-    }
-    
-    // TODO Parallelize.
-    List<List<CompositionProof>> results = new LinkedList<List<CompositionProof>>();
-
-    for (int i = 0; i < this.analyzers.size(); i++) {
-      List<CompositionProof> result = this.analyzers.get(i).proveClaims(composition, properties);
-      results.add(result);
-      logger.debug(result);
+    /**
+     * Adds an analyzer to the manager.
+     * 
+     * @param analyzer the analyzer
+     */
+    public void addAnalyzer(CompositionAnalyzer analyzer) {
+        this.analyzers.add(analyzer);
     }
 
-    return results;
-  }
+    /**
+     * Calls {@link CompositionAnalyzer#analyzeComposition} on all its analyzers.
+     * 
+     * @param composition the decomposition tree
+     * @param properties the desired property set
+     * @return a list of results, ordered in the same way as the analyzers
+     */
+    public List<List<SearchResult<BooleanWithUncertainty>>> analyzeComposition(
+            DecompositionTree composition, List<Property> properties) {
+        if (this.analyzers.isEmpty()) {
+            throw new IllegalStateException("No analyzers available.");
+        }
 
-  /**
-   * Calls {@link CompositionAnalyzer#generateComposition} on all its analyzers.
+        // TODO Parallelize.
+        List<List<SearchResult<BooleanWithUncertainty>>> results = new LinkedList<List<SearchResult<BooleanWithUncertainty>>>();
 
-   * @param properties the desired property set
-   * @return a list of results, ordered in the same way as the analyzers
-   */
-  public List<SearchResult<DecompositionTree>> generateComposition(List<Property> properties) {
-    if (this.analyzers.isEmpty()) {
-      throw new IllegalStateException("No analyzers available.");
+        for (int i = 0; i < this.analyzers.size(); i++) {
+            List<SearchResult<BooleanWithUncertainty>> result = this.analyzers.get(i)
+                    .analyzeComposition(composition, properties);
+            results.add(result);
+            logger.debug(result);
+        }
+
+        return results;
     }
-    
-    // TODO Parallelize.
-    List<SearchResult<DecompositionTree>> results 
-        = new LinkedList<SearchResult<DecompositionTree>>();
 
-    for (int i = 0; i < this.analyzers.size(); i++) {
-      SearchResult<DecompositionTree> result = this.analyzers.get(i)
-          .generateComposition(properties);
-      results.add(result);
-      logger.debug(result);
+    /**
+     * Calls {@link CompositionAnalyzer#proveClaims} on all its analyzers.
+     * 
+     * @param composition the decomposition tree
+     * @param properties the proposed property set
+     * @return a list of results, ordered in the same way as the analyzers
+     */
+    public List<List<CompositionProof>> proveClaims(DecompositionTree composition,
+            List<Property> properties) {
+        if (this.analyzers.isEmpty()) {
+            throw new IllegalStateException("No analyzers available.");
+        }
+
+        // TODO Parallelize.
+        List<List<CompositionProof>> results = new LinkedList<List<CompositionProof>>();
+
+        for (int i = 0; i < this.analyzers.size(); i++) {
+            List<CompositionProof> result = this.analyzers.get(i).proveClaims(composition,
+                    properties);
+            results.add(result);
+            logger.debug(result);
+        }
+
+        return results;
     }
 
-    return results;
-  }
+    /**
+     * Calls {@link CompositionAnalyzer#generateComposition} on all its analyzers.
+     * 
+     * @param properties the desired property set
+     * @return a list of results, ordered in the same way as the analyzers
+     */
+    public List<SearchResult<DecompositionTree>> generateComposition(List<Property> properties) {
+        if (this.analyzers.isEmpty()) {
+            throw new IllegalStateException("No analyzers available.");
+        }
+
+        // TODO Parallelize.
+        List<SearchResult<DecompositionTree>> results = new LinkedList<SearchResult<DecompositionTree>>();
+
+        for (int i = 0; i < this.analyzers.size(); i++) {
+            SearchResult<DecompositionTree> result = this.analyzers.get(i)
+                    .generateComposition(properties);
+            results.add(result);
+            logger.debug(result);
+        }
+
+        return results;
+    }
 }

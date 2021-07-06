@@ -14,35 +14,35 @@ import org.junit.Test;
  *
  */
 public class DecompositionTreeTest {
-  private static final Logger logger = LogManager.getLogger(DecompositionTreeTest.class);
+    private static final Logger logger = LogManager.getLogger(DecompositionTreeTest.class);
 
-  @Test
-  public void testConstruction() {
-    logger.info("testConstruction()");
-    final String tree = "root(b(c,d), e, f(g(h,i)))";
+    @Test
+    public void testConstruction() {
+        logger.info("testConstruction()");
+        final String tree = "root(b(c,d), e, f(g(h,i)))";
 
-    final DecompositionTree c = new DecompositionTree("c");
-    final DecompositionTree d = new DecompositionTree("d");
-    List<DecompositionTree> cd = new LinkedList<DecompositionTree>();
-    cd.add(c);
-    cd.add(d);
-    final DecompositionTree b = new DecompositionTree("b", cd);
-    final DecompositionTree e = new DecompositionTree("e");
-    final DecompositionTree h = new DecompositionTree("h");
-    final DecompositionTree i = new DecompositionTree("i");
-    List<DecompositionTree> hi = new LinkedList<DecompositionTree>();
-    hi.add(h);
-    hi.add(i);
-    DecompositionTree g = new DecompositionTree("g", hi);
-    DecompositionTree f = new DecompositionTree("f", g);
-    List<DecompositionTree> bef = new LinkedList<DecompositionTree>();
-    bef.add(b);
-    bef.add(e);
-    bef.add(f);
-    DecompositionTree root = new DecompositionTree("root", bef);
+        final DecompositionTree c = new DecompositionTree("c");
+        final DecompositionTree d = new DecompositionTree("d");
+        List<DecompositionTree> cd = new LinkedList<DecompositionTree>();
+        cd.add(c);
+        cd.add(d);
+        final DecompositionTree b = new DecompositionTree("b", cd);
+        final DecompositionTree e = new DecompositionTree("e");
+        final DecompositionTree h = new DecompositionTree("h");
+        final DecompositionTree i = new DecompositionTree("i");
+        List<DecompositionTree> hi = new LinkedList<DecompositionTree>();
+        hi.add(h);
+        hi.add(i);
+        DecompositionTree g = new DecompositionTree("g", hi);
+        DecompositionTree f = new DecompositionTree("f", g);
+        List<DecompositionTree> bef = new LinkedList<DecompositionTree>();
+        bef.add(b);
+        bef.add(e);
+        bef.add(f);
+        DecompositionTree root = new DecompositionTree("root", bef);
 
-    DecompositionTree res = DecompositionTree.parseString(tree);
+        DecompositionTree res = DecompositionTree.parseString(tree);
 
-    assertTrue(root.equals(res));
-  }
+        assertTrue(root.equals(res));
+    }
 }

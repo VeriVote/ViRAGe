@@ -1,0 +1,233 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Revision{\isacharunderscore}{\kern0pt}Composition}%
+%
+\isadelimdocument
+\isanewline
+%
+\endisadelimdocument
+%
+\isatagdocument
+\isanewline
+\isanewline
+%
+\isamarkupsection{Revision Composition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Revision{\isacharunderscore}{\kern0pt}Composition\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+A revised electoral module rejects all originally rejected or deferred
+alternatives, and defers the originally elected alternatives.
+It does not elect any alternatives.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Definition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{fun}\isamarkupfalse%
+\ revision{\isacharunderscore}{\kern0pt}composition\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}revision{\isacharunderscore}{\kern0pt}composition\ m\ A\ p\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isacharcomma}{\kern0pt}\ A\ {\isacharminus}{\kern0pt}\ elect\ m\ A\ p{\isacharcomma}{\kern0pt}\ elect\ m\ A\ p{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{abbreviation}\isamarkupfalse%
+\ rev\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+{\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ {\isacharparenleft}{\kern0pt}{\isachardoublequoteopen}{\isacharunderscore}{\kern0pt}{\isasymdown}{\isachardoublequoteclose}\ {\isadigit{5}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}m{\isasymdown}\ {\isacharequal}{\kern0pt}{\isacharequal}{\kern0pt}\ revision{\isacharunderscore}{\kern0pt}composition\ m{\isachardoublequoteclose}%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Soundness%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{theorem}\isamarkupfalse%
+\ rev{\isacharunderscore}{\kern0pt}comp{\isacharunderscore}{\kern0pt}sound{\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ module{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}electoral{\isacharunderscore}{\kern0pt}module\ m{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}electoral{\isacharunderscore}{\kern0pt}module\ {\isacharparenleft}{\kern0pt}revision{\isacharunderscore}{\kern0pt}composition\ m{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isacommand{from}\isamarkupfalse%
+\ module\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\ elect\ m\ A\ p\ {\isasymsubseteq}\ A{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ elect{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}alts\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\ {\isacharparenleft}{\kern0pt}A\ {\isacharminus}{\kern0pt}\ elect\ m\ A\ p{\isacharparenright}{\kern0pt}\ {\isasymunion}\ elect\ m\ A\ p\ {\isacharequal}{\kern0pt}\ A{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ unity{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ set{\isacharunderscore}{\kern0pt}equals{\isacharunderscore}{\kern0pt}partition\ A\ {\isacharparenleft}{\kern0pt}revision{\isacharunderscore}{\kern0pt}composition\ m\ A\ p{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\ {\isacharparenleft}{\kern0pt}A\ {\isacharminus}{\kern0pt}\ elect\ m\ A\ p{\isacharparenright}{\kern0pt}\ {\isasyminter}\ elect\ m\ A\ p\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ disjoint{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\ disjoint{\isadigit{3}}\ {\isacharparenleft}{\kern0pt}revision{\isacharunderscore}{\kern0pt}composition\ m\ A\ p{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{from}\isamarkupfalse%
+\ unity\ disjoint\ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ electoral{\isacharunderscore}{\kern0pt}modI{\isacharparenright}{\kern0pt}\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Composition Rules%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/verifiedVotingRuleConstruction/theories/Compositional_Framework/Components/Compositional_Structures/Revision_Composition.thy%:%
+%:%6=3%:%
+%:%11=4%:%
+%:%12=5%:%
+%:%14=8%:%
+%:%30=10%:%
+%:%31=10%:%
+%:%32=11%:%
+%:%33=12%:%
+%:%42=15%:%
+%:%43=16%:%
+%:%44=17%:%
+%:%53=19%:%
+%:%63=21%:%
+%:%64=21%:%
+%:%65=22%:%
+%:%66=23%:%
+%:%67=24%:%
+%:%68=24%:%
+%:%69=25%:%
+%:%70=26%:%
+%:%77=28%:%
+%:%87=30%:%
+%:%88=30%:%
+%:%89=31%:%
+%:%90=32%:%
+%:%97=33%:%
+%:%98=33%:%
+%:%99=34%:%
+%:%100=34%:%
+%:%101=34%:%
+%:%102=35%:%
+%:%103=35%:%
+%:%104=36%:%
+%:%105=36%:%
+%:%106=37%:%
+%:%107=37%:%
+%:%108=38%:%
+%:%109=38%:%
+%:%110=39%:%
+%:%111=39%:%
+%:%112=40%:%
+%:%113=41%:%
+%:%114=42%:%
+%:%115=42%:%
+%:%116=43%:%
+%:%117=43%:%
+%:%118=44%:%
+%:%119=44%:%
+%:%120=45%:%
+%:%121=45%:%
+%:%122=46%:%
+%:%123=47%:%
+%:%124=47%:%
+%:%125=48%:%
+%:%126=48%:%
+%:%127=48%:%
+%:%128=49%:%
+%:%129=49%:%
+%:%130=50%:%
+%:%145=52%:%
+%:%161=58%:%

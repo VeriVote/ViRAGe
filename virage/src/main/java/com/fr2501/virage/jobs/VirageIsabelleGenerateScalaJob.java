@@ -10,41 +10,41 @@ import java.io.File;
  *
  */
 public class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<File> {
-  private IsabelleCodeGenerator generator;
+    private IsabelleCodeGenerator generator;
 
-  private String composition;
+    private String composition;
 
-  /**
-   * Simple constructor.
+    /**
+     * Simple constructor.
+     * 
+     * @param issuer the issuing ui
+     * @param composition the composition
+     */
+    public VirageIsabelleGenerateScalaJob(VirageUserInterface issuer, String composition) {
+        super(issuer);
 
-   * @param issuer the issuing ui
-   * @param composition the composition
-   */
-  public VirageIsabelleGenerateScalaJob(VirageUserInterface issuer, String composition) {
-    super(issuer);
+        this.composition = composition;
+    }
 
-    this.composition = composition;
-  }
+    @Override
+    protected void concreteExecute() throws Exception {
+        this.generator = this.executingCore.getIsabelleCodeGenerator();
 
-  @Override
-  protected void concreteExecute() throws Exception {
-    this.generator = this.executingCore.getIsabelleCodeGenerator();
+        this.result = this.generator.generateScalaCodeAndCompile(this.composition);
+    }
 
-    this.result = this.generator.generateScalaCodeAndCompile(this.composition);
-  }
+    @Override
+    public boolean externalSoftwareAvailable() {
+        return (ConfigReader.getInstance().hasIsabelle());
+    }
 
-  @Override
-  public boolean externalSoftwareAvailable() {
-    return (ConfigReader.getInstance().hasIsabelle());
-  }
+    @Override
+    public String presentConcreteResult() {
+        return "Created executable JAR file at " + this.result + ".";
+    }
 
-  @Override
-  public String presentConcreteResult() {
-    return "Created executable JAR file at " + this.result + ".";
-  }
-
-  @Override
-  public String getDescription() {
-    return "Generating and compiling Scala code ...";
-  }
+    @Override
+    public String getDescription() {
+        return "Generating and compiling Scala code ...";
+    }
 }

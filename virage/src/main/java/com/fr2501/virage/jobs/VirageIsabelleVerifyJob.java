@@ -11,49 +11,49 @@ import java.io.File;
  *
  */
 public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Boolean, File>> {
-  private IsabelleProofChecker checker;
+    private IsabelleProofChecker checker;
 
-  private File file;
+    private File file;
 
-  /**
-   * Simple constructor.
+    /**
+     * Simple constructor.
+     * 
+     * @param issuer the issuing ui
+     * @param file the file
+     */
+    public VirageIsabelleVerifyJob(VirageUserInterface issuer, File file) {
+        super(issuer);
 
-   * @param issuer the issuing ui
-   * @param file the file
-   */
-  public VirageIsabelleVerifyJob(VirageUserInterface issuer, File file) {
-    super(issuer);
-
-    this.file = file;
-  }
-
-  @Override
-  protected void concreteExecute() throws Exception {
-    this.checker = this.executingCore.getIsabelleProofChecker();
-
-    this.result = this.checker.verifyTheoryFile(this.file,
-        this.executingCore.getFrameworkRepresentation());
-  }
-
-  @Override
-  public boolean externalSoftwareAvailable() {
-    return (ConfigReader.getInstance().hasIsabelle());
-  }
-
-  @Override
-  public String presentConcreteResult() {
-    if (this.result.getFirstValue()) {
-      return "Isabelle theory " + this.result.getSecondValue().getAbsolutePath() 
-          + " was verified successfully.";
-    } else {
-      return "Verification of Isabelle theory " + this.result.getSecondValue().getAbsolutePath() 
-          + " failed.";
+        this.file = file;
     }
-  }
 
-  @Override
-  public String getDescription() {
-    return "Verifying Isabelle theory ...";
-  }
+    @Override
+    protected void concreteExecute() throws Exception {
+        this.checker = this.executingCore.getIsabelleProofChecker();
+
+        this.result = this.checker.verifyTheoryFile(this.file,
+                this.executingCore.getFrameworkRepresentation());
+    }
+
+    @Override
+    public boolean externalSoftwareAvailable() {
+        return (ConfigReader.getInstance().hasIsabelle());
+    }
+
+    @Override
+    public String presentConcreteResult() {
+        if (this.result.getFirstValue()) {
+            return "Isabelle theory " + this.result.getSecondValue().getAbsolutePath()
+                    + " was verified successfully.";
+        } else {
+            return "Verification of Isabelle theory "
+                    + this.result.getSecondValue().getAbsolutePath() + " failed.";
+        }
+    }
+
+    @Override
+    public String getDescription() {
+        return "Verifying Isabelle theory ...";
+    }
 
 }

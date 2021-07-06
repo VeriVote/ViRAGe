@@ -18,55 +18,56 @@ import org.junit.Test;
  *
  */
 public class ExtendedPrologParserTest {
-  private Logger logger = LogManager.getLogger(ExtendedPrologParserTest.class);
+    private Logger logger = LogManager.getLogger(ExtendedPrologParserTest.class);
 
-  @Test(expected = FileNotFoundException.class)
-  public void loadNonExistingFile() throws IOException, MalformedEplFileException {
-    logger.info("loadNonExistingFile()");
-    ExtendedPrologParser parser = new SimpleExtendedPrologParser();
+    @Test(expected = FileNotFoundException.class)
+    public void loadNonExistingFile() throws IOException, MalformedEplFileException {
+        logger.info("loadNonExistingFile()");
+        ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
-    parser.parseFramework(new File(""), false);
-  }
+        parser.parseFramework(new File(""), false);
+    }
 
-  @Test(expected = MalformedEplFileException.class)
-  public void loadInvalidFile() throws IOException, MalformedEplFileException {
-    logger.info("loadInvalidFile()");
-    ExtendedPrologParser parser = new SimpleExtendedPrologParser();
+    @Test(expected = MalformedEplFileException.class)
+    public void loadInvalidFile() throws IOException, MalformedEplFileException {
+        logger.info("loadInvalidFile()");
+        ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
-    parser.parseFramework(new File("src/test/resources/invalid_test.pl"), false);
-  }
+        parser.parseFramework(new File("src/test/resources/invalid_test.pl"), false);
+    }
 
-  /*
-   * @Test This test now depends heavily depends on the config file, so it is no longer meaningful.
-   */
-  /**
-   * Tests the loading process of a valid EPL file.
+    /*
+     * @Test This test now depends heavily depends on the config file, so it is no longer
+     * meaningful.
+     */
+    /**
+     * Tests the loading process of a valid EPL file.
+     * 
+     * @throws IOException if file interaction fails
+     * @throws MalformedEplFileException if the file violates the EPL format
+     */
+    public void loadValidFile() throws IOException, MalformedEplFileException {
+        logger.info("loadValidFile()");
+        ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
-   * @throws IOException if file interaction fails
-   * @throws MalformedEplFileException if the file violates the EPL format
-   */
-  public void loadValidFile() throws IOException, MalformedEplFileException {
-    logger.info("loadValidFile()");
-    ExtendedPrologParser parser = new SimpleExtendedPrologParser();
+        FrameworkRepresentation framework = parser
+                .parseFramework(new File("src/test/resources/valid_test.pl"), false);
 
-    FrameworkRepresentation framework = parser
-        .parseFramework(new File("src/test/resources/valid_test.pl"), false);
+        // The first assertion now depends on a config file.
+        // assertTrue(framework.getComponentTypes().size() == 3);
+        assertTrue(framework.getComponents().size() == 3);
+        assertTrue(framework.getComposableModules().size() == 0);
+        assertTrue(framework.getProperties().size() == 3);
+        assertTrue(framework.getCompositionRules().size() == 4);
+    }
 
-    // The first assertion now depends on a config file.
-    // assertTrue(framework.getComponentTypes().size() == 3);
-    assertTrue(framework.getComponents().size() == 3);
-    assertTrue(framework.getComposableModules().size() == 0);
-    assertTrue(framework.getProperties().size() == 3);
-    assertTrue(framework.getCompositionRules().size() == 4);
-  }
+    @Test
+    public void loadFrameworkFile() throws IOException, MalformedEplFileException {
+        logger.info("loadFrameworkFile()");
+        ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
-  @Test
-  public void loadFrameworkFile() throws IOException, MalformedEplFileException {
-    logger.info("loadFrameworkFile()");
-    ExtendedPrologParser parser = new SimpleExtendedPrologParser();
-
-    FrameworkRepresentation framework = parser
-        .parseFramework(new File("src/test/resources/framework.pl"), false);
-    logger.debug(framework.toString());
-  }
+        FrameworkRepresentation framework = parser
+                .parseFramework(new File("src/test/resources/framework.pl"), false);
+        logger.debug(framework.toString());
+    }
 }

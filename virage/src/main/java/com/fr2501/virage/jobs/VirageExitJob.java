@@ -7,37 +7,37 @@ import com.fr2501.virage.core.VirageUserInterface;
  *
  */
 public class VirageExitJob extends VirageJobWithoutExplicitResult {
-  private int statusCode;
+    private int statusCode;
 
-  /**
-   * Simple constructor.
+    /**
+     * Simple constructor.
+     * 
+     * @param issuer the issuer
+     * @param statusCode the intended exit code
+     */
+    public VirageExitJob(VirageUserInterface issuer, int statusCode) {
+        super(issuer);
 
-   * @param issuer the issuer
-   * @param statusCode the intended exit code
-   */
-  public VirageExitJob(VirageUserInterface issuer, int statusCode) {
-    super(issuer);
+        this.statusCode = statusCode;
+    }
 
-    this.statusCode = statusCode;
-  }
+    @Override
+    public void concreteExecute() {
+        this.executingCore.destroy(this.statusCode);
+    }
 
-  @Override
-  public void concreteExecute() {
-    this.executingCore.destroy(this.statusCode);
-  }
+    @Override
+    public boolean externalSoftwareAvailable() {
+        return true;
+    }
 
-  @Override
-  public boolean externalSoftwareAvailable() {
-    return true;
-  }
+    @Override
+    public String presentConcreteResult() {
+        return "Terminated with exit code " + this.statusCode + ".";
+    }
 
-  @Override
-  public String presentConcreteResult() {
-    return "Terminated with exit code " + this.statusCode + ".";
-  }
-
-  @Override
-  public String getDescription() {
-    return "Terminating ...";
-  }
+    @Override
+    public String getDescription() {
+        return "Terminating ...";
+    }
 }

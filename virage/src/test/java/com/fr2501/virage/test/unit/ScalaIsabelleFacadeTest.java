@@ -10,12 +10,12 @@ import org.junit.Test;
  *
  */
 public class ScalaIsabelleFacadeTest {
-  @Test
-  public void simpleTest()
-      throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
-    @SuppressWarnings("unused")
-    ScalaIsabelleFacade facade = new ScalaIsabelleFacade(
-        "src/test/resources/verifiedVotingRuleConstruction/theories",
-        "Verified_Voting_Rule_Construction");
-  }
+    @Test
+    public void simpleTest()
+            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+        @SuppressWarnings("unused")
+        ScalaIsabelleFacade facade = new ScalaIsabelleFacade(
+                "src/test/resources/verifiedVotingRuleConstruction/theories",
+                "Verified_Voting_Rule_Construction");
+    }
 }

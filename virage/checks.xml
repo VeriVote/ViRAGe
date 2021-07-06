@@ -1,492 +1,506 @@
 <?xml version="1.0"?>
 <!DOCTYPE module PUBLIC
           "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-          "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+          "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
-<!-- Checkstyle configuration that checks sensible coding conventions from: 
-	- https://www.key-project.org/gitlab/key/KeY/wikis/Code-Conventions - the 
-	Java Language Specification at https://docs.oracle.com/javase/specs/jls/se11/html/index.html 
-	- the Sun Code Conventions at https://www.oracle.com/technetwork/java/codeconvtoc-136057.html 
-	- the Javadoc guidelines at https://www.oracle.com/technetwork/java/javase/documentation/index-137868.html 
-	- the JDK Api documentation https://docs.oracle.com/en/java/javase/11/ - 
-	some best practices Checkstyle is very configurable. Be sure to read the 
-	documentation at https://checkstyle.org (or in your downloaded distribution). 
-	Most Checks are configurable, be sure to consult the documentation. To completely 
-	disable a check, just comment it out or delete it from the file. To suppress 
-	certain violations please review suppression filters. Finally, it is worth 
-	reading the documentation. -->
+<!--
+
+  Checkstyle configuration that checks sensible coding conventions from:
+
+    - https://www.key-project.org/gitlab/key/KeY/wikis/Code-Conventions
+
+    - the Java Language Specification at
+      https://docs.oracle.com/javase/specs/jls/se11/html/index.html
+
+    - the Sun Code Conventions at https://www.oracle.com/technetwork/java/codeconvtoc-136057.html
+
+    - the Javadoc guidelines at
+      https://www.oracle.com/technetwork/java/javase/documentation/index-137868.html
+
+    - the JDK Api documentation https://docs.oracle.com/en/java/javase/11/
+
+    - some best practices
+
+  Checkstyle is very configurable. Be sure to read the documentation at
+  https://checkstyle.org (or in your downloaded distribution).
+
+  Most Checks are configurable, be sure to consult the documentation.
+
+  To completely disable a check, just comment it out or delete it from the file.
+  To suppress certain violations please review suppression filters.
+
+  Finally, it is worth reading the documentation.
+
+-->
 <module name="Checker">
-	<property name="charset" value="UTF-8" />
-	<property name="localeLanguage" value="en" />
-	<property name="severity" value="warning" />
-	<property name="fileExtensions"
-		value="java, properties, xml, vm, g, g4, dtd" />
+    <property name="charset" value="UTF-8"/>
+    <property name="localeLanguage" value="en"/>
+    <property name="severity" value="warning"/>
+    <property name="fileExtensions" value="java, properties, xml, vm, g, g4, dtd"/>
 
-	<metadata name="org.checkstyle.principle"
-		value="Practice What You Preach" />
-	<metadata name="org.checkstyle.principle.description"
-		value="In our config we should use all Checks that Checkstyle has" />
+    <metadata name="org.checkstyle.principle" value="Practice What You Preach"/>
+    <metadata name="org.checkstyle.principle.description"
+              value="In our config we should use all Checks that Checkstyle has"/>
 
-	<property name="cacheFile" value="${checkstyle.cache.file}" />
+    <property name="cacheFile" value="${checkstyle.cache.file}"/>
 
-	<!-- Excludes all 'module-info.java' files -->
-	<!-- See https://checkstyle.org/config_filefilters.html -->
-	<module name="BeforeExecutionExclusionFileFilter">
-		<property name="fileNamePattern" value="module\-info\.java$" />
-	</module>
+    <!-- Excludes all 'module-info.java' files              -->
+    <!-- See https://checkstyle.org/config_filefilters.html -->
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" value="module\-info\.java$"/>
+    </module>
 
-	<!-- If you set the basedir property below, then all reported file names 
-		will be relative to the specified directory. See http://checkstyle.sourceforge.net/5.x/config.html#Checker -->
-	<!--KeY <property name="basedir" value="${home.dir}"/> -->
+    <!--
+        If you set the basedir property below, then all reported file
+        names will be relative to the specified directory. See
+        http://checkstyle.sourceforge.net/5.x/config.html#Checker
+    -->
+    <!--KeY <property name="basedir" value="${home.dir}"/> -->
 
-	<!--Headers -->
-	<!--module name="Header"> <property name="headerFile" value="${checkstyle.header.file}"/> 
-		<property name="fileExtensions" value="java"/> <property name="id" value="header"/> 
-		</module> <module name="RegexpHeader"> <property name="headerFile" value="${checkstyle.regexp.header.file}"/> 
-		<property name="fileExtensions" value="java"/> </module -->
+    <!--Headers -->
+    <!--module name="Header">
+        <property name="headerFile" value="${checkstyle.header.file}"/>
+        <property name="fileExtensions" value="java"/>
+        <property name="id" value="header"/>
+    </module>
+    <module name="RegexpHeader">
+        <property name="headerFile" value="${checkstyle.regexp.header.file}"/>
+        <property name="fileExtensions" value="java"/>
+    </module -->
 
-	<!--Miscellaneous -->
-	<module name="UniqueProperties" />
+    <!--Miscellaneous -->
+    <module name="UniqueProperties"/>
 
-	<!-- This is a filter written for KeY which restricts checks to those files 
-		that have been recently touched. The git-diff file defines what "has been 
-		touched" means. See GitDiffFilter.java for details. -->
-	<!--KeY <module name="GitDiffFilter"> -->
-	<!--KeY <property name="diffFilename" value="${diff.file}"/> -->
-	<!--KeY </module> -->
+    <!--
+        This is a filter written for KeY which restricts checks to those
+        files that have been recently touched.
+        The git-diff file defines what "has been touched" means.
+        See GitDiffFilter.java for details.
+    -->
+    <!--KeY <module name="GitDiffFilter"> -->
+    <!--KeY   <property name="diffFilename" value="${diff.file}"/> -->
+    <!--KeY </module> -->
 
-	<!--Checks that a package-info.java file exists for each package. -->
-	<!--See https://checkstyle.org/config_javadoc.html#JavadocPackage -->
-	<module name="JavadocPackage" />
+    <!--Checks that a package-info.java file exists for each package. -->
+    <!--See https://checkstyle.org/config_javadoc.html#JavadocPackage -->
+    <module name="JavadocPackage"/>
 
-	<!--Checks whether files end with a new line. -->
-	<!--See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
-	<module name="NewlineAtEndOfFile">
-		<property name="severity" value="info" />
-	</module>
+    <!--Checks whether files end with a new line. -->
+    <!--See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
+    <module name="NewlineAtEndOfFile">
+        <property name="severity" value="info"/>
+    </module>
 
-	<!--Checks that property files contain the same keys. -->
-	<!--See https://checkstyle.org/config_misc.html#Translation -->
-	<module name="Translation" />
+    <!--Checks that property files contain the same keys. -->
+    <!--See https://checkstyle.org/config_misc.html#Translation -->
+    <module name="Translation"/>
 
-	<!--Checks for Size Violations. -->
-	<!--See http://checkstyle.sf.net/config_sizes.html -->
-	<module name="FileLength">
-		<property name="fileExtensions" value="java" />
-		<property name="severity" value="info" />
-	</module>
+    <!--Checks for Size Violations. -->
+    <!--See http://checkstyle.sf.net/config_sizes.html -->
+    <module name="FileLength">
+        <property name="fileExtensions" value="java"/>
+        <property name="severity" value="info"/>
+    </module>
 
-	<module name="LineLength">
-		<property name="max" value="100" />
-		<property name="fileExtensions" value="java" />
-	</module>
+    <module name="LineLength">
+        <property name="max" value="100"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
 
-	<!--Checks for whitespace -->
-	<!--See http://checkstyle.sf.net/config_whitespace.html -->
-	<module name="FileTabCharacter">
-		<property name="eachLine" value="true" />
-	</module>
+    <!--Checks for whitespace -->
+    <!--See http://checkstyle.sf.net/config_whitespace.html -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
 
-	<!--Miscellaneous other checks. -->
-	<!--See http://checkstyle.sf.net/config_misc.html -->
-	<!--Regexp -->
-	<module name="RegexpSingleline">   <!-- -tr-spaces -->
-		<property name="severity" value="warning" />
-		<property name="format" value="\s+$" />
-		<property name="minimum" value="0" />
-		<property name="maximum" value="0" />
-		<property name="message" value="Line has trailing spaces." />
-	</module>
+    <!--Miscellaneous other checks. -->
+    <!--See http://checkstyle.sf.net/config_misc.html -->
+    <!--Regexp -->
+    <module name="RegexpSingleline">   <!-- -tr-spaces -->
+        <property name="severity" value="warning"/>
+        <property name="format" value="\s+$"/>
+        <property name="minimum" value="0"/>
+        <property name="maximum" value="0"/>
+        <property name="message" value="Line has trailing spaces."/>
+    </module>
 
-	<!-- Regexp -->
-	<module name="RegexpMultiline">
-		<property name="format" value="\r?\n[\t ]*\r?\n[\t ]*\r?\n" />
-		<property name="fileExtensions" value="java,xml,properties" />
-		<property name="message"
-			value="Unnecessary consecutive lines" />
-	</module>
-	<module name="RegexpMultiline">
-		<property name="format" value="/\*\*\W+\* +\p{javaLowerCase}" />
-		<property name="fileExtensions" value="java" />
-		<property name="message"
-			value="First sentence in a comment should start with a capital letter" />
-	</module>
-	<module name="RegexpSingleline">
-		<property name="format" value="/\*\* +\p{javaLowerCase}" />
-		<property name="fileExtensions" value="java" />
-		<property name="message"
-			value="First sentence in a comment should start with a capital letter" />
-	</module>
-	<module name="RegexpSingleline">
-		<property name="format" value="^(?!(.*http|import)).{101,}$" />
-		<property name="fileExtensions" value="g, g4" />
-		<property name="message"
-			value="Line should not be longer then 100 symbols" />
-	</module>
-	<module name="RegexpSingleline">
-		<property name="format"
-			value="^(?!(.*href=&quot;|.*http)).{101,}$" />
-		<property name="fileExtensions" value="xml, vm" />
-		<property name="message"
-			value="Line should not be longer then 100 symbols" />
-	</module>
-	<module name="RegexpOnFilename" />
-	<module name="RegexpOnFilename">
-		<property name="folderPattern"
-			value="[\\/]src[\\/]\w+[\\/]java[\\/]" />
-		<property name="fileNamePattern" value="\.java$" />
-		<property name="match" value="false" />
-		<message key="regexp.filepath.mismatch"
-			value="Only java files should be located in the ''src/*/java'' folders." />
-	</module>
-	<module name="RegexpOnFilename">
-		<property name="folderPattern"
-			value="[\\/]src[\\/]xdocs[\\/]" />
-		<property name="fileNamePattern" value="\.(xml)|(vm)$" />
-		<property name="match" value="false" />
-		<message key="regexp.filepath.mismatch"
-			value="All files in the ''src/xdocs'' folder should have the ''xml'' or ''vm'' extension." />
-	</module>
-	<module name="RegexpOnFilename">
-		<property name="folderPattern"
-			value="[\\/]src[\\/]it[\\/]java[\\/]" />
-		<property name="fileNamePattern"
-			value="^((\w+Test)|(\w+TestSupport)|(Abstract\w+))\.java$" />
-		<property name="match" value="false" />
-		<message key="regexp.filepath.mismatch"
-			value="All files in the ''src/it/java'' folder
-                        should be named ''*Test.java'' or ''Abstract*.java''." />
-	</module>
+    <!-- Regexp -->
+    <module name="RegexpMultiline">
+        <property name="format" value="\r?\n[\t ]*\r?\n[\t ]*\r?\n"/>
+        <property name="fileExtensions" value="java,xml,properties"/>
+        <property name="message" value="Unnecessary consecutive lines"/>
+    </module>
+    <module name="RegexpMultiline">
+        <property name="format" value="/\*\*\W+\* +\p{javaLowerCase}"/>
+        <property name="fileExtensions" value="java"/>
+        <property name="message"
+                  value="First sentence in a comment should start with a capital letter"/>
+    </module>
+    <module name="RegexpSingleline">
+        <property name="format" value="/\*\* +\p{javaLowerCase}"/>
+        <property name="fileExtensions" value="java"/>
+        <property name="message"
+                  value="First sentence in a comment should start with a capital letter"/>
+    </module>
+    <module name="RegexpSingleline">
+        <property name="format" value="^(?!(.*http|import)).{101,}$"/>
+        <property name="fileExtensions" value="g, g4"/>
+        <property name="message" value="Line should not be longer then 100 symbols"/>
+    </module>
+    <module name="RegexpSingleline">
+        <property name="format" value="^(?!(.*href=&quot;|.*http)).{101,}$"/>
+        <property name="fileExtensions" value="xml, vm"/>
+        <property name="message" value="Line should not be longer then 100 symbols"/>
+    </module>
+    <module name="RegexpOnFilename" />
+    <module name="RegexpOnFilename">
+        <property name="folderPattern" value="[\\/]src[\\/]\w+[\\/]java[\\/]"/>
+        <property name="fileNamePattern" value="\.java$"/>
+        <property name="match" value="false"/>
+        <message key="regexp.filepath.mismatch"
+                 value="Only java files should be located in the ''src/*/java'' folders."/>
+    </module>
+    <module name="RegexpOnFilename">
+        <property name="folderPattern" value="[\\/]src[\\/]xdocs[\\/]"/>
+        <property name="fileNamePattern" value="\.(xml)|(vm)$"/>
+        <property name="match" value="false"/>
+        <message key="regexp.filepath.mismatch"
+                 value="All files in the ''src/xdocs'' folder should have the ''xml'' or ''vm'' extension."/>
+    </module>
+    <module name="RegexpOnFilename">
+        <property name="folderPattern" value="[\\/]src[\\/]it[\\/]java[\\/]"/>
+        <property name="fileNamePattern" value="^((\w+Test)|(\w+TestSupport)|(Abstract\w+))\.java$"/>
+        <property name="match" value="false"/>
+        <message key="regexp.filepath.mismatch"
+                 value="All files in the ''src/it/java'' folder
+                        should be named ''*Test.java'' or ''Abstract*.java''."/>
+    </module>
 
 
-	<module name="TreeWalker">
-		<property name="tabWidth" value="4" />
+    <module name="TreeWalker">
+      <property name="tabWidth" value="4"/>
 
-		<module name="MissingOverride">
-			<property name="javaFiveCompatibility" value="true" />
-		</module>
+      <module name="MissingOverride">
+          <property name="javaFiveCompatibility" value="true"/>
+      </module>
 
-		<module name="PackageAnnotation" />
+      <module name="PackageAnnotation"/>
 
-		<!--required for SuppressWarningsFilter (and other Suppress* rules not 
-			used here) -->
-		<!--see http://checkstyle.sourceforge.net/config_annotation.html#SuppressWarningsHolder -->
-		<module name="SuppressWarningsHolder" />
+      <!--required for SuppressWarningsFilter (and other Suppress* rules not used here) -->
+      <!--see http://checkstyle.sourceforge.net/config_annotation.html#SuppressWarningsHolder -->
+      <module name="SuppressWarningsHolder"/>
 
-		<!--Checks for Javadoc comments. -->
-		<!--See http://checkstyle.sf.net/config_javadoc.html -->
-		<module name="InvalidJavadocPosition" />
-		<module name="JavadocMethod">
-			<property name="allowedAnnotations"
-				value="Override,ParameterizedTest,Before,BeforeClass,BeforeEach,BeforeAll,After,AfterClass,AfterEach,AfterAll,DisplayName" />
-		</module>
-		<module name="MissingJavadocMethod">
-			<!--getter and setter need not necessarily be documented ... -->
-			<property name="allowMissingPropertyJavadoc" value="true" />
-			<property name="allowedAnnotations"
-				value="Override,ParameterizedTest,Before,BeforeClass,BeforeEach,BeforeAll,After,AfterClass,AfterEach,AfterAll,DisplayName" />
-			<property name="scope" value="package" />
-		</module>
-		<module name="JavadocType">
-			<property name="scope" value="package" />
-			<property name="authorFormat" value="\S" />
-		</module>
-		<module name="JavadocVariable" />
-		<module name="JavadocStyle">
-			<property name="checkFirstSentence" value="false" />
-		</module>
+      <!--Checks for Javadoc comments. -->
+      <!--See http://checkstyle.sf.net/config_javadoc.html -->
+      <module name="InvalidJavadocPosition"/>
+      <module name="JavadocMethod">
+          <property name="allowedAnnotations"
+                    value="Override,ParameterizedTest,Before,BeforeClass,BeforeEach,BeforeAll,After,AfterClass,AfterEach,AfterAll,DisplayName"/>
+      </module>
+      <module name="MissingJavadocMethod">
+          <!--getter and setter need not necessarily be documented ... -->
+          <property name="allowMissingPropertyJavadoc" value="true"/>
+          <property name="allowedAnnotations"
+                    value="Override,ParameterizedTest,Before,BeforeClass,BeforeEach,BeforeAll,After,AfterClass,AfterEach,AfterAll,DisplayName"/>
+          <property name="scope" value="package"/>
+      </module>
+      <module name="JavadocType">
+          <property name="scope" value="package"/>
+          <property name="authorFormat" value="\S"/>
+      </module>
+      <module name="JavadocVariable"/>
+      <module name="JavadocStyle">
+          <property name="checkFirstSentence" value="false"/>
+      </module>
 
-		<!--Checks for Naming Conventions. -->
-		<!--See http://checkstyle.sf.net/config_naming.html -->
-		<module name="ConstantName" />
-		<module name="LocalFinalVariableName" />
-		<module name="LocalVariableName" />
-		<module name="ClassTypeParameterName" />
-		<module name="InterfaceTypeParameterName" />
-		<module name="MethodTypeParameterName" />
-		<module name="MemberName" />
-		<module name="MethodName" />
-		<module name="PackageName" />
-		<module name="ParameterName" />
-		<module name="StaticVariableName" />
-		<module name="TypeName">
-			<!--This only applies to packages outside eclipse! -->
-			<property name="format"
-				value="^(I[a-z]|[A-HJ-Z])[a-zA-Z0-9]+$" />
-		</module>
+      <!--Checks for Naming Conventions. -->
+      <!--See http://checkstyle.sf.net/config_naming.html -->
+      <module name="ConstantName"/>
+      <module name="LocalFinalVariableName"/>
+      <module name="LocalVariableName"/>
+      <module name="ClassTypeParameterName"/>
+      <module name="InterfaceTypeParameterName"/>
+      <module name="MethodTypeParameterName"/>
+      <module name="MemberName"/>
+      <module name="MethodName"/>
+      <module name="PackageName"/>
+      <module name="ParameterName"/>
+      <module name="StaticVariableName"/>
+      <module name="TypeName">
+          <!--This only applies to packages outside eclipse! -->
+          <property name="format" value="^(I[a-z]|[A-HJ-Z])[a-zA-Z0-9]+$"/>
+      </module>
 
-		<!--Checks for imports -->
-		<!--See https://checkstyle.org/config_import.html -->
-		<module name="AvoidStarImport" />
-		<module name="IllegalImport" /> <!--defaults to sun.* packages -->
+      <!--Checks for imports -->
+      <!--See https://checkstyle.org/config_import.html -->
+      <module name="AvoidStarImport"/>
+      <module name="IllegalImport"/> <!--defaults to sun.* packages -->
 
-		<module name="ImportOrder">
-			<property name="staticGroups"
-				value="java,javax,javafx,org,com" />
-			<property name="groups"
-				value="/^java\./,javax,javafx,org,com" />
-			<property name="useContainerOrderingForStatic" value="true" />
-			<property name="ordered" value="true" />
-			<property name="separated" value="true" />
-			<property name="separatedStaticGroups" value="true" />
-			<property name="option" value="top" />
-			<property name="sortStaticImportsAlphabetically"
-				value="true" />
-		</module>
+      <module name="ImportOrder">
+          <property name="staticGroups" value="java,javax,javafx,org,com"/>
+          <property name="groups" value="/^java\./,javax,javafx,org,com"/>
+          <property name="useContainerOrderingForStatic" value="true"/>
+          <property name="ordered" value="true"/>
+          <property name="separated" value="true"/>
+          <property name="separatedStaticGroups" value="true"/>
+          <property name="option" value="top"/>
+          <property name="sortStaticImportsAlphabetically" value="true"/>
+      </module>
 
-		<module name="RedundantImport" />
-		<module name="UnusedImports">
-			<property name="processJavadoc" value="false" />
-		</module>
+      <module name="RedundantImport"/>
+      <module name="UnusedImports">
+          <property name="processJavadoc" value="false"/>
+      </module>
 
-		<!--Javadoc Comments -->
-		<module name="AtclauseOrder" />
-		<module name="JavadocMethod">
-			<property name="validateThrows" value="true" />
-		</module>
-		<module name="JavadocParagraph" />
-		<module name="JavadocStyle">
-			<property name="scope" value="public" />
-		</module>
-		<module name="JavadocTagContinuationIndentation" />
-		<module name="JavadocType">
-			<!--avoid errors on tag '@noinspection' -->
-			<property name="allowUnknownTags" value="true" />
-		</module>
-		<module name="JavadocVariable" />
-		<module name="NonEmptyAtclauseDescription" />
-		<module name="SingleLineJavadoc">
-			<property name="ignoreInlineTags" value="false" />
-		</module>
-		<module name="WriteTag" />
-		<module name="SummaryJavadoc" />
+      <!--Javadoc Comments -->
+      <module name="AtclauseOrder"/>
+      <module name="JavadocMethod">
+          <property name="validateThrows" value="true"/>
+      </module>
+      <module name="JavadocParagraph"/>
+      <module name="JavadocStyle">
+          <property name="scope" value="public"/>
+      </module>
+      <module name="JavadocTagContinuationIndentation"/>
+      <module name="JavadocType">
+          <!--avoid errors on tag '@noinspection' -->
+          <property name="allowUnknownTags" value="true"/>
+      </module>
+      <module name="JavadocVariable"/>
+      <module name="NonEmptyAtclauseDescription"/>
+      <module name="SingleLineJavadoc">
+          <property name="ignoreInlineTags" value="false"/>
+      </module>
+      <module name="WriteTag"/>
+      <module name="SummaryJavadoc"/>
 
-		<!--Checks for Size Violations. -->
-		<!--See http://checkstyle.sf.net/config_sizes.html -->
-		<module name="MethodLength">
-			<property name="max" value="60" />
-			<property name="countEmpty" value="false" />
-		</module>
-		<module name="ParameterNumber" />
+      <!--Checks for Size Violations. -->
+      <!--See http://checkstyle.sf.net/config_sizes.html -->
+      <module name="MethodLength">
+          <property name="max" value="60"/>
+          <property name="countEmpty" value="false"/>
+      </module>
+      <module name="ParameterNumber"/>
 
-		<!--Checks for whitespace -->
-		<!--See https://checkstyle.org/config_whitespace.html -->
-		<module name="EmptyForIteratorPad" />
-		<module name="GenericWhitespace" />
-		<module name="MethodParamPad" />
-		<module name="NoWhitespaceAfter" />
-		<module name="NoWhitespaceBefore" />
-		<module name="OperatorWrap" />
+      <!--Checks for whitespace -->
+      <!--See https://checkstyle.org/config_whitespace.html -->
+      <module name="EmptyForIteratorPad"/>
+      <module name="GenericWhitespace"/>
+      <module name="MethodParamPad"/>
+      <module name="NoWhitespaceAfter"/>
+      <module name="NoWhitespaceBefore"/>
+      <module name="OperatorWrap"/>
 
-		<!--Checks for whitespace -->
-		<!--See http://checkstyle.sf.net/config_whitespace.html -->
-		<module name="ParenPad">
-			<property name="severity" value="info" />
-		</module>
-		<module name="TypecastParenPad">
-			<property name="severity" value="info" />
-		</module>
-		<module name="WhitespaceAfter">
-			<property name="severity" value="info" />
-			<property name="tokens" value="COMMA, SEMI" />
-		</module>
-		<module name="WhitespaceAround">
-			<property name="severity" value="info" />
-			<property name="tokens"
-				value="ASSIGN, ARRAY_INIT, BAND, BAND_ASSIGN, BOR,
+      <!--Checks for whitespace -->
+      <!--See http://checkstyle.sf.net/config_whitespace.html -->
+      <module name="ParenPad">
+          <property name="severity" value="info"/>
+      </module>
+      <module name="TypecastParenPad">
+          <property name="severity" value="info"/>
+      </module>
+      <module name="WhitespaceAfter">
+          <property name="severity" value="info"/>
+          <property name="tokens" value="COMMA, SEMI"/>
+      </module>
+      <module name="WhitespaceAround">
+          <property name="severity" value="info"/>
+          <property name="tokens"
+            value="ASSIGN, ARRAY_INIT, BAND, BAND_ASSIGN, BOR,
                    BOR_ASSIGN, BSR, BSR_ASSIGN, BXOR, BXOR_ASSIGN,
                    COLON, DIV, DIV_ASSIGN, EQUAL, GE, GT, LAMBDA,
                    LAND, LCURLY, LE, LOR, LT, MINUS, MINUS_ASSIGN,
                    MOD, MOD_ASSIGN, NOT_EQUAL, PLUS, PLUS_ASSIGN,
                    QUESTION, RCURLY, SL, SLIST, SL_ASSIGN, SR,
-                   SR_ASSIGN, STAR, STAR_ASSIGN" />
-		</module>
+                   SR_ASSIGN, STAR, STAR_ASSIGN"/>
+      </module>
 
-		<!--Modifier Checks -->
-		<!--See https://checkstyle.org/config_modifiers.html -->
-		<module name="ModifierOrder" />
-		<module name="RedundantModifier" />
+      <!--Modifier Checks -->
+      <!--See https://checkstyle.org/config_modifiers.html -->
+      <module name="ModifierOrder"/>
+      <module name="RedundantModifier"/>
 
-		<!--Checks for blocks. You know, those {}'s -->
-		<!--See https://checkstyle.org/config_blocks.html -->
-		<module name="AvoidNestedBlocks" />
-		<module name="EmptyBlock" />
-		<module name="EmptyCatchBlock" />
-		<module name="LeftCurly">
-			<property name="option" value="eol" />
-		</module>
-		<module name="NeedBraces" />
-		<module name="RightCurly" />
+      <!--Checks for blocks. You know, those {}'s -->
+      <!--See https://checkstyle.org/config_blocks.html -->
+      <module name="AvoidNestedBlocks"/>
+      <module name="EmptyBlock"/>
+      <module name="EmptyCatchBlock"/>
+      <module name="LeftCurly">
+          <property name="option" value="eol"/>
+      </module>
+      <module name="NeedBraces"/>
+      <module name="RightCurly"/>
 
-		<!--Checks for common coding problems -->
-		<!--See https://checkstyle.org/config_coding.html -->
-		<module name="DeclarationOrder" />
+      <!--Checks for common coding problems -->
+      <!--See https://checkstyle.org/config_coding.html -->
+      <module name="DeclarationOrder"/>
 
-		<module name="DefaultComesLast">
-			<property name="severity" value="info" />
-		</module>
+      <module name="DefaultComesLast">
+          <property name="severity" value="info"/>
+      </module>     
 
-		<module name="EmptyStatement">
-			<message key="empty.statement"
-				value="Empty Statement. (Replace it with an empty block containing a comment.)" />
-			<property name="severity" value="warning" />
-		</module>
+      <module name="EmptyStatement">
+        <message key="empty.statement"
+                 value="Empty Statement. (Replace it with an empty block containing a comment.)"/>
+          <property name="severity" value="warning"/>
+      </module>
 
-		<module name="EqualsHashCode">
-			<property name="severity" value="warning" />
-		</module>
+      <module name="EqualsHashCode">
+          <property name="severity" value="warning"/>
+      </module>
 
-		<module name="HiddenField" />
-		<module name="IllegalInstantiation" />
-		<module name="MagicNumber" />
-		<module name="MissingSwitchDefault" />
+      <module name="HiddenField"/>
+      <module name="IllegalInstantiation"/>
+      <module name="MagicNumber"/>
+      <module name="MissingSwitchDefault"/>
 
-		<module name="FallThrough">
-			<property name="severity" value="warning" />
-			<message key="fall.through"
-				value="Fall through from previous branch of the switch statement. (Add a clarifying comment mentioning 'falls through'.)" />
-			<message key="fall.through.last"
-				value="Fall through from the last branch of the switch statement. (Add a clarifying comment mentioning 'falls through'.)" />
-		</module>
+      <module name="FallThrough">
+          <property name="severity" value="warning"/>
+          <message key="fall.through"
+                   value="Fall through from previous branch of the switch statement. (Add a clarifying comment mentioning 'falls through'.)"/>
+          <message key="fall.through.last"
+                   value="Fall through from the last branch of the switch statement. (Add a clarifying comment mentioning 'falls through'.)"/>
+      </module>
 
-		<module name="InnerAssignment">
-			<property name="severity" value="warning" />
-		</module>
+      <module name="InnerAssignment">
+          <property name="severity" value="warning"/>
+      </module>
 
-		<module name="MultipleVariableDeclarations" />
+      <module name="MultipleVariableDeclarations"/>
 
-		<module name="SimplifyBooleanExpression">
-			<property name="severity" value="warning" />
-		</module>
+      <module name="SimplifyBooleanExpression">
+          <property name="severity" value="warning"/>
+      </module>
 
-		<module name="SimplifyBooleanReturn">
-			<property name="severity" value="warning" />
-		</module>
+      <module name="SimplifyBooleanReturn">
+          <property name="severity" value="warning"/>
+      </module>
 
-		<!--Checks for class design -->
-		<!--See http://checkstyle.sf.net/config_design.html -->
-		<module name="DesignForExtension" />
+      <!--Checks for class design -->
+      <!--See http://checkstyle.sf.net/config_design.html -->
+      <module name="DesignForExtension"/>
 
-		<module name="FinalClass">
-			<property name="severity" value="warning" />
-		</module>
+      <module name="FinalClass">
+          <property name="severity" value="warning"/>
+      </module>
 
-		<!--TODO module name="HideUtilityClassConstructor"> <property name="severity" 
-			value="warning"/> </module -->
+      <!--TODO module name="HideUtilityClassConstructor">
+          <property name="severity" value="warning"/>
+      </module -->
 
-		<module name="InnerTypeLast" />
-		<module name="InterfaceIsType" />
+      <module name="InnerTypeLast"/>
+      <module name="InterfaceIsType"/>
 
-		<module name="MutableException" />
-		<!--TODO module name="OneTopLevelClass"/ -->
-		<module name="ThrowsCount">
-			<property name="max" value="2" />
-		</module>
+      <module name="MutableException"/>
+      <!--TODO module name="OneTopLevelClass"/ -->
+      <module name="ThrowsCount">
+          <property name="max" value="2"/>
+      </module>
 
-		<module name="VisibilityModifier">
-			<property name="allowPublicFinalFields" value="true" />
-			<property name="severity" value="warning" />
-		</module>
+      <module name="VisibilityModifier">
+          <property name="allowPublicFinalFields" value="true"/>
+          <property name="severity" value="warning"/>
+      </module>
 
-		<!-- Coding -->
-		<module name="CovariantEquals" />
-		<module name="EqualsAvoidNull" />
-		<module name="ExplicitInitialization" />
-		<module name="FinalLocalVariable" />
+      <!-- Coding -->
+      <module name="CovariantEquals"/>
+      <module name="EqualsAvoidNull"/>
+      <module name="ExplicitInitialization"/>
+      <module name="FinalLocalVariable"/>
 
-		<!--Miscellaneous other checks. -->
-		<!--See http://checkstyle.sf.net/config_misc.html -->
-		<module name="Indentation">
-			<property name="caseIndent" value="0" />
-		</module>
+      <!--Miscellaneous other checks. -->
+      <!--See http://checkstyle.sf.net/config_misc.html -->
+      <module name="Indentation">
+          <property name="caseIndent" value="0"/>
+      </module>
 
-		<module name="ArrayTypeStyle" />
-		<module name="CommentsIndentation" />
-		<module name="OuterTypeFilename" />
-		<module name="FinalParameters" />
-		<module name="TodoComment">
-			<property name="format" value="(TODO)|(FIXME)" />
-		</module>
-		<module name="UpperEll" />
+      <module name="ArrayTypeStyle"/>
+      <module name="CommentsIndentation"/>
+      <module name="OuterTypeFilename"/>
+      <module name="FinalParameters"/>
+      <module name="TodoComment">
+          <property name="format" value="(TODO)|(FIXME)"/>
+      </module>
+      <module name="UpperEll"/>
 
-		<module name="IllegalCatch">
-			<property name="illegalClassNames"
-				value="java.lang.Exception,
+      <module name="IllegalCatch">
+          <property name="illegalClassNames"
+                    value="java.lang.Exception,
                            java.lang.Throwable,
                            java.lang.RuntimeException,
-                           java.lang.NullPointerException" />
-		</module>
-		<module name="IllegalThrows" />
-		<module name="IllegalToken">
-			<!--property name="tokens" value="LABELED_STAT"/ -->
-			<property name="tokens" value="LITERAL_NATIVE" />
-			<!--property name="tokens" value="LITERAL_VOLATILE"/ -->
-		</module>
-		<module name="IllegalTokenText">
-			<property name="tokens" value="STRING_LITERAL" />
-			<property name="format"
-				value="^(US-ASCII|ISO-8859-1|UTF-8|UTF-16BE|UTF-16LE|UTF-16)$" />
-			<property name="ignoreCase" value="true" />
-		</module>
-		<module name="IllegalType">
-			<property name="illegalClassNames"
-				value="java.util.HashSet, HashSet, java.util.LinkedHashMap, LinkedHashMap,
+                           java.lang.NullPointerException"/>
+      </module>
+      <module name="IllegalThrows"/>
+      <module name="IllegalToken">
+          <!--property name="tokens" value="LABELED_STAT"/ -->
+          <property name="tokens" value="LITERAL_NATIVE"/>
+          <!--property name="tokens" value="LITERAL_VOLATILE"/ -->
+      </module>
+      <module name="IllegalTokenText">
+          <property name="tokens" value="STRING_LITERAL"/>
+          <property name="format" value="^(US-ASCII|ISO-8859-1|UTF-8|UTF-16BE|UTF-16LE|UTF-16)$"/>
+          <property name="ignoreCase" value="true"/>
+      </module>
+      <module name="IllegalType">
+            <property name="illegalClassNames"
+                      value="java.util.HashSet, HashSet, java.util.LinkedHashMap, LinkedHashMap,
                              java.util.TreeMap, TreeMap, java.util.HashMap, HashMap,
                              java.util.LinkedHashSet, LinkedHashSet, java.util.TreeSet, TreeSet,
-                             java.lang.StringBuffer, StringBuffer" />
-		</module>
-		<module name="MissingCtor">
-			<!-- we will not use that fanatic validation, extra code is not good But 
-				this Check will exists as it was created by community demand. -->
-			<property name="severity" value="ignore" />
-		</module>
+                             java.lang.StringBuffer, StringBuffer"/>
+      </module>
+      <module name="MissingCtor">
+          <!--
+              we will not use that fanatic validation, extra code is not good
+              But this Check will exists as it was created by community demand.
+          -->
+          <property name="severity" value="ignore"/>
+      </module>
 
-		<module name="ModifiedControlVariable" />
-		<module name="MultipleStringLiterals" />
-		<module name="NestedForDepth">
-			<property name="max" value="2" />
-		</module>
-		<module name="NestedIfDepth">
-			<property name="max" value="3" />
-		</module>
-		<module name="NestedTryDepth" />
-		<!--TODO module name="NoClone"/ -->
-		<!--TODO module name="NoFinalizer"/ -->
-		<module name="OneStatementPerLine" />
-		<module name="OverloadMethodsDeclarationOrder" />
-		<module name="PackageDeclaration" />
-		<module name="ParameterAssignment" />
-		<module name="RequireThis" />
-		<module name="ReturnCount">
-			<property name="max" value="3" />
-			<property name="maxForVoid" value="1" />
-		</module>
-		<module name="StringLiteralEquality" />
-		<!--TODO module name="SuperClone"/ -->
-		<!--TODO module name="SuperFinalize"/ -->
-		<module name="UnnecessaryParentheses" />
-		<module name="VariableDeclarationUsageDistance" />
+      <module name="ModifiedControlVariable"/>
+      <module name="MultipleStringLiterals"/>
+      <module name="NestedForDepth">
+          <property name="max" value="2"/>
+      </module>
+      <module name="NestedIfDepth">
+          <property name="max" value="3"/>
+      </module>
+      <module name="NestedTryDepth"/>
+      <!--TODO module name="NoClone"/ -->
+      <!--TODO module name="NoFinalizer"/ -->
+      <module name="OneStatementPerLine"/>
+      <module name="OverloadMethodsDeclarationOrder"/>
+      <module name="PackageDeclaration"/>
+      <module name="ParameterAssignment"/>
+      <module name="RequireThis"/>
+      <module name="ReturnCount">
+          <property name="max" value="3"/>
+          <property name="maxForVoid" value="1"/>
+      </module>
+      <module name="StringLiteralEquality"/>
+      <!--TODO module name="SuperClone"/ -->
+      <!--TODO module name="SuperFinalize"/ -->
+      <module name="UnnecessaryParentheses"/>
+      <module name="VariableDeclarationUsageDistance"/>
 
-		<!--Check that ensures decrements and increments -->
-		<!--are not used within expressions -->
-		<!--See NoEmbeddedPlusPlus.java for details. -->
-		<!--KeY <module name="NoEmbeddedPlusPlus"/> -->
+      <!--Check that ensures decrements and increments -->
+      <!--are not used within expressions -->
+      <!--See NoEmbeddedPlusPlus.java for details. -->
+      <!--KeY <module name="NoEmbeddedPlusPlus"/> -->
 
-		<!--https://checkstyle.org/config_filters.html#SuppressionXpathFilter -->
-		<module name="SuppressionXpathFilter">
-			<property name="file"
-				value="${org.checkstyle.sun.suppressionxpathfilter.config}"
-				default="checkstyle-xpath-suppressions.xml" />
-			<property name="optional" value="true" />
-		</module>
+      <!--https://checkstyle.org/config_filters.html#SuppressionXpathFilter -->
+      <module name="SuppressionXpathFilter">
+          <property name="file" value="${org.checkstyle.sun.suppressionxpathfilter.config}"
+                    default="checkstyle-xpath-suppressions.xml"/>
+          <property name="optional" value="true"/>
+      </module>
 
-	</module>
+    </module>
 
-	<!--Support @SuppressWarnings (added in Checkstyle 5.7) -->
-	<!--see http://checkstyle.sourceforge.net/config.html#SuppressWarningsFilter -->
-	<module name="SuppressWarningsFilter" />
+    <!--Support @SuppressWarnings (added in Checkstyle 5.7) -->
+    <!--see http://checkstyle.sourceforge.net/config.html#SuppressWarningsFilter -->
+    <module name="SuppressWarningsFilter"/>
 
-	<!--Checks properties file for a duplicated properties. -->
-	<!--See http://checkstyle.sourceforge.net/config_misc.html#UniqueProperties -->
-	<module name="UniqueProperties" />
+    <!--Checks properties file for a duplicated properties. -->
+    <!--See http://checkstyle.sourceforge.net/config_misc.html#UniqueProperties -->
+    <module name="UniqueProperties"/>
 </module>
