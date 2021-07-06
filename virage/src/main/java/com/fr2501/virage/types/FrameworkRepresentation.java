@@ -390,13 +390,13 @@ public class FrameworkRepresentation {
 
     res += "%\n";
 
-    res += "% === composable_module\n";
+    /* res += "% === composable_module\n";
     res += "%% This area is deprecated and therefore intentionally empty.\n";
 
     res += "% === compositional_structure\n";
     res += "%% This area is deprecated and therefore intentionally empty.\n";
 
-    res += "%\n";
+    res += "%\n"; */
 
     res += "% === property\n";
     for (Property prop : this.properties) {

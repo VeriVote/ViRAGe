@@ -1,13 +1,13 @@
 === Improve UI
-re-add "?-" or ">" if possible (I still think that this does not work while using exec:exec)
 sanitize inputs
 check necessity of log messages
 display types instead of Prolog variables in the end
 add possibility to check all available properties at once
 omit anonymous variables and fill automatically
+do not display atomic properties
 
 === Miscellaneous
-document and rework the (E)PL format (this time for real)
+document the (E)PL format
 experiment with snap on Ubuntu
 interactively launch scala and generate test instances
 optionally run jobs in parallel on CLI
@@ -35,10 +35,11 @@ improve (E)PL generation message
 check Prolog files at version display
 more transparent "parsing (E)PL message"
 add license (MIT?)
-document and rework the (E)PL format (URGENT!!!) (Rudimentary, but the most urgent problem (indistinguishable types for compositional structures) is solved)
+document and rework the (E)PL format (URGENT!!!)
 check versions
 remove tabs
 check lifecycle, add compile or find something more elegant
 improve exec:exec section (Is it actually that bad? See first example at https://www.mojohaus.org/exec-maven-plugin/examples/example-exec-for-java-programs.html)
 do not overwrite framework.pl, or at least ask first!
 "general release-readiness" -> see BEAST (Was that everything?)
+re-add "?-" or ">" if possible (I still think that this does not work while using exec:exec, using colors for now)

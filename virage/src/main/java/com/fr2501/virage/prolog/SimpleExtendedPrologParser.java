@@ -141,6 +141,10 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
   private void parseSection(FrameworkRepresentation framework, List<String> lines,
       ParserState state) throws MalformedEplFileException {
+    if(lines.isEmpty()) {
+      return;
+    }
+    
     switch (state) {
       case COMPOSITION_TYPE:
         this.parseCompositionTypeSection(framework, lines);
