@@ -86,7 +86,7 @@ public class IsabelleProofStepGenerator {
             if (subgoal.getAllCompositionRules().size() == 1) {
                 CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
 
-                if (rule.getOrigin().equals("generated")) {
+                if (rule.getOrigin().equals("ASSUMPTION")) {
                     continue;
                 }
             }

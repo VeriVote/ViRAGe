@@ -338,23 +338,23 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
     }
 
     private ParserState newState(String line, ParserState oldState) {
-        if (line.contains(ExtendedPrologStrings.COMPOSITION_TYPE_HEADER)) {
+        if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSITION_TYPE_HEADER)) {
             return ParserState.COMPOSITION_TYPE;
         }
 
-        if (line.contains(ExtendedPrologStrings.COMPOSABLE_MODULE_HEADER)) {
+        if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSABLE_MODULE_HEADER)) {
             return ParserState.COMPOSABLE_MODULE;
         }
 
-        if (line.contains(ExtendedPrologStrings.COMPOSITIONAL_STRUCTURE_HEADER)) {
+        if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSITIONAL_STRUCTURE_HEADER)) {
             return ParserState.COMPOSITIONAL_STRUCTURE;
         }
 
-        if (line.contains(ExtendedPrologStrings.PROPERTY_HEADER)) {
+        if (line.toUpperCase().contains(ExtendedPrologStrings.PROPERTY_HEADER)) {
             return ParserState.PROPERTY;
         }
 
-        if (line.contains(ExtendedPrologStrings.COMPOSITION_RULE_HEADER)) {
+        if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSITION_RULE_HEADER)) {
             return ParserState.COMPOSITION_RULE;
         }
 

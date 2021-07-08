@@ -4,6 +4,7 @@ import com.fr2501.util.Pair;
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageCore;
+import com.fr2501.virage.prolog.ExtendedPrologStrings;
 import com.fr2501.virage.prolog.PrologClause;
 import com.fr2501.virage.prolog.PrologPredicate;
 
@@ -304,7 +305,7 @@ public class FrameworkRepresentation {
                 PrologPredicate pred = new PrologPredicate(p.getName(), params);
                 PrologClause clause = new PrologClause(pred);
 
-                CompositionRule rule = new CompositionRule(p.getName() + "_intro", "generated",
+                CompositionRule rule = new CompositionRule(p.getName() + "_intro", "ASSUMPTION",
                         clause);
                 this.add(rule);
 
@@ -379,7 +380,7 @@ public class FrameworkRepresentation {
 
         res += "%\n";
 
-        res += "% === component_type\n";
+        res += "% " + ExtendedPrologStrings.COMPOSITION_TYPE_HEADER + "\n";
         for (ComponentType type : this.componentTypes) {
             res += "% == " + type.getName() + "\n";
             for (Component comp : this.components) {
@@ -401,7 +402,7 @@ public class FrameworkRepresentation {
          * res += "%\n";
          */
 
-        res += "% === property\n";
+        res += "% " + ExtendedPrologStrings.PROPERTY_HEADER + "\n";
         for (Property prop : this.properties) {
             res += "% " + prop.toString() + "\n";
         }
@@ -412,7 +413,7 @@ public class FrameworkRepresentation {
 
         res += "%\n";
 
-        res += "% === composition_rule\n";
+        res += "% " + ExtendedPrologStrings.COMPOSITION_RULE_HEADER + "\n";
         for (CompositionRule rule : this.compositionRules) {
             res += rule.toEplString() + "\n";
         }
@@ -462,10 +463,10 @@ public class FrameworkRepresentation {
 
         res += "%% To add new composition rules, go to the bottom of this file.\n"
                 + "%% A rule definition consists of three parts. The first one represents its origin,\n"
-                + "%% for user defined rules this will always be \"unproven\". The second part is\n"
+                + "%% for user defined rules this will always be \"UNPROVEN\". The second part is\n"
                 + "%% the symbolic name of the rule that will be used in generated proofs.\n"
                 + "%% The third part is a Prolog clause capturing the semantics of the rule.\n"
-                + "%%\n" + "%% Example:\n" + "%% % = unproven\n"
+                + "%%\n" + "%% Example:\n" + "%% % = UNPROVEN\n"
                 + "%% % example_rule_without_meaning\n" + "%% property_a(X) :- property_b(X).\n";
 
         res += SEPARATOR;

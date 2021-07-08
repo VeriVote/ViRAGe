@@ -5,6 +5,7 @@ import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
+import com.fr2501.virage.jobs.VirageExitJob;
 import com.fr2501.virage.jobs.VirageJob;
 import com.fr2501.virage.jobs.VirageJobState;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
@@ -163,6 +164,10 @@ public class VirageCore implements Runnable {
             logger.warn("External software unavailable!");
 
             return;
+        }
+        
+        if(job instanceof VirageExitJob) {
+            job.execute(this);
         }
 
         this.jobs.add(job);

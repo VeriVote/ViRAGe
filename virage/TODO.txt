@@ -9,8 +9,6 @@ VCLI constructor
 === (E)PL
 document
 add explaining constants to (E)PL
-(E)PL keywords caps-lock
-generated -> requirement
 timezone
 add ROOT to path
 
@@ -21,14 +19,6 @@ display types instead of Prolog variables in the end
 add possibility to check all available properties at once
 omit anonymous variables and fill automatically
 do not display atomic properties
-empty variables -> not set
-remove \n before colour
-explain that libswipl.so is a SWI-Prolog library
-explicitly request libjpl.so
-check existence of these files
-scala via isabelle instead of isabelle scala
-wider header in help, uniform width
-"isabelle session within it"
 display list of files instead of asking 100 times
 
 === Miscellaneous
@@ -43,8 +33,6 @@ add more C snippets
 branch cleanup
 include jEdit (or find some other solution? xdg-open?)
 termination of text editor (exit codes? descendants?)
-rename config.properties
-execute VirageExitJob immediately
 timestamp in config
 consistency check via keySet instead of version check
 check why scala-isabelle requires a name
@@ -75,3 +63,16 @@ improve exec:exec section (Is it actually that bad? See first example at https:/
 do not overwrite framework.pl, or at least ask first!
 "general release-readiness" -> see BEAST (Was that everything?)
 re-add "?-" or ">" if possible (I still think that this does not work while using exec:exec, using colors for now)
+---
+empty variables -> not set
+remove \n before colour
+execute VirageExitJob immediately
+rename config.properties
+(E)PL keywords caps-lock
+generated -> requirement
+explain that libswipl.so is a SWI-Prolog library
+"isabelle session within it"
+explicitly request libjpl.so
+check existence of these files
+scala via isabelle instead of isabelle scala
+wider header in help, uniform width

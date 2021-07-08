@@ -64,7 +64,7 @@ public class ConfigReader {
     private ConfigReader() {
         VIRAGE_FOLDER_PATH = System.getProperty("user.home") + File.separator + ".virage"
                 + File.separator;
-        CONFIG_PATH = VIRAGE_FOLDER_PATH + "config.properties";
+        CONFIG_PATH = VIRAGE_FOLDER_PATH + "settings";
 
         // This is only to ensure unit-tests are working.
         try {
@@ -90,13 +90,13 @@ public class ConfigReader {
     public static String getConfigPath() {
         VIRAGE_FOLDER_PATH = System.getProperty("user.home") + File.separator + ".virage"
                 + File.separator;
-        CONFIG_PATH = VIRAGE_FOLDER_PATH + "config.properties";
+        CONFIG_PATH = VIRAGE_FOLDER_PATH + "settings";
 
         return CONFIG_PATH;
     }
 
     /**
-     * Reads the config.properties-file supplied to ViRAGe.
+     * Reads the settings-file supplied to ViRAGe.
      * 
      * @throws IOException if reading the file is impossible
      */
@@ -137,7 +137,7 @@ public class ConfigReader {
         SimpleFileReader reader = new SimpleFileReader();
         SimpleFileWriter writer = new SimpleFileWriter();
 
-        File oldPropertiesFile = new File(VIRAGE_FOLDER_PATH + "old_config.properties");
+        File oldPropertiesFile = new File(VIRAGE_FOLDER_PATH + "old_settings");
         if (!oldPropertiesFile.exists()) {
             oldPropertiesFile.createNewFile();
         }
@@ -148,7 +148,7 @@ public class ConfigReader {
         oldProperties.load(new FileInputStream(oldPropertiesFile));
 
         InputStream configFromResourcesStream = this.getClass().getClassLoader()
-                .getResourceAsStream("config.properties");
+                .getResourceAsStream("settings");
         StringWriter stringWriter = new StringWriter();
         IOUtils.copy(configFromResourcesStream, stringWriter, StandardCharsets.UTF_8);
 
@@ -193,7 +193,7 @@ public class ConfigReader {
             res += "Isabelle: \t\t"
                     + ProcessUtils.runTerminatingProcess(this.getIsabelleExecutable() + " version")
                             .getFirstValue();
-            res += "Isabelle scala: \t" + ProcessUtils
+            res += "Scala (via Isabelle): " + ProcessUtils
                     .runTerminatingProcess(this.getIsabelleExecutable() + " scalac -version")
                     .getFirstValue();
         } catch (IOException e) {

@@ -75,7 +75,7 @@ public class IsabelleTheoryGeneratorTest {
     }
 
     /*
-     * Test disabled after introduction of config.properties
+     * Test disabled after introduction of settings
      * 
      * @Test
      */

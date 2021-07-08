@@ -156,9 +156,9 @@
             </goals>
             <configuration>
               <files>
-                <file>${user.home}/.virage/config.properties</file>
+                <file>${user.home}/.virage/settings</file>
               </files>
-              <!-- config.properties won't be there on first startup. -->
+              <!-- settings won't be there on first startup. -->
               <!-- This is fine, as ViRAGe will copy it and enforce a restart if necessary. -->
               <quiet>true</quiet>
             </configuration>

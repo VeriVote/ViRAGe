@@ -78,8 +78,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         } catch (InvalidConfigVersionException e) {
             System.out.println("# " + e.getMessage());
             if (this.requestConfirmation(
-                    "# ViRAGe can replace the config file with an up-to-date one. "
-                            + "Your old config file will be moved to \"old_config.properties\", and as many settings "
+                    "# ViRAGe can replace the settings file with an up-to-date one. "
+                            + "Your old settings file will be moved to \"old_settings\", and as many settings "
                             + "as possible will be transferred. "
                             + "Do you want to let ViRAGe perform this operation?")) {
                 try {
@@ -128,17 +128,32 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         try {
             JplFacade facade = new JplFacade();
         } catch (ExternalSoftwareUnavailableException e) {
-            this.displayError("libswipl.so could not be located.");
+            this.displayError("A required SWI-Prolog library (\"libswipl.so\") could not be located.");
 
             String newValue;
             try {
-                newValue = this.requestString("Please input the path to libswipl.so.\n"
-                        + "For your setup of SWI-Prolog, typical values are \"/usr/lib/libswipl.so\" or \""
-                        + ConfigReader.getInstance().getSwiplLib() + "libswipl.so\""
-                        + ", but this might differ on your system.");
+                while (true) {
+                    newValue = this.requestString("Please input the path to libswipl.so. "
+                            + "For your setup of SWI-Prolog, typical values are "
+                            + "\"/usr/lib/libswipl.so\" or \""
+                            + ConfigReader.getInstance().getSwiplLib() + "libswipl.so\""
+                            + ", but this might differ on your system.");
 
-                if (!newValue.isEmpty()) {
-                    ConfigReader.getInstance().updateValueForLdPreload(newValue);
+                    if (!newValue.isEmpty()) {
+                        final File file = new File(newValue);
+                        if(!file.exists()) {
+                            this.displayError("This file does not exist. Please try again.");
+                            continue;
+                        }
+                            
+                        if (!newValue.endsWith("libswipl.so")) {
+                            this.displayError("This is not \"libswipl.so\". Please try again.");
+                            continue;
+                        }
+                        
+                        ConfigReader.getInstance().updateValueForLdPreload(newValue);
+                        break;
+                    }
                 }
             } catch (ExternalSoftwareUnavailableException e1) {
                 // TODO Auto-generated catch block
@@ -147,18 +162,36 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
             unsafeState = true;
         } catch (UnsatisfiedLinkError e) {
-            this.displayError("SWI-Prolog library directory could not be located.");
+            this.displayError("The SWI-Prolog library directory could not be located. " 
+                    + "This directory must contain the library \"libjpl.so\", otherwise "
+                    + "ViRAGe will not work properly.");
 
             String newValue;
             try {
-                newValue = this.requestString(
-                        "Please input the path to the SWI-Prolog " + "library directory.\n"
-                                + "For your setup of SWI-Prolog, the typical value is \""
-                                + ConfigReader.getInstance().getSwiplLib()
-                                + "\", but this might differ on your system.");
+                while (true) {
+                    newValue = this.requestString(
+                            "Please input the path to the SWI-Prolog " + "library directory. "
+                                    + "For your setup of SWI-Prolog, the typical value is \""
+                                    + ConfigReader.getInstance().getSwiplLib()
+                                    + "\", but this might differ on your system.");
+    
+                    if (!newValue.isEmpty()) {
+                        File file = new File(newValue);
+                        if (!file.exists()) {
+                            this.displayError("This directory does not exist. Please try again.");
+                            continue;
+                        } else if (!file.isDirectory()) {
+                            this.displayError("This path is not a directory. Please try again.");
+                            continue;
+                        } else if (!(new File(newValue + File.separator + "libjpl.so").exists())) {
+                            this.displayError("This directory does not contain \"libjpl.so\". "
+                                    + "You either supplied the wrong directory, "
+                                    + "or JPL is not installed.");
+                        }
 
-                if (!newValue.isEmpty()) {
-                    ConfigReader.getInstance().updateValueForLdLibraryPath(newValue);
+                        ConfigReader.getInstance().updateValueForLdLibraryPath(newValue);
+                        break;
+                    }
                 }
             } catch (ExternalSoftwareUnavailableException e1) {
                 // TODO Auto-generated catch block
@@ -192,10 +225,16 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                 System.out.println("#");
                 lastPrefix = s.split("_")[0];
             }
+            
+            String value = ConfigReader.getInstance().getAllProperties().get(s).replaceAll(";",
+                    ";\n#\t");
+            
+            if(value.isEmpty()) {
+                value = "NOT_SET";
+            }
 
-            System.out.println(("# " + s.toUpperCase() + ":\n#\t"
-                    + ConfigReader.getInstance().getAllProperties().get(s)).replaceAll(";",
-                            ";\n#\t"));
+            System.out.println("# " + s.toUpperCase() + ":\n#\t"
+                    + value);
         }
 
         if (this.requestConfirmation(
@@ -612,12 +651,12 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         }
 
         while (true) {
-            System.out.println(message);
+            System.out.print(message);
             // Set background to white and text to black to signal input opportunity.
             // ">" would be nicer, but this appears to conflict with mvn exec:exec,
             // see https://github.com/mojohaus/exec-maven-plugin/issues/159.
             System.out.println("\u001B[47m\u001B[30m");
-            String input = this.scanner.nextLine();
+            final String input = this.scanner.nextLine();
             System.out.print("\u001B[0m\n");
 
             switch (input) {
@@ -649,12 +688,12 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     @Override
     public void displayMessage(String message) {
-        System.out.println(message);
+        System.out.println(message + "\n");
     }
 
     @Override
     public void displayError(String message) {
-        System.err.println(message);
+        System.err.println(message + "\n");
     }
 
     public void displayHelp() {
