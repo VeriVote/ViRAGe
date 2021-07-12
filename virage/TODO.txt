@@ -30,7 +30,6 @@ run on different sessions to see behavior
 only compile scala code twice if the second run might work
 cross-verification of Scala and C programs
 add more C snippets
-branch cleanup
 include jEdit (or find some other solution? xdg-open?)
 termination of text editor (exit codes? descendants?)
 timestamp in config
@@ -76,3 +75,5 @@ explicitly request libjpl.so
 check existence of these files
 scala via isabelle instead of isabelle scala
 wider header in help, uniform width
+---
+branch cleanup
