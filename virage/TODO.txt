@@ -9,7 +9,6 @@ VCLI constructor
 === (E)PL
 document
 add explaining constants to (E)PL
-timezone
 add ROOT to path
 
 === Improve UI
@@ -77,3 +76,4 @@ scala via isabelle instead of isabelle scala
 wider header in help, uniform width
 ---
 branch cleanup
+timezone
