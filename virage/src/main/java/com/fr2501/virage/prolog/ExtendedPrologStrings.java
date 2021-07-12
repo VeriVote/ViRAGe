@@ -16,5 +16,6 @@ public abstract class ExtendedPrologStrings {
     public static final String COMPONENT = "COMPONENT";
     public static final String UNDEFINED = "UNDEFINED";
     public static final String ASSUMPTION = "ASSUMPTION";
+    public static final String UNPROVEN = "UNPROVEN";
     public static final String COMMENT = "%";
 }

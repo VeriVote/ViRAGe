@@ -220,9 +220,10 @@ public class IsabelleFrameworkExtractor {
 
                 // Remove theory prefixes of constants
                 sign = sign.replaceAll("\\?\\?\\.\\w+\\.", "");
+                sign = sign.replaceAll("[A-Z]\\w+\\.", "");
 
                 // Composition Rules are very limited on the operators they can contain.
-                Pattern allowedChars = Pattern.compile("[A-Za-z0-9,_\\(\\)]+");
+                Pattern allowedChars = Pattern.compile("[A-Za-z0-9,_\\(\\)\\.]+");
 
                 List<String> antecedents = new LinkedList<String>();
                 String succedent = "";

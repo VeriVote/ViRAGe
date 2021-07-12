@@ -2,6 +2,7 @@ package com.fr2501.virage.isabelle;
 
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
+import com.fr2501.virage.prolog.ExtendedPrologStrings;
 import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
@@ -275,8 +276,10 @@ public class IsabelleTheoryGenerator {
                 // Isabelle expects imports without suffix.
                 originStrings.add(origin.replace(IsabelleUtils.FILE_EXTENSION, ""));
             } else {
-                // Proof relies on unproven facts, add a comment explaining this.
-                usingUnprovenFacts = true;
+                if(origin.equals(ExtendedPrologStrings.UNPROVEN)) {
+                    // Proof relies on unproven facts, add a comment explaining this.
+                    usingUnprovenFacts = true;
+                }
             }
         }
 

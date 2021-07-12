@@ -187,6 +187,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                             this.displayError("This directory does not contain \"libjpl.so\". "
                                     + "You either supplied the wrong directory, "
                                     + "or JPL is not installed.");
+                            continue;
                         }
 
                         ConfigReader.getInstance().updateValueForLdLibraryPath(newValue);
@@ -688,12 +689,12 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     @Override
     public void displayMessage(String message) {
-        System.out.println(message + "\n");
+        System.out.println(message);
     }
 
     @Override
     public void displayError(String message) {
-        System.err.println(message + "\n");
+        System.err.println(message);
     }
 
     public void displayHelp() {
