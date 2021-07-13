@@ -8,6 +8,7 @@ import com.fr2501.virage.prolog.ExtendedPrologStrings;
 import com.fr2501.virage.prolog.PrologClause;
 import com.fr2501.virage.prolog.PrologPredicate;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -112,6 +113,10 @@ public class FrameworkRepresentation {
     }
 
     public void setTheoryPath(String theoryPath) {
+        if(!theoryPath.endsWith(File.separator)) {
+            theoryPath = theoryPath + File.separator;
+        }
+        
         this.theoryPath = theoryPath;
     }
 
@@ -379,7 +384,7 @@ public class FrameworkRepresentation {
 
         String res = this.createHeader();
 
-        res += "% ==== " + this.theoryPath + " - " + this.sessionName + "\n";
+        res += "% ==== " + this.theoryPath + "ROOT" + " - " + this.sessionName + "\n";
 
         res += "%\n";
 

@@ -53,36 +53,32 @@ public class IsabelleFrameworkExtractor {
     public FrameworkRepresentation extract(String sessionDir, String sessionName)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
         ScalaIsabelleFacade facade = new ScalaIsabelleFacade(sessionDir, sessionName);
-
-        File plFile;
+        
+        File plFile = new File(
+                sessionDir + File.separator + "framework" + System.currentTimeMillis() + ".pl");
         try {
-            plFile = File.createTempFile("framework", ".pl");
-
-            plFile.deleteOnExit();
-
-            FrameworkRepresentation framework = new FrameworkRepresentation(
-                    plFile.getAbsolutePath());
-
-            framework.setAbsolutePath(plFile.getAbsolutePath());
-
-            framework.setTheoryPath(sessionDir);
-            framework.setSessionName(sessionName);
-
-            Map<String, Map<String, String>> compRulesRaw = facade.getTheorems();
-            Map<String, Map<String, String>> compsRaw = facade.getFunctionsAndDefinitions();
-
-            this.convertComponents(framework, compsRaw);
-            this.convertCompositionRules(framework, compRulesRaw);
-
-            framework.addDummyRulesIfNecessary();
-
-            return framework;
+            plFile.createNewFile();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        return null;
+        FrameworkRepresentation framework = new FrameworkRepresentation(plFile.getAbsolutePath());
+
+        framework.setAbsolutePath(plFile.getAbsolutePath());
+
+        framework.setTheoryPath(sessionDir);
+        framework.setSessionName(sessionName);
+
+        Map<String, Map<String, String>> compRulesRaw = facade.getTheorems();
+        Map<String, Map<String, String>> compsRaw = facade.getFunctionsAndDefinitions();
+
+        this.convertComponents(framework, compsRaw);
+        this.convertCompositionRules(framework, compRulesRaw);
+
+        framework.addDummyRulesIfNecessary();
+
+        return framework;
     }
 
     private void convertComponents(FrameworkRepresentation framework,

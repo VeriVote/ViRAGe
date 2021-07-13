@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class SimpleExtendedPrologParser implements ExtendedPrologParser {
-    SimpleFileReader fileReader;
+    private final SimpleFileReader fileReader;
     private final PrologParser prologParser;
     private final Logger logger = LogManager.getLogger(SimpleExtendedPrologParser.class);
 
@@ -88,6 +88,10 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
                 line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
                 line = line.replace(ExtendedPrologStrings.COMMENT, "");
                 line = StringUtils.removeWhitespace(line);
+                
+                if(line.endsWith("ROOT")) {
+                    line = line.substring(0, line.length() - "ROOT".length());
+                }
 
                 framework.setTheoryPath(line);
                 continue;

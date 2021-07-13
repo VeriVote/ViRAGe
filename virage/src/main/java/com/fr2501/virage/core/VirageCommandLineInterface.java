@@ -703,33 +703,34 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
         this.requestString("Press ENTER to leave help and return to previous state.");
     }
-    
+
+    @Override
     public int chooseAlternative(String message, List<?> alternatives) {
         this.displayMessage(message + "\n");
-        
-        for(int i=0; i<alternatives.size(); i++) {
+
+        for (int i = 0; i < alternatives.size(); i++) {
             this.displayMessage("[" + i + "] " + alternatives.get(i).toString());
         }
-        
+
         int res;
-        while(true) {
-            String input = this.requestString("Please enter a number between 0 and " 
+        while (true) {
+            final String input = this.requestString("Please enter a number between 0 and "
                     + (alternatives.size() - 1) + " or leave empty to choose none of the above.");
-            
-            if(input.isEmpty()) {
+
+            if (input.isEmpty()) {
                 return -1;
             }
-            
+
             try {
                 res = Integer.parseInt(input);
-                
-                if(0 <= res && res < alternatives.size()) {
+
+                if (0 <= res && res < alternatives.size()) {
                     return res;
                 }
             } catch (NumberFormatException e) {
-                //NO-OP
+                // NO-OP
             }
-            
+
             this.displayError("Please try again.");
         }
     }
