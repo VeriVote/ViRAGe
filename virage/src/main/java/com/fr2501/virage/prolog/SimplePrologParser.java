@@ -3,8 +3,6 @@ package com.fr2501.virage.prolog;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.fr2501.util.StringUtils;
-
 /**
  * A simple implementation of the {@link PrologParser} interface.
  *

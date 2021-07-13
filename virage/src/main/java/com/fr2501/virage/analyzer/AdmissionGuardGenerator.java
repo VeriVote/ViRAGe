@@ -16,9 +16,10 @@ import java.util.List;
  *
  */
 public class AdmissionGuardGenerator {
+    /** The framework representation used throughout. */
     private FrameworkRepresentation framework;
 
-    public AdmissionGuardGenerator(FrameworkRepresentation framework) {
+    public AdmissionGuardGenerator(final FrameworkRepresentation framework) {
         this.framework = framework;
     }
 

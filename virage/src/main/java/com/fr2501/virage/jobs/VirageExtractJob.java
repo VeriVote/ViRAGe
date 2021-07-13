@@ -1,13 +1,11 @@
 package com.fr2501.virage.jobs;
 
-import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleFrameworkExtractor;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
-import java.io.File;
 
 /**
  * A {@link VirageJob} to extract a {@link FrameworkRepresentation} from an Isabelle session.

@@ -1,7 +1,6 @@
 package com.fr2501.virage.jobs;
 
 import com.fr2501.util.SystemUtils;
-import com.fr2501.virage.core.ProgressIndicator;
 import com.fr2501.virage.core.VirageCore;
 import com.fr2501.virage.core.VirageUserInterface;
 import java.time.Instant;

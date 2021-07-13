@@ -39,7 +39,6 @@ import java.util.Scanner;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.common.returnsreceiver.qual.This;
 
 /**
  * A simple command line interface for ViRAGe.
@@ -69,10 +68,41 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         this.scanner = new Scanner(System.in);
         this.core = core;
 
-        this.printSeparator();
-        System.out.println(BANNER);
-        this.printSeparator();
+        this.printSeparator(); /* ----- */
 
+        this.printBanner();
+
+        this.printSeparator(); /* ----- */
+
+        this.checkSettingsCompatibility();
+        this.printTimestamp();
+
+        this.printSeparator(); /* ----- */
+
+        this.printPurpose();
+
+        this.printSeparator(); /* ----- */
+
+        this.checkEnvironment();
+
+        this.printSeparator(); /* ----- */
+
+        this.printSettings();
+
+        this.printSeparator(); /* ----- */
+
+        this.clpi = new CommandLineProgressIndicator();
+    }
+
+    private void printSeparator() {
+        this.displayMessage(SEPARATOR);
+    }
+
+    private void printBanner() {
+        this.displayMessage(BANNER);
+    }
+
+    private void checkSettingsCompatibility() {
         try {
             ConfigReader.getInstance().readConfigFile(false);
         } catch (InvalidConfigVersionException e) {
@@ -106,21 +136,23 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             // TODO
             e.printStackTrace();
         }
+    }
 
+    private void printTimestamp() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
-        System.out.println(
+        this.displayMessage(
                 "# Version " + VirageCore.getVersion() + ", Timestamp: " + dtf.format(now));
-        System.out.println("# If you need help, type \"help\", \"h\" or \"?\".");
-        System.out.println("# To exit ViRAGe, type \"exit\".");
+        this.displayMessage("# If you need help, type \"help\", \"h\" or \"?\".");
+        this.displayMessage("# To exit ViRAGe, type \"exit\".");
+    }
 
-        this.printSeparator();
+    private void printPurpose() {
+        this.displayMessage("# ViRAGe is a tool to generate voting rules and automatically ");
+        this.displayMessage("# reason about their social choice properties.");
+    }
 
-        System.out.println("# ViRAGe is a tool to generate voting rules and automatically ");
-        System.out.println("# reason about their social choice properties.");
-
-        this.printSeparator();
-
+    private void checkEnvironment() {
         this.displayMessage("# " + ConfigReader.getInstance().checkAvailabilityAndGetVersions()
                 .replace("\n", "\n# "));
 
@@ -128,7 +160,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         try {
             JplFacade facade = new JplFacade();
         } catch (ExternalSoftwareUnavailableException e) {
-            this.displayError("A required SWI-Prolog library (\"libswipl.so\") could not be located.");
+            this.displayError(
+                    "A required SWI-Prolog library (\"libswipl.so\") could not be located.");
 
             String newValue;
             try {
@@ -141,16 +174,16 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
                     if (!newValue.isEmpty()) {
                         final File file = new File(newValue);
-                        if(!file.exists()) {
+                        if (!file.exists()) {
                             this.displayError("This file does not exist. Please try again.");
                             continue;
                         }
-                            
+
                         if (!newValue.endsWith("libswipl.so")) {
                             this.displayError("This is not \"libswipl.so\". Please try again.");
                             continue;
                         }
-                        
+
                         ConfigReader.getInstance().updateValueForLdPreload(newValue);
                         break;
                     }
@@ -162,7 +195,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
             unsafeState = true;
         } catch (UnsatisfiedLinkError e) {
-            this.displayError("The SWI-Prolog library directory could not be located. " 
+            this.displayError("The SWI-Prolog library directory could not be located. "
                     + "This directory must contain the library \"libjpl.so\", otherwise "
                     + "ViRAGe will not work properly.");
 
@@ -174,7 +207,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                                     + "For your setup of SWI-Prolog, the typical value is \""
                                     + ConfigReader.getInstance().getSwiplLib()
                                     + "\", but this might differ on your system.");
-    
+
                     if (!newValue.isEmpty()) {
                         File file = new File(newValue);
                         if (!file.exists()) {
@@ -207,9 +240,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                     + "Please restart ViRAGe after it terminated.");
             System.exit(0);
         }
+    }
 
-        this.printSeparator();
-
+    private void printSettings() {
         System.out.println("# Reading configuration from " + ConfigReader.getConfigPath() + ".");
         System.out.println("#");
         System.out.println("# The following settings were found: ");
@@ -226,16 +259,15 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                 System.out.println("#");
                 lastPrefix = s.split("_")[0];
             }
-            
+
             String value = ConfigReader.getInstance().getAllProperties().get(s).replaceAll(";",
                     ";\n#\t");
-            
-            if(value.isEmpty()) {
+
+            if (value.isEmpty()) {
                 value = "NOT_SET";
             }
 
-            System.out.println("# " + s.toUpperCase() + ":\n#\t"
-                    + value);
+            System.out.println("# " + s.toUpperCase() + ":\n#\t" + value);
         }
 
         if (this.requestConfirmation(
@@ -260,14 +292,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                                 + "\"SYSTEM_TEXT_EDITOR\" or the environment variable \"EDITOR\".");
             }
         }
-
-        this.printSeparator();
-
-        this.clpi = new CommandLineProgressIndicator();
-    }
-
-    private void printSeparator() {
-        System.out.println(SEPARATOR);
     }
 
     /**
@@ -356,21 +380,21 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             File file = new File(path);
             if (file.isDirectory()) {
                 File[] files = file.listFiles();
-                
+
                 List<File> plFiles = new LinkedList<File>();
-                for(File child : files) {
-                    if(child.getAbsolutePath().endsWith(".pl")) {
+                for (File child : files) {
+                    if (child.getAbsolutePath().endsWith(".pl")) {
                         plFiles.add(child);
                     }
                 }
-                
+
                 if (!plFiles.isEmpty()) {
                     int idx = this.chooseAlternative("The following (E)PL files were found. "
                             + "Do you want to use one of those and skip (E)PL generation? "
                             + "This saves time if no changes to the Isabelle theories were "
                             + "made since the (E)PL file was created.", plFiles);
-                    
-                    if(idx != -1) {
+
+                    if (idx != -1) {
                         return this.extractAndOrParseFramework(plFiles.get(idx).getAbsolutePath());
                     }
                 }

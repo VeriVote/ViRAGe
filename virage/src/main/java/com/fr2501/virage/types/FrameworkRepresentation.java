@@ -9,9 +9,6 @@ import com.fr2501.virage.prolog.PrologClause;
 import com.fr2501.virage.prolog.PrologPredicate;
 
 import java.io.File;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;

@@ -1,6 +1,5 @@
 package com.fr2501.virage.core;
 
-import com.fr2501.util.SystemUtils;
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;

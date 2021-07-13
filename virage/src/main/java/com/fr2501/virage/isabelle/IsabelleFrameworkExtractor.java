@@ -7,7 +7,6 @@ import com.fr2501.virage.prolog.SimplePrologParser;
 import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.CompositionRule;
-import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;

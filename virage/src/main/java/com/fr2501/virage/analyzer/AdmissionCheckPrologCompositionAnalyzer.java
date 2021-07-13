@@ -20,11 +20,12 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologCompositionAnalyzer {
-    private static final Logger logger = LogManager.getLogger();
+    /** The logger. */
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
-     * 
+     *
      * @param framework the framework
      * @throws IOException but should actually not
      * @throws ExternalSoftwareUnavailableException if SWI-Prolog is unavailable
@@ -33,7 +34,7 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
             throws IOException, ExternalSoftwareUnavailableException {
         super(framework);
 
-        logger.info("Initialising AdmissionCheckPrologCompositionAnalyzer");
+        LOGGER.info("Initialising AdmissionCheckPrologCompositionAnalyzer");
     }
 
     @Override
@@ -54,7 +55,7 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
                 loadedMetaInterpreter = true;
             }
         } catch (IOException e) {
-            logger.error("An error occured.", e);
+            LOGGER.error("An error occured.", e);
         }
     }
 
@@ -87,8 +88,8 @@ public class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologComposi
                 resultMap = result.getValue();
             } catch (ValueNotPresentException e) {
                 // This should never happen.
-                logger.warn("This should not have happened.");
-                logger.warn(e);
+                LOGGER.warn("This should not have happened.");
+                LOGGER.warn(e);
             }
 
             String solution = resultMap.get("X");

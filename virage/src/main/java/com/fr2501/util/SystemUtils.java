@@ -9,8 +9,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fr2501.virage.core.VirageCore;
-
 /**
  * A set of system utility functions.
  *
