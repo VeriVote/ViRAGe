@@ -356,29 +356,22 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             File file = new File(path);
             if (file.isDirectory()) {
                 File[] files = file.listFiles();
-
-                outer: for (File child : files) {
-                    if (child.getAbsolutePath().endsWith(".pl")) {
-                        while (true) {
-                            String confString = "(E)PL file \"" + child.getAbsolutePath()
-                                    + "\" found. " + "Do you want to "
-                                    + "skip (E)PL generation and use this file instead? This saves time if no "
-                                    + "changes to the Isabelle theories were made since the file was "
-                                    + "created.\n";
-
-                            if (child.getAbsolutePath().endsWith(File.separator + "framework.pl")) {
-                                confString += "CAREFUL: If you choose \"no\", the previous file will "
-                                        + "be OVERWRITTEN!";
-                            }
-
-                            boolean conf = this.requestConfirmation(confString);
-
-                            if (conf) {
-                                return this.extractAndOrParseFramework(child.getAbsolutePath());
-                            } else {
-                                continue outer;
-                            }
-                        }
+                
+                List<File> plFiles = new LinkedList<File>();
+                for(File child : files) {
+                    if(child.getAbsolutePath().endsWith(".pl")) {
+                        plFiles.add(child);
+                    }
+                }
+                
+                if (!plFiles.isEmpty()) {
+                    int idx = this.chooseAlternative("The following (E)PL files were found. "
+                            + "Do you want to use one of those and skip (E)PL generation? "
+                            + "This saves time if no changes to the Isabelle theories were "
+                            + "made since the (E)PL file was created.", plFiles);
+                    
+                    if(idx != -1) {
+                        return this.extractAndOrParseFramework(plFiles.get(idx).getAbsolutePath());
                     }
                 }
             }
@@ -709,5 +702,35 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         System.out.println(writer.toString());
 
         this.requestString("Press ENTER to leave help and return to previous state.");
+    }
+    
+    public int chooseAlternative(String message, List<?> alternatives) {
+        this.displayMessage(message + "\n");
+        
+        for(int i=0; i<alternatives.size(); i++) {
+            this.displayMessage("[" + i + "] " + alternatives.get(i).toString());
+        }
+        
+        int res;
+        while(true) {
+            String input = this.requestString("Please enter a number between 0 and " 
+                    + (alternatives.size() - 1) + " or leave empty to choose none of the above.");
+            
+            if(input.isEmpty()) {
+                return -1;
+            }
+            
+            try {
+                res = Integer.parseInt(input);
+                
+                if(0 <= res && res < alternatives.size()) {
+                    return res;
+                }
+            } catch (NumberFormatException e) {
+                //NO-OP
+            }
+            
+            this.displayError("Please try again.");
+        }
     }
 }

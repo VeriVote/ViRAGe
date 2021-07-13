@@ -1,5 +1,7 @@
 package com.fr2501.virage.core;
 
+import java.util.List;
+
 import com.fr2501.virage.jobs.VirageJob;
 
 /**
@@ -26,4 +28,6 @@ public interface VirageUserInterface extends Runnable {
     public void displayMessage(String message);
 
     public void displayError(String message);
+    
+    public int chooseAlternative(String message, List<?> alternatives);
 }

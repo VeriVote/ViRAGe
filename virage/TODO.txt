@@ -18,7 +18,6 @@ display types instead of Prolog variables in the end
 add possibility to check all available properties at once
 omit anonymous variables and fill automatically
 do not display atomic properties
-display list of files instead of asking 100 times
 
 === Miscellaneous
 experiment with snap on Ubuntu
@@ -77,3 +76,5 @@ wider header in help, uniform width
 ---
 branch cleanup
 timezone
+---
+display list of files instead of asking 100 times

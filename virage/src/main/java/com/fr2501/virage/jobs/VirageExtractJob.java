@@ -39,7 +39,7 @@ public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepre
         framework.setTheoryPath(this.path);
         framework.setSessionName(this.sessionName);
 
-        File frameworkFile = new File(this.path + File.separator + "framework.pl");
+        File frameworkFile = new File(this.path + File.separator + "framework" + System.currentTimeMillis() + ".pl");
         SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(frameworkFile.getAbsolutePath(), framework.toEplString());
 
