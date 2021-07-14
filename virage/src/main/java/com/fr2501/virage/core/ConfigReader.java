@@ -588,6 +588,17 @@ public class ConfigReader {
 
     public void openConfigFileForEditing() throws ExternalSoftwareUnavailableException {
         String editorExecutable = "";
+        
+        try {
+            Process process = new ProcessBuilder("xdg-open", this.configFile.getAbsolutePath())
+                    .directory(null).start();
+            process.waitFor();
+            return;
+        } catch (IOException e) {
+            // TODO
+        } catch (InterruptedException e) {
+            // TODO
+        }
 
         if (this.properties.containsKey("SYSTEM_TEXT_EDITOR")
                 && !this.properties.getProperty("SYSTEM_TEXT_EDITOR").toString().isEmpty()) {
@@ -598,15 +609,16 @@ public class ConfigReader {
         } else {
             throw new ExternalSoftwareUnavailableException();
         }
-
+        
         try {
-            Process process = new ProcessBuilder("xdg-open", this.configFile.getAbsolutePath())
+            Process process = new ProcessBuilder(editorExecutable, this.configFile.getAbsolutePath())
                     .directory(null).start();
             process.waitFor();
-        } catch (IOException e) {
-            throw new ExternalSoftwareUnavailableException();
         } catch (InterruptedException e) {
-            throw new ExternalSoftwareUnavailableException();
+            // TODO
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 }
