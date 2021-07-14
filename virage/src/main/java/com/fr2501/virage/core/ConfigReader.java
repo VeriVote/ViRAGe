@@ -588,7 +588,7 @@ public class ConfigReader {
 
     public void openConfigFileForEditing() throws ExternalSoftwareUnavailableException {
         String editorExecutable = "";
-        
+
         try {
             Process process = new ProcessBuilder("xdg-open", this.configFile.getAbsolutePath())
                     .directory(null).start();
@@ -609,10 +609,10 @@ public class ConfigReader {
         } else {
             throw new ExternalSoftwareUnavailableException();
         }
-        
+
         try {
-            Process process = new ProcessBuilder(editorExecutable, this.configFile.getAbsolutePath())
-                    .directory(null).start();
+            Process process = new ProcessBuilder(editorExecutable,
+                    this.configFile.getAbsolutePath()).directory(null).start();
             process.waitFor();
         } catch (InterruptedException e) {
             // TODO

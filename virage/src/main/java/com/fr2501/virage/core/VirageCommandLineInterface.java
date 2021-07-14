@@ -24,9 +24,12 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.InvalidConfigVersionException;
 import com.fr2501.virage.types.Property;
 import java.io.File;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,6 +53,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     private VirageCore core;
 
     private CommandLineProgressIndicator clpi;
+    
+    private Writer outputWriter;
 
     private static final String SEPARATOR = "###########################################################";
     private static final String BANNER = "#\n"
@@ -63,6 +68,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     private Thread thread;
 
     protected VirageCommandLineInterface(VirageCore core) {
+        this.outputWriter = new BufferedWriter(new OutputStreamWriter(System.out), 256);
+
         logger.info("Initialising VirageCommandLineInterface.");
 
         this.scanner = new Scanner(System.in);
@@ -106,7 +113,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         try {
             ConfigReader.getInstance().readConfigFile(false);
         } catch (InvalidConfigVersionException e) {
-            System.out.println("# " + e.getMessage());
+            this.displayMessage("# " + e.getMessage());
             if (this.requestConfirmation(
                     "# ViRAGe can replace the settings file with an up-to-date one. "
                             + "Your old settings file will be moved to \"old_settings\", and as many settings "
@@ -124,7 +131,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                     e1.printStackTrace();
                 }
             } else {
-                System.out.println("# ViRAGe is in an unsafe state as you "
+                this.displayMessage("# ViRAGe is in an unsafe state as you "
                         + "loaded an outdated configuration.");
 
                 if (!this.requestConfirmation("Do you want to continue anyways?")) {
@@ -243,9 +250,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     private void printSettings() {
-        System.out.println("# Reading configuration from " + ConfigReader.getConfigPath() + ".");
-        System.out.println("#");
-        System.out.println("# The following settings were found: ");
+        this.displayMessage("# Reading configuration from " + ConfigReader.getConfigPath() + ".");
+        this.displayMessage("#");
+        this.displayMessage("# The following settings were found: ");
 
         List<String> propertyNames = new LinkedList<String>();
         for (String s : ConfigReader.getInstance().getAllProperties().keySet()) {
@@ -256,7 +263,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         String lastPrefix = "";
         for (String s : propertyNames) {
             if (!lastPrefix.equals(s.split("_")[0])) {
-                System.out.println("#");
+                this.displayMessage("#");
                 lastPrefix = s.split("_")[0];
             }
 
@@ -267,7 +274,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                 value = "NOT_SET";
             }
 
-            System.out.println("# " + s.toUpperCase() + ":\n#\t" + value);
+            this.displayMessage("# " + s.toUpperCase() + ":\n#\t" + value);
         }
 
         if (this.requestConfirmation(
@@ -356,7 +363,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             } else if (arg.equals("S")) {
                 job = this.createCodeGenerationQuery();
             } else {
-                System.out.println("Please try again.");
+                this.displayMessage("Please try again.");
                 continue;
             }
 
@@ -401,7 +408,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             }
 
             if (!ConfigReader.getInstance().hasIsabelle()) {
-                System.out.println("Isabelle is not available. "
+                this.displayMessage("Isabelle is not available. "
                         + "Please install Isabelle or supply an (E)PL-file directly.");
 
                 return null;
@@ -458,7 +465,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
     @Override
     public void notify(VirageJob<?> job) {
-        System.out.println(job.presentResult() + "\n");
+        this.displayMessage(job.presentResult() + "\n");
     }
 
     private VirageGenerateJob createGenerationQuery() {
@@ -585,13 +592,13 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             List<String> sortedProps = new ArrayList<String>();
             for (Property p : this.core.getFrameworkRepresentation().getProperties()) {
                 if (p.getArity() == 1) {
-                    sortedProps.add("\t" + p.getName() + "\n");
+                    sortedProps.add("\t" + p.getName());
                 }
             }
             Collections.sort(sortedProps);
 
             for (String s : sortedProps) {
-                System.out.print(s);
+                this.displayMessage(s);
             }
 
             return this.requestPropertyString();
@@ -622,19 +629,19 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         if (compositionString.isEmpty() || invalid) {
             List<String> sortedStrings = new ArrayList<String>();
             for (Component c : this.core.getFrameworkRepresentation().getComponents()) {
-                sortedStrings.add("\t" + c.toString() + "\n");
+                sortedStrings.add("\t" + c.toString());
             }
             for (ComposableModule c : this.core.getFrameworkRepresentation()
                     .getComposableModules()) {
-                sortedStrings.add("\t" + c.toString() + "\n");
+                sortedStrings.add("\t" + c.toString());
             }
             for (CompositionalStructure c : this.core.getFrameworkRepresentation()
                     .getCompositionalStructures()) {
-                sortedStrings.add("\t" + c.toString() + "\n");
+                sortedStrings.add("\t" + c.toString());
             }
             Collections.sort(sortedStrings);
             for (String s : sortedStrings) {
-                System.out.print(s);
+                this.displayMessage(s);
             }
 
             return this.requestCompositionString();
@@ -658,7 +665,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                 return false;
             }
 
-            System.out.println("Please try again.");
+            this.displayMessage("Please try again.");
         }
     }
 
@@ -669,13 +676,10 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         }
 
         while (true) {
-            System.out.print(message);
-            // Set background to white and text to black to signal input opportunity.
-            // ">" would be nicer, but this appears to conflict with mvn exec:exec,
-            // see https://github.com/mojohaus/exec-maven-plugin/issues/159.
-            System.out.println("\u001B[47m\u001B[30m");
+            this.displayMessage(message);
+            
+            this.displayInputMarker();
             final String input = this.scanner.nextLine();
-            System.out.print("\u001B[0m\n");
 
             switch (input) {
             case "?":
@@ -685,14 +689,6 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                 break;
             case "exit":
                 this.core.submit(new VirageExitJob(this, 0));
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    // NO-OP
-                } finally {
-                    this.displayMessage("Graceful exit was impossible. Terminating anyways.");
-                    System.exit(-1);
-                }
                 break;
             default:
                 if (this.clpi != null) {
@@ -703,10 +699,29 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             }
         }
     }
+    
+    private void displayInputMarker() {
+        // Set background to white and text to black to signal input opportunity.
+        // ">" would be nicer, but this appears to conflict with mvn exec:exec,
+        // see https://github.com/mojohaus/exec-maven-plugin/issues/159.
+        try {
+            this.outputWriter.append("? \033[1A\n");
+            this.outputWriter.flush();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void displayMessage(String message) {
-        System.out.println(message);
+        try {
+            this.outputWriter.append(message + "\n");
+            this.outputWriter.flush();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -723,7 +738,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             logger.error("Something went wrong.", e);
             e.printStackTrace();
         }
-        System.out.println(writer.toString());
+        this.displayMessage(writer.toString());
 
         this.requestString("Press ENTER to leave help and return to previous state.");
     }

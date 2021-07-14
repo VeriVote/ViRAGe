@@ -1,3 +1,13 @@
+== HIGH PRIORITY
+refactoring + checkstyle
+resolve synonyms
+display types instead of Prolog variables in the end
+consistency check via keySet instead of version check
+re-enable C generation
+
+--- Done
+fix line breaks, try to add '>' (still seems impossible, but colors removed)
+
 === maven stuff
 jar?
 module?
@@ -10,7 +20,6 @@ add explaining constants to (E)PL
 
 === Improve UI
 check necessity of log messages
-display types instead of Prolog variables in the end
 add possibility to check all available properties at once
 omit anonymous variables and fill automatically
 do not display atomic properties
@@ -27,7 +36,6 @@ add more C snippets
 include jEdit (or find some other solution? xdg-open?)
 termination of text editor (exit codes? descendants?)
 timestamp in config
-consistency check via keySet instead of version check
 check why scala-isabelle requires a name
 
 === FINISHED

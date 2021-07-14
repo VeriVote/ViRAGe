@@ -5,8 +5,10 @@ import static scala.concurrent.ExecutionContext.global;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
+
 import de.unruh.isabelle.control.Isabelle;
 import de.unruh.isabelle.control.Isabelle.Setup;
+import de.unruh.isabelle.control.IsabelleBuildException;
 import de.unruh.isabelle.mlvalue.ListConverter;
 import de.unruh.isabelle.mlvalue.MLFunction;
 import de.unruh.isabelle.mlvalue.MLFunction0;
@@ -61,7 +63,7 @@ public class ScalaIsabelleFacade {
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param sessionDir the session base directory
      * @param sessionName the session name
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
@@ -77,7 +79,7 @@ public class ScalaIsabelleFacade {
         List<Path> sessionDirs = new LinkedList<Path>();
         sessionDirs.add(Path.of(this.sessionDir));
 
-        this.setup = new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()), sessionName,
+        this.setup = new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()), "",
                 new Some<Path>(Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
                 Path.of(sessionDir),
                 JavaConverters.asScalaIteratorConverter(sessionDirs.iterator()).asScala().toSeq(),
@@ -85,7 +87,9 @@ public class ScalaIsabelleFacade {
 
         try {
             isabelle = new Isabelle(setup);
-        } catch (/* IsabelleBuildFailed */Exception e) {
+            // TODO Don't.
+        } catch (/*IsabelleBuild*/Exception e) {
+            e.printStackTrace();
             logger.error("Building session " + sessionName
                     + " failed. Restarting ViRAGe or building"
                     + " the session manually within Isabelle might help. If the session is supposed"
@@ -114,7 +118,7 @@ public class ScalaIsabelleFacade {
         try {
             Isabelle isabelle = new Isabelle(setup);
             isabelle.destroy();
-        } catch (/* IsabelleBuildFailed */Exception e) {
+        } catch (/* IsabelleBuild */Exception e) {
             logger.error("Building session " + sessionName
                     + " failed. Restarting ViRAGe or building"
                     + " the session manually within Isabelle might help. If the session is supposed"
