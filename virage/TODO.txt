@@ -6,11 +6,9 @@ module?
 checkstyle (mvn checkstyle:checkstyle)!
 
 === (E)PL
-document
 add explaining constants to (E)PL
 
 === Improve UI
-sanitize inputs
 check necessity of log messages
 display types instead of Prolog variables in the end
 add possibility to check all available properties at once
@@ -69,6 +67,7 @@ explain that libswipl.so is a SWI-Prolog library
 "isabelle session within it"
 explicitly request libjpl.so
 check existence of these files
+sanitize inputs
 scala via isabelle instead of isabelle scala
 wider header in help, uniform width
 ---
@@ -79,3 +78,5 @@ display list of files instead of asking 100 times
 add ROOT to path
 fixed generation of (E)PL files to tmp
 VCLI constructor
+---
+document
