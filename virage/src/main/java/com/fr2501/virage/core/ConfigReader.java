@@ -4,11 +4,13 @@ import com.fr2501.util.Pair;
 import com.fr2501.util.ProcessUtils;
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.InvalidConfigVersionException;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -109,27 +111,54 @@ public class ConfigReader {
             this.configFile.createNewFile();
             this.copyConfigToExpectedPath();
         }
-
+        
         Properties proposedProperties = new Properties();
 
         InputStream input = new FileInputStream(this.configFile);
 
         proposedProperties.load(input);
+        
+        var configCompatibility = this.checkConfigCompatibility();
 
-        if (proposedProperties.containsKey("VIRAGE_CONFIG_VERSION") && proposedProperties
-                .getProperty("VIRAGE_CONFIG_VERSION").equals(VirageCore.getVersion())) {
+        if (configCompatibility.getFirstValue()) {
             this.properties = proposedProperties;
         } else {
             if (overwriteIfNecessary) {
                 this.copyConfigToExpectedPath();
             } else {
                 throw new InvalidConfigVersionException(
-                        "Expected config version " + VirageCore.getVersion() + ", found "
-                                + proposedProperties.getProperty("VIRAGE_CONFIG_VERSION") + ".");
+                        "The settings file at " + CONFIG_PATH + " is missing the following keys: " 
+                                + StringUtils.printCollection(configCompatibility.getSecondValue()));
+                
             }
         }
 
         this.properties.load(new FileInputStream(this.configFile));
+    }
+    
+    private Pair<Boolean, List<String>> checkConfigCompatibility() throws IOException {
+        final Properties oldProperties = new Properties();
+        final InputStream input = new FileInputStream(this.configFile);
+        oldProperties.load(input);
+        
+        final Properties newProperties = new Properties();
+        final InputStream newPropertiesStream = this.getClass().getClassLoader()
+                .getResourceAsStream("settings");
+        newProperties.load(newPropertiesStream);
+        
+        List<String> missingKeys = new LinkedList<String>();
+        
+        outer: for(Object newKey : newProperties.keySet()) {
+            for(Object oldKey : oldProperties.keySet()) {
+                if(newKey.toString().equals(oldKey.toString())) {
+                    continue outer;
+                }
+            }
+            
+            missingKeys.add(newKey.toString());
+        }
+
+        return new Pair<Boolean, List<String>>(missingKeys.isEmpty(), missingKeys);
     }
 
     public void copyConfigToExpectedPath() throws IOException {

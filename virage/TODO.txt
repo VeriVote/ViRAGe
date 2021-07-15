@@ -1,12 +1,12 @@
 == HIGH PRIORITY
 refactoring + checkstyle
 resolve synonyms
-display types instead of Prolog variables in the end
-consistency check via keySet instead of version check
 re-enable C generation
 
 --- Done
 fix line breaks, try to add '>' (still seems impossible, but colors removed)
+display types instead of Prolog variables in the end
+consistency check via keySet instead of version check
 
 === maven stuff
 jar?

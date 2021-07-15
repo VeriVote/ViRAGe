@@ -135,7 +135,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
             }
 
             String solution = resultMap.get("X");
-            DecompositionTree solutionTree = new DecompositionTree(solution);
+            DecompositionTree solutionTree = DecompositionTree.parseString(solution);
 
             return new SearchResult<DecompositionTree>(result.getState(), solutionTree);
         } else {

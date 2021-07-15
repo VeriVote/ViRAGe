@@ -67,15 +67,22 @@ public class VirageGenerateJob
         }
 
         List<String> results = new LinkedList<String>();
-        for (SearchResult<DecompositionTree> tree : this.result) {
-            if (tree.hasValue()) {
-                results.add(tree.getValue().toString());
+        for (SearchResult<DecompositionTree> treeResult : this.result) {
+            if (treeResult.hasValue()) {
+                DecompositionTree tree = treeResult.getValue();
+                
+                results.add(tree.toStringWithTypesInsteadOfVariables(this.framework));
             }
         }
 
         if (results.isEmpty()) {
             return "No composition found with " + prop + " "
                     + StringUtils.printCollection(this.properties) + ".";
+        }
+        
+        if(results.contains("")) {
+            return "Any component of type " + this.properties.get(0).getParameters().get(0).getName() +
+                    " satisfies the " + prop + " " + StringUtils.printCollection(this.properties) + ".";
         }
 
         return "Generated the " + this.properties.get(0).getParameters().get(0).getName() + " \""

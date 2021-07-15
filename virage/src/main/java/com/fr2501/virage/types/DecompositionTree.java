@@ -1,6 +1,8 @@
 package com.fr2501.virage.types;
 
 import com.fr2501.util.StringUtils;
+import com.fr2501.virage.prolog.PrologPredicate;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -173,5 +175,39 @@ public class DecompositionTree {
             return false;
         }
         return true;
+    }
+    
+    public String toStringWithTypesInsteadOfVariables(FrameworkRepresentation framework) {
+        String res = "";
+
+        if(PrologPredicate.isVariable(this.label)) {
+            return res;
+        } else {
+            res += this.label;
+        }
+        
+        Component thisComponent = framework.getComponent(this.label);
+
+        if (!this.children.isEmpty()) {
+            res += "(";
+
+            for (int i = 0; i < this.children.size(); i++) {
+                final DecompositionTree currentChild = this.children.get(i);
+
+                if (PrologPredicate.isVariable(currentChild.getLabel())) {
+                    res += thisComponent.getParameters().get(i).getName() + ",";
+                } else {
+                    res += currentChild.toStringWithTypesInsteadOfVariables(framework);
+                }
+            }
+
+            if (res.endsWith(",")) {
+                res = res.substring(0, res.length() - 1);
+            }
+
+            res += ")";
+        }
+
+        return res;
     }
 }

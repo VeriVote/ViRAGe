@@ -69,7 +69,11 @@ public class PrologPredicate {
      * @return true if this is a variable, false otherwise
      */
     public boolean isVariable() {
-        return this.name.matches("[A-Z_][a-zA-Z_0-9]*");
+        return PrologPredicate.isVariable(this.name);
+    }
+    
+    public static boolean isVariable(String s) {
+        return s.matches("[A-Z_][a-zA-Z_0-9]*");
     }
 
     @Override
