@@ -1,12 +1,12 @@
 package com.fr2501.virage.analyzer;
 
-import com.fr2501.virage.prolog.PrologProof;
+import java.util.List;
+
 import com.fr2501.virage.types.BooleanWithUncertainty;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
-import java.util.List;
 
 /**
  * The interface defining the methods required for analyzing and generating compositions (e.g.

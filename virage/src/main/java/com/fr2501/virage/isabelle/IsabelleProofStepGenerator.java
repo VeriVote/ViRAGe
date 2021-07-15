@@ -41,7 +41,7 @@ public class IsabelleProofStepGenerator {
      */
     public IsabelleProofStepGenerator(IsabelleProofGenerator parent,
             Map<String, String> functionsAndDefinitions) {
-        if (PROOF_STEP_TEMPLATE.equals("")) {
+        if (PROOF_STEP_TEMPLATE.isEmpty()) {
             InputStream proofStepTemplateStream = this.getClass().getClassLoader()
                     .getResourceAsStream("proof_step.template");
             StringWriter writer = new StringWriter();

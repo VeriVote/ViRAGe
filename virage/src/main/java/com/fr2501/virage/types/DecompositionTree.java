@@ -108,7 +108,7 @@ public class DecompositionTree {
             }
         }
 
-        if (!currentChild.equals("")) {
+        if (!currentChild.isEmpty()) {
             children.add(DecompositionTree.parseString(currentChild));
         }
 

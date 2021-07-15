@@ -76,7 +76,7 @@ public class IsabelleCodeGenerator {
         this.parser = new IsabelleTheoryParser();
         this.generator = new IsabelleTheoryGenerator(framework);
 
-        if (exportTemplate.equals("")) {
+        if (exportTemplate.isEmpty()) {
             StringWriter writer = new StringWriter();
 
             InputStream exportTemplateStream = this.getClass().getClassLoader()

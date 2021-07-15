@@ -33,10 +33,10 @@ public class ProcessUtils {
         String stdErr = new String(p.getErrorStream().readAllBytes());
         String stdOut = new String(p.getInputStream().readAllBytes());
 
-        if (!stdErr.equals("")) {
+        if (!stdErr.isEmpty()) {
             logger.warn(stdErr);
         }
-        if (!stdOut.equals("")) {
+        if (!stdOut.isEmpty()) {
             logger.info(stdOut);
         }
 
@@ -65,10 +65,10 @@ public class ProcessUtils {
         String stdErr = new String(p.getErrorStream().readAllBytes());
         String stdOut = new String(p.getInputStream().readAllBytes());
 
-        if (!stdErr.equals("")) {
+        if (!stdErr.isEmpty()) {
             System.err.print(stdErr);
         }
-        if (!stdOut.equals("")) {
+        if (!stdOut.isEmpty()) {
             System.out.print(stdOut);
         }
 

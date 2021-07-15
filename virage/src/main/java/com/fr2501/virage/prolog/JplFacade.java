@@ -35,9 +35,9 @@ public class JplFacade {
 
     private PrologParser parser;
 
-    private static int fileCounter = 0;
+    private static int fileCounter;
 
-    private boolean compatibilityMode = false;
+    private boolean compatibilityMode;
 
     public JplFacade() throws ExternalSoftwareUnavailableException {
         this(JplFacade.DEFAULT_TIMEOUT);
@@ -436,7 +436,7 @@ public class JplFacade {
         replacementString = StringUtils.removeWhitespace(replacementString);
         replacementString = replacementString.substring(1, replacementString.length() - 1);
 
-        if (replacementString.equals("")) {
+        if (replacementString.isEmpty()) {
             // List of replacements is empty.
             return result;
         }

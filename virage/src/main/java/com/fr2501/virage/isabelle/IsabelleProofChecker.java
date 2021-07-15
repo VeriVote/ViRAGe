@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class IsabelleProofChecker {
-    private static IsabelleProofChecker instance = null;
+    private static IsabelleProofChecker instance;
     private static final String SERVER_NAME = "virage_isabelle_server";
 
     private static final Logger logger = LogManager.getLogger(IsabelleProofChecker.class);
@@ -56,8 +56,8 @@ public class IsabelleProofChecker {
 
     private List<String> solvers;
 
-    boolean finished = false;
-    IsabelleEvent lastEvent;
+    private boolean finished;
+    private IsabelleEvent lastEvent;
 
     private IsabelleProofChecker(String sessionName, String theoryPath)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
@@ -79,7 +79,7 @@ public class IsabelleProofChecker {
             this.initServer();
             this.initClient(sessionName, theoryPath);
 
-            if (this.rootTemplate.equals("")) {
+            if (this.rootTemplate.isEmpty()) {
                 StringWriter writer = new StringWriter();
                 InputStream rootTemplateStream = this.getClass().getClassLoader()
                         .getResourceAsStream("doc_root.template");

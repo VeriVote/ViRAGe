@@ -44,7 +44,7 @@ public class IsabelleProofGenerator {
      */
     public IsabelleProofGenerator(IsabelleTheoryGenerator parent,
             Map<String, String> functionsAndDefinitions) {
-        if (PROOF_TEMPLATE.equals("")) {
+        if (PROOF_TEMPLATE.isEmpty()) {
             InputStream proofTemplateStream = this.getClass().getClassLoader()
                     .getResourceAsStream("proof.template");
             StringWriter writer = new StringWriter();

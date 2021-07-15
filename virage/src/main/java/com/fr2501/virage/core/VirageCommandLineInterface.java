@@ -511,7 +511,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         String defaultPath = ConfigReader.getInstance().getDefaultOutputPath();
         String outputPath = this.requestString("Please specify a directory for the "
                 + "generated theory file. (Press ENTER for default: " + defaultPath + ")");
-        if (outputPath.equals("")) {
+        if (outputPath.isEmpty()) {
             outputPath = defaultPath;
         }
 

@@ -22,7 +22,7 @@ public abstract class VirageJob<T> {
 
     protected String errorMessage = "";
 
-    private static long next_id = 0;
+    private static long next_id;
 
     private long id;
 
@@ -30,7 +30,7 @@ public abstract class VirageJob<T> {
     private long timeStarted;
     private long timeFinished;
 
-    int phase = 0;
+    int phase;
 
     /**
      * Simple constructor.

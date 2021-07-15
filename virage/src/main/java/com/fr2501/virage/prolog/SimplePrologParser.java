@@ -10,7 +10,7 @@ import java.util.List;
 public class SimplePrologParser implements PrologParser {
     @Override
     public PrologClause parseSingleClause(String clause) {
-        if (clause.equals("")) {
+        if (clause.isEmpty()) {
             throw new IllegalArgumentException();
         }
 
@@ -48,7 +48,7 @@ public class SimplePrologParser implements PrologParser {
 
     @Override
     public PrologPredicate parsePredicate(String string) {
-        if (string.equals("")) {
+        if (string.isEmpty()) {
             throw new IllegalArgumentException();
         }
 
@@ -90,7 +90,7 @@ public class SimplePrologParser implements PrologParser {
             }
         }
 
-        if (!currentPredicate.equals("")) {
+        if (!currentPredicate.isEmpty()) {
             parameters.add(this.parsePredicate(currentPredicate));
         }
 
@@ -107,7 +107,7 @@ public class SimplePrologParser implements PrologParser {
     }
 
     private List<PrologPredicate> splitAntecedents(String antecedentString) {
-        if (antecedentString.equals("")) {
+        if (antecedentString.isEmpty()) {
             throw new IllegalArgumentException();
         }
         List<PrologPredicate> res = new LinkedList<PrologPredicate>();

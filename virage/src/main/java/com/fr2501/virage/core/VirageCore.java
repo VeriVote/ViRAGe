@@ -44,12 +44,12 @@ public class VirageCore implements Runnable {
     private String[] args;
     private VirageUserInterface ui;
 
-    private ExtendedPrologParser extendedPrologParser = null;
-    private VirageSearchManager searchManager = null;
-    private IsabelleTheoryGenerator theoryGenerator = null;
-    private IsabelleProofChecker checker = null;
-    private IsabelleCodeGenerator codeGenerator = null;
-    private FrameworkRepresentation framework = null;
+    private ExtendedPrologParser extendedPrologParser;
+    private VirageSearchManager searchManager;
+    private IsabelleTheoryGenerator theoryGenerator;
+    private IsabelleProofChecker checker;
+    private IsabelleCodeGenerator codeGenerator;
+    private FrameworkRepresentation framework;
 
     private BlockingQueue<VirageJob<?>> jobs;
 

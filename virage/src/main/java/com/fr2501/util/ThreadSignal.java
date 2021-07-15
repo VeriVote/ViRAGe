@@ -5,7 +5,7 @@ package com.fr2501.util;
  *
  */
 public class ThreadSignal {
-    private boolean finished = false;
+    private boolean finished;
 
     private synchronized boolean getFinished() {
         return this.finished;

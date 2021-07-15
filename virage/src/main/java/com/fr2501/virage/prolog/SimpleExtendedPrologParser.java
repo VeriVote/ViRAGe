@@ -255,7 +255,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
         for (int i = 1; i < lines.size(); i++) {
             String currentLine = lines.get(i);
 
-            if (origin.equals("")) {
+            if (origin.isEmpty()) {
                 // No origin.
                 if (!currentLine.startsWith("=")) {
                     logger.error("No origin specified for: \"" + currentLine + "\"");
@@ -265,7 +265,7 @@ public class SimpleExtendedPrologParser implements ExtendedPrologParser {
                     continue;
                 }
             } else {
-                if (name.equals("")) {
+                if (name.isEmpty()) {
                     // No name.
                     name = this.sanitizeLine(currentLine);
                     continue;

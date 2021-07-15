@@ -51,7 +51,7 @@ public class IsabelleTheoryGenerator {
     private static final String DEFAULT_PATH = "../virage/target/generated-sources";
 
     private static String THEORY_TEMPLATE = "";
-    private static int theoryCounter = 0;
+    private static int theoryCounter;
     private Map<String, String> functionsAndDefinitions;
     private FrameworkRepresentation framework;
 
@@ -71,7 +71,7 @@ public class IsabelleTheoryGenerator {
      * @param framework the framework representation
      */
     public IsabelleTheoryGenerator(String theoryPath, FrameworkRepresentation framework) {
-        if (THEORY_TEMPLATE.equals("")) {
+        if (THEORY_TEMPLATE.isEmpty()) {
             InputStream theoryTemplateStream = this.getClass().getClassLoader()
                     .getResourceAsStream("theory.template");
             StringWriter writer = new StringWriter();

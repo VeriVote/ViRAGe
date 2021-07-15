@@ -10,7 +10,6 @@ import com.fr2501.virage.types.InvalidConfigVersionException;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -537,7 +536,7 @@ public class ConfigReader {
                     }
                 }
 
-                if (value.equals("")) {
+                if (value.isEmpty()) {
 
                     for (String line : lines) {
                         if (line.startsWith("PLARCH")) {
@@ -545,7 +544,7 @@ public class ConfigReader {
                         }
                     }
 
-                    if (value.equals("")) {
+                    if (value.isEmpty()) {
                         logger.error("$PLARCH is undefined as well.");
                         throw new ExternalSoftwareUnavailableException();
                     } else {

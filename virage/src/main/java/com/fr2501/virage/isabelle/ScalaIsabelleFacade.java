@@ -8,7 +8,6 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
 
 import de.unruh.isabelle.control.Isabelle;
 import de.unruh.isabelle.control.Isabelle.Setup;
-import de.unruh.isabelle.control.IsabelleBuildException;
 import de.unruh.isabelle.mlvalue.ListConverter;
 import de.unruh.isabelle.mlvalue.MLFunction;
 import de.unruh.isabelle.mlvalue.MLFunction0;
@@ -20,6 +19,7 @@ import de.unruh.isabelle.pure.Context;
 import de.unruh.isabelle.pure.Implicits;
 import de.unruh.isabelle.pure.Theory;
 import de.unruh.isabelle.pure.Thm;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;

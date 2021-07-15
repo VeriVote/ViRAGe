@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
     private static final Logger logger = LogManager.getLogger();
 
-    protected static boolean loadedMetaInterpreter = false;
+    protected static boolean loadedMetaInterpreter;
 
     protected static final long DEFAULT_TIMEOUT = 10000;
     protected JplFacade facade;
