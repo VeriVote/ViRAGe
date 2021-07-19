@@ -5,6 +5,7 @@ import com.fr2501.virage.jobs.VirageAnalyzeJob;
 import com.fr2501.virage.jobs.VirageDummyJob;
 import com.fr2501.virage.jobs.VirageExitJob;
 import com.fr2501.virage.jobs.VirageExtractJob;
+import com.fr2501.virage.jobs.VirageGenerateCCodeJob;
 import com.fr2501.virage.jobs.VirageGenerateJob;
 import com.fr2501.virage.jobs.VirageIsabelleGenerateJob;
 import com.fr2501.virage.jobs.VirageIsabelleGenerateScalaJob;
@@ -175,8 +176,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                 while (true) {
                     newValue = this.requestString("Please input the path to libswipl.so. "
                             + "For your setup of SWI-Prolog, typical values are "
-                            + "\"/usr/lib/libswipl.so\" or \""
-                            + ConfigReader.getInstance().getSwiplLib() + "libswipl.so\""
+                            + this.addQuotationsToPath("/usr/lib/libswipl.so") + "or "
+                            + this.addQuotationsToPath(ConfigReader.getInstance().getSwiplLib() + "libswipl.so")
                             + ", but this might differ on your system.");
 
                     if (!newValue.isEmpty()) {
@@ -211,9 +212,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                 while (true) {
                     newValue = this.requestString(
                             "Please input the path to the SWI-Prolog " + "library directory. "
-                                    + "For your setup of SWI-Prolog, the typical value is \""
-                                    + ConfigReader.getInstance().getSwiplLib()
-                                    + "\", but this might differ on your system.");
+                                    + "For your setup of SWI-Prolog, the typical value is "
+                                    + this.addQuotationsToPath(ConfigReader.getInstance().getSwiplLib())
+                                    + ", but this might differ on your system.");
 
                     if (!newValue.isEmpty()) {
                         File file = new File(newValue);
@@ -250,7 +251,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     private void printSettings() {
-        this.displayMessage("# Reading configuration from " + ConfigReader.getConfigPath() + ".");
+        this.displayMessage("# Reading configuration from " + this.addQuotationsToPath(ConfigReader.getConfigPath()) + ".");
         this.displayMessage("#");
         this.displayMessage("# The following settings were found: ");
 
@@ -279,10 +280,11 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
         if (this.requestConfirmation(
                 "# Do you want to edit these settings? " + "This will open the configuration "
-                        + "file in a text editor and require a restart of ViRAGe.")) {
+                        + "file via \'xdg-open\' or your chosen text editor"
+                        + " and require a restart of ViRAGe.")) {
 
             try {
-                this.displayMessage("# If ViRAGe freezes without opening an editor, "
+                this.displayMessage("# If ViRAGe freezes or terminates without opening an editor, "
                         + "please try another one by setting \"SYSTEM_TEXT_EDITOR\" in "
                         + ConfigReader.getConfigPath() + ". At the moment, only windowed "
                         + "editors (mousepad, ...) are supported, not in-terminal ones "
@@ -322,8 +324,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         while (true) {
             if (ConfigReader.getInstance().hasPathToRootFile() && firstTry && this
                     .requestConfirmation("Configuration option \"ISABELLE_PATH_TO_ROOT_FILE\" "
-                            + "is specified as \"" + ConfigReader.getInstance().getPathToRootFile()
-                            + "\". "
+                            + "is specified as " + this.addQuotationsToPath(ConfigReader.getInstance().getPathToRootFile())
+                            + ". "
                             + "Do you want to use this Isabelle ROOT file to generate an (E)PL file?")) {
                 path = ConfigReader.getInstance().getPathToRootFile();
 
@@ -331,7 +333,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             } else {
                 path = this.requestString("Please input the path to an (E)PL file or "
                         + "an Isabelle ROOT file containing exactly one session specification. "
-                        + "(Press ENTER for default: " + defaultPath + ")");
+                        + "(Press ENTER for default: " + this.addQuotationsToPath(defaultPath) + ")");
             }
 
             if (path.equals("")) {
@@ -347,7 +349,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             String arg = this
                     .requestString("Do you want to (g)enerate a composition, (a)nalyze one, "
                             + "(p)rove a claim,\n"
-                            + "generate (I)sabelle proofs or generate (S)cala code?");
+                            + "generate (I)sabelle proofs, generate (S)cala code or generate (C) code?");
 
             VirageJob<?> job = null;
 
@@ -362,6 +364,8 @@ public class VirageCommandLineInterface implements VirageUserInterface {
                 job = this.createIsabelleQuery();
             } else if (arg.equals("S")) {
                 job = this.createCodeGenerationQuery();
+            } else if (arg.equals("C")) {
+                job = this.createCCodeGenerationQuery();
             } else {
                 this.displayMessage("Please try again.");
                 continue;
@@ -385,6 +389,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
             }
 
             File file = new File(path);
+            String newFileName = null;
             if (file.isDirectory()) {
                 File[] files = file.listFiles();
 
@@ -403,6 +408,20 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
                     if (idx != -1) {
                         return this.extractAndOrParseFramework(plFiles.get(idx).getAbsolutePath());
+                    } else {
+                        while(true) {
+                            newFileName = this.requestString("Please enter a name for the new file.");
+                            
+                            if(!newFileName.endsWith(".pl")) {
+                                newFileName += ".pl";
+                                
+                                File checkExistenceFile = new File(path + File.separator + newFileName);
+                                if(checkExistenceFile.exists() && this.requestConfirmation("File exists already. " 
+                                        + "Do you want to overwrite it?")) {
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -416,20 +435,20 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
             String sessionName;
             if (ConfigReader.getInstance().hasSessionName() && this.requestConfirmation(
-                    "Configuration option " + "\"ISABELLE_SESSION_NAME\" is specified " + "as \""
-                            + ConfigReader.getInstance().getSessionName()
-                            + "\". Is this the name of the session specified within the given ROOT file?")) {
+                    "Configuration option " + "\"ISABELLE_SESSION_NAME\" is specified " + "as "
+                            + this.addQuotationsToPath(ConfigReader.getInstance().getSessionName())
+                            + ". Is this the name of the session specified within the given ROOT file?")) {
 
                 sessionName = ConfigReader.getInstance().getSessionName();
 
                 this.displayMessage("Extracting (E)PL file from session \"" + sessionName + "\" at "
-                        + path + ".\n" + "This might take some time.");
+                        + this.addQuotationsToPath(path) + ".\n" + "This might take some time.");
             } else {
                 sessionName = this.requestString(
                         "Please input the name of " + "the session within this directory.");
             }
 
-            VirageExtractJob extractJob = new VirageExtractJob(this, path, sessionName);
+            VirageExtractJob extractJob = new VirageExtractJob(this, path, sessionName, newFileName);
             this.core.submit(extractJob);
             extractJob.waitFor();
             if (extractJob.getState().equals(VirageJobState.FAILED)) {
@@ -510,7 +529,7 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
         String defaultPath = ConfigReader.getInstance().getDefaultOutputPath();
         String outputPath = this.requestString("Please specify a directory for the "
-                + "generated theory file. (Press ENTER for default: " + defaultPath + ")");
+                + "generated theory file. (Press ENTER for default: " + this.addQuotationsToPath(defaultPath) + ")");
         if (outputPath.isEmpty()) {
             outputPath = defaultPath;
         }
@@ -560,6 +579,13 @@ public class VirageCommandLineInterface implements VirageUserInterface {
         String composition = this.requestCompositionString();
 
         VirageIsabelleGenerateScalaJob res = new VirageIsabelleGenerateScalaJob(this, composition);
+        return res;
+    }
+    
+    private VirageGenerateCCodeJob createCCodeGenerationQuery() {
+        String composition = this.requestCompositionString();
+
+        VirageGenerateCCodeJob res = new VirageGenerateCCodeJob(this, composition);
         return res;
     }
 
@@ -772,5 +798,9 @@ public class VirageCommandLineInterface implements VirageUserInterface {
 
             this.displayError("Please try again.");
         }
+    }
+    
+    private String addQuotationsToPath(String pathString) {
+        return "\'" + pathString + "\'";
     }
 }

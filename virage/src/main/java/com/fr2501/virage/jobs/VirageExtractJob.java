@@ -14,6 +14,7 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
 public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepresentation> {
     private String sessionName;
     private String path;
+    private String fileName;
 
     /**
      * Simple constructor.
@@ -23,17 +24,22 @@ public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepre
      * @param sessionName the name of the session
      */
     public VirageExtractJob(VirageUserInterface issuer, String path, String sessionName) {
+        this(issuer, path, sessionName, null);
+    }
+    
+    public VirageExtractJob(VirageUserInterface issuer, String path, String sessionName, String fileName) {
         super(issuer);
 
         this.sessionName = sessionName;
         this.path = path;
+        this.fileName = fileName;
     }
 
     @Override
     protected void concreteExecute()
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
         IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
-        FrameworkRepresentation framework = extractor.extract(this.path, this.sessionName);
+        FrameworkRepresentation framework = extractor.extract(this.path, this.sessionName, this.fileName);
         framework.setTheoryPath(this.path);
         framework.setSessionName(this.sessionName);
 
@@ -47,7 +53,7 @@ public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepre
 
     @Override
     public String presentConcreteResult() {
-        return "Extracted (E)PL file " + this.result.getAbsolutePath() + " from " + this.path + ".";
+        return "Extracted (E)PL file \'" + this.result.getAbsolutePath() + "\' from \'" + this.path + "\'.";
     }
 
     @Override

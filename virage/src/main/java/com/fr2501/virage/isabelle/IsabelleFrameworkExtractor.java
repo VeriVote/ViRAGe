@@ -49,12 +49,16 @@ public class IsabelleFrameworkExtractor {
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
      * @throws IsabelleBuildFailedException if the session build fails
      */
-    public FrameworkRepresentation extract(String sessionDir, String sessionName)
+    public FrameworkRepresentation extract(String sessionDir, String sessionName, String fileName)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+        if(fileName == null) {
+            return this.extract(sessionDir, sessionName);
+        }
+        
         ScalaIsabelleFacade facade = new ScalaIsabelleFacade(sessionDir, sessionName);
         
         File plFile = new File(
-                sessionDir + File.separator + "framework" + System.currentTimeMillis() + ".pl");
+                sessionDir + File.separator + fileName);
         try {
             plFile.createNewFile();
         } catch (IOException e) {
@@ -79,6 +83,14 @@ public class IsabelleFrameworkExtractor {
 
         return framework;
     }
+    
+    public FrameworkRepresentation extract(String sessionDir, String sessionName)
+            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+        
+        return this.extract(sessionDir, sessionName, "framework" + System.currentTimeMillis() + ".pl");
+    }
+    
+    
 
     private void convertComponents(FrameworkRepresentation framework,
             Map<String, Map<String, String>> compsRaw) {

@@ -7,6 +7,7 @@ import java.util.List;
  * A compositional structure for the modular framework.
  *
  */
+@Deprecated
 public class CompositionalStructure implements TypedAndParameterized {
     private String name;
     private List<ComponentType> parameters;

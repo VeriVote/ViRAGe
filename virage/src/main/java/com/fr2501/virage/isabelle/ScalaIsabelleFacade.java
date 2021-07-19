@@ -79,7 +79,7 @@ public class ScalaIsabelleFacade {
         List<Path> sessionDirs = new LinkedList<Path>();
         sessionDirs.add(Path.of(this.sessionDir));
 
-        this.setup = new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()), "",
+        this.setup = new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()), sessionName,
                 new Some<Path>(Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
                 Path.of(sessionDir),
                 JavaConverters.asScalaIteratorConverter(sessionDirs.iterator()).asScala().toSeq(),

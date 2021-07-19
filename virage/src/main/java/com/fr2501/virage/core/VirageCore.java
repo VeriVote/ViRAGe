@@ -1,6 +1,7 @@
 package com.fr2501.virage.core;
 
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
+import com.fr2501.virage.beast.CCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
@@ -48,7 +49,8 @@ public class VirageCore implements Runnable {
     private VirageSearchManager searchManager;
     private IsabelleTheoryGenerator theoryGenerator;
     private IsabelleProofChecker checker;
-    private IsabelleCodeGenerator codeGenerator;
+    private IsabelleCodeGenerator scalaCodeGenerator;
+    private CCodeGenerator cCodeGenerator;
     private FrameworkRepresentation framework;
 
     private BlockingQueue<VirageJob<?>> jobs;
@@ -82,7 +84,7 @@ public class VirageCore implements Runnable {
     }
 
     public IsabelleCodeGenerator getIsabelleCodeGenerator() {
-        return this.codeGenerator;
+        return this.scalaCodeGenerator;
     }
 
     public FrameworkRepresentation getFrameworkRepresentation() {
@@ -200,6 +202,7 @@ public class VirageCore implements Runnable {
             // this.searchManager.addAnalyzer(new SBMCCompositionAnalyzer(framework));
             this.theoryGenerator = new IsabelleTheoryGenerator(framework.getTheoryPath(),
                     framework);
+            this.cCodeGenerator = new CCodeGenerator(this.framework);
         } catch (IOException e) {
             logger.error(e);
 
@@ -260,7 +263,7 @@ public class VirageCore implements Runnable {
                         framework.getTheoryPath());
                 this.checker.setSolvers(ConfigReader.getInstance().getIsabelleTactics());
 
-                this.codeGenerator = new IsabelleCodeGenerator(this.framework);
+                this.scalaCodeGenerator = new IsabelleCodeGenerator(this.framework);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -300,5 +303,9 @@ public class VirageCore implements Runnable {
 
     public static String getVersion() {
         return _VERSION;
+    }
+    
+    public CCodeGenerator getCCodeGenerator() {
+        return this.cCodeGenerator;
     }
 }
