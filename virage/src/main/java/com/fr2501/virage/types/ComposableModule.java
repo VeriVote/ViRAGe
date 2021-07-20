@@ -8,11 +8,12 @@ import java.util.List;
  */
 @Deprecated
 public class ComposableModule extends Component {
-    public ComposableModule(ComponentType type, String name) {
+    public ComposableModule(final ComponentType type, final String name) {
         super(type, name);
     }
 
-    public ComposableModule(ComponentType type, String name, List<ComponentType> parameters) {
+    public ComposableModule(final ComponentType type, final String name,
+            final List<ComponentType> parameters) {
         super(type, name, parameters);
     }
 }

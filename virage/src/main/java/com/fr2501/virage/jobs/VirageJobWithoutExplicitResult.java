@@ -7,12 +7,17 @@ import com.fr2501.virage.core.VirageUserInterface;
  *
  */
 public abstract class VirageJobWithoutExplicitResult extends VirageJob<Void> {
-    public VirageJobWithoutExplicitResult(VirageUserInterface issuer) {
+    /**
+     * Simple constructor.
+     *
+     * @param issuer the issuing ui.
+     */
+    public VirageJobWithoutExplicitResult(final VirageUserInterface issuer) {
         super(issuer);
     }
 
     @Override
-    public Void getResult() {
+    public final Void getResult() {
         throw new UnsupportedOperationException();
     }
 }

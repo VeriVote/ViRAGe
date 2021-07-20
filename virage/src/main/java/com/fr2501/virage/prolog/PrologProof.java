@@ -1,17 +1,19 @@
 package com.fr2501.virage.prolog;
 
-import com.fr2501.util.StringUtils;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.fr2501.util.StringUtils;
 
 /**
  * Using the meta interpreter in src/java/main/resources, this class is able to make the Prolog
  * search process more transparent, exposing goals and subgoals for every proof step.
  *
  */
-public class PrologProof {
+public final class PrologProof {
     private static final Logger logger = LogManager.getLogger(PrologProof.class);
 
     private static final String SUBGOAL = "subgoal";
@@ -19,36 +21,34 @@ public class PrologProof {
     private static final String BRANCH_CLOSE = "true";
     private static final String SEPARATOR = ",";
 
-    private String goal;
-    private List<PrologProof> subgoals;
+    private final String goal;
+    private final List<PrologProof> subgoals;
 
-    private PrologProof(String goal) {
+    private PrologProof(final String goal) {
         this(goal, new LinkedList<PrologProof>());
     }
 
-    private PrologProof(String goal, List<PrologProof> subgoals) {
+    private PrologProof(final String goal, final List<PrologProof> subgoals) {
         this.goal = goal;
         this.subgoals = subgoals;
     }
 
     /**
      * Translates a String given by the meta interpreter to a PrologProof object.
-     * 
+     *
      * @param string the string
      * @return the PrologProof object
      */
-    public static PrologProof createProofFromString(String string) {
-        logger.debug(string);
-
-        String[] splits = string.split(SUBGOAL);
+    public static PrologProof createProofFromString(final String string) {
+        final String[] splits = string.split(SUBGOAL);
         // First entry of splits is empty, remove it.
-        String[] subgoals = new String[splits.length - 1];
+        final String[] subgoals = new String[splits.length - 1];
         for (int i = 1; i < splits.length; i++) {
             subgoals[i - 1] = splits[i];
         }
 
-        boolean[] lastOfLevel = new boolean[subgoals.length];
-        boolean[] closesBranch = new boolean[subgoals.length];
+        final boolean[] lastOfLevel = new boolean[subgoals.length];
+        final boolean[] closesBranch = new boolean[subgoals.length];
 
         for (int i = 0; i < subgoals.length; i++) {
             if (i < subgoals.length - 1) {
@@ -66,7 +66,7 @@ public class PrologProof {
             closesBranch[i] = subgoals[i].contains(BRANCH_CLOSE);
             if (closesBranch[i]) {
                 // Remove "true" and following brackets, they have served their purpose.
-                String regex = SEPARATOR + BRANCH_CLOSE + ".*";
+                final String regex = SEPARATOR + BRANCH_CLOSE + ".*";
                 subgoals[i] = subgoals[i].replaceAll(regex, "");
             }
 
@@ -84,8 +84,8 @@ public class PrologProof {
             }
         }
 
-        boolean[] closed = new boolean[subgoals.length];
-        int[] levels = new int[subgoals.length];
+        final boolean[] closed = new boolean[subgoals.length];
+        final int[] levels = new int[subgoals.length];
         int currentLevel = 0;
 
         for (int i = 0; i < subgoals.length; i++) {
@@ -116,10 +116,10 @@ public class PrologProof {
             }
         }
 
-        int[] parents = new int[subgoals.length];
+        final int[] parents = new int[subgoals.length];
         parents[0] = -1;
         for (int i = 1; i < subgoals.length; i++) {
-            int level = levels[i];
+            final int level = levels[i];
 
             for (int j = i; j >= 0; j--) {
                 if (levels[j] < level) {
@@ -129,7 +129,7 @@ public class PrologProof {
             }
         }
 
-        PrologProof[] proofs = new PrologProof[subgoals.length];
+        final PrologProof[] proofs = new PrologProof[subgoals.length];
         for (int i = 0; i < subgoals.length; i++) {
             proofs[i] = new PrologProof(subgoals[i]);
         }
@@ -141,11 +141,11 @@ public class PrologProof {
             }
         }
 
-        PrologProof res = proofs[0];
+        final PrologProof res = proofs[0];
         return res;
     }
 
-    private void addSubgoal(PrologProof subgoal) {
+    private void addSubgoal(final PrologProof subgoal) {
         this.subgoals.add(subgoal);
     }
 
@@ -162,7 +162,7 @@ public class PrologProof {
         return this.toString(0);
     }
 
-    private String toString(int n) {
+    private String toString(final int n) {
         String res = "";
 
         for (int i = 0; i < n; i++) {
@@ -171,7 +171,7 @@ public class PrologProof {
 
         res += this.goal;
 
-        for (PrologProof subgoal : this.subgoals) {
+        for (final PrologProof subgoal : this.subgoals) {
             res += "\n" + subgoal.toString(n + 1);
         }
 

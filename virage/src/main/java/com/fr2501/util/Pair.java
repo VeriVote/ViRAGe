@@ -6,11 +6,11 @@ package com.fr2501.util;
  * @param <S> type of the first value
  * @param <T> type of the second value
  */
-public class Pair<S, T> {
-    private S firstValue;
-    private T secondValue;
+public final class Pair<S, T> {
+    private final S firstValue;
+    private final T secondValue;
 
-    public Pair(S firstValue, T secondValue) {
+    public Pair(final S firstValue, final T secondValue) {
         this.firstValue = firstValue;
         this.secondValue = secondValue;
     }

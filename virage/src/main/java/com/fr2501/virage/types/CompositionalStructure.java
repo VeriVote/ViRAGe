@@ -1,19 +1,21 @@
 package com.fr2501.virage.types;
 
-import com.fr2501.util.StringUtils;
 import java.util.List;
+
+import com.fr2501.util.StringUtils;
 
 /**
  * A compositional structure for the modular framework.
  *
  */
 @Deprecated
-public class CompositionalStructure implements TypedAndParameterized {
-    private String name;
-    private List<ComponentType> parameters;
-    private ComponentType type;
+public final class CompositionalStructure implements TypedAndParameterized {
+    private final String name;
+    private final List<ComponentType> parameters;
+    private final ComponentType type;
 
-    public CompositionalStructure(String name, ComponentType type, List<ComponentType> parameters) {
+    public CompositionalStructure(final String name, final ComponentType type,
+            final List<ComponentType> parameters) {
         this.name = name;
         this.parameters = parameters;
         this.type = type;
@@ -29,15 +31,15 @@ public class CompositionalStructure implements TypedAndParameterized {
     }
 
     @Override
-    public String toString() {
-        String res = "(" + this.type + ") " + this.name + "("
-                + StringUtils.printCollection(this.parameters) + ")";
-
-        return res;
+    public ComponentType getType() {
+        return this.type;
     }
 
     @Override
-    public ComponentType getType() {
-        return this.type;
+    public String toString() {
+        final String res = "(" + this.type + ") " + this.name + "("
+                + StringUtils.printCollection(this.parameters) + ")";
+
+        return res;
     }
 }

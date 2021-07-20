@@ -1,36 +1,48 @@
 package com.fr2501.virage.jobs;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.core.ConfigReader;
-import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * A {@link VirageJob} used to prove claims about properties of compositions.
  *
  */
-public class VirageProveJob extends VirageJobWithExplicitResult<List<List<CompositionProof>>> {
-    private List<String> propertyStrings;
+public final class VirageProveJob extends VirageJobWithExplicitResult<List<List<CompositionProof>>> {
+    /**
+     * List of String representations of desired properties.
+     */
+    private final List<String> propertyStrings;
+    /**
+     * List of desired properties.
+     */
     private List<Property> properties;
-    private DecompositionTree tree;
+    /**
+     * Composition to be checked.
+     */
+    private final DecompositionTree tree;
 
+    /**
+     * The framework representation.
+     */
     private FrameworkRepresentation framework;
-    private VirageSearchManager manager;
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param issuer the issuing ui
      * @param tree the tree
      * @param properties the properties
      */
-    public VirageProveJob(VirageUserInterface issuer, String tree, List<String> properties) {
+    public VirageProveJob(final VirageUserInterface issuer, final String tree,
+            final List<String> properties) {
         super(issuer);
 
         this.tree = DecompositionTree.parseString(tree);
@@ -40,25 +52,24 @@ public class VirageProveJob extends VirageJobWithExplicitResult<List<List<Compos
     @Override
     public void concreteExecute() {
         this.framework = this.executingCore.getFrameworkRepresentation();
-        this.manager = this.executingCore.getSearchManager();
 
         this.properties = new LinkedList<Property>();
 
-        for (String s : this.propertyStrings) {
+        for (final String s : this.propertyStrings) {
             this.properties.add(this.framework.getProperty(s));
         }
 
-        this.result = this.manager.proveClaims(tree, properties);
-    }
-
-    @Override
-    public List<List<CompositionProof>> getResult() {
-        return this.result;
+        this.result = this.executingCore.getSearchManager().proveClaims(this.tree, this.properties);
     }
 
     @Override
     public boolean externalSoftwareAvailable() {
-        return (ConfigReader.getInstance().hasJpl());
+        return ConfigReader.getInstance().hasJpl();
+    }
+
+    @Override
+    public String getDescription() {
+        return "Searching proof ...";
     }
 
     @Override
@@ -68,14 +79,9 @@ public class VirageProveJob extends VirageJobWithExplicitResult<List<List<Compos
             prop = "property";
         }
 
-        String res = "Proof found. " + this.tree.toString() + " satisfies the " + prop + " "
+        final String res = "Proof found. " + this.tree.toString() + " satisfies the " + prop + " "
                 + StringUtils.printCollection(this.properties) + ".";
 
         return res;
-    }
-
-    @Override
-    public String getDescription() {
-        return "Searching proof ...";
     }
 }

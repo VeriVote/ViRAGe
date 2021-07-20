@@ -7,52 +7,101 @@ import java.util.List;
  * A simple data object to contain a single Prolog predicate and its parameters.
  *
  */
-public class PrologPredicate {
+public final class PrologPredicate {
     private String name;
-    private List<PrologPredicate> parameters;
-    private int arity;
+    private final List<PrologPredicate> parameters;
+    private final int arity;
     private int depth;
 
     /**
+     * Creates a predicate without any parameters (arity 0).
+     *
+     * @param name the name of the predicate
+     */
+    public PrologPredicate(final String name) {
+        this.name = name;
+        this.parameters = new LinkedList<PrologPredicate>();
+        this.arity = 0;
+    }
+
+    /**
      * Simple constructor.
-     * 
+     *
      * @param name the name
      * @param parameters the parameters
      */
-    public PrologPredicate(String name, List<PrologPredicate> parameters) {
+    public PrologPredicate(final String name, final List<PrologPredicate> parameters) {
         this.name = name;
         this.parameters = parameters;
         this.arity = parameters.size();
 
         this.depth = 0;
-        for (PrologPredicate parameter : this.parameters) {
+        for (final PrologPredicate parameter : this.parameters) {
             if (parameter.depth >= this.depth) {
                 this.depth = parameter.depth + 1;
             }
         }
     }
 
+    public static boolean isVariable(final String s) {
+        return s.matches("[A-Z_][a-zA-Z_0-9]*");
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final PrologPredicate other = (PrologPredicate) obj;
+        if (this.arity != other.arity) {
+            return false;
+        }
+        if (this.name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!this.name.equals(other.name)) {
+            return false;
+        }
+        if (this.parameters == null) {
+            if (other.parameters != null) {
+                return false;
+            }
+        }
+
+        if (this.parameters.size() != other.parameters.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < this.parameters.size(); i++) {
+            if (!this.parameters.get(i).equals(other.parameters.get(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
-     * Creates a predicate without any parameters (arity 0).
-     * 
-     * @param name the name of the predicate
+     * Returns all children of a predicate.
+     *
+     * @return the children
      */
-    public PrologPredicate(String name) {
-        this.name = name;
-        this.parameters = new LinkedList<PrologPredicate>();
-        this.arity = 0;
-    }
+    public List<PrologPredicate> getAllChildren() {
+        final List<PrologPredicate> res = new LinkedList<PrologPredicate>();
+        res.add(this);
 
-    public String getName() {
-        return this.name;
-    }
+        for (final PrologPredicate child : this.parameters) {
+            res.addAll(child.getAllChildren());
+        }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<PrologPredicate> getParameters() {
-        return this.parameters;
+        return res;
     }
 
     public int getArity() {
@@ -63,17 +112,35 @@ public class PrologPredicate {
         return this.depth;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public List<PrologPredicate> getParameters() {
+        return this.parameters;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.arity;
+        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        result = prime * result + ((this.parameters == null) ? 0 : this.parameters.hashCode());
+        return result;
+    }
+
     /**
      * Checks whether a PrologPredicate is a variable.
-     * 
+     *
      * @return true if this is a variable, false otherwise
      */
     public boolean isVariable() {
         return PrologPredicate.isVariable(this.name);
     }
-    
-    public static boolean isVariable(String s) {
-        return s.matches("[A-Z_][a-zA-Z_0-9]*");
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     @Override
@@ -95,72 +162,5 @@ public class PrologPredicate {
         }
 
         return res;
-    }
-
-    /**
-     * Returns all children of a predicate.
-     * 
-     * @return the children
-     */
-    public List<PrologPredicate> getAllChildren() {
-        List<PrologPredicate> res = new LinkedList<PrologPredicate>();
-        res.add(this);
-
-        for (PrologPredicate child : this.parameters) {
-            res.addAll(child.getAllChildren());
-        }
-
-        return res;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + arity;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        PrologPredicate other = (PrologPredicate) obj;
-        if (arity != other.arity) {
-            return false;
-        }
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        if (parameters == null) {
-            if (other.parameters != null) {
-                return false;
-            }
-        }
-
-        if (this.parameters.size() != other.parameters.size()) {
-            return false;
-        }
-
-        for (int i = 0; i < this.parameters.size(); i++) {
-            if (!this.parameters.get(i).equals(other.parameters.get(i))) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

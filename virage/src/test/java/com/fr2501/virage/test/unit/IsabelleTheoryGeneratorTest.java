@@ -1,5 +1,13 @@
 package com.fr2501.virage.test.unit;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
@@ -11,18 +19,12 @@ import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Test suite for {@link IsabelleTheoryGenerator}.
  *
  */
-public class IsabelleTheoryGeneratorTest {
+public final class IsabelleTheoryGeneratorTest {
     private static final String PATH = "src/test/resources/framework.pl";
     private static final String SMC = "sequential_composition(" + "loop_composition("
             + "parallel_composition(" + "sequential_composition(" + "pass_module(2,_),"
@@ -34,7 +36,7 @@ public class IsabelleTheoryGeneratorTest {
 
     /**
      * Initialization for the following tests.
-     * 
+     *
      * @throws IOException if file system interaction fails
      * @throws MalformedEplFileException if the input file violates the EPL format
      * @throws ExternalSoftwareUnavailableException if Isabelle or swipl is unavailable
@@ -42,61 +44,61 @@ public class IsabelleTheoryGeneratorTest {
     @Before
     public void init()
             throws IOException, MalformedEplFileException, ExternalSoftwareUnavailableException {
-        ExtendedPrologParser parser = new SimpleExtendedPrologParser();
+        final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
         this.framework = parser.parseFramework(new File(PATH), false);
 
         this.analyzer = new SimplePrologCompositionAnalyzer(this.framework);
     }
 
-    @Test
-    public void testSmcProof() {
-        List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("monotonicity"));
-        properties.add(this.framework.getProperty("electing"));
+    protected void proveClaims(final List<Property> properties, final String composition) {
+        final List<CompositionProof> proofs = this.analyzer
+                .proveClaims(DecompositionTree.parseString(composition), properties);
 
-        proveClaims(properties, SMC);
-    }
+        final IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator(
+                "src/test/resources/theories/", this.framework);
 
-    @Test
-    public void testVerySimpleProof() {
-        List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("electing"));
-
-        proveClaims(properties, "elect_module");
-    }
-
-    @Test
-    public void testSimpleProof() {
-        List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("electing"));
-        properties.add(this.framework.getProperty("monotonicity"));
-
-        proveClaims(properties, "sequential_composition(pass_module(1,_),elect_module)");
+        generator.generateTheoryFile(composition, proofs);
     }
 
     /*
      * Test disabled after introduction of settings
-     * 
+     *
      * @Test
      */
     /**
      * Tests proof of condorcet_consistency for an elimination module.
      */
     public void testCondorcetProof() {
-        List<Property> properties = new LinkedList<Property>();
+        final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty("condorcet_consistency"));
 
-        proveClaims(properties,
+        this.proveClaims(properties,
                 "sequential_composition(elimination_module(copeland_score,max,less), elect_module)");
     }
 
-    protected void proveClaims(List<Property> properties, String composition) {
-        List<CompositionProof> proofs = analyzer.proveClaims(DecompositionTree.parseString(composition),
-                properties);
+    @Test
+    public void testSimpleProof() {
+        final List<Property> properties = new LinkedList<Property>();
+        properties.add(this.framework.getProperty("electing"));
+        properties.add(this.framework.getProperty("monotonicity"));
 
-        IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator(
-                "src/test/resources/theories/", this.framework);
+        this.proveClaims(properties, "sequential_composition(pass_module(1,_),elect_module)");
+    }
 
-        generator.generateTheoryFile(composition, proofs);
+    @Test
+    public void testSmcProof() {
+        final List<Property> properties = new LinkedList<Property>();
+        properties.add(this.framework.getProperty("monotonicity"));
+        properties.add(this.framework.getProperty("electing"));
+
+        this.proveClaims(properties, SMC);
+    }
+
+    @Test
+    public void testVerySimpleProof() {
+        final List<Property> properties = new LinkedList<Property>();
+        properties.add(this.framework.getProperty("electing"));
+
+        this.proveClaims(properties, "elect_module");
     }
 }

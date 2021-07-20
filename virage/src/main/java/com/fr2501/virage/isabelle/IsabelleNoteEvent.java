@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class IsabelleNoteEvent extends IsabelleEvent {
 
-    public IsabelleNoteEvent(Map<String, String> parameters) {
+    public IsabelleNoteEvent(final Map<String, String> parameters) {
         super(parameters);
     }
 

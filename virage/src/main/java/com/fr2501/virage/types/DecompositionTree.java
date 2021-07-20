@@ -1,46 +1,34 @@
 package com.fr2501.virage.types;
 
-import com.fr2501.util.StringUtils;
-import com.fr2501.virage.prolog.PrologPredicate;
-
 import java.util.LinkedList;
 import java.util.List;
+
+import com.fr2501.util.StringUtils;
+import com.fr2501.virage.prolog.PrologPredicate;
 
 /**
  * A class for representing decomposition trees.
  *
  */
-public class DecompositionTree {
-    private String label;
-    private int arity;
-    private List<DecompositionTree> children;
-
-    /**
-     * Simple constructor.
-     * 
-     * @param label the label
-     * @param children the children
-     */
-    public DecompositionTree(String label, List<DecompositionTree> children) {
-        this.label = label;
-        this.arity = children.size();
-        this.children = children;
-    }
+public final class DecompositionTree {
+    private final String label;
+    private final int arity;
+    private final List<DecompositionTree> children;
 
     @Deprecated // This is very easy to confuse with DecompositionTree.parseString.
     // Use DecompositionTree(label, new LinkedList<DecompositionTree>()) instead.
-    public DecompositionTree(String label) {
+    public DecompositionTree(final String label) {
         this(label, new LinkedList<DecompositionTree>());
     }
 
     /**
      * Simple constructor for trees with only one child.
-     * 
+     *
      * @param label the label
      * @param child the child
      */
-    public DecompositionTree(String label, DecompositionTree child) {
-        List<DecompositionTree> children = new LinkedList<DecompositionTree>();
+    public DecompositionTree(final String label, final DecompositionTree child) {
+        final List<DecompositionTree> children = new LinkedList<DecompositionTree>();
         children.add(child);
 
         this.label = label;
@@ -48,35 +36,35 @@ public class DecompositionTree {
         this.children = children;
     }
 
-    public String getLabel() {
-        return label;
-    }
-
-    public int getArity() {
-        return arity;
-    }
-
-    public List<DecompositionTree> getChildren() {
-        return children;
+    /**
+     * Simple constructor.
+     *
+     * @param label the label
+     * @param children the children
+     */
+    public DecompositionTree(final String label, final List<DecompositionTree> children) {
+        this.label = label;
+        this.arity = children.size();
+        this.children = children;
     }
 
     /**
      * Creates a DecompositionTree object from a string in bracket notation.
-     * 
+     *
      * @param s the string
-     * 
+     *
      * @return a DecompositionTree representing s
      */
-    public static DecompositionTree parseString(String s) {
-        s = StringUtils.removeWhitespace(s);
+    public static DecompositionTree parseString(final String passedString) {
+        final String s = StringUtils.removeWhitespace(passedString);
 
         String label = "";
-        List<DecompositionTree> children = new LinkedList<DecompositionTree>();
+        final List<DecompositionTree> children = new LinkedList<DecompositionTree>();
         String currentChild = "";
         int level = 0;
 
         for (int i = 0; i < s.length(); i++) {
-            char current = s.charAt(i);
+            final char current = s.charAt(i);
 
             if (current == '(') {
                 level++;
@@ -120,42 +108,21 @@ public class DecompositionTree {
     }
 
     @Override
-    public String toString() {
-        if (this.arity == 0) {
-            return this.label;
-        } else {
-            String res = this.label;
-            res += "(" + StringUtils.printCollection(children) + ")";
-            return res;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + arity;
-        result = prime * result + ((children == null) ? 0 : children.hashCode());
-        result = prime * result + ((label == null) ? 0 : label.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (this.getClass() != obj.getClass()) {
             return false;
         }
-        DecompositionTree other = (DecompositionTree) obj;
-        if (arity != other.arity) {
+        final DecompositionTree other = (DecompositionTree) obj;
+        if (this.arity != other.arity) {
             return false;
         }
-        if (children == null) {
+        if (this.children == null) {
             if (other.children != null) {
                 return false;
             }
@@ -167,26 +134,59 @@ public class DecompositionTree {
             }
         }
 
-        if (label == null) {
+        if (this.label == null) {
             if (other.label != null) {
                 return false;
             }
-        } else if (!label.equals(other.label)) {
+        } else if (!this.label.equals(other.label)) {
             return false;
         }
         return true;
     }
-    
-    public String toStringWithTypesInsteadOfVariables(FrameworkRepresentation framework) {
+
+    public int getArity() {
+        return this.arity;
+    }
+
+    public List<DecompositionTree> getChildren() {
+        return this.children;
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.arity;
+        result = prime * result + ((this.children == null) ? 0 : this.children.hashCode());
+        result = prime * result + ((this.label == null) ? 0 : this.label.hashCode());
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        if (this.arity == 0) {
+            return this.label;
+        } else {
+            String res = this.label;
+            res += "(" + StringUtils.printCollection(this.children) + ")";
+            return res;
+        }
+    }
+
+    public String toStringWithTypesInsteadOfVariables(final FrameworkRepresentation framework) {
         String res = "";
 
-        if(PrologPredicate.isVariable(this.label)) {
+        if (PrologPredicate.isVariable(this.label)) {
             return res;
         } else {
             res += this.label;
         }
-        
-        Component thisComponent = framework.getComponent(this.label);
+
+        final Component thisComponent = framework.getComponent(this.label);
 
         if (!this.children.isEmpty()) {
             res += "(";

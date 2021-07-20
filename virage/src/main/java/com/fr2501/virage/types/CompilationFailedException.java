@@ -2,27 +2,39 @@ package com.fr2501.virage.types;
 
 /**
  * An exception thrown if compilation of generated code fails.
- *
  */
 public class CompilationFailedException extends Exception {
-    private String message;
-
     /**
      * The UID.
      */
     private static final long serialVersionUID = -3356300070323059173L;
 
-    public CompilationFailedException(String msg) {
+    /**
+     * The message of this exception.
+     */
+    private final String message;
+
+    /**
+     * Simple constructor.
+     * @param msg the message
+     */
+    public CompilationFailedException(final String msg) {
         this.message = msg;
     }
 
+    /**
+     * Safe to override.
+     */
     @Override
-    public String getMessage() {
+    public String getLocalizedMessage() {
         return this.message;
     }
 
+    /**
+     * Safe to override.
+     */
     @Override
-    public String getLocalizedMessage() {
+    public String getMessage() {
         return this.message;
     }
 

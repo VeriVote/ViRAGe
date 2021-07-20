@@ -1,9 +1,10 @@
 package com.fr2501.virage.test.unit;
 
+import org.junit.Test;
+
 import com.fr2501.virage.isabelle.ScalaIsabelleFacade;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
-import org.junit.Test;
 
 /**
  * Test suite for {@link ScalaIsabelleFacade}.
@@ -14,7 +15,7 @@ public class ScalaIsabelleFacadeTest {
     public void simpleTest()
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
         @SuppressWarnings("unused")
-        ScalaIsabelleFacade facade = new ScalaIsabelleFacade(
+        final ScalaIsabelleFacade facade = new ScalaIsabelleFacade(
                 "src/test/resources/verifiedVotingRuleConstruction/theories",
                 "Verified_Voting_Rule_Construction");
     }

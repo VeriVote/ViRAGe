@@ -11,23 +11,25 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
  * A {@link VirageJob} to extract a {@link FrameworkRepresentation} from an Isabelle session.
  *
  */
-public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepresentation> {
-    private String sessionName;
-    private String path;
-    private String fileName;
+public final class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepresentation> {
+    private final String sessionName;
+    private final String path;
+    private final String fileName;
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param issuer the issuer
      * @param path the path to the session
      * @param sessionName the name of the session
      */
-    public VirageExtractJob(VirageUserInterface issuer, String path, String sessionName) {
+    public VirageExtractJob(final VirageUserInterface issuer, final String path,
+            final String sessionName) {
         this(issuer, path, sessionName, null);
     }
-    
-    public VirageExtractJob(VirageUserInterface issuer, String path, String sessionName, String fileName) {
+
+    public VirageExtractJob(final VirageUserInterface issuer, final String path,
+            final String sessionName, final String fileName) {
         super(issuer);
 
         this.sessionName = sessionName;
@@ -38,8 +40,9 @@ public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepre
     @Override
     protected void concreteExecute()
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
-        IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
-        FrameworkRepresentation framework = extractor.extract(this.path, this.sessionName, this.fileName);
+        final IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
+        final FrameworkRepresentation framework = extractor.extract(this.path, this.sessionName,
+                this.fileName);
         framework.setTheoryPath(this.path);
         framework.setSessionName(this.sessionName);
 
@@ -52,12 +55,13 @@ public class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepre
     }
 
     @Override
-    public String presentConcreteResult() {
-        return "Extracted (E)PL file \'" + this.result.getAbsolutePath() + "\' from \'" + this.path + "\'.";
+    public String getDescription() {
+        return "Extracting (E)PL file ...";
     }
 
     @Override
-    public String getDescription() {
-        return "Extracting (E)PL file ...";
+    public String presentConcreteResult() {
+        return "Extracted (E)PL file \'" + this.result.getAbsolutePath() + "\' from \'" + this.path
+                + "\'.";
     }
 }

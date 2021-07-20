@@ -8,24 +8,31 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class VirageMain {
-    private static final Logger logger = LogManager.getLogger(VirageMain.class);
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(VirageMain.class);
 
     /**
      * The main entry point for ViRAGe.
-     * 
+     *
      * @param args the command-line arguments
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         try {
-            VirageCore core = new VirageCore(args);
-            Thread coreThread = new Thread(core, "core");
+            final VirageCore core = new VirageCore(args);
+            final Thread coreThread = new Thread(core, "core");
             coreThread.start();
 
             while (true) {
             }
-        } catch (Exception e) {
-            logger.fatal("An unrecoverable error has occurred.", e);
-            logger.fatal("The program will now terminate.");
+            // Last point of failure, no idea what is thrown this far.
+            // If this is ever executed, something has gone so wrong
+            // that I cannot even imagine it now, so no more specialized
+            // catch clause is possible.
+        } catch (final Exception e) {
+            LOGGER.fatal("An unrecoverable error has occurred.", e);
+            LOGGER.fatal("The program will now terminate.");
         }
         System.exit(1);
     }

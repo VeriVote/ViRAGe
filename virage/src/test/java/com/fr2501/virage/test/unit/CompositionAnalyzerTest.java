@@ -3,6 +3,16 @@ package com.fr2501.virage.test.unit;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
@@ -18,14 +28,6 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 import com.fr2501.virage.types.ValueNotPresentException;
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Tests that each implementation of {@link CompositionAnalyzer} must pass.
@@ -43,39 +45,39 @@ public abstract class CompositionAnalyzerTest {
 
     /**
      * Performs setup for the following tests.
-     * 
+     *
      * @throws IOException if reading resources fails
      * @throws MalformedEplFileException if the input file does not satisfy the EPL format
      */
     @Before
     public void setup() throws IOException, MalformedEplFileException {
-        ExtendedPrologParser parser = new SimpleExtendedPrologParser();
+        final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
         this.framework = parser.parseFramework(new File(FRAMEWORK_PATH), false);
 
-        this.generator = new TestDataGenerator(framework);
+        this.generator = new TestDataGenerator(this.framework);
     }
 
     @Test
     public void testSequentialMajorityComparison()
             throws ValueNotPresentException, IOException, ExternalSoftwareUnavailableException {
         logger.info("testSequentialMajorityComparison()");
-        String smc = "sequential_composition(" + "loop_composition(" + "parallel_composition("
+        final String smc = "sequential_composition(" + "loop_composition(" + "parallel_composition("
                 + "sequential_composition(" + "pass_module(2,_)," + "sequential_composition("
                 + "revision_composition(" + "plurality)," + "pass_module(1,_))),"
                 + "drop_module(2,_)," + "max_aggregator)," + "defer_equal_condition(1)),"
                 + "elect_module)";
 
-        DecompositionTree smcTree = DecompositionTree.parseString(smc);
+        final DecompositionTree smcTree = DecompositionTree.parseString(smc);
 
-        CompositionAnalyzer analyzer = this.createInstance();
+        final CompositionAnalyzer analyzer = this.createInstance();
         analyzer.setTimeout(10000);
 
-        List<Property> properties = new LinkedList<Property>();
+        final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty("monotonicity"));
 
-        List<SearchResult<BooleanWithUncertainty>> resultList = analyzer.analyzeComposition(smcTree,
-                properties);
-        SearchResult<BooleanWithUncertainty> result = resultList.get(0);
+        final List<SearchResult<BooleanWithUncertainty>> resultList = analyzer
+                .analyzeComposition(smcTree, properties);
+        final SearchResult<BooleanWithUncertainty> result = resultList.get(0);
 
         if (result.getState() == QueryState.TIMEOUT) {
             logger.warn("The current CompositionAnalyzer is very slow. "
@@ -97,17 +99,18 @@ public abstract class CompositionAnalyzerTest {
         int failure = 0;
         int error = 0;
 
-        CompositionAnalyzer analyzer = this.createInstance();
+        final CompositionAnalyzer analyzer = this.createInstance();
         analyzer.setTimeout(_timeout);
 
         for (int i = 0; i < _runs; i++) {
-            int amount = (int) (5 * Math.random()) + 1;
+            final int amount = (int) (5 * Math.random()) + 1;
 
-            List<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
+            final List<Property> properties = this.generator
+                    .getRandomComposableModuleProperties(amount);
 
             logger.debug("Query: " + StringUtils.printCollection(properties));
 
-            SearchResult<DecompositionTree> result = analyzer.generateComposition(properties);
+            final SearchResult<DecompositionTree> result = analyzer.generateComposition(properties);
 
             if (result.hasValue()) {
                 success++;
@@ -131,7 +134,8 @@ public abstract class CompositionAnalyzerTest {
 
         if (failure == 100 || success == 100 || timeout == 100) {
             logger.warn("A highly unlikely result occured in the test.\n"
-                    + "This might happen by (a very small) chance, so rerunning the test might help.\n"
+                    + "This might happen by (a very small) chance, "
+                    + "so rerunning the test might help.\n"
                     + "If the problem persists, something has gone wrong.");
             fail();
         }
@@ -143,8 +147,9 @@ public abstract class CompositionAnalyzerTest {
     @Test
     public void testAccordanceWithSpca() throws IOException, ExternalSoftwareUnavailableException {
         logger.info("testAccordanceWithSCPA()");
-        SimplePrologCompositionAnalyzer spca = new SimplePrologCompositionAnalyzer(this.framework);
-        CompositionAnalyzer self = this.createInstance();
+        final SimplePrologCompositionAnalyzer spca = new SimplePrologCompositionAnalyzer(
+                this.framework);
+        final CompositionAnalyzer self = this.createInstance();
 
         final int _runs = 100;
         final int _timeout = 10;
@@ -164,14 +169,16 @@ public abstract class CompositionAnalyzerTest {
         int trustedFailure = 0;
 
         for (int i = 0; i < _runs; i++) {
-            int amount = (int) (3 * Math.random()) + 1;
+            final int amount = (int) (3 * Math.random()) + 1;
 
-            List<Property> properties = this.generator.getRandomComposableModuleProperties(amount);
+            final List<Property> properties = this.generator
+                    .getRandomComposableModuleProperties(amount);
 
             logger.debug("Query: " + StringUtils.printCollection(properties));
 
-            SearchResult<DecompositionTree> trustedResult = spca.generateComposition(properties);
-            SearchResult<DecompositionTree> result = self.generateComposition(properties);
+            final SearchResult<DecompositionTree> trustedResult = spca
+                    .generateComposition(properties);
+            final SearchResult<DecompositionTree> result = self.generateComposition(properties);
 
             if (result.getState() == QueryState.ERROR) {
                 errors++;
@@ -233,20 +240,21 @@ public abstract class CompositionAnalyzerTest {
 
     @Test
     public void testSimpleProofs() throws IOException, ExternalSoftwareUnavailableException {
-        List<Property> properties = new LinkedList<Property>();
+        final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty("monotonicity"));
 
-        String votingRule = "sequential_composition(pass_module(1,R),elect_module)";
+        final String votingRule = "sequential_composition(pass_module(1,R),elect_module)";
 
-        CompositionAnalyzer analyzer = this.createInstance();
+        final CompositionAnalyzer analyzer = this.createInstance();
 
-        List<CompositionProof> proof = analyzer
+        final List<CompositionProof> proof = analyzer
                 .proveClaims(DecompositionTree.parseString(votingRule), properties);
 
         // Prolog variable names are not always the same.
-        String proofString = proof.get(0).toString().replaceAll("_[0-9]+", "R");
+        final String proofString = proof.get(0).toString().replaceAll("_[0-9]+", "R");
 
-        String reference = ": monotonicity(sequential_composition(pass_module(1,R),elect_module)) by seq_comp_mono\n"
+        final String reference = ": monotonicity(sequential_composition(pass_module(1,R),elect_module)) "
+                + "by seq_comp_mono\n"
                 + "\t: defer_lift_invariance(pass_module(1,R)) by pass_mod_dl_inv\n"
                 + "\t: non_electing(pass_module(1,R)) by pass_mod_non_electing\n"
                 + "\t: defers(1,pass_module(1,R)) by pass_one_mod_def_one\n"

@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,33 +16,34 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class SimpleFileReader {
-    private BufferedReader reader;
     private static final Logger logger = LogManager.getLogger(SimpleFileReader.class.getName());
+
+    private BufferedReader reader;
 
     /**
      * Reads the specified file line by line.
-     * 
+     *
      * @param file the file to be read.
      * @return a list containing the lines of that file.
      * @throws IOException if reading the file is not possible.
      */
-    public List<String> readFileByLine(File file) throws IOException {
+    public List<String> readFileByLine(final File file) throws IOException {
         logger.info("Trying to read from file \"" + file + "\"");
 
-        List<String> res = new LinkedList<String>();
+        final List<String> res = new LinkedList<String>();
 
         try {
             this.reader = new BufferedReader(new FileReader(file));
 
-            String line = reader.readLine();
+            String line = this.reader.readLine();
             while (line != null) {
                 res.add(line);
-                line = reader.readLine();
+                line = this.reader.readLine();
             }
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             logger.error("Invalid file.");
             throw e;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Something went wrong while reading the file.");
             throw e;
         } finally {
@@ -49,7 +51,7 @@ public class SimpleFileReader {
                 if (this.reader != null) {
                     this.reader.close();
                 }
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 logger.warn("Closing the FileWriter was impossible.");
             }
         }
@@ -59,16 +61,16 @@ public class SimpleFileReader {
 
     /**
      * Reads the specified file.
-     * 
+     *
      * @param file the file to be read.
      * @return a String representing the contents of that file.
      * @throws IOException if reading the file is not possible.
      */
-    public String readFile(File file) throws IOException {
-        List<String> list = this.readFileByLine(file);
+    public String readFile(final File file) throws IOException {
+        final List<String> list = this.readFileByLine(file);
 
         String res = "";
-        for (String s : list) {
+        for (final String s : list) {
             res += s + "\n";
         }
 

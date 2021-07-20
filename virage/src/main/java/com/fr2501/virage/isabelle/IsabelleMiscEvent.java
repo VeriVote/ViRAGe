@@ -12,7 +12,7 @@ public class IsabelleMiscEvent extends IsabelleEvent {
         super(new HashMap<String, String>());
     }
 
-    public IsabelleMiscEvent(Map<String, String> parameters) {
+    public IsabelleMiscEvent(final Map<String, String> parameters) {
         super(parameters);
     }
 

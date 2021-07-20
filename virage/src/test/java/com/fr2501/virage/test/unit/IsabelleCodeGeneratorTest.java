@@ -1,5 +1,12 @@
 package com.fr2501.virage.test.unit;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
@@ -10,11 +17,6 @@ import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * A test suite for {@link IsabelleCodeGenerator}.
@@ -33,13 +35,13 @@ public class IsabelleCodeGeneratorTest {
 
     /**
      * Initialization for the following tests.
-     * 
+     *
      * @throws IOException if file interaction fails
      * @throws MalformedEplFileException if input file is not valid EPL
      */
     @Before
     public void init() throws IOException, MalformedEplFileException {
-        ExtendedPrologParser parser = new SimpleExtendedPrologParser();
+        final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
         this.framework = parser.parseFramework(new File(EPL_PATH), false);
 
         this.generator = new IsabelleTheoryGenerator(THEORY_PATH, this.framework);
@@ -48,11 +50,12 @@ public class IsabelleCodeGeneratorTest {
     @Test
     public void electTest() throws IOException, InterruptedException, CompilationFailedException,
             IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
-        IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
+        final IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
-        String module = "elect_module";
+        final String module = "elect_module";
 
-        File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
+        final File theory = this.generator.generateTheoryFile(module,
+                new LinkedList<CompositionProof>());
 
         codeGenerator.generateScalaCodeAndCompile(theory);
     }
@@ -60,9 +63,9 @@ public class IsabelleCodeGeneratorTest {
     @Test
     public void dropTest() throws IOException, InterruptedException, CompilationFailedException,
             IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
-        IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
+        final IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
-        String module = "drop_module(1,_)";
+        final String module = "drop_module(1,_)";
 
         codeGenerator.generateScalaCodeAndCompile(module);
     }
@@ -71,11 +74,12 @@ public class IsabelleCodeGeneratorTest {
     public void pluralityTest()
             throws IOException, InterruptedException, CompilationFailedException,
             IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
-        IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
+        final IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
-        String module = "plurality";
+        final String module = "plurality";
 
-        File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
+        final File theory = this.generator.generateTheoryFile(module,
+                new LinkedList<CompositionProof>());
 
         codeGenerator.generateScalaCodeAndCompile(theory);
     }
@@ -83,11 +87,12 @@ public class IsabelleCodeGeneratorTest {
     @Test
     public void smcTest() throws IOException, InterruptedException, CompilationFailedException,
             IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
-        IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
+        final IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
-        String module = SMC;
+        final String module = SMC;
 
-        File theory = this.generator.generateTheoryFile(module, new LinkedList<CompositionProof>());
+        final File theory = this.generator.generateTheoryFile(module,
+                new LinkedList<CompositionProof>());
 
         codeGenerator.generateScalaCodeAndCompile(theory);
     }

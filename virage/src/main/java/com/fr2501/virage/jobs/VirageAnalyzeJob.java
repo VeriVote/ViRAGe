@@ -1,5 +1,8 @@
 package com.fr2501.virage.jobs;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageSearchManager;
@@ -9,30 +12,29 @@ import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * A {@link VirageJob} used to analyze a composition.
  *
  */
-public class VirageAnalyzeJob
-        extends VirageJobWithExplicitResult<List<List<SearchResult<BooleanWithUncertainty>>>> {
-    private List<String> propertyStrings;
+public final class VirageAnalyzeJob
+extends VirageJobWithExplicitResult<List<List<SearchResult<BooleanWithUncertainty>>>> {
+    private final List<String> propertyStrings;
     private List<Property> properties;
-    private DecompositionTree tree;
+    private final DecompositionTree tree;
 
     private FrameworkRepresentation framework;
     private VirageSearchManager manager;
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param issuer the issuer
      * @param tree the tree
      * @param properties the properties
      */
-    public VirageAnalyzeJob(VirageUserInterface issuer, String tree, List<String> properties) {
+    public VirageAnalyzeJob(final VirageUserInterface issuer, final String tree,
+            final List<String> properties) {
         super(issuer);
 
         this.tree = DecompositionTree.parseString(tree);
@@ -46,21 +48,21 @@ public class VirageAnalyzeJob
 
         this.properties = new LinkedList<Property>();
 
-        for (String s : this.propertyStrings) {
+        for (final String s : this.propertyStrings) {
             this.properties.add(this.framework.getProperty(s));
         }
 
-        this.result = this.manager.analyzeComposition(tree, properties);
-    }
-
-    @Override
-    public List<List<SearchResult<BooleanWithUncertainty>>> getResult() {
-        return this.result;
+        this.result = this.manager.analyzeComposition(this.tree, this.properties);
     }
 
     @Override
     public boolean externalSoftwareAvailable() {
         return (ConfigReader.getInstance().hasJpl());
+    }
+
+    @Override
+    public String getDescription() {
+        return "Analyzing a composition ...";
     }
 
     @Override
@@ -71,8 +73,8 @@ public class VirageAnalyzeJob
         }
 
         boolean hasProperties = false;
-        for (List<SearchResult<BooleanWithUncertainty>> resultList : this.result) {
-            for (SearchResult<BooleanWithUncertainty> result : resultList) {
+        for (final List<SearchResult<BooleanWithUncertainty>> resultList : this.result) {
+            for (final SearchResult<BooleanWithUncertainty> result : resultList) {
                 if (result.hasValue() && result.getValue() == BooleanWithUncertainty.TRUE) {
                     hasProperties = true;
                     break;
@@ -82,15 +84,10 @@ public class VirageAnalyzeJob
 
         if (hasProperties) {
             return this.tree.toString() + " has the " + prop + " "
-                    + StringUtils.printCollection(properties) + "";
+                    + StringUtils.printCollection(this.properties) + "";
         } else {
             return this.tree.toString() + " cannot be shown to have the " + prop + " "
-                    + StringUtils.printCollection(properties) + "";
+                    + StringUtils.printCollection(this.properties) + "";
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return "Analyzing a composition ...";
     }
 }

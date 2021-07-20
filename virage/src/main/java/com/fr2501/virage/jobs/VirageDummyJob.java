@@ -7,9 +7,9 @@ import com.fr2501.virage.core.VirageUserInterface;
  * actual job, but a return value is still required.
  *
  */
-public class VirageDummyJob extends VirageJobWithoutExplicitResult {
+public final class VirageDummyJob extends VirageJobWithoutExplicitResult {
 
-    public VirageDummyJob(VirageUserInterface issuer) {
+    public VirageDummyJob(final VirageUserInterface issuer) {
         super(issuer);
     }
 
@@ -24,7 +24,7 @@ public class VirageDummyJob extends VirageJobWithoutExplicitResult {
     }
 
     @Override
-    public String presentResult() {
+    public String getDescription() {
         return "";
     }
 
@@ -34,7 +34,7 @@ public class VirageDummyJob extends VirageJobWithoutExplicitResult {
     }
 
     @Override
-    public String getDescription() {
+    public String presentResult() {
         return "";
     }
 

@@ -1,26 +1,28 @@
 package com.fr2501.virage.jobs;
 
+import java.io.File;
+
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
-import java.io.File;
 
 /**
  * A {@link VirageJob} used to invoke Isabelle code generation.
  *
  */
-public class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<File> {
+public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<File> {
     private IsabelleCodeGenerator generator;
 
-    private String composition;
+    private final String composition;
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param issuer the issuing ui
      * @param composition the composition
      */
-    public VirageIsabelleGenerateScalaJob(VirageUserInterface issuer, String composition) {
+    public VirageIsabelleGenerateScalaJob(final VirageUserInterface issuer,
+            final String composition) {
         super(issuer);
 
         this.composition = composition;
@@ -39,12 +41,12 @@ public class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<
     }
 
     @Override
-    public String presentConcreteResult() {
-        return "Created executable JAR file at \'" + this.result + "\'.";
+    public String getDescription() {
+        return "Generating and compiling Scala code ...";
     }
 
     @Override
-    public String getDescription() {
-        return "Generating and compiling Scala code ...";
+    public String presentConcreteResult() {
+        return "Created executable JAR file at \'" + this.result + "\'.";
     }
 }

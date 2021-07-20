@@ -9,56 +9,18 @@ import java.util.List;
  */
 public class SimplePrologParser implements PrologParser {
     @Override
-    public PrologClause parseSingleClause(String clause) {
-        if (clause.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-
-        String sanitizedClause = this.sanitizeClause(clause);
-        if (sanitizedClause.charAt(sanitizedClause.length() - 1) != '.') {
-            throw new IllegalArgumentException();
-        }
-        sanitizedClause = sanitizedClause.replace(".", "");
-
-        String[] cedents = sanitizedClause.split(":-");
-
-        if (cedents.length > 2) {
-            throw new IllegalArgumentException();
-        }
-
-        PrologPredicate succedent = this.parsePredicate(cedents[0]);
-        if (cedents.length == 1) {
-            return new PrologClause(succedent);
-        }
-
-        String antecedentString = cedents[1];
-        List<PrologPredicate> antecedents;
-        antecedents = this.splitAntecedents(antecedentString);
-
-        return new PrologClause(succedent, antecedents);
-    }
-
-    private String sanitizeClause(String clause) {
-        String res = clause.replace(" ", "");
-        res = res.replace("\n", "");
-        res = res.replace("\t", "");
-
-        return res;
-    }
-
-    @Override
-    public PrologPredicate parsePredicate(String string) {
+    public PrologPredicate parsePredicate(final String string) {
         if (string.isEmpty()) {
             throw new IllegalArgumentException();
         }
 
         String name = "";
-        List<PrologPredicate> parameters = new LinkedList<PrologPredicate>();
+        final List<PrologPredicate> parameters = new LinkedList<PrologPredicate>();
         String currentPredicate = "";
         int level = 0;
 
         for (int i = 0; i < string.length(); i++) {
-            char current = string.charAt(i);
+            final char current = string.charAt(i);
 
             if (current == '(') {
                 level++;
@@ -106,16 +68,54 @@ public class SimplePrologParser implements PrologParser {
         return new PrologPredicate(name, parameters);
     }
 
-    private List<PrologPredicate> splitAntecedents(String antecedentString) {
+    @Override
+    public PrologClause parseSingleClause(final String clause) {
+        if (clause.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
+        String sanitizedClause = this.sanitizeClause(clause);
+        if (sanitizedClause.charAt(sanitizedClause.length() - 1) != '.') {
+            throw new IllegalArgumentException();
+        }
+        sanitizedClause = sanitizedClause.replace(".", "");
+
+        final String[] cedents = sanitizedClause.split(":-");
+
+        if (cedents.length > 2) {
+            throw new IllegalArgumentException();
+        }
+
+        final PrologPredicate succedent = this.parsePredicate(cedents[0]);
+        if (cedents.length == 1) {
+            return new PrologClause(succedent);
+        }
+
+        final String antecedentString = cedents[1];
+        final List<PrologPredicate> antecedents;
+        antecedents = this.splitAntecedents(antecedentString);
+
+        return new PrologClause(succedent, antecedents);
+    }
+
+    private String sanitizeClause(final String clause) {
+        String res = clause.replace(" ", "");
+        res = res.replace("\n", "");
+        res = res.replace("\t", "");
+
+        return res;
+    }
+
+    private List<PrologPredicate> splitAntecedents(final String antecedentString) {
         if (antecedentString.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        List<PrologPredicate> res = new LinkedList<PrologPredicate>();
+        final List<PrologPredicate> res = new LinkedList<PrologPredicate>();
         String currentPredicate = "";
         int level = 0;
 
         for (int i = 0; i < antecedentString.length(); i++) {
-            char current = antecedentString.charAt(i);
+            final char current = antecedentString.charAt(i);
 
             if (current == '(') {
                 level++;

@@ -1,5 +1,8 @@
 package com.fr2501.virage.jobs;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageSearchManager;
@@ -8,16 +11,14 @@ import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * A {@link VirageJob} used for generating compositions.
  *
  */
-public class VirageGenerateJob
-        extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
-    private List<String> propertyStrings;
+public final class VirageGenerateJob
+extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
+    private final List<String> propertyStrings;
     private List<Property> properties;
 
     private FrameworkRepresentation framework;
@@ -25,11 +26,11 @@ public class VirageGenerateJob
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param issuer the issuing ui
      * @param properties the properties
      */
-    public VirageGenerateJob(VirageUserInterface issuer, List<String> properties) {
+    public VirageGenerateJob(final VirageUserInterface issuer, final List<String> properties) {
         super(issuer);
 
         this.propertyStrings = properties;
@@ -42,21 +43,21 @@ public class VirageGenerateJob
 
         this.properties = new LinkedList<Property>();
 
-        for (String s : this.propertyStrings) {
+        for (final String s : this.propertyStrings) {
             this.properties.add(this.framework.getProperty(s));
         }
 
-        this.result = this.manager.generateComposition(properties);
-    }
-
-    @Override
-    public List<SearchResult<DecompositionTree>> getResult() {
-        return this.result;
+        this.result = this.manager.generateComposition(this.properties);
     }
 
     @Override
     public boolean externalSoftwareAvailable() {
         return (ConfigReader.getInstance().hasJpl());
+    }
+
+    @Override
+    public String getDescription() {
+        return "Generating Composition ...";
     }
 
     @Override
@@ -66,11 +67,11 @@ public class VirageGenerateJob
             prop = "property";
         }
 
-        List<String> results = new LinkedList<String>();
-        for (SearchResult<DecompositionTree> treeResult : this.result) {
+        final List<String> results = new LinkedList<String>();
+        for (final SearchResult<DecompositionTree> treeResult : this.result) {
             if (treeResult.hasValue()) {
-                DecompositionTree tree = treeResult.getValue();
-                
+                final DecompositionTree tree = treeResult.getValue();
+
                 results.add(tree.toStringWithTypesInsteadOfVariables(this.framework));
             }
         }
@@ -79,19 +80,15 @@ public class VirageGenerateJob
             return "No composition found with " + prop + " "
                     + StringUtils.printCollection(this.properties) + ".";
         }
-        
-        if(results.contains("")) {
-            return "Any component of type " + this.properties.get(0).getParameters().get(0).getName() +
-                    " satisfies the " + prop + " " + StringUtils.printCollection(this.properties) + ".";
+
+        if (results.contains("")) {
+            return "Any component of type "
+                    + this.properties.get(0).getParameters().get(0).getName() + " satisfies the "
+                    + prop + " " + StringUtils.printCollection(this.properties) + ".";
         }
 
         return "Generated the " + this.properties.get(0).getParameters().get(0).getName() + " \""
-                + StringUtils.printCollection(results) + "\" with the " + prop + " "
-                + StringUtils.printCollection(this.properties) + ".";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Generating Composition ...";
+        + StringUtils.printCollection(results) + "\" with the " + prop + " "
+        + StringUtils.printCollection(this.properties) + ".";
     }
 }

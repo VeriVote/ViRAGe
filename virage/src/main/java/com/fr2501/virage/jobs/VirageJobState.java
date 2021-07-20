@@ -5,5 +5,20 @@ package com.fr2501.virage.jobs;
  *
  */
 public enum VirageJobState {
-    PENDING, RUNNING, FAILED, FINISHED
+    /**
+     * Job is waiting for execution.
+     */
+    PENDING,
+    /**
+     * Job is currently under execution.
+     */
+    RUNNING,
+    /**
+     * Job execution failed.
+     */
+    FAILED,
+    /**
+     * Job finished without errors.
+     */
+    FINISHED
 }

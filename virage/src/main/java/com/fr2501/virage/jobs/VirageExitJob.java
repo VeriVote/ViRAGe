@@ -6,16 +6,16 @@ import com.fr2501.virage.core.VirageUserInterface;
  * A {@link VirageJob} used to terminate the system.
  *
  */
-public class VirageExitJob extends VirageJobWithoutExplicitResult {
-    private int statusCode;
+public final class VirageExitJob extends VirageJobWithoutExplicitResult {
+    private final int statusCode;
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param issuer the issuer
      * @param statusCode the intended exit code
      */
-    public VirageExitJob(VirageUserInterface issuer, int statusCode) {
+    public VirageExitJob(final VirageUserInterface issuer, final int statusCode) {
         super(issuer);
 
         this.statusCode = statusCode;
@@ -32,12 +32,12 @@ public class VirageExitJob extends VirageJobWithoutExplicitResult {
     }
 
     @Override
-    public String presentConcreteResult() {
-        return "Terminated with exit code " + this.statusCode + ".";
+    public String getDescription() {
+        return "Terminating ...";
     }
 
     @Override
-    public String getDescription() {
-        return "Terminating ...";
+    public String presentConcreteResult() {
+        return "Terminated with exit code " + this.statusCode + ".";
     }
 }

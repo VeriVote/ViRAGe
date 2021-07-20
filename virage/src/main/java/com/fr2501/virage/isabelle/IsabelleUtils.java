@@ -1,12 +1,13 @@
 package com.fr2501.virage.isabelle;
 
-import com.fr2501.virage.prolog.PrologPredicate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.fr2501.virage.prolog.PrologPredicate;
 
 /**
  * This class contains some useful utility functions for interaction with Isabelle.
@@ -43,7 +44,7 @@ public class IsabelleUtils {
      * This method tries, along with other things, to match Prolog predicates to Isabelle entities.
      * It is case-insensitive, so no two Isabelle entities may share the same name with different
      * capitalization.
-     * 
+     *
      * @param functionsAndDefinitions all functions and definitions given within the current
      * Isabelle folder
      * @param predicate the predicate to be mapped
@@ -51,20 +52,20 @@ public class IsabelleUtils {
      * for it to be fully known in the current file
      */
     public static Map<String, Set<String>> translatePrologToIsabelle(
-            Map<String, String> functionsAndDefinitions, String predicate) {
-        Set<String> requiredFiles = new HashSet<String>();
+            final Map<String, String> functionsAndDefinitions, final String predicate) {
+        final Set<String> requiredFiles = new HashSet<String>();
 
         String res = predicate.replace(",", ")(");
         res = res.replace("(", " (");
 
-        Pattern pattern = Pattern.compile("[a-zA-Z_]+");
-        Matcher matcher = pattern.matcher(res);
+        final Pattern pattern = Pattern.compile("[a-zA-Z_]+");
+        final Matcher matcher = pattern.matcher(res);
 
         while (matcher.find()) {
-            String match = res.substring(matcher.start(), matcher.end());
+            final String match = res.substring(matcher.start(), matcher.end());
             String replacement = match;
 
-            for (String string : functionsAndDefinitions.keySet()) {
+            for (final String string : functionsAndDefinitions.keySet()) {
                 if (string.equalsIgnoreCase(match)) {
                     replacement = string;
                     requiredFiles.add(functionsAndDefinitions.get(string));
@@ -75,7 +76,7 @@ public class IsabelleUtils {
             res = res.replace(match, replacement);
         }
 
-        Map<String, Set<String>> resMap = new HashMap<String, Set<String>>();
+        final Map<String, Set<String>> resMap = new HashMap<String, Set<String>>();
         resMap.put(res, requiredFiles);
         return resMap;
     }
@@ -84,7 +85,7 @@ public class IsabelleUtils {
      * This method tries, along with other things, to match Prolog predicates to Isabelle entities.
      * It is case-insensitive, so no two Isabelle entities may share the same name with different
      * capitalization.
-     * 
+     *
      * @param functionsAndDefinitions all functions and definitions given within the current
      * Isabelle folder
      * @param predicate the predicate to be mapped
@@ -92,19 +93,19 @@ public class IsabelleUtils {
      * for it to be fully known in the current file
      */
     public static Map<String, Set<String>> translatePrologToIsabelle(
-            Map<String, String> functionsAndDefinitions, PrologPredicate predicate) {
+            final Map<String, String> functionsAndDefinitions, final PrologPredicate predicate) {
         return translatePrologToIsabelle(functionsAndDefinitions, predicate.toString());
     }
 
     /**
      * Uses {@link IsabelleUtils#SIMPLE_TYPES} to determine whether the given type is a simple
      * Isabelle type.
-     * 
+     *
      * @param type the type
      * @return true if type is simple type, false otherwise
      */
-    public static boolean isSimpleType(String type) {
-        for (String standardType : SIMPLE_TYPES) {
+    public static boolean isSimpleType(final String type) {
+        for (final String standardType : SIMPLE_TYPES) {
             if (standardType.equals(type)) {
                 return true;
             }
@@ -115,12 +116,12 @@ public class IsabelleUtils {
 
     /**
      * Finds a new Isabelle variable not yet used within the given statement.
-     * 
+     *
      * @param statement the statement
      * @return a new variable ('x' if possible, otherwise tries 'x1', 'x2', ...)
      */
-    public static String getUnusedVariable(String statement) {
-        String unused = "x";
+    public static String getUnusedVariable(final String statement) {
+        final String unused = "x";
 
         if (!statement.contains(unused)) {
             return unused;

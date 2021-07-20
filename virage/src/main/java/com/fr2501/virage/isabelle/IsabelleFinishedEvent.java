@@ -6,14 +6,14 @@ import java.util.Map;
  * An {@link IsabelleEvent} raised when a command finishes (not necessarily successful).
  *
  */
-public class IsabelleFinishedEvent extends IsabelleEvent {
+public final class IsabelleFinishedEvent extends IsabelleEvent {
 
-    public IsabelleFinishedEvent(Map<String, String> parameters) {
+    public IsabelleFinishedEvent(final Map<String, String> parameters) {
         super(parameters);
     }
 
     @Override
-    public void applyEffects(IsabelleProofChecker checker) {
+    public void applyEffects(final IsabelleProofChecker checker) {
         checker.setFinished(true);
     }
 }

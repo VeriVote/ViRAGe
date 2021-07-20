@@ -1,27 +1,28 @@
 package com.fr2501.virage.jobs;
 
+import java.io.File;
+
 import com.fr2501.util.Pair;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
-import java.io.File;
 
 /**
  * A {@link VirageJob} that invokes Isabelle to automatically attempt proof verification.
  *
  */
-public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Boolean, File>> {
+public final class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Boolean, File>> {
     private IsabelleProofChecker checker;
 
-    private File file;
+    private final File file;
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param issuer the issuing ui
      * @param file the file
      */
-    public VirageIsabelleVerifyJob(VirageUserInterface issuer, File file) {
+    public VirageIsabelleVerifyJob(final VirageUserInterface issuer, final File file) {
         super(issuer);
 
         this.file = file;
@@ -41,6 +42,11 @@ public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Bo
     }
 
     @Override
+    public String getDescription() {
+        return "Verifying Isabelle theory ...";
+    }
+
+    @Override
     public String presentConcreteResult() {
         if (this.result.getFirstValue()) {
             return "Isabelle theory \'" + this.result.getSecondValue().getAbsolutePath()
@@ -49,11 +55,6 @@ public class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Bo
             return "Verification of Isabelle theory \'"
                     + this.result.getSecondValue().getAbsolutePath() + "\' failed.";
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return "Verifying Isabelle theory ...";
     }
 
 }

@@ -8,11 +8,11 @@ import com.fr2501.virage.prolog.QueryState;
  *
  * @param <T> the type of the encapsulated value
  */
-public class SearchResult<T> {
+public final class SearchResult<T> {
     private QueryState state;
     private T value;
 
-    public SearchResult(QueryState state, T value) {
+    public SearchResult(final QueryState state, final T value) {
         this.state = state;
         this.value = value;
     }
@@ -21,13 +21,9 @@ public class SearchResult<T> {
         return this.state;
     }
 
-    public synchronized void setState(QueryState state) {
-        this.state = state;
-    }
-
     /**
      * Simple getter.
-     * 
+     *
      * @return the value
      * @throws ValueNotPresentException if no value is present
      */
@@ -38,17 +34,21 @@ public class SearchResult<T> {
         return this.value;
     }
 
-    public void setValue(T value) {
-        this.value = value;
-    }
-
     /**
      * Simple getter.
-     * 
+     *
      * @return true if {@code this} has a value different from null, false otherwise
      */
     public boolean hasValue() {
         return (this.value != null);
+    }
+
+    public synchronized void setState(final QueryState state) {
+        this.state = state;
+    }
+
+    public void setValue(final T value) {
+        this.value = value;
     }
 
     @Override

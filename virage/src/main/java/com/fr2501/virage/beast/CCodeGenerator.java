@@ -19,72 +19,54 @@ import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
-public class CCodeGenerator {
+public final class CCodeGenerator {
     private final String codeFileTemplate;
     private final String compositionsTemplate;
-    
+
     private final FrameworkRepresentation framework;
-    
-    public CCodeGenerator(FrameworkRepresentation framework) {
+
+    public CCodeGenerator(final FrameworkRepresentation framework) {
         this.framework = framework;
-        
-        StringWriter writer = new StringWriter();
-        InputStream codeFileTemplateStream = this.getClass().getClassLoader()
+
+        final StringWriter writer = new StringWriter();
+        final InputStream codeFileTemplateStream = this.getClass().getClassLoader()
                 .getResourceAsStream("code_file.template");
         try {
             IOUtils.copy(codeFileTemplateStream, writer, StandardCharsets.UTF_8);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
-        
+
         this.codeFileTemplate = writer.toString();
-        
-        InputStream compositionsTemplateStream = this.getClass().getClassLoader()
+
+        final InputStream compositionsTemplateStream = this.getClass().getClassLoader()
                 .getResourceAsStream("c_implementations/compositions.template");
         try {
             IOUtils.copy(compositionsTemplateStream, writer, StandardCharsets.UTF_8);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
-        
+
         this.compositionsTemplate = writer.toString();
     }
 
-    public File getCCodeFromComposition(String compositionString) {
-        DecompositionTree composition = DecompositionTree.parseString(compositionString);
-        String cCode = "";
-
-        String entryName = "composition";
-
-        Pair<Pair<String, String>, Integer> res = this.getCCodeFromComposition(composition, 0);
-
-        String fileContents = this.codeFileTemplate.replace("$CONTENT",
-                res.getFirstValue().getSecondValue());
-        fileContents = fileContents.replace("$ENTRY", res.getFirstValue().getFirstValue());
-        
-        File result = new File("target/generated-sources/voting_rule.c");
-        (new SimpleFileWriter()).writeToFile(result.getAbsolutePath(),
-                fileContents);
-
-        return result;
-    }
-
     private Pair<Pair<String, String>, Integer> getCCodeFromComposition(
-            DecompositionTree composition, int ctr) {
+            final DecompositionTree composition, final int ctr) {
         String head = "";
         String body = "";
 
-        ComposableModule currentModule = framework.getComposableModule(composition.getLabel());
+        final ComposableModule currentModule = this.framework
+                .getComposableModule(composition.getLabel());
         if (currentModule != null) {
             head = composition.getLabel() + "(";
 
             for (int i = 0; i < composition.getChildren().size(); i++) {
-                DecompositionTree child = composition.getChildren().get(i);
-                String childLabel = child.getLabel();
+                final DecompositionTree child = composition.getChildren().get(i);
+                final String childLabel = child.getLabel();
 
                 if (childLabel.equals("_")) {
-                    ComponentType childType = this.framework.getComponent(composition.getLabel())
-                            .getParameters().get(i);
+                    final ComponentType childType = this.framework
+                            .getComponent(composition.getLabel()).getParameters().get(i);
 
                     if (childType.getName().equals("nat")) {
                         head += "1";
@@ -102,14 +84,14 @@ public class CCodeGenerator {
             head += "p,r)";
         }
 
-        CompositionalStructure currentStructure = framework
+        final CompositionalStructure currentStructure = this.framework
                 .getCompositionalStructure(composition.getLabel());
         if (currentStructure != null) {
-            String structure = composition.getLabel();
+            final String structure = composition.getLabel();
 
-            Pattern pattern = Pattern.compile("// " + structure + ".*" + "// " + structure,
+            final Pattern pattern = Pattern.compile("// " + structure + ".*" + "// " + structure,
                     Pattern.DOTALL);
-            Matcher matcher = pattern.matcher(this.compositionsTemplate);
+            final Matcher matcher = pattern.matcher(this.compositionsTemplate);
 
             if (matcher.find()) {
                 String structureTemplate = matcher.group();
@@ -117,10 +99,10 @@ public class CCodeGenerator {
                 structureTemplate = structureTemplate.replace("$IDX", String.valueOf(ctr));
 
                 int moduleCounter = 1;
-                for (DecompositionTree child : composition.getChildren()) {
+                for (final DecompositionTree child : composition.getChildren()) {
                     if (this.framework.getComposableModule(child.getLabel()) != null
                             || this.framework.getCompositionalStructure(child.getLabel()) != null) {
-                        Pair<Pair<String, String>, Integer> childCode = this
+                        final Pair<Pair<String, String>, Integer> childCode = this
                                 .getCCodeFromComposition(child, ctr + 1);
 
                         body += childCode.getFirstValue().getSecondValue() + "\n";
@@ -130,8 +112,9 @@ public class CCodeGenerator {
                                 childCode.getFirstValue().getFirstValue());
                         moduleCounter++;
                     } else if (this.framework.getComponent(child.getLabel()) != null) {
-                        Component currentComponent = this.framework.getComponent(child.getLabel());
-                        ComponentType type = currentComponent.getType();
+                        final Component currentComponent = this.framework
+                                .getComponent(child.getLabel());
+                        final ComponentType type = currentComponent.getType();
 
                         if (type.getName().equals("aggregator")) {
                             structureTemplate = structureTemplate.replace("$AGGREGATOR",
@@ -158,6 +141,25 @@ public class CCodeGenerator {
         }
 
         return new Pair<Pair<String, String>, Integer>(new Pair<String, String>(head, body), ctr);
+    }
+
+    public File getCCodeFromComposition(final String compositionString) {
+        final DecompositionTree composition = DecompositionTree.parseString(compositionString);
+        final String cCode = "";
+
+        final String entryName = "composition";
+
+        final Pair<Pair<String, String>, Integer> res = this.getCCodeFromComposition(composition,
+                0);
+
+        String fileContents = this.codeFileTemplate.replace("$CONTENT",
+                res.getFirstValue().getSecondValue());
+        fileContents = fileContents.replace("$ENTRY", res.getFirstValue().getFirstValue());
+
+        final File result = new File("target/generated-sources/voting_rule.c");
+        (new SimpleFileWriter()).writeToFile(result.getAbsolutePath(), fileContents);
+
+        return result;
     }
 
 }

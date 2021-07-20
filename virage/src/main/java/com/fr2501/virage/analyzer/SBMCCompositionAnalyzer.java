@@ -40,7 +40,7 @@
 //import javafx.application.Platform;
 //
 ///**
-// * 
+// *
 // * A {@link CompositionAnalyzer} that can use SBMC via BEAST
 // *
 // */
@@ -71,25 +71,25 @@
 //    // TODO: Fix me
 //    /*
 //     * final class BEASTMainRunner implements Runnable {
-//     * 
+//     *
 //     * @Override public void run() { MainApplicationClass.main(new String[0]); } }
-//     * 
+//     *
 //     * Thread beastThread = new Thread(new BEASTMainRunner()); beastThread.start();
 //     */
 //  }
 //
 //  @Override
-//  public List<SearchResult<BooleanWithUncertainty>> 
+//  public List<SearchResult<BooleanWithUncertainty>>
 //    analyzeComposition(DecompositionTree composition,
 //      List<Property> properties) {
-//    List<SearchResult<BooleanWithUncertainty>> res = 
+//    List<SearchResult<BooleanWithUncertainty>> res =
 //      new LinkedList<SearchResult<BooleanWithUncertainty>>();
 //
 //    for (Property property : properties) {
 //      List<Property> singleProp = new LinkedList<Property>();
 //      singleProp.add(property);
 //
-//      List<SearchResult<BooleanWithUncertainty>> superResults = 
+//      List<SearchResult<BooleanWithUncertainty>> superResults =
 //        super.analyzeComposition(composition, singleProp);
 //
 //      // Single property, single result.
@@ -122,9 +122,9 @@
 //
 
 //
-//  private SearchResult<BooleanWithUncertainty> 
+//  private SearchResult<BooleanWithUncertainty>
 //    runSBMCCheck(DecompositionTree composition, Property property) {
-//    final BlockingQueue<SearchResult<BooleanWithUncertainty>> queue = 
+//    final BlockingQueue<SearchResult<BooleanWithUncertainty>> queue =
 //      new LinkedBlockingQueue<SearchResult<BooleanWithUncertainty>>();
 //
 //    // Make sure BEAST is started and ready.
@@ -139,10 +139,10 @@
 //    Platform.runLater(new Runnable() {
 //      @Override
 //      public synchronized void run() {
-//        SearchResult<BooleanWithUncertainty> res 
+//        SearchResult<BooleanWithUncertainty> res
 //          = new SearchResult<BooleanWithUncertainty>(QueryState.FAILED, null);
 //
-//        ElectionDescription elecDesc 
+//        ElectionDescription elecDesc
 //          = new ElectionDescription("tmp", new Preference(), new CandidateList());
 //
 //        String[] lines = elecDescCode.split("\n");
@@ -159,7 +159,7 @@
 //        }
 //
 //        elecDesc.setCode(elecDescCode);
-//        elecDesc.setLockedPositions(offset, offset + lines[lockedLine].length(), 
+//        elecDesc.setLockedPositions(offset, offset + lines[lockedLine].length(),
 //          elecDescCode.length() - 1);
 //        elecDesc.setNotNew();
 //

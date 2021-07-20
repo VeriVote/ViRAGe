@@ -7,16 +7,28 @@ import com.fr2501.virage.core.VirageUserInterface;
  *
  */
 public abstract class VirageJobWithExplicitResult<T> extends VirageJob<T> {
+    /**
+     * The result of this job.
+     */
     protected T result;
 
-    public VirageJobWithExplicitResult(VirageUserInterface issuer) {
+    /**
+     * Simple constructor.
+     *
+     * @param issuer the issuing ui
+     */
+    public VirageJobWithExplicitResult(final VirageUserInterface issuer) {
         super(issuer);
     }
 
-    public T getResult() {
+    @Override
+    public final T getResult() {
         return this.result;
     }
 
+    /**
+     * Safe to override.
+     */
     @Override
     public String toString() {
         String res = super.toString();

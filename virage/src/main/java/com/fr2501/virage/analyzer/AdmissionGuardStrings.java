@@ -5,7 +5,13 @@ package com.fr2501.virage.analyzer;
  *
  */
 public class AdmissionGuardStrings {
+    /**
+     * Prefix for admission guard predicates.
+     */
     public static final String ADMITS = "admits_";
+
+    /**
+     * Suffix for admission guard predicates.
+     */
     public static final String SUFFIX = "_wa";
-    public static final String ORIGIN = "ASSUMPTION";
 }

@@ -2,8 +2,9 @@ package com.fr2501.virage.test.unit;
 
 import static org.junit.Assert.assertTrue;
 
-import com.fr2501.virage.prolog.PrologProof;
 import org.junit.Test;
+
+import com.fr2501.virage.prolog.PrologProof;
 
 /**
  * Test suite for {@link PrologProof}.
@@ -12,7 +13,7 @@ import org.junit.Test;
 public class PrologProofTest {
     @Test
     public void testSmcMonotone() {
-        String input = "subgoal(monotone(sequential_composition(loop_composition("
+        final String input = "subgoal(monotone(sequential_composition(loop_composition("
                 + "parallel_composition(sequential_composition(pass_module(2),"
                 + "sequential_composition(downgrade(plurality_module), pass_module(1))),"
                 + " drop_module(2), max_aggregator), defer_eq_condition"
@@ -61,7 +62,7 @@ public class PrologProofTest {
                 + "aggregator), defer_eq_condition(1)), 1), true), \nsubgoal("
                 + "electing(elect_module), true)))))";
 
-        String reference = "monotone(sequential_composition(loop_composition(parallel_composition("
+        final String reference = "monotone(sequential_composition(loop_composition(parallel_composition("
                 + "sequential_composition(pass_module(2),sequential_composition("
                 + "downgrade(plurality_module),"
                 + "pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)),elect_module))\n"
@@ -108,7 +109,7 @@ public class PrologProofTest {
                 + "sequential_composition(downgrade(plurality_module),pass_module(1))),drop_module(2),"
                 + "max_aggregator),defer_eq_condition(1)),1)\n" + "	electing(elect_module)";
 
-        PrologProof proof = PrologProof.createProofFromString(input);
+        final PrologProof proof = PrologProof.createProofFromString(input);
 
         assertTrue(proof.toString().equals(reference));
     }

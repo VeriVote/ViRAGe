@@ -5,7 +5,7 @@
 //import edu.pse.beast.types.cbmctypes.outputplugins.CandidateList;
 //
 ///**
-// * 
+// *
 // * Generates {@link ElectionDescription}s as required by BEAST
 // *
 // */

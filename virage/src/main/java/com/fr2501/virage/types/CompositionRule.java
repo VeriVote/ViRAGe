@@ -1,27 +1,28 @@
 package com.fr2501.virage.types;
 
+import java.util.List;
+
 import com.fr2501.virage.prolog.PrologClause;
 import com.fr2501.virage.prolog.PrologPredicate;
-import java.util.List;
 
 /**
  * A composition rule stating different kinds of relations between components, compositional
  * structures and properties.
  *
  */
-public class CompositionRule implements Comparable<CompositionRule> {
-    private String name;
-    private String origin;
-    private PrologClause clause;
+public final class CompositionRule implements Comparable<CompositionRule> {
+    private final String name;
+    private final String origin;
+    private final PrologClause clause;
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param name the name
      * @param origin the origin
      * @param clause the clause
      */
-    public CompositionRule(String name, String origin, PrologClause clause) {
+    public CompositionRule(final String name, final String origin, final PrologClause clause) {
         this.name = name;
         this.origin = origin;
 
@@ -29,50 +30,8 @@ public class CompositionRule implements Comparable<CompositionRule> {
         this.clause = clause;
     }
 
-    public String getName() {
-        return this.name;
-    }
-
-    public String getOrigin() {
-        return this.origin;
-    }
-
-    public PrologClause getClause() {
-        return this.clause;
-    }
-
-    public List<PrologPredicate> getAntecedents() {
-        return this.clause.getAntecedents();
-    }
-
-    public PrologPredicate getSuccedent() {
-        return this.clause.getSuccedent();
-    }
-
     @Override
-    public String toString() {
-        String res = this.name + ": " + clause.toString() + " (from " + this.origin + ")";
-
-        return res;
-    }
-
-    /**
-     * Retrieves a representation of this in the EPL format.
-     * 
-     * @return the string representation
-     */
-    public String toEplString() {
-        String res = "";
-
-        res += "% = " + this.origin + "\n";
-        res += "% " + this.name + "\n";
-        res += this.clause.toString() + "\n";
-
-        return res;
-    }
-
-    @Override
-    public int compareTo(CompositionRule rule) {
+    public int compareTo(final CompositionRule rule) {
         if (this.equals(rule)) {
             return 0;
         }
@@ -91,48 +50,91 @@ public class CompositionRule implements Comparable<CompositionRule> {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((clause == null) ? 0 : clause.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((origin == null) ? 0 : origin.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (this.getClass() != obj.getClass()) {
             return false;
         }
-        CompositionRule other = (CompositionRule) obj;
-        if (clause == null) {
+        final CompositionRule other = (CompositionRule) obj;
+        if (this.clause == null) {
             if (other.clause != null) {
                 return false;
             }
-        } else if (!clause.equals(other.clause)) {
+        } else if (!this.clause.equals(other.clause)) {
             return false;
         }
-        if (name == null) {
+        if (this.name == null) {
             if (other.name != null) {
                 return false;
             }
-        } else if (!name.equals(other.name)) {
+        } else if (!this.name.equals(other.name)) {
             return false;
         }
-        if (origin == null) {
+        if (this.origin == null) {
             if (other.origin != null) {
                 return false;
             }
-        } else if (!origin.equals(other.origin)) {
+        } else if (!this.origin.equals(other.origin)) {
             return false;
         }
         return true;
+    }
+
+    public List<PrologPredicate> getAntecedents() {
+        return this.clause.getAntecedents();
+    }
+
+    public PrologClause getClause() {
+        return this.clause;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getOrigin() {
+        return this.origin;
+    }
+
+    public PrologPredicate getSuccedent() {
+        return this.clause.getSuccedent();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.clause == null) ? 0 : this.clause.hashCode());
+        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        result = prime * result + ((this.origin == null) ? 0 : this.origin.hashCode());
+        return result;
+    }
+
+    /**
+     * Retrieves a representation of this in the EPL format.
+     *
+     * @return the string representation
+     */
+    public String toEplString() {
+        String res = "";
+
+        res += "% = " + this.origin + "\n";
+        res += "% " + this.name + "\n";
+        res += this.clause.toString() + "\n";
+
+        return res;
+    }
+
+    @Override
+    public String toString() {
+        final String res = this.name + ": " + this.clause.toString() + " (from " + this.origin
+                + ")";
+
+        return res;
     }
 }

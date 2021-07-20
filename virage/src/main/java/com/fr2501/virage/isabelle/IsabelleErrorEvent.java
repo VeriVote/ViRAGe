@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class IsabelleErrorEvent extends IsabelleEvent {
 
-    public IsabelleErrorEvent(Map<String, String> parameters) {
+    public IsabelleErrorEvent(final Map<String, String> parameters) {
         super(parameters);
     }
 
