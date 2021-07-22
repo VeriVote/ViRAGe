@@ -9,9 +9,20 @@ import com.fr2501.virage.prolog.QueryState;
  * @param <T> the type of the encapsulated value
  */
 public final class SearchResult<T> {
+    /**
+     * The state of this query.
+     */
     private QueryState state;
+    /**
+     * The result value.
+     */
     private T value;
 
+    /**
+     * Simple constructor.
+     * @param state the state
+     * @param value the value
+     */
     public SearchResult(final QueryState state, final T value) {
         this.state = state;
         this.value = value;
@@ -40,7 +51,7 @@ public final class SearchResult<T> {
      * @return true if {@code this} has a value different from null, false otherwise
      */
     public boolean hasValue() {
-        return (this.value != null);
+        return this.value != null;
     }
 
     public synchronized void setState(final QueryState state) {

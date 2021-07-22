@@ -45,9 +45,9 @@ public interface CompositionAnalyzer {
      *
      * @param composition the composition to be used
      * @param properties the properties that shall be proven to be satisfied by the composition
-     * @return a list of {@link PrologProof}s, ordered the same way as the properties
+     * @return a list of {@link CompositionProof}s, ordered the same way as the properties
      * @throws IllegalArgumentException if no proof can be generated (i.e. asked to prove a
-     * non-provable claim)
+     *      non-provable claim)
      */
     public List<CompositionProof> proveClaims(DecompositionTree composition,
             List<Property> properties) throws IllegalArgumentException;

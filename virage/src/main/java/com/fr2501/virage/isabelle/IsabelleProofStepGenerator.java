@@ -22,14 +22,14 @@ import com.fr2501.virage.types.CompositionRule;
  *
  */
 public class IsabelleProofStepGenerator {
-    private static final Logger logger = LogManager.getLogger(IsabelleProofStepGenerator.class);
-    private static String PROOF_STEP_TEMPLATE = "";
+    private static final Logger LOGGER = LogManager.getLogger(IsabelleProofStepGenerator.class);
+    private static String proofStepTemplate = "";
 
-    private static String VAR_GOAL_ID = "$GOAL_ID";
-    private static String VAR_GOAL = "$GOAL";
-    private static String VAR_SUBGOAL_IDS = "$SUBGOAL_IDS";
-    private static String VAR_RULE = "$RULE";
-    private static String VAR_SOLVER = "$SOLVER";
+    private static String varGoalId = "$GOAL_ID";
+    private static String varGoal = "$GOAL";
+    private static String varSubgoalIds = "$SUBGOAL_IDS";
+    private static String varRule = "$RULE";
+    private static String varSolver = "$SOLVER";
 
     private final Map<String, String> functionsAndDefinitions;
     private final PrologParser parser;
@@ -43,17 +43,17 @@ public class IsabelleProofStepGenerator {
      */
     public IsabelleProofStepGenerator(final IsabelleProofGenerator parent,
             final Map<String, String> functionsAndDefinitions) {
-        if (PROOF_STEP_TEMPLATE.isEmpty()) {
+        if (proofStepTemplate.isEmpty()) {
             final InputStream proofStepTemplateStream = this.getClass().getClassLoader()
                     .getResourceAsStream("proof_step.template");
             final StringWriter writer = new StringWriter();
             try {
                 IOUtils.copy(proofStepTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
-                logger.error("Something went wrong.", e);
+                LOGGER.error("Something went wrong.", e);
                 e.printStackTrace();
             }
-            PROOF_STEP_TEMPLATE = writer.toString();
+            proofStepTemplate = writer.toString();
         }
 
         this.functionsAndDefinitions = functionsAndDefinitions;
@@ -112,13 +112,13 @@ public class IsabelleProofStepGenerator {
 
     private String replaceVariables(final String goalId, final String goal, final String subgoalIds,
             final String rule, final String solver) {
-        String res = PROOF_STEP_TEMPLATE;
+        String res = proofStepTemplate;
 
-        res = res.replace(VAR_GOAL_ID, goalId);
-        res = res.replace(VAR_GOAL, goal);
-        res = res.replace(VAR_SUBGOAL_IDS, subgoalIds);
-        res = res.replace(VAR_RULE, rule);
-        res = res.replace(VAR_SOLVER, solver);
+        res = res.replace(varGoalId, goalId);
+        res = res.replace(varGoal, goal);
+        res = res.replace(varSubgoalIds, subgoalIds);
+        res = res.replace(varRule, rule);
+        res = res.replace(varSolver, solver);
 
         return res;
     }

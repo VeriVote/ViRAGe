@@ -7,7 +7,7 @@ import java.util.List;
  * A simple implementation of the {@link PrologParser} interface.
  *
  */
-public class SimplePrologParser implements PrologParser {
+public final class SimplePrologParser implements PrologParser {
     @Override
     public PrologPredicate parsePredicate(final String string) {
         if (string.isEmpty()) {
@@ -132,7 +132,7 @@ public class SimplePrologParser implements PrologParser {
                         currentPredicate += current;
                     }
 
-                    res.add((this.parsePredicate(currentPredicate)));
+                    res.add(this.parsePredicate(currentPredicate));
                     currentPredicate = "";
                     continue;
                 }

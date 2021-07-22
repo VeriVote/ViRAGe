@@ -5,12 +5,18 @@ package com.fr2501.util;
  *
  */
 public class ThreadSignal {
+    /**
+     * True if finished, false otherwise.
+     */
     private boolean finished;
 
     private synchronized boolean getFinished() {
         return this.finished;
     }
 
+    /**
+     * Set signal to finished.
+     */
     public synchronized void finish() {
         this.finished = true;
     }

@@ -12,7 +12,13 @@ import com.fr2501.virage.types.Property;
  *
  */
 public class TestDataGenerator {
+    /**
+     * The compositional framework.
+     */
     private final FrameworkRepresentation framework;
+    /**
+     * All unary properties of this.framework.
+     */
     private final List<Property> eligibleProperties;
 
     /**
@@ -41,27 +47,6 @@ public class TestDataGenerator {
     }
 
     /**
-     * Returns random sets of unary properties.
-     *
-     * @param amount size of the set to be generated
-     * @return the set of properties
-     */
-    public List<Property> getRandomComposableModuleProperties(final int amount) {
-        if (amount > this.eligibleProperties.size()) {
-            throw new IllegalArgumentException();
-        }
-
-        final List<Property> res = new LinkedList<Property>();
-
-        while (res.size() != amount) {
-            final int idx = (int) (this.eligibleProperties.size() * Math.random());
-            res.add(this.eligibleProperties.get(idx));
-        }
-
-        return res;
-    }
-
-    /**
      * Returns the power set of unary properties within a compositional framework.
      *
      * @return all possible combinations of properties
@@ -81,6 +66,28 @@ public class TestDataGenerator {
                     res.get(j).add(p);
                 }
             }
+        }
+
+        return res;
+    }
+
+    /**
+     * Returns random sets of unary properties.
+     *
+     * @param amount size of the set to be generated
+     * @return the set of properties
+     */
+    public List<Property> getRandomComposableModuleProperties(final int amount)
+            throws IllegalArgumentException {
+        if (amount > this.eligibleProperties.size()) {
+            throw new IllegalArgumentException();
+        }
+
+        final List<Property> res = new LinkedList<Property>();
+
+        while (res.size() != amount) {
+            final int idx = (int) (this.eligibleProperties.size() * Math.random());
+            res.add(this.eligibleProperties.get(idx));
         }
 
         return res;

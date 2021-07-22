@@ -114,7 +114,7 @@ public final class ConfigReader {
                     .runTerminatingProcess(this.getIsabelleExecutable() + " scalac -version")
             .getFirstValue();
         } catch (final IOException e) {
-            res += ("Isabelle: \t\tNOT FOUND\n");
+            res += "Isabelle: \t\tNOT FOUND\n";
             this.isabelleAvailable = false;
         } catch (final InterruptedException e) {
             // TODO Auto-generated catch block
@@ -146,7 +146,7 @@ public final class ConfigReader {
             this.swiplAvailable = false;
         }
 
-        res += ("JPL: \t\t\t" + JPL.version_string());
+        res += "JPL: \t\t\t" + JPL.version_string();
 
         return res;
     }
@@ -182,7 +182,7 @@ public final class ConfigReader {
                 .runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME")
                 .getFirstValue();
 
-        return (output.split("=")[1].trim());
+        return output.split("=")[1].trim();
     }
 
     private String computeIsabelleSessionDir()
@@ -191,7 +191,7 @@ public final class ConfigReader {
                 .runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME_USER")
                 .getFirstValue();
 
-        return (output.split("=")[1].trim());
+        return output.split("=")[1].trim();
     }
 
     public void copyConfigToExpectedPath() throws IOException {

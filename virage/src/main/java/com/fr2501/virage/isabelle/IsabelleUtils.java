@@ -33,7 +33,7 @@ public class IsabelleUtils {
     /**
      * Simple types offered by Isabelle/HOL.
      */
-    public static final String[] SIMPLE_TYPES = { "Nat.nat", "HOL.bool" };
+    public static final String[] SIMPLE_TYPES = {"Nat.nat", "HOL.bool"};
 
     /**
      * String used by Isabelle to denote the line stating imported theories.
@@ -46,10 +46,10 @@ public class IsabelleUtils {
      * capitalization.
      *
      * @param functionsAndDefinitions all functions and definitions given within the current
-     * Isabelle folder
+     *      Isabelle folder
      * @param predicate the predicate to be mapped
      * @return a map containing the Isabelle String and a set of all files that need to be imported
-     * for it to be fully known in the current file
+     *       for it to be fully known in the current file
      */
     public static Map<String, Set<String>> translatePrologToIsabelle(
             final Map<String, String> functionsAndDefinitions, final String predicate) {
@@ -87,10 +87,10 @@ public class IsabelleUtils {
      * capitalization.
      *
      * @param functionsAndDefinitions all functions and definitions given within the current
-     * Isabelle folder
+     *      Isabelle folder
      * @param predicate the predicate to be mapped
      * @return a map containing the Isabelle String and a set of all files that need to be imported
-     * for it to be fully known in the current file
+     *      for it to be fully known in the current file
      */
     public static Map<String, Set<String>> translatePrologToIsabelle(
             final Map<String, String> functionsAndDefinitions, final PrologPredicate predicate) {

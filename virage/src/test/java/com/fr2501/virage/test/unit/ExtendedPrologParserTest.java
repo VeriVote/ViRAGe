@@ -20,11 +20,11 @@ import com.fr2501.virage.types.FrameworkRepresentation;
  *
  */
 public class ExtendedPrologParserTest {
-    private final Logger logger = LogManager.getLogger(ExtendedPrologParserTest.class);
+    private final Logger LOGGER = LogManager.getLogger(ExtendedPrologParserTest.class);
 
     @Test(expected = FileNotFoundException.class)
     public void loadNonExistingFile() throws IOException, MalformedEplFileException {
-        this.logger.info("loadNonExistingFile()");
+        this.LOGGER.info("loadNonExistingFile()");
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
         parser.parseFramework(new File(""), false);
@@ -32,7 +32,7 @@ public class ExtendedPrologParserTest {
 
     @Test(expected = MalformedEplFileException.class)
     public void loadInvalidFile() throws IOException, MalformedEplFileException {
-        this.logger.info("loadInvalidFile()");
+        this.LOGGER.info("loadInvalidFile()");
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
         parser.parseFramework(new File("src/test/resources/invalid_test.pl"), false);
@@ -49,7 +49,7 @@ public class ExtendedPrologParserTest {
      * @throws MalformedEplFileException if the file violates the EPL format
      */
     public void loadValidFile() throws IOException, MalformedEplFileException {
-        this.logger.info("loadValidFile()");
+        this.LOGGER.info("loadValidFile()");
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
         final FrameworkRepresentation framework = parser
@@ -65,11 +65,11 @@ public class ExtendedPrologParserTest {
 
     @Test
     public void loadFrameworkFile() throws IOException, MalformedEplFileException {
-        this.logger.info("loadFrameworkFile()");
+        this.LOGGER.info("loadFrameworkFile()");
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
         final FrameworkRepresentation framework = parser
                 .parseFramework(new File("src/test/resources/framework.pl"), false);
-        this.logger.debug(framework.toString());
+        this.LOGGER.debug(framework.toString());
     }
 }

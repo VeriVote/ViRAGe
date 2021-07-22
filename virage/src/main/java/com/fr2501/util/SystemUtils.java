@@ -15,10 +15,14 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class SystemUtils {
-    private static Logger logger = LogManager.getRootLogger();
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     // See
-    // https://stackoverflow.com/questions/5419039/is-djava-library-path-equivalent-to-system-setpropertyjava-library-path
+    // https://stackoverflow.com/questions/5419039/
+    // is-djava-library-path-equivalent-to-system-setpropertyjava-library-path
     /**
      * A method to add paths to LD_LIBRARY_PATH. If possible, do not use this.
      *
@@ -51,6 +55,10 @@ public class SystemUtils {
         }
     }
 
+    /**
+     * Returns current time (yyyy-MM-dd HH:mm:ss).
+     * @return the time
+     */
     public static String getTime() {
         final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         final LocalDateTime now = LocalDateTime.now();
@@ -67,8 +75,8 @@ public class SystemUtils {
      */
     @SuppressWarnings("unchecked")
     public static void setUnixEnvironmentVariable(final String name, final String value) {
-        logger.info("Attempting to change environment variable " + name + " to " + value);
-        logger.info("Old value: " + System.getenv(name));
+        LOGGER.info("Attempting to change environment variable " + name + " to " + value);
+        LOGGER.info("Old value: " + System.getenv(name));
 
         final Map<String, String> env = System.getenv();
 
@@ -92,9 +100,9 @@ public class SystemUtils {
             e.printStackTrace();
         }
 
-        logger.info("New value: " + System.getenv(name));
+        LOGGER.info("New value: " + System.getenv(name));
         if (!System.getenv(name).equals(value)) {
-            logger.error("Setting environment variable " + name + " to " + value + " failed.");
+            LOGGER.error("Setting environment variable " + name + " to " + value + " failed.");
         }
     }
 }

@@ -31,7 +31,7 @@ import com.fr2501.virage.types.ValueNotPresentException;
  *
  */
 public final class JplFacade {
-    private static final Logger logger = LogManager.getLogger(JplFacade.class);
+    private static final Logger LOGGER = LogManager.getLogger(JplFacade.class);
     private static final long DEFAULT_TIMEOUT = 10000;
 
     private static int fileCounter;
@@ -82,7 +82,7 @@ public final class JplFacade {
             final Query compatQuery = new Query("subsumes_term(X,Y)");
             compatQuery.hasSolution();
         } catch (final JPLException e) {
-            logger.warn("Outdated version of SWI-Prolog detected. "
+            LOGGER.warn("Outdated version of SWI-Prolog detected. "
                     + "ViRAGe attempts to run in compatibility mode, but results might be unexpected. "
                     + "Especially, queries that result in Prolog terms containing variables will "
                     + "always fail.\n"
@@ -212,10 +212,10 @@ public final class JplFacade {
         }
 
         Compound toReturn = new Compound(",",
-                new Term[] { terms.get(predCount - 2), terms.get(predCount - 1) });
+                new Term[] {terms.get(predCount - 2), terms.get(predCount - 1)});
 
         for (int i = predCount - 3; i > 0; i--) {
-            toReturn = new Compound(",", new Term[] { terms.get(i), toReturn });
+            toReturn = new Compound(",", new Term[] {terms.get(i), toReturn});
         }
 
         return toReturn;
@@ -237,7 +237,7 @@ public final class JplFacade {
      * @param path path to the file
      */
     public void consultFile(final String path) {
-        final Query q = new Query("consult", new Term[] { new Atom(path) });
+        final Query q = new Query("consult", new Term[] {new Atom(path)});
         q.hasSolution();
     }
 
@@ -252,10 +252,10 @@ public final class JplFacade {
             fileCounter++;
             dest.deleteOnExit();
             FileUtils.copyURLToFile(url, dest);
-            logger.debug(dest.getAbsolutePath());
+            LOGGER.debug(dest.getAbsolutePath());
             this.consultFile(dest.getAbsolutePath());
         } catch (final IOException e) {
-            logger.error("Something went wrong.", e);
+            LOGGER.error("Something went wrong.", e);
         }
     }
 
@@ -283,7 +283,7 @@ public final class JplFacade {
 
         int maxDepth = 0;
         while (System.currentTimeMillis() < endTime) {
-            logger.debug("Current maxDepth: " + maxDepth);
+            LOGGER.debug("Current maxDepth: " + maxDepth);
             final long remainingTime = endTime - System.currentTimeMillis();
             final String actualQuery = "call_with_depth_limit(" + "(" + queryString + ")" + ","
                     + maxDepth + "," + unusedVariable + ")";
@@ -353,7 +353,7 @@ public final class JplFacade {
 
         int maxDepth = 0;
         while (System.currentTimeMillis() < endTime) {
-            logger.debug("Current maxDepth: " + maxDepth);
+            LOGGER.debug("Current maxDepth: " + maxDepth);
             final long remainingTime = endTime - System.currentTimeMillis();
             final String actualQuery = "call_with_depth_limit(" + "(" + queryString + ")" + ","
                     + maxDepth + "," + unusedVariable + ")";
@@ -421,12 +421,12 @@ public final class JplFacade {
      * @param queryString the query
      * @param timeout the timeout
      * @return a {@link Map} containing the result. If no solution is found within timeout, an empty
-     * Map is returned. If no solution exists, return null.
+     *      Map is returned. If no solution exists, return null.
      * @throws PrologException if query is malformed.
      */
     public Map<String, String> simpleQueryWithTimeout(final String queryString, final long timeout)
             throws PrologException {
-        final float timeoutInSeconds = (timeout) / 1000.0f;
+        final float timeoutInSeconds = timeout / 1000.0f;
 
         final String actualQuery = "call_with_time_limit(" + timeoutInSeconds + "," + "("
                 + queryString + ")" + ")";
@@ -450,7 +450,7 @@ public final class JplFacade {
                     return result;
                 } catch (final JPLException e) {
                     if (this.compatibilityMode) {
-                        logger.error(
+                        LOGGER.error(
                                 "The JPL/SWI-Prolog compatibility mode was unable to handle this query. "
                                         + "Please consider upgrading at least to SWI-Prolog 8.0.0.");
 
@@ -464,7 +464,7 @@ public final class JplFacade {
             }
         } catch (final PrologException e) {
             if (!e.getMessage().equals("PrologException: time_limit_exceeded")) {
-                logger.error("A Prolog error occured.");
+                LOGGER.error("A Prolog error occured.");
                 throw e;
             }
 

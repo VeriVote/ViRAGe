@@ -8,7 +8,10 @@ import com.fr2501.virage.core.VirageUserInterface;
  *
  */
 public final class VirageDummyJob extends VirageJobWithoutExplicitResult {
-
+    /**
+     * Simple constructor.
+     * @param issuer the issuing UI.
+     */
     public VirageDummyJob(final VirageUserInterface issuer) {
         super(issuer);
     }

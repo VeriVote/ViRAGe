@@ -29,12 +29,28 @@ import com.fr2501.virage.types.ValueNotPresentException;
  *
  */
 public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
-    private static final Logger logger = LogManager.getLogger();
-
+    /**
+     * True if resources/meta_interpreter.pl is loaded, false otherwise.
+     */
     protected static boolean loadedMetaInterpreter;
 
+    /**
+     * The default timeout.
+     */
     protected static final long DEFAULT_TIMEOUT = 10000;
+
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    /**
+     * The JPL facade.
+     */
     protected JplFacade facade;
+    /**
+     * The current Compositional Framework.
+     */
     protected FrameworkRepresentation framework;
 
     /**
@@ -46,7 +62,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
      */
     public SimplePrologCompositionAnalyzer(final FrameworkRepresentation framework)
             throws IOException, ExternalSoftwareUnavailableException {
-        logger.info("Initialising SimplePrologCompositionAnalyzer.");
+        LOGGER.info("Initialising SimplePrologCompositionAnalyzer.");
         this.framework = framework;
 
         this.facade = new JplFacade(DEFAULT_TIMEOUT);
@@ -92,6 +108,107 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
         return result;
     }
 
+    @Override
+    public SearchResult<DecompositionTree> generateComposition(final List<Property> properties) {
+        for (final Property property : properties) {
+            if (property.getArity() != 1) {
+                throw new IllegalArgumentException(
+                        "For now, only unary " + "properties can be used in queries.");
+            }
+        }
+
+        // Safety measure to ensure all properties talking about the same element.
+        final List<String> propertyStrings = new LinkedList<String>();
+        for (final Property property : properties) {
+            propertyStrings.add(property.getInstantiatedString("X"));
+        }
+
+        final String query = StringUtils.printCollection(propertyStrings);
+
+        final SearchResult<Map<String, String>> result = this.facade.iterativeDeepeningQuery(query);
+
+        Map<String, String> resultMap = null;
+        if (result.hasValue()) {
+            try {
+                resultMap = result.getValue();
+            } catch (final ValueNotPresentException e) {
+                // This should never happen.
+                LOGGER.warn("This should not have happened.");
+                LOGGER.warn(e);
+            }
+
+            final String solution = resultMap.get("X");
+            final DecompositionTree solutionTree = DecompositionTree.parseString(solution);
+
+            return new SearchResult<DecompositionTree>(result.getState(), solutionTree);
+        } else {
+            return new SearchResult<DecompositionTree>(result.getState(), null);
+        }
+    }
+
+    @Override
+    public List<CompositionProof> proveClaims(final DecompositionTree composition,
+            final List<Property> properties) {
+        final List<PrologProof> proofs = new LinkedList<PrologProof>();
+
+        for (final Property property : properties) {
+            if (property.getArity() != 1) {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        final String votingRule = composition.toString();
+
+        for (final Property property : properties) {
+            // This is fine as it's the only variable.
+            final String proofVariable = "P";
+            final String query = "prove((" + property.getInstantiatedString(votingRule) + "),"
+                    + proofVariable + ")";
+
+            LOGGER.debug(query);
+
+            // Disabling timeout as these queries are typically fast
+            final long oldTimeout = this.facade.getTimeout();
+            this.facade.setTimeout(Integer.MAX_VALUE / 2);
+            final SearchResult<Map<String, String>> result = this.facade
+                    .iterativeDeepeningQuery(query);
+            this.facade.setTimeout(oldTimeout);
+
+            if (result.hasValue()) {
+                try {
+                    final Map<String, String> map = result.getValue();
+
+                    if (map.containsKey(proofVariable)) {
+                        LOGGER.debug(map.get(proofVariable));
+
+                        proofs.add(PrologProof.createProofFromString(map.get(proofVariable)));
+                    } else {
+                        throw new IllegalArgumentException();
+                    }
+                } catch (final ValueNotPresentException e) {
+                    throw new IllegalArgumentException();
+                }
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        final List<CompositionProof> res = new LinkedList<CompositionProof>();
+        for (final PrologProof proof : proofs) {
+            res.add(this.findCompositionRules(proof));
+        }
+
+        return res;
+    }
+
+    @Override
+    public void setTimeout(final long millis) {
+        this.facade.setTimeout(millis);
+    }
+
+    /**
+     * Consults both the current (E)PL file and the resources/meta_interpreter.pl.
+     */
     protected void consultKnowledgeBase() {
         this.facade.consultFile(this.framework.getAbsolutePath());
 
@@ -175,103 +292,5 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
         }
 
         throw new IllegalArgumentException();
-    }
-
-    @Override
-    public SearchResult<DecompositionTree> generateComposition(final List<Property> properties) {
-        for (final Property property : properties) {
-            if (property.getArity() != 1) {
-                throw new IllegalArgumentException(
-                        "For now, only unary " + "properties can be used in queries.");
-            }
-        }
-
-        // Safety measure to ensure all properties talking about the same element.
-        final List<String> propertyStrings = new LinkedList<String>();
-        for (final Property property : properties) {
-            propertyStrings.add(property.getInstantiatedString("X"));
-        }
-
-        final String query = StringUtils.printCollection(propertyStrings);
-
-        final SearchResult<Map<String, String>> result = this.facade.iterativeDeepeningQuery(query);
-
-        Map<String, String> resultMap = null;
-        if (result.hasValue()) {
-            try {
-                resultMap = result.getValue();
-            } catch (final ValueNotPresentException e) {
-                // This should never happen.
-                logger.warn("This should not have happened.");
-                logger.warn(e);
-            }
-
-            final String solution = resultMap.get("X");
-            final DecompositionTree solutionTree = DecompositionTree.parseString(solution);
-
-            return new SearchResult<DecompositionTree>(result.getState(), solutionTree);
-        } else {
-            return new SearchResult<DecompositionTree>(result.getState(), null);
-        }
-    }
-
-    @Override
-    public List<CompositionProof> proveClaims(final DecompositionTree composition,
-            final List<Property> properties) {
-        final List<PrologProof> proofs = new LinkedList<PrologProof>();
-
-        for (final Property property : properties) {
-            if (property.getArity() != 1) {
-                throw new IllegalArgumentException();
-            }
-        }
-
-        final String votingRule = composition.toString();
-
-        for (final Property property : properties) {
-            // This is fine as it's the only variable.
-            final String proofVariable = "P";
-            final String query = "prove((" + property.getInstantiatedString(votingRule) + "),"
-                    + proofVariable + ")";
-
-            logger.debug(query);
-
-            // Disabling timeout as these queries are typically fast
-            final long oldTimeout = this.facade.getTimeout();
-            this.facade.setTimeout(Integer.MAX_VALUE / 2);
-            final SearchResult<Map<String, String>> result = this.facade
-                    .iterativeDeepeningQuery(query);
-            this.facade.setTimeout(oldTimeout);
-
-            if (result.hasValue()) {
-                try {
-                    final Map<String, String> map = result.getValue();
-
-                    if (map.containsKey(proofVariable)) {
-                        logger.debug(map.get(proofVariable));
-
-                        proofs.add(PrologProof.createProofFromString(map.get(proofVariable)));
-                    } else {
-                        throw new IllegalArgumentException();
-                    }
-                } catch (final ValueNotPresentException e) {
-                    throw new IllegalArgumentException();
-                }
-            } else {
-                throw new IllegalArgumentException();
-            }
-        }
-
-        final List<CompositionProof> res = new LinkedList<CompositionProof>();
-        for (final PrologProof proof : proofs) {
-            res.add(this.findCompositionRules(proof));
-        }
-
-        return res;
-    }
-
-    @Override
-    public void setTimeout(final long millis) {
-        this.facade.setTimeout(millis);
     }
 }

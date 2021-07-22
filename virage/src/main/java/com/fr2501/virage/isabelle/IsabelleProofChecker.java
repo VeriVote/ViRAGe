@@ -159,7 +159,7 @@ public final class IsabelleProofChecker {
 
     private void generateProofDocument(final File theory, final String adHocSessionName,
             final String theoryPath) throws IOException, InterruptedException,
-    IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+        IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
         final String generatedPath = theory.getParent();
 
         final File docFolder = new File(
@@ -335,17 +335,17 @@ public final class IsabelleProofChecker {
      */
     public Pair<Boolean, File> verifyTheoryFile(final File theory,
             final FrameworkRepresentation framework) throws IOException, InterruptedException {
-        String theoryPath = theory.getCanonicalPath();
+        String theoryPathLocal = theory.getCanonicalPath();
         this.parentName = framework.getSessionName();
 
-        if (theoryPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
-            theoryPath = theoryPath.substring(0,
-                    theoryPath.length() - IsabelleUtils.FILE_EXTENSION.length());
+        if (theoryPathLocal.endsWith(IsabelleUtils.FILE_EXTENSION)) {
+            theoryPathLocal = theoryPathLocal.substring(0,
+                    theoryPathLocal.length() - IsabelleUtils.FILE_EXTENSION.length());
         }
 
         logger.info("Starting to verify " + theory + ". This might take some time.");
         String command = "use_theories {\"session_id\": \"" + this.sessionId + "\", "
-                + "\"theories\": [\"" + theoryPath + "\"]}";
+                + "\"theories\": [\"" + theoryPathLocal + "\"]}";
         this.sendCommandAndWaitForTermination(command);
 
         final String result = this.lastEvent.getValue("ok");
@@ -368,7 +368,7 @@ public final class IsabelleProofChecker {
             final String errors = this.lastEvent.getValue("errors");
 
             command = "purge_theories {\"session_id\": \"" + this.sessionId + "\", "
-                    + "\"theories\": [\"" + theoryPath + "\"]}";
+                    + "\"theories\": [\"" + theoryPathLocal + "\"]}";
             this.sendCommandAndWaitForOk(command);
 
             final Pattern pattern = Pattern.compile("line=[0-9]+");

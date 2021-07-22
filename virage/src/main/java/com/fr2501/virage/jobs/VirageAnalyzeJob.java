@@ -18,12 +18,27 @@ import com.fr2501.virage.types.SearchResult;
  *
  */
 public final class VirageAnalyzeJob
-extends VirageJobWithExplicitResult<List<List<SearchResult<BooleanWithUncertainty>>>> {
+    extends VirageJobWithExplicitResult<List<List<SearchResult<BooleanWithUncertainty>>>> {
+    /**
+     * String representation of the desired properties.
+     */
     private final List<String> propertyStrings;
+    /**
+     * The desired properties.
+     */
     private List<Property> properties;
+    /**
+     * The composition.
+     */
     private final DecompositionTree tree;
 
+    /**
+     * The compositional framework.
+     */
     private FrameworkRepresentation framework;
+    /**
+     * The search manager.
+     */
     private VirageSearchManager manager;
 
     /**
@@ -57,7 +72,7 @@ extends VirageJobWithExplicitResult<List<List<SearchResult<BooleanWithUncertaint
 
     @Override
     public boolean externalSoftwareAvailable() {
-        return (ConfigReader.getInstance().hasJpl());
+        return ConfigReader.getInstance().hasJpl();
     }
 
     @Override

@@ -38,22 +38,62 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
 // This is required due to Commons CLI still recommending the deprecated way of building Options.
 @SuppressWarnings("deprecation")
 public final class VirageCore implements Runnable {
-    private static final Logger logger = LogManager.getLogger(VirageCore.class.getName());
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(VirageCore.class.getName());
 
-    private static final String _VERSION = "0.1.0";
+    /**
+     * ViRAGe versiom.
+     */
+    private static final String VERSION = "0.1.0";
 
+    /**
+     * Command line argument container.
+     */
     private CommandLine cl;
+    /**
+     * Command line arguments.
+     */
     private final String[] args;
+
+    /**
+     * The user interface.
+     */
     private VirageUserInterface ui;
 
+    /**
+     * The (E)PL parser.
+     */
     private ExtendedPrologParser extendedPrologParser;
+    /**
+     * The search manager.
+     */
     private VirageSearchManager searchManager;
+    /**
+     * The Isabelle theory generator.
+     */
     private IsabelleTheoryGenerator theoryGenerator;
+    /**
+     * The Isabelle proof checker.
+     */
     private IsabelleProofChecker checker;
+    /**
+     * The Isabelle Scala generator.
+     */
     private IsabelleCodeGenerator scalaCodeGenerator;
+    /**
+     * The C code generator.
+     */
     private CCodeGenerator cCodeGenerator;
+    /**
+     * The Compositional Framework.
+     */
     private FrameworkRepresentation framework;
 
+    /**
+     * The ViRAGeJob queue.
+     */
     private final BlockingQueue<VirageJob<?>> jobs;
 
     /**
@@ -62,14 +102,14 @@ public final class VirageCore implements Runnable {
      * @param args the arguments
      */
     public VirageCore(final String[] args) {
-        logger.info("Initialising VirageCore.");
+        LOGGER.info("Initialising VirageCore.");
 
         this.args = args;
         this.jobs = new LinkedBlockingQueue<VirageJob<?>>();
     }
 
     public static String getVersion() {
-        return _VERSION;
+        return VERSION;
     }
 
     /**
@@ -144,7 +184,7 @@ public final class VirageCore implements Runnable {
                     this.framework);
             this.cCodeGenerator = new CCodeGenerator(this.framework);
         } catch (final IOException e) {
-            logger.error(e);
+            LOGGER.error(e);
 
             unsafeState = true;
         } catch (final UnsatisfiedLinkError e) {
@@ -173,7 +213,8 @@ public final class VirageCore implements Runnable {
             final String newValue;
             try {
                 newValue = this.ui.requestString("Please input the path to libswipl.so.\n"
-                        + "For your setup of SWI-Prolog, typical values are \"/usr/lib/libswipl.so\" or \""
+                        + "For your setup of SWI-Prolog, "
+                        + "typical values are \"/usr/lib/libswipl.so\" or \""
                         + ConfigReader.getInstance().getSwiplLib() + "libswipl.so\""
                         + ", but this might differ on your system.");
 
@@ -187,7 +228,7 @@ public final class VirageCore implements Runnable {
 
             unsafeState = true;
         } catch (final JPLException e) {
-            logger.error("SWI-Prolog appears to be outdated. Please refer to ViRAGe's readme.", e);
+            LOGGER.error("SWI-Prolog appears to be outdated. Please refer to ViRAGe's readme.", e);
             unsafeState = true;
         }
 
@@ -234,7 +275,7 @@ public final class VirageCore implements Runnable {
         try {
             this.cl = parser.parse(options, args);
         } catch (final ParseException e) {
-            logger.fatal("Something went wrong while parsing the command line parameters.");
+            LOGGER.fatal("Something went wrong while parsing the command line parameters.");
 
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("ViRAGe", options);
@@ -252,13 +293,13 @@ public final class VirageCore implements Runnable {
         try {
             this.init(this.args);
         } catch (final ParseException e) {
-            logger.error("An error occured.", e);
+            LOGGER.error("An error occured.", e);
             return;
         }
 
         while (true) {
             if (!this.jobs.isEmpty()) {
-                logger.debug("VirageJob found.");
+                LOGGER.debug("VirageJob found.");
 
                 final VirageJob<?> job;
                 try {
@@ -274,7 +315,7 @@ public final class VirageCore implements Runnable {
                     // program. The type of exceptions is unknown, as
                     // job.execute can do virtually anything.
                 } catch (final Exception e) {
-                    logger.error("An error occured.", e);
+                    LOGGER.error("An error occured.", e);
                 }
             } else {
                 // No jobs, busy waiting
@@ -308,7 +349,7 @@ public final class VirageCore implements Runnable {
         if (!job.externalSoftwareAvailable()) {
             job.setState(VirageJobState.FAILED);
 
-            logger.warn("External software unavailable!");
+            LOGGER.warn("External software unavailable!");
 
             return;
         }

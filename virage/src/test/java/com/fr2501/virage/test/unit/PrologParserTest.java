@@ -19,11 +19,11 @@ import com.fr2501.virage.prolog.SimplePrologParser;
  *
  */
 public class PrologParserTest {
-    private static final Logger logger = LogManager.getLogger(PrologParserTest.class);
+    private static final Logger LOGGER = LogManager.getLogger(PrologParserTest.class);
 
     @Test(expected = IllegalArgumentException.class)
     public void parseEmptyClause() {
-        logger.info("parseEmptyClause()");
+        LOGGER.info("parseEmptyClause()");
         final String clause = "";
         final PrologParser parser = new SimplePrologParser();
 
@@ -32,7 +32,7 @@ public class PrologParserTest {
 
     @Test
     public void testEquals() {
-        logger.info("testEquals()");
+        LOGGER.info("testEquals()");
         {
             final PrologClause clause1 = new PrologClause(new PrologPredicate("a"));
             assertTrue(clause1.equals(clause1));
@@ -103,7 +103,7 @@ public class PrologParserTest {
 
     @Test
     public void parseFact() {
-        logger.info("parseFact()");
+        LOGGER.info("parseFact()");
         final String clause = "a.";
         final PrologClause res = new PrologClause(new PrologPredicate("a"));
 
@@ -116,7 +116,7 @@ public class PrologParserTest {
 
     @Test
     public void parseSimpleClause() {
-        logger.info("parseSimpleClause()");
+        LOGGER.info("parseSimpleClause()");
         final String clause = "a :- b,c.";
         final List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
         antecedents.add(new PrologPredicate("b"));
@@ -132,7 +132,7 @@ public class PrologParserTest {
 
     @Test
     public void parseComplexClause() {
-        logger.info("parseComplexClause()");
+        LOGGER.info("parseComplexClause()");
         final String clause = "a(X,Y) :- b,c(X),d(X,Y).";
 
         final List<PrologPredicate> x = new LinkedList<PrologPredicate>();
@@ -162,7 +162,7 @@ public class PrologParserTest {
 
     @Test
     public void parseRealClause() {
-        logger.info("parseRealClause()");
+        LOGGER.info("parseRealClause()");
         final String clause = "monotone(sequential_composition(X,Y)) "
                 + ":- defer_lift_invariant(X),non_electing(X),defers(X,1),electing(Y).";
 

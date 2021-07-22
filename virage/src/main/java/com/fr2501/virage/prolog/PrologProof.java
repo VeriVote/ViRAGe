@@ -3,9 +3,6 @@ package com.fr2501.virage.prolog;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fr2501.util.StringUtils;
 
 /**
@@ -14,8 +11,6 @@ import com.fr2501.util.StringUtils;
  *
  */
 public final class PrologProof {
-    private static final Logger logger = LogManager.getLogger(PrologProof.class);
-
     private static final String SUBGOAL = "subgoal";
     private static final String MORE_GOALS_ON_LEVEL = "','";
     private static final String BRANCH_CLOSE = "true";

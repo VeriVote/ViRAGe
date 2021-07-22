@@ -16,7 +16,7 @@ public abstract class VirageJob<T> {
     /**
      * The next available ID for a new job.
      */
-    private static long NEXT_ID;
+    private static long nextID;
 
     /**
      * The core object executing this job.
@@ -62,8 +62,8 @@ public abstract class VirageJob<T> {
      */
     public VirageJob(final VirageUserInterface issuer) {
         this.issuer = issuer;
-        this.id = VirageJob.NEXT_ID;
-        VirageJob.NEXT_ID++;
+        this.id = VirageJob.nextID;
+        VirageJob.nextID++;
 
         this.timeIssued = System.currentTimeMillis();
 
@@ -185,8 +185,8 @@ public abstract class VirageJob<T> {
         while (true) {
             boolean finished = false;
             synchronized (this) {
-                finished = (this.getState() != VirageJobState.PENDING
-                        && this.getState() != VirageJobState.RUNNING);
+                finished = this.getState() != VirageJobState.PENDING
+                        && this.getState() != VirageJobState.RUNNING;
             }
 
             if (finished) {
@@ -206,7 +206,7 @@ public abstract class VirageJob<T> {
      * The actual implementation of the job's functionality.
      *
      * @throws Exception which will be caught by the {@link com.fr2501.virage.core.VirageCore}
-     * object
+     *     object
      */
     protected abstract void concreteExecute() throws Exception;
 }

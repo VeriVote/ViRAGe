@@ -8,7 +8,6 @@ import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageSearchManager;
 import com.fr2501.virage.core.VirageUserInterface;
 import com.fr2501.virage.types.DecompositionTree;
-import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
@@ -17,11 +16,19 @@ import com.fr2501.virage.types.SearchResult;
  *
  */
 public final class VirageGenerateJob
-extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
+        extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
+    /**
+     * String representations of the desired properties.
+     */
     private final List<String> propertyStrings;
+    /**
+     * The desired properties.
+     */
     private List<Property> properties;
 
-    private FrameworkRepresentation framework;
+    /**
+     * The search manager to be used.
+     */
     private VirageSearchManager manager;
 
     /**
@@ -38,13 +45,12 @@ extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
 
     @Override
     public void concreteExecute() {
-        this.framework = this.executingCore.getFrameworkRepresentation();
         this.manager = this.executingCore.getSearchManager();
 
         this.properties = new LinkedList<Property>();
 
         for (final String s : this.propertyStrings) {
-            this.properties.add(this.framework.getProperty(s));
+            this.properties.add(this.executingCore.getFrameworkRepresentation().getProperty(s));
         }
 
         this.result = this.manager.generateComposition(this.properties);
@@ -52,7 +58,7 @@ extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
 
     @Override
     public boolean externalSoftwareAvailable() {
-        return (ConfigReader.getInstance().hasJpl());
+        return ConfigReader.getInstance().hasJpl();
     }
 
     @Override
@@ -72,7 +78,8 @@ extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
             if (treeResult.hasValue()) {
                 final DecompositionTree tree = treeResult.getValue();
 
-                results.add(tree.toStringWithTypesInsteadOfVariables(this.framework));
+                results.add(tree.toStringWithTypesInsteadOfVariables(
+                        this.executingCore.getFrameworkRepresentation()));
             }
         }
 
@@ -88,7 +95,7 @@ extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {
         }
 
         return "Generated the " + this.properties.get(0).getParameters().get(0).getName() + " \""
-        + StringUtils.printCollection(results) + "\" with the " + prop + " "
-        + StringUtils.printCollection(this.properties) + ".";
+                + StringUtils.printCollection(results) + "\" with the " + prop + " "
+                + StringUtils.printCollection(this.properties) + ".";
     }
 }

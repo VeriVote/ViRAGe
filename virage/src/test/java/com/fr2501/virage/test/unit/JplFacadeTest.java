@@ -19,12 +19,12 @@ import com.fr2501.virage.types.SearchResult;
  *
  */
 public class JplFacadeTest {
-    private static final Logger logger = LogManager.getLogger(JplFacadeTest.class);
-    private static final String validTestPath = "src/test/resources/valid_test.pl";
+    private static final Logger LOGGER = LogManager.getLogger(JplFacadeTest.class);
+    private static final String VALID_TEST_PATH = "src/test/resources/valid_test.pl";
 
     @Test
     public void testInvalidQuery() throws ExternalSoftwareUnavailableException {
-        logger.info("testInvalidQuery()");
+        LOGGER.info("testInvalidQuery()");
         final JplFacade facade = new JplFacade(1000);
 
         final String query = "(,this is not a ) legit ,;. query @ all.)(";
@@ -36,9 +36,9 @@ public class JplFacadeTest {
 
     @Test
     public void testSimpleQuery() throws Exception {
-        logger.info("testSimpleQuery()");
+        LOGGER.info("testSimpleQuery()");
         final JplFacade facade = new JplFacade(1000);
-        facade.consultFile(validTestPath);
+        facade.consultFile(VALID_TEST_PATH);
 
         final String query = "property_a(X)";
 
@@ -49,9 +49,9 @@ public class JplFacadeTest {
 
     @Test
     public void testFactQuery() throws Exception {
-        logger.info("testFactQuery()");
+        LOGGER.info("testFactQuery()");
         final JplFacade facade = new JplFacade(1000);
-        facade.consultFile(validTestPath);
+        facade.consultFile(VALID_TEST_PATH);
 
         String query = "property_a(d)";
         SearchResult<Boolean> result = facade.factQuery(query);

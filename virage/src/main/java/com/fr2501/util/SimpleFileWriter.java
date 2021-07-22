@@ -13,8 +13,14 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class SimpleFileWriter {
-    private static final Logger logger = LogManager.getLogger(SimpleFileWriter.class.getName());
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(SimpleFileWriter.class.getName());
 
+    /**
+     * The FileWriter.
+     */
     private FileWriter writer;
 
     /**
@@ -31,12 +37,12 @@ public class SimpleFileWriter {
                 this.writer.write(o.toString() + "\n");
             }
         } catch (final IOException e) {
-            logger.error("Writing to " + path + " was impossible.");
+            LOGGER.error("Writing to " + path + " was impossible.");
         } finally {
             try {
                 this.writer.close();
             } catch (final IOException e) {
-                logger.warn("Closing the FileWriter was impossible.");
+                LOGGER.warn("Closing the FileWriter was impossible.");
             }
         }
     }
@@ -54,12 +60,12 @@ public class SimpleFileWriter {
             this.writer = new FileWriter(file);
             this.writer.write(contents);
         } catch (final IOException e) {
-            logger.error("Writing to " + path + " was impossible.");
+            LOGGER.error("Writing to " + path + " was impossible.");
         } finally {
             try {
                 this.writer.close();
             } catch (final IOException e) {
-                logger.warn("Closing the FileWriter was impossible.");
+                LOGGER.warn("Closing the FileWriter was impossible.");
             }
         }
     }

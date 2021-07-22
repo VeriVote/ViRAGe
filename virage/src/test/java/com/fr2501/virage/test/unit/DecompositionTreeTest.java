@@ -16,11 +16,11 @@ import com.fr2501.virage.types.DecompositionTree;
  *
  */
 public class DecompositionTreeTest {
-    private static final Logger logger = LogManager.getLogger(DecompositionTreeTest.class);
+    private static final Logger LOGGER = LogManager.getLogger(DecompositionTreeTest.class);
 
     @Test
     public void testConstruction() {
-        logger.info("testConstruction()");
+        LOGGER.info("testConstruction()");
         final String tree = "root(b(c,d), e, f(g(h,i)))";
 
         final DecompositionTree c = new DecompositionTree("c");

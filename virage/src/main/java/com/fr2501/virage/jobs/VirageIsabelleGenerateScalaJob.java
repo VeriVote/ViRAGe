@@ -11,8 +11,14 @@ import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
  *
  */
 public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<File> {
+    /**
+     * The Isabelle Scala generator.
+     */
     private IsabelleCodeGenerator generator;
 
+    /**
+     * The composition from which an implementation shall be generated.
+     */
     private final String composition;
 
     /**
@@ -29,15 +35,8 @@ public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitR
     }
 
     @Override
-    protected void concreteExecute() throws Exception {
-        this.generator = this.executingCore.getIsabelleCodeGenerator();
-
-        this.result = this.generator.generateScalaCodeAndCompile(this.composition);
-    }
-
-    @Override
     public boolean externalSoftwareAvailable() {
-        return (ConfigReader.getInstance().hasIsabelle());
+        return ConfigReader.getInstance().hasIsabelle();
     }
 
     @Override
@@ -48,5 +47,12 @@ public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitR
     @Override
     public String presentConcreteResult() {
         return "Created executable JAR file at \'" + this.result + "\'.";
+    }
+
+    @Override
+    protected void concreteExecute() throws Exception {
+        this.generator = this.executingCore.getIsabelleCodeGenerator();
+
+        this.result = this.generator.generateScalaCodeAndCompile(this.composition);
     }
 }

@@ -34,13 +34,14 @@ import com.fr2501.virage.types.Parameterized;
  *
  */
 public final class IsabelleTheoryGenerator {
-    private static final Logger logger = LogManager.getLogger(IsabelleTheoryGenerator.class);
+    protected static final String VAR_MODULE_NAME = "$MODULE_NAME";
+    protected static final String VAR_MODULE_PARAMETERS = "$MODULE_PARAMETERS";
+
+    private static final Logger LOGGER = LogManager.getLogger(IsabelleTheoryGenerator.class);
 
     private static final String VAR_THEORY_NAME = "$THEORY_NAME";
     private static final String VAR_IMPORTS = "$IMPORTS";
     private static final String VAR_MODULE_PARAM_TYPES = "$MODULE_PARAM_TYPES";
-    protected static final String VAR_MODULE_NAME = "$MODULE_NAME";
-    protected static final String VAR_MODULE_PARAMETERS = "$MODULE_PARAMETERS";
     private static final String VAR_MODULE_DEF = "$MODULE_DEF";
     private static final String VAR_PROOFS = "$PROOFS";
 
@@ -52,7 +53,7 @@ public final class IsabelleTheoryGenerator {
     // TODO config
     private static final String DEFAULT_PATH = "../virage/target/generated-sources";
 
-    private static String THEORY_TEMPLATE = "";
+    private static String theoryTemplate = "";
     private static int theoryCounter;
     private Map<String, String> functionsAndDefinitions;
     private final FrameworkRepresentation framework;
@@ -74,16 +75,16 @@ public final class IsabelleTheoryGenerator {
      */
     public IsabelleTheoryGenerator(final String theoryPath,
             final FrameworkRepresentation framework) {
-        if (THEORY_TEMPLATE.isEmpty()) {
+        if (theoryTemplate.isEmpty()) {
             final InputStream theoryTemplateStream = this.getClass().getClassLoader()
                     .getResourceAsStream("theory.template");
             final StringWriter writer = new StringWriter();
             try {
                 IOUtils.copy(theoryTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
-                logger.error("Something went wrong.", e);
+                LOGGER.error("Something went wrong.", e);
             }
-            THEORY_TEMPLATE = writer.toString();
+            theoryTemplate = writer.toString();
         }
 
         final IsabelleTheoryParser parser = new IsabelleTheoryParser();
@@ -91,7 +92,7 @@ public final class IsabelleTheoryGenerator {
         try {
             this.functionsAndDefinitions = parser.getAllFunctionsAndDefinitions(theoryPath);
         } catch (final IOException e) {
-            logger.error("Something went wrong.", e);
+            LOGGER.error("Something went wrong.", e);
         }
 
         this.framework = framework;
@@ -148,8 +149,8 @@ public final class IsabelleTheoryGenerator {
      * @param composition the composition
      * @param proofs proofs for all the claimed properties
      * @param outputPath a path to the folder to which the result shall be written. If path points
-     * to a file, this file will be overwritten and the name will most probably not correspond to
-     * the theory inside, so Isabelle won't be able to verify it.
+     *      to a file, this file will be overwritten and the name will most probably not correspond to
+     *      the theory inside, so Isabelle won't be able to verify it.
      * @return the {@link File} containing the results
      */
     public File generateTheoryFile(final String passedComposition, final List<CompositionProof> proofs,
@@ -255,7 +256,7 @@ public final class IsabelleTheoryGenerator {
 
             return new File(outputPath).getCanonicalFile();
         } catch (final IOException e) {
-            logger.error("Something went wrong.", e);
+            LOGGER.error("Something went wrong.", e);
         }
 
         return null;
@@ -306,7 +307,7 @@ public final class IsabelleTheoryGenerator {
     private String replaceVariables(final String theoryName, final String imports,
             final String moduleParamTypes, final String moduleName, final String moduleParameters,
             final String moduleDef, final String proofs) {
-        String res = THEORY_TEMPLATE;
+        String res = theoryTemplate;
 
         res = res.replace(VAR_PROOFS, proofs);
 

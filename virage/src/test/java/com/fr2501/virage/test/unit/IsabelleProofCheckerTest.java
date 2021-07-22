@@ -37,7 +37,7 @@ import com.fr2501.virage.types.SearchResult;
  *
  */
 public final class IsabelleProofCheckerTest {
-    private static final Logger logger = LogManager.getLogger(IsabelleProofCheckerTest.class);
+    private static final Logger LOGGER = LogManager.getLogger(IsabelleProofCheckerTest.class);
 
     private static final String EPL_PATH = "src/test/resources/framework.pl";
     private static final String THEORY_PATH = "src/test/resources/old_theories";
@@ -79,7 +79,7 @@ public final class IsabelleProofCheckerTest {
     // Takes long, not performed by default.
     @Test
     public void simpleFrameworkTest() throws IOException, InterruptedException,
-    ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+        ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
         final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty("electing"));
 
@@ -125,7 +125,7 @@ public final class IsabelleProofCheckerTest {
      */
     // @Test
     public void smcTest() throws IOException, InterruptedException,
-    ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+        ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
         final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty("electing"));
         properties.add(this.framework.getProperty("monotonicity"));
@@ -152,7 +152,7 @@ public final class IsabelleProofCheckerTest {
      */
     // @Test
     public void testRandomPropertySets() throws Exception {
-        logger.info("testRandomPropertySets()");
+        LOGGER.info("testRandomPropertySets()");
         final int _runs = 3;
         final int _timeout = 10;
 
@@ -174,35 +174,35 @@ public final class IsabelleProofCheckerTest {
             final TestDataGenerator generator = new TestDataGenerator(this.framework);
             final List<Property> properties = generator.getRandomComposableModuleProperties(amount);
 
-            logger.debug("Query: " + StringUtils.printCollection(properties));
+            LOGGER.debug("Query: " + StringUtils.printCollection(properties));
 
             final SearchResult<DecompositionTree> result = analyzer.generateComposition(properties);
 
             if (result.hasValue()) {
                 success++;
-                logger.debug("Result: " + result.getValue().toString());
+                LOGGER.debug("Result: " + result.getValue().toString());
 
                 this.proveClaims(properties, result.getValue().toString());
                 checker.verifyTheoryFile(this.file, this.framework);
             } else {
                 if (result.getState() == QueryState.TIMEOUT) {
                     timeout++;
-                    logger.debug("Query timed out.");
+                    LOGGER.debug("Query timed out.");
                 } else if (result.getState() == QueryState.FAILED) {
                     failure++;
-                    logger.debug("No solution exists.");
+                    LOGGER.debug("No solution exists.");
                 } else if (result.getState() == QueryState.ERROR) {
                     error++;
-                    logger.error("An error occured");
+                    LOGGER.error("An error occured");
                 }
             }
         }
 
-        logger.debug("\nSucceeded:\t" + success + "\nFailed:\t\t" + failure + "\nTimed out:\t"
+        LOGGER.debug("\nSucceeded:\t" + success + "\nFailed:\t\t" + failure + "\nTimed out:\t"
                 + timeout + "\nErrors:\t\t" + error);
 
         if (failure == 100 || success == 100 || timeout == 100) {
-            logger.warn("A highly unlikely result occured in the test.\n"
+            LOGGER.warn("A highly unlikely result occured in the test.\n"
                     + "This might happen by (a very small) chance, so rerunning the test might help.\n"
                     + "If the problem persists, something has gone wrong.");
             fail();

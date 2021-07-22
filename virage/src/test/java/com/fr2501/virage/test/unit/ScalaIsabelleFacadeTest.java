@@ -11,6 +11,11 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
  *
  */
 public class ScalaIsabelleFacadeTest {
+    /**
+     * This test tries to create a ScalaIsabelleFacade object.
+     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     * @throws IsabelleBuildFailedException if the Isabelle build process fails
+     */
     @Test
     public void simpleTest()
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {

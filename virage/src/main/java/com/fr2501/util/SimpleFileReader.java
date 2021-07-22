@@ -16,8 +16,14 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class SimpleFileReader {
-    private static final Logger logger = LogManager.getLogger(SimpleFileReader.class.getName());
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(SimpleFileReader.class.getName());
 
+    /**
+     * The file reader.
+     */
     private BufferedReader reader;
 
     /**
@@ -28,7 +34,7 @@ public class SimpleFileReader {
      * @throws IOException if reading the file is not possible.
      */
     public List<String> readFileByLine(final File file) throws IOException {
-        logger.info("Trying to read from file \"" + file + "\"");
+        LOGGER.info("Trying to read from file \"" + file + "\"");
 
         final List<String> res = new LinkedList<String>();
 
@@ -41,10 +47,10 @@ public class SimpleFileReader {
                 line = this.reader.readLine();
             }
         } catch (final FileNotFoundException e) {
-            logger.error("Invalid file.");
+            LOGGER.error("Invalid file.");
             throw e;
         } catch (final IOException e) {
-            logger.error("Something went wrong while reading the file.");
+            LOGGER.error("Something went wrong while reading the file.");
             throw e;
         } finally {
             try {
@@ -52,7 +58,7 @@ public class SimpleFileReader {
                     this.reader.close();
                 }
             } catch (final IOException e) {
-                logger.warn("Closing the FileWriter was impossible.");
+                LOGGER.warn("Closing the FileWriter was impossible.");
             }
         }
 

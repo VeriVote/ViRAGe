@@ -7,6 +7,9 @@ import com.fr2501.virage.core.VirageUserInterface;
  *
  */
 public final class VirageExitJob extends VirageJobWithoutExplicitResult {
+    /**
+     * The exit code to be given to the OS.
+     */
     private final int statusCode;
 
     /**

@@ -23,11 +23,11 @@ import com.fr2501.virage.types.Property;
  */
 public class IsabelleProofGenerator {
     private static final Logger logger = LogManager.getLogger(IsabelleProofGenerator.class);
-    private static String PROOF_TEMPLATE = "";
+    private static String proofTemplate = "";
 
-    private static final String VAR_THEOREM_NAME = "$THEOREM_NAME";
-    private static final String VAR_GOAL = "$GOAL";
-    private static final String VAR_PROOF_STEPS = "$PROOF_STEPS";
+    private static final String varTheoremName = "$THEOREM_NAME";
+    private static final String varGoal = "$GOAL";
+    private static final String varProofSteps = "$PROOF_STEPS";
     private static final String VAR_SUBGOAL_IDS = "$SUBGOAL_IDS";
     private static final String VAR_ASSUMPTIONS = "$ASSUMPTIONS";
 
@@ -46,7 +46,7 @@ public class IsabelleProofGenerator {
      */
     public IsabelleProofGenerator(final IsabelleTheoryGenerator parent,
             final Map<String, String> functionsAndDefinitions) {
-        if (PROOF_TEMPLATE.isEmpty()) {
+        if (proofTemplate.isEmpty()) {
             final InputStream proofTemplateStream = this.getClass().getClassLoader()
                     .getResourceAsStream("proof.template");
             final StringWriter writer = new StringWriter();
@@ -56,7 +56,7 @@ public class IsabelleProofGenerator {
                 logger.error("Something went wrong.", e);
                 e.printStackTrace();
             }
-            PROOF_TEMPLATE = writer.toString();
+            proofTemplate = writer.toString();
         }
 
         this.functionsAndDefinitions = functionsAndDefinitions;
@@ -143,11 +143,11 @@ public class IsabelleProofGenerator {
 
     private String replaceVariables(final String theoremName, final String goal,
             final String proofSteps, final String subgoalIds, final String assumptions) {
-        String res = PROOF_TEMPLATE;
+        String res = proofTemplate;
 
-        res = res.replace(VAR_THEOREM_NAME, theoremName);
-        res = res.replace(VAR_GOAL, goal);
-        res = res.replace(VAR_PROOF_STEPS, proofSteps);
+        res = res.replace(varTheoremName, theoremName);
+        res = res.replace(varGoal, goal);
+        res = res.replace(varProofSteps, proofSteps);
         res = res.replace(VAR_SUBGOAL_IDS, subgoalIds);
         res = res.replace(VAR_ASSUMPTIONS, assumptions);
 

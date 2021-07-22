@@ -134,7 +134,7 @@ public final class IsabelleCodeGenerator {
 
     public File generateCode(final DecompositionTree composition,
             final IsabelleCodeGenerationLanguage language) throws IOException, InterruptedException,
-    IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+        IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
         return this.generateCode(composition.toString(), language);
     }
 
@@ -185,7 +185,7 @@ public final class IsabelleCodeGenerator {
      */
     public File generateCode(final String composition,
             final IsabelleCodeGenerationLanguage language) throws IOException, InterruptedException,
-    IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+        IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
         final File theory = this.generator.generateTheoryFile(composition,
                 new LinkedList<CompositionProof>());
 
@@ -197,7 +197,7 @@ public final class IsabelleCodeGenerator {
      * and returns an executable jar file if possible.
      *
      * @param theory the theory file, containing exactly one definition, on which code generation
-     * shall take place
+     *      shall take place
      * @return an executable Scala-jar file if possible
      * @throws IOException if file system interaction goes wrong
      * @throws InterruptedException if processes are interrupted prematurely
@@ -289,7 +289,7 @@ public final class IsabelleCodeGenerator {
 
     private File invokeIsabelleCodeGeneration(final File theory, final String sessionName,
             final String theoryName) throws IOException, InterruptedException,
-    IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+        IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
         final String generatedPath = theory.getParent();
         final String theoryPath = new File(this.framework.getTheoryPath()).getCanonicalPath();
 

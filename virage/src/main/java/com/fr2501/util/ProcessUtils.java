@@ -10,21 +10,24 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class ProcessUtils {
-    private static final Logger logger = LogManager.getLogger(ProcessUtils.class);
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(ProcessUtils.class);
 
     /**
      * Executes a terminating command and logs it outputs, stderr foing to logger.warn(), stdout to
      * logger.info(). <b>Does not return if the command is non-terminating!</b>
      *
      * @param command the command to be executed (as is, i.e. the String has to contain all
-     * parameters etc.)
+     *      parameters etc.)
      * @return the exit code (usually 0 on success, but depending on the command)
      * @throws IOException if reading the outputs fails
      * @throws InterruptedException if command execution is interrupted
      */
     public static int runTerminatingProcessAndLogOutput(final String command)
             throws IOException, InterruptedException {
-        logger.info("Running command: " + command);
+        LOGGER.info("Running command: " + command);
 
         final Runtime rt = Runtime.getRuntime();
 
@@ -35,10 +38,10 @@ public class ProcessUtils {
         final String stdOut = new String(p.getInputStream().readAllBytes());
 
         if (!stdErr.isEmpty()) {
-            logger.warn(stdErr);
+            LOGGER.warn(stdErr);
         }
         if (!stdOut.isEmpty()) {
-            logger.info(stdOut);
+            LOGGER.info(stdOut);
         }
 
         return status;
@@ -49,14 +52,14 @@ public class ProcessUtils {
      * <b>Does not return if the command is non-terminating!</b>
      *
      * @param command the command to be executed (as is, i.e. the String has to contain all
-     * parameters etc.)
+     *      parameters etc.)
      * @return the exit code (usually 0 on success, but depending on the command)
      * @throws IOException if reading the outputs fails
      * @throws InterruptedException if command execution is interrupted
      */
     public static int runTerminatingProcessAndPrintOutput(final String command)
             throws IOException, InterruptedException {
-        logger.info("Running command: " + command);
+        LOGGER.info("Running command: " + command);
 
         final Runtime rt = Runtime.getRuntime();
 
@@ -81,14 +84,14 @@ public class ProcessUtils {
      * <b>Does not return if the command is non-terminating!</b>
      *
      * @param command the command to be executed (as is, i.e. the String has to contain all
-     * parameters etc.)
+     *      parameters etc.)
      * @return a Pair of strings representing stdout and stderr of the process
      * @throws IOException if reading the outputs fails
      * @throws InterruptedException if command execution is interrupted
      */
     public static Pair<String, String> runTerminatingProcess(final String command)
             throws IOException, InterruptedException {
-        logger.info("Running command: " + command);
+        LOGGER.info("Running command: " + command);
 
         final Runtime rt = Runtime.getRuntime();
 

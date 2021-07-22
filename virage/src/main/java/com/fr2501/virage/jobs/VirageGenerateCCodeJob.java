@@ -11,8 +11,14 @@ import com.fr2501.virage.core.VirageUserInterface;
  *
  */
 public final class VirageGenerateCCodeJob extends VirageJobWithExplicitResult<File> {
+    /**
+     * The C code generator.
+     */
     private CCodeGenerator generator;
 
+    /**
+     * The generation from which code shall be generated.
+     */
     private final String composition;
 
     /**
@@ -36,7 +42,7 @@ public final class VirageGenerateCCodeJob extends VirageJobWithExplicitResult<Fi
 
     @Override
     public boolean externalSoftwareAvailable() {
-        return (ConfigReader.getInstance().hasIsabelle());
+        return ConfigReader.getInstance().hasIsabelle();
     }
 
     @Override

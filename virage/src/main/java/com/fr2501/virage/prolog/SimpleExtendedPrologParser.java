@@ -25,18 +25,35 @@ import com.fr2501.virage.types.Property;
  *
  */
 public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(SimpleExtendedPrologParser.class);
+    /**
+     * The file reader.
+     */
     private final SimpleFileReader fileReader;
+    /**
+     * The Prolog parser.
+     */
     private final PrologParser prologParser;
-    private final Logger logger = LogManager.getLogger(SimpleExtendedPrologParser.class);
 
     /**
      * Simple constructor.
      */
     public SimpleExtendedPrologParser() {
-        this.logger.info("Initialising SimpleExtendedPrologParser.");
+        LOGGER.info("Initialising SimpleExtendedPrologParser.");
 
         this.fileReader = new SimpleFileReader();
         this.prologParser = new SimplePrologParser();
+    }
+
+    @Override
+    public FrameworkRepresentation parseFramework(final File file, final boolean addDummies)
+            throws IOException, MalformedEplFileException {
+        final List<String> framework = this.fileReader.readFileByLine(file);
+
+        return this.parseFramework(framework, file.getAbsolutePath(), addDummies);
     }
 
     private List<ComponentType> extractParameters(final String component)
@@ -50,7 +67,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
         // Opening, but no closing bracket.
         if (!component.contains(")")) {
-            this.logger.error("Opening, but no closing bracket on: \"" + component + "\"");
+            LOGGER.error("Opening, but no closing bracket on: \"" + component + "\"");
             throw new MalformedEplFileException();
         }
 
@@ -115,7 +132,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
             if (origin.isEmpty()) {
                 // No origin.
                 if (!currentLine.startsWith("=")) {
-                    this.logger.error("No origin specified for: \"" + currentLine + "\"");
+                    LOGGER.error("No origin specified for: \"" + currentLine + "\"");
                     throw new MalformedEplFileException();
                 } else {
                     origin = this.sanitizeLine(currentLine);
@@ -162,7 +179,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
             } else {
                 // New Instance of given type.
                 if (currentType == null) {
-                    this.logger.error("No type defined for \"" + currentLine + "\".");
+                    LOGGER.error("No type defined for \"" + currentLine + "\".");
                     throw new MalformedEplFileException();
                 }
 
@@ -176,14 +193,6 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
         }
     }
 
-    @Override
-    public FrameworkRepresentation parseFramework(final File file, final boolean addDummies)
-            throws IOException, MalformedEplFileException {
-        final List<String> framework = this.fileReader.readFileByLine(file);
-
-        return this.parseFramework(framework, file.getAbsolutePath(), addDummies);
-    }
-
     /**
      * This method does the actual parsing.
      *
@@ -191,7 +200,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
      * @param path the path to the framework (required for compatibility reasons)
      * @return a {@link FrameworkRepresentation} of the input.
      * @throws MalformedEplFileException if the input does not follow the specification of the
-     * extended Prolog format.
+     *      extended Prolog format.
      */
     private FrameworkRepresentation parseFramework(final List<String> representation,
             final String path, final boolean addDummies) throws MalformedEplFileException {
@@ -321,7 +330,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
                     type = new ComponentType(typeString);
                     framework.setAlias(typeString);
                 } else {
-                    this.logger.error("Malformed header: \"" + lines.get(0) + "\"");
+                    LOGGER.error("Malformed header: \"" + lines.get(0) + "\"");
                     throw new MalformedEplFileException();
                 }
             } else {

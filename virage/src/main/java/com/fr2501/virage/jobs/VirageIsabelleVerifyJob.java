@@ -11,9 +11,16 @@ import com.fr2501.virage.isabelle.IsabelleProofChecker;
  * A {@link VirageJob} that invokes Isabelle to automatically attempt proof verification.
  *
  */
-public final class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<Pair<Boolean, File>> {
+public final class VirageIsabelleVerifyJob
+        extends VirageJobWithExplicitResult<Pair<Boolean, File>> {
+    /**
+     * The checker used to verify the proof.
+     */
     private IsabelleProofChecker checker;
 
+    /**
+     * The theory file to be checked.
+     */
     private final File file;
 
     /**
@@ -29,16 +36,8 @@ public final class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<P
     }
 
     @Override
-    protected void concreteExecute() throws Exception {
-        this.checker = this.executingCore.getIsabelleProofChecker();
-
-        this.result = this.checker.verifyTheoryFile(this.file,
-                this.executingCore.getFrameworkRepresentation());
-    }
-
-    @Override
     public boolean externalSoftwareAvailable() {
-        return (ConfigReader.getInstance().hasIsabelle());
+        return ConfigReader.getInstance().hasIsabelle();
     }
 
     @Override
@@ -55,6 +54,14 @@ public final class VirageIsabelleVerifyJob extends VirageJobWithExplicitResult<P
             return "Verification of Isabelle theory \'"
                     + this.result.getSecondValue().getAbsolutePath() + "\' failed.";
         }
+    }
+
+    @Override
+    protected void concreteExecute() throws Exception {
+        this.checker = this.executingCore.getIsabelleProofChecker();
+
+        this.result = this.checker.verifyTheoryFile(this.file,
+                this.executingCore.getFrameworkRepresentation());
     }
 
 }

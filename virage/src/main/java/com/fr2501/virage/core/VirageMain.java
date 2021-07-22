@@ -25,6 +25,7 @@ public class VirageMain {
             coreThread.start();
 
             while (true) {
+                // NO-OP
             }
             // Last point of failure, no idea what is thrown this far.
             // If this is ever executed, something has gone so wrong

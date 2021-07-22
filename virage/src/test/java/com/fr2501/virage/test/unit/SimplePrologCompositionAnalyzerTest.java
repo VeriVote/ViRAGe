@@ -15,7 +15,10 @@ import com.fr2501.virage.types.ValueNotPresentException;
  *
  */
 public final class SimplePrologCompositionAnalyzerTest extends CompositionAnalyzerTest {
-    private static final Logger logger = LogManager
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager
             .getLogger(SimplePrologCompositionAnalyzer.class);
 
     @Override
@@ -27,7 +30,7 @@ public final class SimplePrologCompositionAnalyzerTest extends CompositionAnalyz
     // Obviously, there is nothing to be done here.
     @Override
     public void testAccordanceWithSpca() throws ValueNotPresentException {
-        logger.info("testAccordanceWithSPCA()");
+        LOGGER.info("testAccordanceWithSPCA()");
         return;
     }
 }

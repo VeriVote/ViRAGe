@@ -50,9 +50,19 @@ import com.fr2501.virage.types.Property;
  *
  */
 public final class VirageCommandLineInterface implements VirageUserInterface {
-    private static final Logger logger = LogManager.getLogger(VirageCommandLineInterface.class);
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(VirageCommandLineInterface.class);
 
-    private static final String SEPARATOR = "###########################################################";
+    /**
+     * The separator.
+     */
+    private static final String SEPARATOR =
+            "###########################################################";
+    /**
+     * The banner.
+     */
     private static final String BANNER = "#\n"
             + "# Y88b      / ,e, 888~-_        e       e88~~\\           \n"
             + "#  Y88b    /   \"  888   \\      d8b     d888      e88~~8e \n"
@@ -61,17 +71,34 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             + "#     Y8/     888 888_-~    /____Y88b  Y888   | Y888    ,\n"
             + "#      Y      888 888 ~-_  /      Y88b  \"88__/   \"88___/ \n#";
 
+    /**
+     * A Scanner to read input.
+     */
     private final Scanner scanner;
+    /**
+     * The core this UI is attached to.
+     */
     private final VirageCore core;
 
+    /**
+     * Writer to display output.
+     */
     private final Writer outputWriter;
 
+    /**
+     * This UI's thread.
+     */
     private Thread thread;
 
+    /**
+     * Simple constructor.
+     *
+     * @param core the ViRAGe core this UI will be attached to.
+     */
     protected VirageCommandLineInterface(final VirageCore core) {
         this.outputWriter = new BufferedWriter(new OutputStreamWriter(System.out), 256);
 
-        logger.info("Initialising VirageCommandLineInterface.");
+        LOGGER.info("Initialising VirageCommandLineInterface.");
 
         this.scanner = new Scanner(System.in);
         this.core = core;
@@ -110,6 +137,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
         boolean unsafeState = false;
         try {
+            @SuppressWarnings("unused")
             final JplFacade facade = new JplFacade();
         } catch (final ExternalSoftwareUnavailableException e) {
             this.displayError(
@@ -202,7 +230,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             this.displayMessage("# " + e.getMessage());
             if (this.requestConfirmation(
                     "# ViRAGe can replace the settings file with an up-to-date one. "
-                            + "Your old settings file will be moved to \"old_settings\", and as many settings "
+                            + "Your old settings file will be moved to \"old_settings\", "
+                            + "and as many settings "
                             + "as possible will be transferred. "
                             + "Do you want to let ViRAGe perform this operation?")) {
                 try {
@@ -326,7 +355,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         proveJob.waitFor();
 
         if (proveJob.getState() == VirageJobState.FAILED) {
-            logger.warn("Proving the given claims failed.");
+            LOGGER.warn("Proving the given claims failed.");
             return new VirageDummyJob(this);
         }
 
@@ -371,6 +400,9 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         System.err.println(message);
     }
 
+    /**
+     * Display help from resources/help.txt.
+     */
     public void displayHelp() {
         final InputStream helpStream = this.getClass().getClassLoader()
                 .getResourceAsStream("help.txt");
@@ -378,7 +410,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         try {
             IOUtils.copy(helpStream, writer, StandardCharsets.UTF_8);
         } catch (final IOException e) {
-            logger.error("Something went wrong.", e);
+            LOGGER.error("Something went wrong.", e);
             e.printStackTrace();
         }
         this.displayMessage(writer.toString());
@@ -471,7 +503,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             if (ConfigReader.getInstance().hasSessionName() && this.requestConfirmation(
                     "Configuration option " + "\"ISABELLE_SESSION_NAME\" is specified " + "as "
                             + this.addQuotationsToPath(ConfigReader.getInstance().getSessionName())
-                            + ". Is this the name of the session specified within the given ROOT file?")) {
+                            + ". Is this the name of the session specified within "
+                            + "the given ROOT file?")) {
 
                 sessionName = ConfigReader.getInstance().getSessionName();
 
@@ -620,7 +653,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             try {
                 DecompositionTree.parseString(compositionString);
             } catch (final IllegalArgumentException e) {
-                logger.error("\"" + compositionString
+                LOGGER.error("\"" + compositionString
                         + "\" could not be parsed. Please check the brackets and try again.");
                 invalid = true;
             }
@@ -687,7 +720,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 final Property property = framework.getProperty(propertyString);
 
                 if (property == null) {
-                    logger.error("Property \"" + propertyString + "\" is undefined.");
+                    LOGGER.error("Property \"" + propertyString + "\" is undefined.");
 
                     invalid = true;
                     break;
@@ -739,7 +772,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
     @Override
     public void run() {
-        logger.info("Started VirageCommandLineInterface.");
+        LOGGER.info("Started VirageCommandLineInterface.");
 
         final String defaultPath = "./src/test/resources/framework.pl";
 
@@ -779,7 +812,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             final String arg = this
                     .requestString("Do you want to (g)enerate a composition, (a)nalyze one, "
                             + "(p)rove a claim,\n"
-                            + "generate (I)sabelle proofs, generate (S)cala code or generate (C) code?");
+                            + "generate (I)sabelle proofs, generate (S)cala code "
+                            + "or generate (C) code?");
 
             VirageJob<?> job = null;
 

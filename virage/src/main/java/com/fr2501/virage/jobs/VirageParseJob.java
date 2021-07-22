@@ -51,7 +51,7 @@ public final class VirageParseJob extends VirageJobWithExplicitResult<FrameworkR
     @Override
     public String presentConcreteResult() {
         final String res = "Successfully loaded (E)PL file at \'" + this.file.getAbsolutePath()
-        + "\'.\n";
+            + "\'.\n";
 
         /*
          * res += "\n";

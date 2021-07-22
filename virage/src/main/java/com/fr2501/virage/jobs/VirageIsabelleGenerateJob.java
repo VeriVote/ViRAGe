@@ -12,10 +12,22 @@ import com.fr2501.virage.types.CompositionProof;
  *
  */
 public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult<File> {
+    /**
+     * The composition.
+     */
     private final String composition;
+    /**
+     * The proofs to be contained within the theory.
+     */
     private final List<CompositionProof> proofs;
+    /**
+     * Path where the .thy-file will be saved.
+     */
     private final String outputPath;
 
+    /**
+     * The Isabelle theory generator to be used.
+     */
     private IsabelleTheoryGenerator generator;
 
     /**
@@ -36,14 +48,6 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
     }
 
     @Override
-    protected void concreteExecute() throws Exception {
-        this.generator = this.executingCore.getIsabelleTheoryGenerator();
-
-        this.result = this.generator.generateTheoryFile(this.composition, this.proofs,
-                this.outputPath);
-    }
-
-    @Override
     public boolean externalSoftwareAvailable() {
         return true;
     }
@@ -56,5 +60,13 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
     @Override
     public String presentConcreteResult() {
         return "Generated theory file at \'" + this.outputPath + "\'.";
+    }
+
+    @Override
+    protected void concreteExecute() throws Exception {
+        this.generator = this.executingCore.getIsabelleTheoryGenerator();
+
+        this.result = this.generator.generateTheoryFile(this.composition, this.proofs,
+                this.outputPath);
     }
 }
