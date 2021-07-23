@@ -42,26 +42,62 @@ import scala.concurrent.Future;
  *
  */
 public final class ScalaIsabelleFacade {
+    /**
+     * The character used by Isabelle to separate Theory names and their Session prefix.
+     */
     private static final String ISA_SEPARATOR = ".";
 
+    /**
+     * The Isabelle instance.
+     */
     private static Isabelle isabelle;
+    /**
+     * The list converter for scala-isabelle.
+     */
     private static final ListConverter<String> LIST_CONVERTER = new ListConverter<String>(
             new JavaStringConverter());
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LogManager.getRootLogger();
+    /**
+     * The string converter for scala-isabelle.
+     */
     private static final JavaStringConverter STRING_CONVERTER = new JavaStringConverter();
 
+    /**
+     * The "pair-to-list" converter for scala-isabelle.
+     */
     private static final ListConverter<Tuple2<String, String>> PAIR_TO_LIST_CONVERTER
         = new ListConverter<Tuple2<String, String>>(
             new Tuple2Converter<String, String>(STRING_CONVERTER, STRING_CONVERTER));
 
+    /**
+     * All functions and definitions extracted from a given session.
+     */
     private Map<String, Map<String, String>> functionsAndDefinitions;
-    private final String sessionDir;
 
+    /**
+     * The session directory.
+     */
+    private final String sessionDir;
+    /**
+     * The session name.
+     */
     private final String sessionName;
 
+    /**
+     * The scala-isabelle setup object.
+     */
     private final Setup setup;
+    /**
+     * All theorems of a given session.
+     */
     private Map<String, Map<String, String>> theorems;
 
+    /**
+     * Names of all theories within the given session.
+     */
     private final Set<String> theoryNames;
 
     /**
@@ -102,6 +138,13 @@ public final class ScalaIsabelleFacade {
         this.init();
     }
 
+    /**
+     * Triggers the Isabelle build process for a given session.
+     * @param sessionDir the session directory
+     * @param sessionName the session name
+     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     * @throws IsabelleBuildFailedException if the build process fails
+     */
     public static void buildSession(final String sessionDir, final String sessionName)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
 
@@ -294,7 +337,7 @@ public final class ScalaIsabelleFacade {
         isabelle.destroy();
     }
 
-    /*
+    /**
      * Required, as StringConverter cannot be instantiated.
      */
     private static class JavaStringConverter extends Converter<String> {

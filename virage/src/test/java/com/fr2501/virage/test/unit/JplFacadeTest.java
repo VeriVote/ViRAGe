@@ -19,9 +19,19 @@ import com.fr2501.virage.types.SearchResult;
  *
  */
 public class JplFacadeTest {
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(JplFacadeTest.class);
+    /**
+     * Path to valid test file.
+     */
     private static final String VALID_TEST_PATH = "src/test/resources/valid_test.pl";
 
+    /**
+     * Tests an invalid query.
+     * @throws ExternalSoftwareUnavailableException if JPL is unavailable
+     */
     @Test
     public void testInvalidQuery() throws ExternalSoftwareUnavailableException {
         LOGGER.info("testInvalidQuery()");
@@ -34,8 +44,14 @@ public class JplFacadeTest {
         assertTrue(result.getState() == QueryState.ERROR);
     }
 
+    /**
+     * Tests simple query.
+     * @throws ExternalSoftwareUnavailableException if JPL is unavailable
+     * @throws UnsatisfiedLinkError if JPL cannot be loaded correctly
+     */
     @Test
-    public void testSimpleQuery() throws Exception {
+    public void testSimpleQuery() throws UnsatisfiedLinkError,
+            ExternalSoftwareUnavailableException {
         LOGGER.info("testSimpleQuery()");
         final JplFacade facade = new JplFacade(1000);
         facade.consultFile(VALID_TEST_PATH);
@@ -47,8 +63,13 @@ public class JplFacadeTest {
         assertTrue(result.getState() == QueryState.SUCCESS);
     }
 
+    /**
+     * Tests fact query.
+     * @throws UnsatisfiedLinkError if JPL cannot be loaded
+     * @throws ExternalSoftwareUnavailableException if JPL is unavailable
+     */
     @Test
-    public void testFactQuery() throws Exception {
+    public void testFactQuery() throws UnsatisfiedLinkError, ExternalSoftwareUnavailableException {
         LOGGER.info("testFactQuery()");
         final JplFacade facade = new JplFacade(1000);
         facade.consultFile(VALID_TEST_PATH);
@@ -64,6 +85,10 @@ public class JplFacadeTest {
         assertTrue(booleanResult);
     }
 
+    /**
+     * Tests simple unification query.
+     * @throws ExternalSoftwareUnavailableException if JPL is unavailable
+     */
     @Test
     public void testUnification() throws ExternalSoftwareUnavailableException {
         final JplFacade facade = new JplFacade(1000);

@@ -8,7 +8,13 @@ import java.util.List;
  *
  */
 public final class PrologClause {
+    /**
+     * The succedent.
+     */
     private final PrologPredicate succedent;
+    /**
+     * The antecedent.
+     */
     private final List<PrologPredicate> antecedents;
 
     /**
@@ -21,6 +27,11 @@ public final class PrologClause {
         this.antecedents = new LinkedList<PrologPredicate>();
     }
 
+    /**
+     * Simple constructor.
+     * @param succedent the succedent
+     * @param antecedents the antecedents
+     */
     public PrologClause(final PrologPredicate succedent, final List<PrologPredicate> antecedents) {
         this.succedent = succedent;
         this.antecedents = antecedents;

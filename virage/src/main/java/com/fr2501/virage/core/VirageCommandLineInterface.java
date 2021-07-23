@@ -133,7 +133,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
     private void checkEnvironment() {
         this.displayMessage("# " + ConfigReader.getInstance().checkAvailabilityAndGetVersions()
-                .replace("\n", "\n# "));
+                .replace(System.lineSeparator(), "\n# "));
 
         boolean unsafeState = false;
         try {
@@ -165,7 +165,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                             continue;
                         }
 
-                        ConfigReader.getInstance().updateValueForLdPreload(newValue);
+                        ConfigReader.getInstance().updateValueForLibswiplPath(newValue);
                         break;
                     }
                 }
@@ -204,7 +204,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                             continue;
                         }
 
-                        ConfigReader.getInstance().updateValueForLdLibraryPath(newValue);
+                        ConfigReader.getInstance().updateValueForSwiPrologLibrariesPath(newValue);
                         break;
                     }
                 }
@@ -262,7 +262,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
     @Override
     public int chooseAlternative(final String message, final List<?> alternatives) {
-        this.displayMessage(message + "\n");
+        this.displayMessage(message + System.lineSeparator());
 
         for (int i = 0; i < alternatives.size(); i++) {
             this.displayMessage("[" + i + "] " + alternatives.get(i).toString());
@@ -434,7 +434,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     @Override
     public void displayMessage(final String message) {
         try {
-            this.outputWriter.append(message + "\n");
+            this.outputWriter.append(message + System.lineSeparator());
             this.outputWriter.flush();
         } catch (final IOException e) {
             // TODO Auto-generated catch block
@@ -561,7 +561,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
     @Override
     public void notify(final VirageJob<?> job) {
-        this.displayMessage(job.presentResult() + "\n");
+        this.displayMessage(job.presentResult() + System.lineSeparator());
     }
 
     private void printBanner() {

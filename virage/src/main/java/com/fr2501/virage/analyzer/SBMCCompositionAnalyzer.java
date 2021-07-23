@@ -145,13 +145,13 @@
 //        ElectionDescription elecDesc
 //          = new ElectionDescription("tmp", new Preference(), new CandidateList());
 //
-//        String[] lines = elecDescCode.split("\n");
+//        String[] lines = elecDescCode.split(System.lineSeparator());
 //
 //        int offset = 0;
 //        int lockedLine = 0;
 //        for (int i = 0; i < lines.length; i++) {
 //          if (!lines[i].startsWith("unsigned int[C] voting")) {
-//            offset += lines[i].length() + "\n".length();
+//            offset += lines[i].length() + System.lineSeparator().length();
 //          } else {
 //            lockedLine = i;
 //            break;

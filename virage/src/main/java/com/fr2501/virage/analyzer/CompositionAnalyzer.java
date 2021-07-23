@@ -19,7 +19,7 @@ public interface CompositionAnalyzer {
      *
      * @param millis timeout in milliseconds
      */
-    public void setTimeout(long millis);
+    void setTimeout(long millis);
 
     /**
      * Checks whether a given composition satisfies the specified property set.
@@ -28,7 +28,7 @@ public interface CompositionAnalyzer {
      * @param properties the property set
      * @return a List of {@link SearchResult}s, ordered according to the properties.
      */
-    public List<SearchResult<BooleanWithUncertainty>> analyzeComposition(
+    List<SearchResult<BooleanWithUncertainty>> analyzeComposition(
             DecompositionTree composition, List<Property> properties);
 
     /**
@@ -37,7 +37,7 @@ public interface CompositionAnalyzer {
      * @param properties the property set
      * @return a {@link SearchResult} containing the result
      */
-    public SearchResult<DecompositionTree> generateComposition(List<Property> properties);
+    SearchResult<DecompositionTree> generateComposition(List<Property> properties);
 
     /**
      * Derives the Prolog proof for a given claim. <b>May only be called on already proven
@@ -49,6 +49,6 @@ public interface CompositionAnalyzer {
      * @throws IllegalArgumentException if no proof can be generated (i.e. asked to prove a
      *      non-provable claim)
      */
-    public List<CompositionProof> proveClaims(DecompositionTree composition,
-            List<Property> properties) throws IllegalArgumentException;
+    List<CompositionProof> proveClaims(DecompositionTree composition, List<Property> properties)
+            throws IllegalArgumentException;
 }

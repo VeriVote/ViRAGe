@@ -25,13 +25,25 @@ import com.fr2501.virage.types.Property;
  *
  */
 public final class IsabelleTheoryGeneratorTest {
+    /**
+     * Path to the (E)PL file.
+     */
     private static final String PATH = "src/test/resources/framework.pl";
+    /**
+     * String representation of SMC.
+     */
     private static final String SMC = "sequential_composition(" + "loop_composition("
             + "parallel_composition(" + "sequential_composition(" + "pass_module(2,_),"
             + "sequential_composition(" + "revision_composition(" + "plurality),"
             + "pass_module(1,_)))," + "drop_module(2,_)," + "max_aggregator),"
             + "defer_equal_condition(1))," + "elect_module)";
+    /**
+     * The compositional framework.
+     */
     private FrameworkRepresentation framework;
+    /**
+     * The analyzer.
+     */
     private CompositionAnalyzer analyzer;
 
     /**
@@ -50,6 +62,11 @@ public final class IsabelleTheoryGeneratorTest {
         this.analyzer = new SimplePrologCompositionAnalyzer(this.framework);
     }
 
+    /**
+     * Used to prove claims for further test use.
+     * @param properties the desired properties
+     * @param composition the composition
+     */
     protected void proveClaims(final List<Property> properties, final String composition) {
         final List<CompositionProof> proofs = this.analyzer
                 .proveClaims(DecompositionTree.parseString(composition), properties);
@@ -76,6 +93,9 @@ public final class IsabelleTheoryGeneratorTest {
                 "sequential_composition(elimination_module(copeland_score,max,less), elect_module)");
     }
 
+    /**
+     * Simple proof test.
+     */
     @Test
     public void testSimpleProof() {
         final List<Property> properties = new LinkedList<Property>();
@@ -85,6 +105,9 @@ public final class IsabelleTheoryGeneratorTest {
         this.proveClaims(properties, "sequential_composition(pass_module(1,_),elect_module)");
     }
 
+    /**
+     * SMC proof test.
+     */
     @Test
     public void testSmcProof() {
         final List<Property> properties = new LinkedList<Property>();
@@ -94,6 +117,9 @@ public final class IsabelleTheoryGeneratorTest {
         this.proveClaims(properties, SMC);
     }
 
+    /**
+     * Simple proof test.
+     */
     @Test
     public void testVerySimpleProof() {
         final List<Property> properties = new LinkedList<Property>();

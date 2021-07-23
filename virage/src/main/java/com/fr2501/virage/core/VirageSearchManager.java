@@ -16,6 +16,11 @@ import com.fr2501.virage.types.SearchResult;
  */
 public class VirageSearchManager {
     /**
+     * Error message for missing analyzers.
+     */
+    private final static String NO_ANALYZERS = "No analyzers available!";
+
+    /**
      * The list of analyzers to be used by this manager.
      */
     private final List<CompositionAnalyzer> analyzers;
@@ -42,12 +47,13 @@ public class VirageSearchManager {
      * @param composition the decomposition tree
      * @param properties the desired property set
      * @return a list of results, ordered in the same way as the analyzers
+     * @throws IllegalStateException if no analyzers are available
      */
     public List<List<SearchResult<BooleanWithUncertainty>>> analyzeComposition(
             final DecompositionTree composition, final List<Property> properties)
                     throws IllegalStateException {
         if (this.analyzers.isEmpty()) {
-            throw new IllegalStateException("No analyzers available.");
+            throw new IllegalStateException(NO_ANALYZERS);
         }
 
         // TODO Parallelize.
@@ -68,11 +74,12 @@ public class VirageSearchManager {
      *
      * @param properties the desired property set
      * @return a list of results, ordered in the same way as the analyzers
+     * @throws IllegalStateException if no analyzers are available
      */
     public List<SearchResult<DecompositionTree>> generateComposition(
             final List<Property> properties) throws IllegalStateException {
         if (this.analyzers.isEmpty()) {
-            throw new IllegalStateException("No analyzers available.");
+            throw new IllegalStateException(NO_ANALYZERS);
         }
 
         // TODO Parallelize.
@@ -94,11 +101,12 @@ public class VirageSearchManager {
      * @param composition the decomposition tree
      * @param properties the proposed property set
      * @return a list of results, ordered in the same way as the analyzers
+     * @throws IllegalStateException if no analyzers are available
      */
     public List<List<CompositionProof>> proveClaims(final DecompositionTree composition,
             final List<Property> properties) throws IllegalStateException {
         if (this.analyzers.isEmpty()) {
-            throw new IllegalStateException("No analyzers available.");
+            throw new IllegalStateException(NO_ANALYZERS);
         }
 
         // TODO Parallelize.

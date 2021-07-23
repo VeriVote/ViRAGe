@@ -26,24 +26,67 @@ import com.fr2501.virage.prolog.PrologPredicate;
  *
  */
 public final class FrameworkRepresentation {
-    private static final Logger logger = LogManager.getLogger(FrameworkRepresentation.class);
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(FrameworkRepresentation.class);
 
+    /**
+     * Separator for generated (E)PL files.
+     */
     private static final String SEPARATOR = "%%%%%%%%%%%%%%%%%%%%\n";
 
+    /**
+     * Path to the (E)PL file.
+     */
     private String absolutePath;
+    /**
+     * Path to Isabelle theories.
+     */
     private String theoryPath;
+    /**
+     * Name of the Isabelle sesison.
+     */
     private String sessionName;
 
+    /**
+     * Set of component types.
+     */
     private final Set<ComponentType> componentTypes;
+    /**
+     * Set of components.
+     */
     private final Set<Component> components;
+    /**
+     * Set of composable modules.
+     */
     private final Set<ComposableModule> composableModules;
+    /**
+     * Set of compositional structures.
+     */
     private final Set<CompositionalStructure> compositionalStructures;
+    /**
+     * Set of composition rules.
+     */
     private final List<CompositionRule> compositionRules;
+    /**
+     * Set of properties.
+     */
     private final Set<Property> properties;
 
+    /**
+     * List of type synonyms.
+     */
     private List<Pair<String, String>> typeSynonyms;
+    /**
+     * List of atomic types.
+     */
     private List<ComponentType> atomicTypes;
 
+    /**
+     * Composable module alias.
+     */
+    @Deprecated
     private String composableModuleAlias;
 
     /*
@@ -185,7 +228,7 @@ public final class FrameworkRepresentation {
     private void checkTypes(final Parameterized object) {
         for (final ComponentType paramType : object.getParameters()) {
             if (!this.componentTypes.contains(paramType)) {
-                logger.info("Added item with unknown parameter type \"" + paramType.getName()
+                LOGGER.info("Added item with unknown parameter type \"" + paramType.getName()
                     + "\" to framework.");
             }
         }
@@ -195,7 +238,7 @@ public final class FrameworkRepresentation {
         final ComponentType type = object.getType();
 
         if (!this.componentTypes.contains(type)) {
-            logger.info("Added item with unknown type \"" + type.getName() + "\" to framework.");
+            LOGGER.info("Added item with unknown type \"" + type.getName() + "\" to framework.");
         }
     }
 
@@ -356,6 +399,10 @@ public final class FrameworkRepresentation {
         this.sessionName = sessionName;
     }
 
+    /**
+     * Simple setter.
+     * @param theoryPath the theory path.
+     */
     public void setTheoryPath(final String theoryPath) {
         String theoryPathCopy = theoryPath;
 
@@ -380,16 +427,16 @@ public final class FrameworkRepresentation {
 
         String res = this.createHeader();
 
-        res += "% ==== " + this.theoryPath + "ROOT" + " - " + this.sessionName + "\n";
+        res += "% ==== " + this.theoryPath + "ROOT" + " - " + this.sessionName + System.lineSeparator();
 
         res += "%\n";
 
-        res += "% " + ExtendedPrologStrings.COMPOSITION_TYPE_HEADER + "\n";
+        res += "% " + ExtendedPrologStrings.COMPOSITION_TYPE_HEADER + System.lineSeparator();
         for (final ComponentType type : this.componentTypes) {
-            res += "% == " + type.getName() + "\n";
+            res += "% == " + type.getName() + System.lineSeparator();
             for (final Component comp : this.components) {
                 if (comp.getType().equals(type)) {
-                    res += "% " + comp.toStringWithoutTypeSignature() + "\n";
+                    res += "% " + comp.toStringWithoutTypeSignature() + System.lineSeparator();
                 }
             }
         }
@@ -406,21 +453,21 @@ public final class FrameworkRepresentation {
          * res += "%\n";
          */
 
-        res += "% " + ExtendedPrologStrings.PROPERTY_HEADER + "\n";
+        res += "% " + ExtendedPrologStrings.PROPERTY_HEADER + System.lineSeparator();
         for (final Property prop : this.properties) {
-            res += "% " + prop.toString() + "\n";
+            res += "% " + prop.toString() + System.lineSeparator();
         }
         final List<String> additionalProperties = ConfigReader.getInstance()
                 .getAdditionalProperties();
         for (final String prop : additionalProperties) {
-            res += "% " + prop + "\n";
+            res += "% " + prop + System.lineSeparator();
         }
 
         res += "%\n";
 
-        res += "% " + ExtendedPrologStrings.COMPOSITION_RULE_HEADER + "\n";
+        res += "% " + ExtendedPrologStrings.COMPOSITION_RULE_HEADER + System.lineSeparator();
         for (final CompositionRule rule : this.compositionRules) {
-            res += rule.toEplString() + "\n";
+            res += rule.toEplString() + System.lineSeparator();
         }
 
         return res;
@@ -441,39 +488,39 @@ public final class FrameworkRepresentation {
 
         res += "ComponentTypes:\n";
         for (final ComponentType ct : this.componentTypes) {
-            res += "\t" + ct.toString() + "\n";
+            res += "\t" + ct.toString() + System.lineSeparator();
         }
-        res += "\n";
+        res += System.lineSeparator();
 
         res += "Components:\n";
         for (final Component c : this.components) {
-            res += "\t" + c.toString() + "\n";
+            res += "\t" + c.toString() + System.lineSeparator();
         }
-        res += "\n";
+        res += System.lineSeparator();
 
         res += "ComposableModules:\n";
         for (final ComposableModule cm : this.composableModules) {
-            res += "\t" + cm.toString() + "\n";
+            res += "\t" + cm.toString() + System.lineSeparator();
         }
-        res += "\n";
+        res += System.lineSeparator();
 
         res += "CompositionalStructures:\n";
         for (final CompositionalStructure cs : this.compositionalStructures) {
-            res += "\t" + cs.toString() + "\n";
+            res += "\t" + cs.toString() + System.lineSeparator();
         }
-        res += "\n";
+        res += System.lineSeparator();
 
         res += "Property:\n";
         for (final Property p : this.properties) {
-            res += "\t" + p.toString() + "\n";
+            res += "\t" + p.toString() + System.lineSeparator();
         }
-        res += "\n";
+        res += System.lineSeparator();
 
         res += "CompositionRules:\n";
         for (final CompositionRule cr : this.compositionRules) {
-            res += "\t" + cr.toString() + "\n";
+            res += "\t" + cr.toString() + System.lineSeparator();
         }
-        res += "\n";
+        res += System.lineSeparator();
 
         return res;
     }

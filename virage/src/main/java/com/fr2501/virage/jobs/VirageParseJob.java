@@ -54,26 +54,26 @@ public final class VirageParseJob extends VirageJobWithExplicitResult<FrameworkR
             + "\'.\n";
 
         /*
-         * res += "\n";
+         * res += System.lineSeparator();
          *
          * res += "Properties: \n";
          *
          * List<Property> sortedProps = new ArrayList<Property>();
          * sortedProps.addAll(this.result.getProperties()); Collections.sort(sortedProps, (Property
          * a, Property b) -> a.getName().compareTo(b.getName())); for (Property p : sortedProps) {
-         * res += "\t" + p.getName() + "/" + p.getArity() + "\n"; }
+         * res += "\t" + p.getName() + "/" + p.getArity() + System.lineSeparator(); }
          *
-         * res += "\n";
+         * res += System.lineSeparator();
          *
          * res += "Components: \n";
          *
          * List<String> sortedStrings = new ArrayList<String>(); for (Component c :
          * this.result.getComponents()) { sortedStrings.add("\t" + c.getName() + "/" +
-         * c.getParameters().size() + "\n"); } for (ComposableModule c :
+         * c.getParameters().size() + System.lineSeparator()); } for (ComposableModule c :
          * this.result.getComposableModules()) { sortedStrings.add("\t" + c.getName() + "/" +
-         * c.getParameters().size() + "\n"); } for (CompositionalStructure c :
+         * c.getParameters().size() + System.lineSeparator()); } for (CompositionalStructure c :
          * this.result.getCompositionalStructures()) { sortedStrings.add("\t" + c.getName() + "/" +
-         * c.getParameters().size() + "\n"); } Collections.sort(sortedStrings); for (String s :
+         * c.getParameters().size() + System.lineSeparator()); } Collections.sort(sortedStrings); for (String s :
          * sortedStrings) { res += s; }
          */
 

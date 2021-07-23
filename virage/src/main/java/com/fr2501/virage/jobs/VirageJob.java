@@ -131,7 +131,7 @@ public abstract class VirageJob<T> {
         res += "Job ran for " + String.format("%.2f", timeInS) + " seconds.\n";
 
         if (this.state == VirageJobState.FINISHED) {
-            res += this.presentConcreteResult() + "\n";
+            res += this.presentConcreteResult() + System.lineSeparator();
         } else {
             res += "Something went wrong while executing this job.\n";
             res += this.errorMessage;
@@ -164,15 +164,15 @@ public abstract class VirageJob<T> {
      */
     @Override
     public String toString() {
-        String res = "----------- " + this.getClass().getCanonicalName() + "\n";
-        res += "ID: " + this.id + "\n";
+        String res = "----------- " + this.getClass().getCanonicalName() + System.lineSeparator();
+        res += "ID: " + this.id + System.lineSeparator();
 
-        res += "Issued: " + Instant.ofEpochMilli(this.timeIssued).toString() + "\n";
-        res += "Started: " + Instant.ofEpochMilli(this.timeStarted).toString() + "\n";
-        res += "Finished: " + Instant.ofEpochMilli(this.timeFinished).toString() + "\n";
+        res += "Issued: " + Instant.ofEpochMilli(this.timeIssued).toString() + System.lineSeparator();
+        res += "Started: " + Instant.ofEpochMilli(this.timeStarted).toString() + System.lineSeparator();
+        res += "Finished: " + Instant.ofEpochMilli(this.timeFinished).toString() + System.lineSeparator();
         res += "Time elapsed: " + (this.timeFinished - this.timeStarted) + " milliseconds \n";
         res += "-----\n";
-        res += "State: " + this.state + "\n";
+        res += "State: " + this.state + System.lineSeparator();
 
         return res;
     }

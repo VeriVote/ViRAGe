@@ -16,8 +16,14 @@ import com.fr2501.virage.types.DecompositionTree;
  *
  */
 public class DecompositionTreeTest {
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(DecompositionTreeTest.class);
 
+    /**
+     * Simple test.
+     */
     @Test
     public void testConstruction() {
         LOGGER.info("testConstruction()");

@@ -34,12 +34,30 @@ import com.fr2501.virage.types.ValueNotPresentException;
  *
  */
 public abstract class CompositionAnalyzerTest {
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(CompositionAnalyzerTest.class);
 
+    /**
+     * Path to an (E)PL file.
+     */
     private static final String FRAMEWORK_PATH = "src/test/resources/framework.pl";
+    /**
+     * The test data generator.
+     */
     protected TestDataGenerator generator;
+    /**
+     * The framework representation.
+     */
     protected FrameworkRepresentation framework;
 
+    /**
+     * Instance creation to allow reuse for all implementations.
+     * @return an instance of the respective class
+     * @throws IOException if io fails
+     * @throws ExternalSoftwareUnavailableException if external software is unavailablw
+     */
     protected abstract CompositionAnalyzer createInstance()
             throws IOException, ExternalSoftwareUnavailableException;
 
@@ -57,6 +75,12 @@ public abstract class CompositionAnalyzerTest {
         this.generator = new TestDataGenerator(this.framework);
     }
 
+    /**
+     * Tests SMC proof.
+     * @throws ValueNotPresentException if proof process fails
+     * @throws IOException if io fails
+     * @throws ExternalSoftwareUnavailableException if external software is unavailable
+     */
     @Test
     public void testSequentialMajorityComparison()
             throws ValueNotPresentException, IOException, ExternalSoftwareUnavailableException {
@@ -88,8 +112,13 @@ public abstract class CompositionAnalyzerTest {
         assertTrue(result.getValue() == BooleanWithUncertainty.TRUE);
     }
 
+    /**
+     * Tests random property sets.
+     * @throws IOException if io fails
+     * @throws ExternalSoftwareUnavailableException if external software is unavailable
+     */
     @Test
-    public void testRandomPropertySets() throws Exception {
+    public void testRandomPropertySets() throws IOException, ExternalSoftwareUnavailableException {
         LOGGER.info("testRandomPropertySets()");
         final int _runs = 100;
         final int _timeout = 10;
@@ -141,9 +170,13 @@ public abstract class CompositionAnalyzerTest {
         }
     }
 
-    // The SimplePrologCompositionAnalyzer is considered to be correct and
-    // is thus used as a baseline for all other implementations of
-    // CompositionAnalyzer.
+    /**
+     * The SimplePrologCompositionAnalyzer is considered to be correct and
+     * is thus used as a baseline for all other implementations of
+     * CompositionAnalyzer.
+     * @throws IOException if io fails
+     * @throws ExternalSoftwareUnavailableException if JPL is unavailable
+     */
     @Test
     public void testAccordanceWithSpca() throws IOException, ExternalSoftwareUnavailableException {
         LOGGER.info("testAccordanceWithSCPA()");
@@ -238,6 +271,11 @@ public abstract class CompositionAnalyzerTest {
         }
     }
 
+    /**
+     * Tests simple proofs.
+     * @throws IOException if io fails
+     * @throws ExternalSoftwareUnavailableException if external software is unavailable
+     */
     @Test
     public void testSimpleProofs() throws IOException, ExternalSoftwareUnavailableException {
         final List<Property> properties = new LinkedList<Property>();

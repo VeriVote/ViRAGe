@@ -11,8 +11,17 @@ import com.fr2501.virage.prolog.PrologPredicate;
  *
  */
 public final class CompositionRule implements Comparable<CompositionRule> {
+    /**
+     * The name.
+     */
     private final String name;
+    /**
+     * The origin.
+     */
     private final String origin;
+    /**
+     * The Prolog clause.
+     */
     private final PrologClause clause;
 
     /**
@@ -123,9 +132,9 @@ public final class CompositionRule implements Comparable<CompositionRule> {
     public String toEplString() {
         String res = "";
 
-        res += "% = " + this.origin + "\n";
-        res += "% " + this.name + "\n";
-        res += this.clause.toString() + "\n";
+        res += "% = " + this.origin + System.lineSeparator();
+        res += "% " + this.name + System.lineSeparator();
+        res += this.clause.toString() + System.lineSeparator();
 
         return res;
     }

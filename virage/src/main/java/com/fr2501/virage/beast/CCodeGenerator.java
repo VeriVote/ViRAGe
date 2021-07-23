@@ -19,6 +19,10 @@ import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
+/**
+ * Generator to create C code from compositions.
+ *
+ */
 public final class CCodeGenerator {
     private final String codeFileTemplate;
     private final String compositionsTemplate;
@@ -64,7 +68,7 @@ public final class CCodeGenerator {
                 final DecompositionTree child = composition.getChildren().get(i);
                 final String childLabel = child.getLabel();
 
-                if (childLabel.equals("_")) {
+                if ("_".equals(childLabel)) {
                     final ComponentType childType = this.framework
                             .getComponent(composition.getLabel()).getParameters().get(i);
 
@@ -105,7 +109,7 @@ public final class CCodeGenerator {
                         final Pair<Pair<String, String>, Integer> childCode = this
                                 .getCCodeFromComposition(child, ctr + 1);
 
-                        body += childCode.getFirstValue().getSecondValue() + "\n";
+                        body += childCode.getFirstValue().getSecondValue() + System.lineSeparator();
 
                         structureTemplate = structureTemplate.replace(
                                 "$MODULE_" + String.valueOf(moduleCounter),

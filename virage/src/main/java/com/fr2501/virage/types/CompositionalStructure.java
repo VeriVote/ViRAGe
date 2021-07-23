@@ -10,10 +10,25 @@ import com.fr2501.util.StringUtils;
  */
 @Deprecated
 public final class CompositionalStructure implements TypedAndParameterized {
+    /**
+     * The name.
+     */
     private final String name;
+    /**
+     * The parameters.
+     */
     private final List<ComponentType> parameters;
+    /**
+     * The type.
+     */
     private final ComponentType type;
 
+    /**
+     * Simple constructor.
+     * @param name the name
+     * @param type the type
+     * @param parameters the parameters
+     */
     public CompositionalStructure(final String name, final ComponentType type,
             final List<ComponentType> parameters) {
         this.name = name;

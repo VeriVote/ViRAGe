@@ -8,7 +8,10 @@ import java.util.Map;
  *
  */
 public class IsabelleOkEvent extends IsabelleEvent {
-
+    /**
+     * Simple constructor.
+     * @param parameters the parameters
+     */
     public IsabelleOkEvent(final Map<String, String> parameters) {
         super(parameters);
     }

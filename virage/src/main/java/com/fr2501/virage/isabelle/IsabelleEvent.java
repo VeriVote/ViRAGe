@@ -7,8 +7,15 @@ import java.util.Map;
  *
  */
 public abstract class IsabelleEvent {
+    /**
+     * The parameters.
+     */
     private final Map<String, String> parameters;
 
+    /**
+     * Simple constructor.
+     * @param parameters the parameters.
+     */
     public IsabelleEvent(final Map<String, String> parameters) {
         this.parameters = parameters;
     }

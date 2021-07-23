@@ -13,13 +13,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 public class IsabelleEventFactory {
+    /**
+     * String for "OK" events.
+     */
     private static final String OK_STRING = "OK";
+    /**
+     * String for "ERROR" events.
+     */
     private static final String ERROR_STRING = "ERROR";
+    /**
+     * String for "NOTE" events.
+     */
     private static final String NOTE_STRING = "NOTE";
+    /**
+     * String for "FINISHED" events.
+     */
     private static final String FINISHED_STRING = "FINISHED";
 
+    /**
+     * The object mapper.
+     */
     private final ObjectMapper mapper;
 
+    /**
+     * Simple constructor.
+     */
     public IsabelleEventFactory() {
         this.mapper = new ObjectMapper();
     }

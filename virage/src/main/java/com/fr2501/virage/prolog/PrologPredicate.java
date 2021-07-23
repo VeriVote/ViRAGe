@@ -8,9 +8,21 @@ import java.util.List;
  *
  */
 public final class PrologPredicate {
+    /**
+     * The name.
+     */
     private String name;
+    /**
+     * The parameters.
+     */
     private final List<PrologPredicate> parameters;
+    /**
+     * The arity.
+     */
     private final int arity;
+    /**
+     * The depth of this predicate.
+     */
     private int depth;
 
     /**
@@ -43,6 +55,11 @@ public final class PrologPredicate {
         }
     }
 
+    /**
+     * Checks whether a string represents a Prolog variable.
+     * @param s the string
+     * @return true if s is a Prolog variable name, false otherwise
+     */
     public static boolean isVariable(final String s) {
         return s.matches("[A-Z_][a-zA-Z_0-9]*");
     }

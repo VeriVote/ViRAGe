@@ -11,6 +11,9 @@ import com.fr2501.virage.prolog.PrologProof;
  *
  */
 public class PrologProofTest {
+    /**
+     * Tries to derive a proof of SMC's monotonicity.
+     */
     @Test
     public void testSmcMonotone() {
         final String input = "subgoal(monotone(sequential_composition(loop_composition("

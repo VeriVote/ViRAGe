@@ -34,32 +34,88 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
  *
  */
 public final class IsabelleProofChecker {
+    /**
+     * The singleton instance.
+     */
     private static IsabelleProofChecker instance;
+    /**
+     * The server process name.
+     */
     private static final String SERVER_NAME = "virage_isabelle_server";
 
-    private static final Logger logger = LogManager.getLogger(IsabelleProofChecker.class);
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(IsabelleProofChecker.class);
 
+    /**
+     * The sesion name variable.
+     */
     private static final String SESSION_NAME_VAR = "$SESSION_NAME";
+    /**
+     * The theory name variable.
+     */
     private static final String THEORY_NAME_VAR = "$THEORY_NAME";
+    /**
+     * The parent name variable.
+     */
     private static final String PARENT_NAME_VAR = "$PARENT_NAME";
 
+    /**
+     * The runtime.
+     */
     private final Runtime runtime;
+    /**
+     * The server process.
+     */
     private Process server;
+    /**
+     * The client process.
+     */
     private Process client;
+    /**
+     * The client input stream.
+     */
     private OutputStream clientInput;
 
+    /**
+     * The unique session ID.
+     */
     private String sessionId;
+    /**
+     * The session name.
+     */
     private String sessionName;
+    /**
+     * The theory path.
+     */
     private String theoryPath;
-    // Default if nothing else is given.
+    /**
+     * The parent name. Defaults to "Pure" if nothing else is given.
+     */
     private String parentName = "Pure";
 
+    /**
+     * The proof template.
+     */
     private String rootTemplate = "";
+    /**
+     * The LaTeX template.
+     */
     private String texTemplate = "";
 
+    /**
+     * The list of solvers to be used by Isabelle.
+     */
     private List<String> solvers;
 
+    /**
+     * True iff verification is finished.
+     */
     private boolean finished;
+    /**
+     * The last caught Isabelle event.
+     */
     private IsabelleEvent lastEvent;
 
     private IsabelleProofChecker(final String sessionName, final String theoryPath)
@@ -89,7 +145,7 @@ public final class IsabelleProofChecker {
                 try {
                     IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
                 } catch (final IOException e) {
-                    logger.error("Something went wrong.", e);
+                    LOGGER.error("Something went wrong.", e);
                 }
                 this.rootTemplate = writer.toString();
 
@@ -99,12 +155,12 @@ public final class IsabelleProofChecker {
                 try {
                     IOUtils.copy(texTemplateStream, writer, StandardCharsets.UTF_8);
                 } catch (final IOException e) {
-                    logger.error("Something went wrong.", e);
+                    LOGGER.error("Something went wrong.", e);
                 }
                 this.texTemplate = writer.toString();
             }
         } catch (IOException | InterruptedException e) {
-            logger.error("Something went wrong.", e);
+            LOGGER.error("Something went wrong.", e);
             e.printStackTrace();
         }
     }
@@ -177,7 +233,7 @@ public final class IsabelleProofChecker {
         final int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
 
         if (status != 0) {
-            logger.warn("Isabelle documentation generation failed.");
+            LOGGER.warn("Isabelle documentation generation failed.");
 
             throw new IsabelleBuildFailedException();
         }
@@ -222,7 +278,7 @@ public final class IsabelleProofChecker {
      * @param evt the event
      */
     public synchronized void notify(final IsabelleEvent evt) {
-        logger.debug(evt.toString());
+        LOGGER.debug(evt.toString());
         this.lastEvent = evt;
         evt.applyEffects(this);
     }
@@ -278,7 +334,7 @@ public final class IsabelleProofChecker {
                             s = s.replace(theoryName, newTheoryName);
                         }
 
-                        result += s + "\n";
+                        result += s + System.lineSeparator();
                     }
 
                     theory.delete();
@@ -295,7 +351,7 @@ public final class IsabelleProofChecker {
     }
 
     private void sendCommandAndWaitForOk(final String command) throws IOException {
-        this.clientInput.write((command + "\n").getBytes());
+        this.clientInput.write((command + System.lineSeparator()).getBytes());
         this.clientInput.flush();
 
         // TODO: There is probably a better solution for this.
@@ -307,7 +363,7 @@ public final class IsabelleProofChecker {
     }
 
     private void sendCommandAndWaitForTermination(final String command) throws IOException {
-        this.clientInput.write((command + "\n").getBytes());
+        this.clientInput.write((command + System.lineSeparator()).getBytes());
         this.clientInput.flush();
 
         this.waitForFinish();
@@ -343,14 +399,14 @@ public final class IsabelleProofChecker {
                     theoryPathLocal.length() - IsabelleUtils.FILE_EXTENSION.length());
         }
 
-        logger.info("Starting to verify " + theory + ". This might take some time.");
+        LOGGER.info("Starting to verify " + theory + ". This might take some time.");
         String command = "use_theories {\"session_id\": \"" + this.sessionId + "\", "
                 + "\"theories\": [\"" + theoryPathLocal + "\"]}";
         this.sendCommandAndWaitForTermination(command);
 
         final String result = this.lastEvent.getValue("ok");
         if (result.equals("true")) {
-            logger.info("Verification successful.");
+            LOGGER.info("Verification successful.");
 
             final String adHocSessionName = this.buildSessionRoot(
                     theory.getName().substring(0, theory.getName().length() - 4), theory);
@@ -358,12 +414,12 @@ public final class IsabelleProofChecker {
                 this.generateProofDocument(theory, adHocSessionName, framework.getTheoryPath());
             } catch (IOException | IsabelleBuildFailedException
                     | ExternalSoftwareUnavailableException e) {
-                logger.warn("No documentation could be generated.");
+                LOGGER.warn("No documentation could be generated.");
             }
 
             return new Pair<Boolean, File>(true, theory);
         } else {
-            logger.info(
+            LOGGER.info(
                     "Verification failed. Attempting to solve automatically by employing different solvers.");
             final String errors = this.lastEvent.getValue("errors");
 
@@ -386,7 +442,7 @@ public final class IsabelleProofChecker {
                     // so the recursive call is fine.
                     return this.verifyTheoryFile(newFile, framework);
                 } else {
-                    logger.info("Automatic verification failed. "
+                    LOGGER.info("Automatic verification failed. "
                             + "You might be able to fix the errors manually within Isabelle.");
                 }
             }

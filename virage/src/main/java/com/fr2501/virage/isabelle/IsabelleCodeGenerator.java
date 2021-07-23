@@ -34,36 +34,108 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
  *
  */
 public final class IsabelleCodeGenerator {
-    private static final Logger logger = LogManager.getLogger(IsabelleCodeGenerator.class);
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(IsabelleCodeGenerator.class);
 
+    /**
+     * Code suffix.
+     */
     private static final String CODE = "_code";
+    /**
+     * End string.
+     */
     private static final String END = "end";
 
+    /**
+     * Template for code export.
+     */
     private static String exportTemplate = "";
+    /**
+     * Isabelle ROOT file template.
+     */
     private static String rootTemplate = "";
+    /**
+     * Voting context template.
+     */
     private static String votingContextTemplate = "";
+    /**
+     * Module name variable.
+     */
     private static final String MODULE_NAME_VAR = "$MODULE_NAME";
+    /**
+     * Language variable.
+     */
     private static final String LANGUAGE_VAR = "$LANGUAGE";
+    /**
+     * Session name variable.
+     */
     private static final String SESSION_NAME_VAR = "$SESSION_NAME";
+    /**
+     * Theory name variable.
+     */
     private static final String THEORY_NAME_VAR = "$THEORY_NAME";
+    /**
+     * Parameter variable.
+     */
     private static final String PARAM_VAR = "$PARAMS";
+    /**
+     * Parent name variable.
+     */
     private static final String PARENT_NAME_VAR = "$PARENT_NAME";
 
     // TODO: This feels too "hard-coded"
+    /**
+     * Enum string.
+     */
     private static final String ENUM = "Enum";
+    /**
+     * Enum comment.
+     */
     private static final String ENUM_COMMENT = "ENUM";
+    /**
+     * HOL.equal.
+     */
     private static final String EQUALITY = "HOL.equal";
+    /**
+     * Equality comment.
+     */
     private static final String EQUALITY_COMMENT = "EQUALITY";
+    /**
+     * Relation string.
+     */
     private static final String RELATION = "(x: Set.set[(A, A)]):";
+    /**
+     * Option1 comment.
+     */
     private static final String OPTION1_COMMENT = "OPTION1";
+    /**
+     * Option2 comment.
+     */
     private static final String OPTION2_COMMENT = "OPTION2";
 
+    /**
+     * The compositional framework.
+     */
     private final FrameworkRepresentation framework;
 
+    /**
+     * The theory generator.
+     */
     private final IsabelleTheoryGenerator generator;
+    /**
+     * The Isabelle theory parser.
+     */
     private final IsabelleTheoryParser parser;
+    /**
+     * The file reader.
+     */
     private final SimpleFileReader reader;
 
+    /**
+     * Map of the code replacemenents.
+     */
     private Map<String, String> codeReplacements;
 
     /**
@@ -87,7 +159,7 @@ public final class IsabelleCodeGenerator {
             try {
                 IOUtils.copy(exportTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
-                logger.error("Something went wrong.", e);
+                LOGGER.error("Something went wrong.", e);
             }
             exportTemplate = writer.toString();
 
@@ -97,7 +169,7 @@ public final class IsabelleCodeGenerator {
             try {
                 IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
-                logger.error("Something went wrong.", e);
+                LOGGER.error("Something went wrong.", e);
             }
             rootTemplate = writer.toString();
 
@@ -107,7 +179,7 @@ public final class IsabelleCodeGenerator {
             try {
                 IOUtils.copy(votingContextTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
-                logger.error("Something went wrong.", e);
+                LOGGER.error("Something went wrong.", e);
             }
             votingContextTemplate = writer.toString();
         }
@@ -132,6 +204,17 @@ public final class IsabelleCodeGenerator {
         return sessionName;
     }
 
+    /**
+     * Invokes Isabelle's code generator to generate code from a composition.
+     *
+     * @param composition the composition
+     * @param language the target language
+     * @return a file containing the generated code
+     * @throws IOException if file system interaction fails
+     * @throws InterruptedException if process is interrupted
+     * @throws IsabelleBuildFailedException if session build process fails
+     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     */
     public File generateCode(final DecompositionTree composition,
             final IsabelleCodeGenerationLanguage language) throws IOException, InterruptedException,
         IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
@@ -165,7 +248,7 @@ public final class IsabelleCodeGenerator {
 
             return codeFile;
         } catch (final IsabelleBuildFailedException e) {
-            logger.error(
+            LOGGER.error(
                     "Isabelle code generation failed for file " + theory.getCanonicalPath() + ".");
 
             throw e;
@@ -238,14 +321,14 @@ public final class IsabelleCodeGenerator {
                             + " -d " + jarPath);
 
             if (status != 0) {
-                logger.error("Generated Scala code could not be compiled. "
+                LOGGER.error("Generated Scala code could not be compiled. "
                         + "ViRAGe requires at least Scala 2.13.0 to work properly. "
                         + "Please check and update accordingly.");
                 throw new CompilationFailedException("Generated Scala code could not be compiled.");
             }
         }
 
-        logger.info("Scala compilation was successful. The jar file can be found at " + jarPath);
+        LOGGER.info("Scala compilation was successful. The jar file can be found at " + jarPath);
 
         return new File(jarPath);
     }
@@ -300,7 +383,7 @@ public final class IsabelleCodeGenerator {
         final int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
 
         if (status != 0) {
-            logger.error("Isabelle code generation failed.");
+            LOGGER.error("Isabelle code generation failed.");
 
             throw new IsabelleBuildFailedException();
         }

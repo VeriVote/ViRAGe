@@ -7,7 +7,10 @@ import java.util.Map;
  *
  */
 public class IsabelleErrorEvent extends IsabelleEvent {
-
+    /**
+     * Simple constructor.
+     * @param parameters the parameters
+     */
     public IsabelleErrorEvent(final Map<String, String> parameters) {
         super(parameters);
     }

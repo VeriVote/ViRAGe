@@ -62,7 +62,7 @@ public class StringUtils {
      * Separates a String along a given separator, preserves ordering.
      *
      * @param separator the separator
-     * @param string the string to be separated
+     * @param paramString the string to be separated
      * @return a list of the separated strings
      */
     public static List<String> separate(final String separator, final String paramString) {

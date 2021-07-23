@@ -12,6 +12,11 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
  *
  */
 public class IsabelleFrameworkExtractorTest {
+    /**
+     * Simple test.
+     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     * @throws IsabelleBuildFailedException if the build process fails
+     */
     @Test
     public void simpleTest()
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {

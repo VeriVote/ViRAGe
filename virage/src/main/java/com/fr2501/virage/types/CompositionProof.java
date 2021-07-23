@@ -11,9 +11,21 @@ import java.util.Set;
  *
  */
 public final class CompositionProof {
+    /**
+     * The goal.
+     */
     private final String goal;
+    /**
+     * List of subgoals.
+     */
     private final List<CompositionProof> subgoals;
+    /**
+     * The rule.
+     */
     private final CompositionRule rule;
+    /**
+     * The ID.
+     */
     private String id = "";
 
     /**
@@ -137,7 +149,7 @@ public final class CompositionProof {
         res += this.goal + " by " + this.rule.getName();
 
         for (final CompositionProof subgoal : this.subgoals) {
-            res += "\n" + subgoal.toString(n + 1);
+            res += System.lineSeparator() + subgoal.toString(n + 1);
         }
 
         return res;

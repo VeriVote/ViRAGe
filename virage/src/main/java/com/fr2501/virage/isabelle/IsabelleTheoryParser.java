@@ -16,7 +16,13 @@ import com.fr2501.util.StringUtils;
  */
 @Deprecated
 public class IsabelleTheoryParser {
+    /**
+     * The Isabelle keyword for definitions.
+     */
     private static final String DEFINITION = "definition";
+    /**
+     * The Isabelle keyword for fun.
+     */
     private static final String FUNCTION = "fun";
 
     /**
@@ -134,7 +140,7 @@ public class IsabelleTheoryParser {
             final String line = lines.get(i);
 
             if (StringUtils.removeWhitespace(line).startsWith(prefix)) {
-                return line + "\n" + lines.get(i + 1);
+                return line + System.lineSeparator() + lines.get(i + 1);
             }
         }
 

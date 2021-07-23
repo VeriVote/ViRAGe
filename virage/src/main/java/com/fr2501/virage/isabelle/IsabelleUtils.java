@@ -41,6 +41,16 @@ public class IsabelleUtils {
     public static final String IMPORTS = "imports";
 
     /**
+     * String used by Isabelle in type signatures.
+     */
+    public static final String RIGHTARROW = "=>";
+
+    /**
+     * String used by Isabelle for anonymous types.
+     */
+    public static final String TYPE_ALIAS = "'a";
+
+    /**
      * This method tries, along with other things, to match Prolog predicates to Isabelle entities.
      * It is case-insensitive, so no two Isabelle entities may share the same name with different
      * capitalization.

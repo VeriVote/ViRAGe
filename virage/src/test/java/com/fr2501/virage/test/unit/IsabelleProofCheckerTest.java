@@ -37,19 +37,43 @@ import com.fr2501.virage.types.SearchResult;
  *
  */
 public final class IsabelleProofCheckerTest {
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(IsabelleProofCheckerTest.class);
 
+    /**
+     * Path to an EPL file.
+     */
     private static final String EPL_PATH = "src/test/resources/framework.pl";
+    /**
+     * Path to Isabelle theories.
+     */
     private static final String THEORY_PATH = "src/test/resources/old_theories";
+    /**
+     * String representation of SMC.
+     */
     private static final String SMC = "sequential_composition(" + "loop_composition("
             + "parallel_composition(" + "sequential_composition(" + "pass_module(2,_),"
             + "sequential_composition(" + "revision_composition(" + "plurality),"
             + "pass_module(1,_)))," + "drop_module(2,_)," + "max_aggregator),"
             + "defer_equal_condition(1))," + "elect_module)";
+    /**
+     * A compositional framework.
+     */
     private FrameworkRepresentation framework;
+    /**
+     * The composition analyzer.
+     */
     private CompositionAnalyzer analyzer;
+    /**
+     * The theory generator.
+     */
     private IsabelleTheoryGenerator generator;
 
+    /**
+     * The generated theory file.
+     */
     private File file;
 
     /**
@@ -69,6 +93,11 @@ public final class IsabelleProofCheckerTest {
         this.generator = new IsabelleTheoryGenerator(THEORY_PATH, this.framework);
     }
 
+    /**
+     * Prove claums for further use.
+     * @param properties the desired properties
+     * @param composition the composition
+     */
     protected void proveClaims(final List<Property> properties, final String composition) {
         final List<CompositionProof> proofs = this.analyzer
                 .proveClaims(DecompositionTree.parseString(composition), properties);
@@ -77,6 +106,13 @@ public final class IsabelleProofCheckerTest {
     }
 
     // Takes long, not performed by default.
+    /**
+     * Simple test.
+     * @throws IOException if io operation fails
+     * @throws InterruptedException if execution is interrupted
+     * @throws ExternalSoftwareUnavailableException if Isabelle or JPL are unavailable
+     * @throws IsabelleBuildFailedException if the build process fails
+     */
     @Test
     public void simpleFrameworkTest() throws IOException, InterruptedException,
         ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
@@ -120,8 +156,8 @@ public final class IsabelleProofCheckerTest {
      *
      * @throws IOException if file operations fail
      * @throws InterruptedException if the process is interrupted
-     * @throws ExternalSoftwareUnavailableException
-     * @throws IsabelleBuildFailedException
+     * @throws ExternalSoftwareUnavailableException if Isabelle or JPL is unavailable
+     * @throws IsabelleBuildFailedException if the build process fails
      */
     // @Test
     public void smcTest() throws IOException, InterruptedException,

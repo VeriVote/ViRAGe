@@ -11,12 +11,30 @@ import com.fr2501.util.StringUtils;
  *
  */
 public final class PrologProof {
+    /**
+     * Subgoal string.
+     */
     private static final String SUBGOAL = "subgoal";
+    /**
+     * Indicator for more goals on the same level.
+     */
     private static final String MORE_GOALS_ON_LEVEL = "','";
+    /**
+     * Indicator for closed branch.
+     */
     private static final String BRANCH_CLOSE = "true";
+    /**
+     * Separator string.
+     */
     private static final String SEPARATOR = ",";
 
+    /**
+     * The proof's goal.
+     */
     private final String goal;
+    /**
+     * Required subgoals.
+     */
     private final List<PrologProof> subgoals;
 
     private PrologProof(final String goal) {
@@ -167,7 +185,7 @@ public final class PrologProof {
         res += this.goal;
 
         for (final PrologProof subgoal : this.subgoals) {
-            res += "\n" + subgoal.toString(n + 1);
+            res += System.lineSeparator() + subgoal.toString(n + 1);
         }
 
         return res;

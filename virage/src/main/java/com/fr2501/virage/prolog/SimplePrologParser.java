@@ -100,7 +100,7 @@ public final class SimplePrologParser implements PrologParser {
 
     private String sanitizeClause(final String clause) {
         String res = clause.replace(" ", "");
-        res = res.replace("\n", "");
+        res = res.replace(System.lineSeparator(), "");
         res = res.replace("\t", "");
 
         return res;

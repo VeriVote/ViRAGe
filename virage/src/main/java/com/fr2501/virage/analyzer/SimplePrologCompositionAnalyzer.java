@@ -146,6 +146,9 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
         }
     }
 
+    /**
+     * Safe to override.
+     */
     @Override
     public List<CompositionProof> proveClaims(final DecompositionTree composition,
             final List<Property> properties) {

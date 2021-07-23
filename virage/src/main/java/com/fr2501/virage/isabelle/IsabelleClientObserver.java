@@ -12,13 +12,31 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public final class IsabelleClientObserver implements Runnable {
-    private static final Logger logger = LogManager.getLogger(IsabelleClientObserver.class);
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(IsabelleClientObserver.class);
+    /**
+     * Proof checker acting as listener.
+     */
     private final IsabelleProofChecker listener;
 
+    /**
+     * The Isabelle client process.
+     */
     private final Process isabelleClient;
+    /**
+     * The Isabelle event factory.
+     */
     private final IsabelleEventFactory factory;
 
+    /**
+     * Reader for stdout.
+     */
     private final BufferedReader stdoutReader;
+    /**
+     * Reader for stderr.
+     */
     private final BufferedReader stderrReader;
 
     private IsabelleClientObserver(final IsabelleProofChecker listener,
@@ -57,14 +75,14 @@ public final class IsabelleClientObserver implements Runnable {
             try {
                 if (this.stdoutReader.ready()) {
                     final String line = this.stdoutReader.readLine();
-                    logger.debug(line);
+                    LOGGER.debug(line);
 
                     this.handleEvent(line);
                 } else if (this.stderrReader.ready()) {
-                    logger.error(this.stderrReader.readLine());
+                    LOGGER.error(this.stderrReader.readLine());
                 }
             } catch (final IOException e) {
-                logger.error("Something went wrong.", e);
+                LOGGER.error("Something went wrong.", e);
                 e.printStackTrace();
             }
         }

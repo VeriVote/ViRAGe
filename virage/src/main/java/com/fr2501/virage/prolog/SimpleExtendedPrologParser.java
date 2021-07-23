@@ -198,6 +198,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
      *
      * @param representation a line-by-line representation of the extended Prolog file.
      * @param path the path to the framework (required for compatibility reasons)
+     * @param addDummies true iff dummy rules shall be added as specified in settings file
      * @return a {@link FrameworkRepresentation} of the input.
      * @throws MalformedEplFileException if the input does not follow the specification of the
      *      extended Prolog format.

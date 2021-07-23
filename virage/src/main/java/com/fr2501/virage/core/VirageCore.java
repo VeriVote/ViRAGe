@@ -199,7 +199,7 @@ public final class VirageCore implements Runnable {
                                 + "\", but this might differ on your system.");
 
                 if (!newValue.isEmpty()) {
-                    ConfigReader.getInstance().updateValueForLdLibraryPath(newValue);
+                    ConfigReader.getInstance().updateValueForSwiPrologLibrariesPath(newValue);
                 }
             } catch (final ExternalSoftwareUnavailableException e1) {
                 // TODO Auto-generated catch block
@@ -219,7 +219,7 @@ public final class VirageCore implements Runnable {
                         + ", but this might differ on your system.");
 
                 if (!newValue.isEmpty()) {
-                    ConfigReader.getInstance().updateValueForLdPreload(newValue);
+                    ConfigReader.getInstance().updateValueForLibswiplPath(newValue);
                 }
             } catch (final ExternalSoftwareUnavailableException e1) {
                 // TODO Auto-generated catch block

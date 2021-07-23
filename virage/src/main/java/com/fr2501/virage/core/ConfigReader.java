@@ -36,35 +36,83 @@ import com.fr2501.virage.types.InvalidConfigVersionException;
  *
  */
 public final class ConfigReader {
-    private static final Logger logger = LogManager.getRootLogger();
+    /**
+     * THe logger.
+     */
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
+    /**
+     * Character used to separate lists in the settings file.
+     */
     private static final String LIST_SEPARATOR = ";";
 
+    /**
+     * Name of the option containing the Isabelle binary.
+     */
     private static final String ISABELLE_BIN = "ISABELLE_EXECUTABLE";
+    /**
+     * Name of the option containing the SWI-Prolog binary.
+     */
     private static final String SWIPL_BIN = "SWI_PROLOG_EXECUTABLE";
 
+    /**
+     * Singleton instance.
+     */
     private static ConfigReader instance;
 
-    private static String CONFIG_PATH;
-    private static String VIRAGE_FOLDER_PATH;
+    /**
+     * Path to the settings file.
+     */
+    private static String configPath;
+    /**
+     * Path to the .virage-folder.
+     */
+    private static String virageFolderPath;
 
+    /**
+     * True iff Isabelle is available.
+     */
     private boolean isabelleAvailable = true;
+    /**
+     * True iff SWI-Prolog is available.
+     */
     private boolean swiplAvailable = true;
+    /**
+     * True iff JPL is available.
+     */
     private boolean jplAvailable = true;
 
+    /**
+     * Isabelle home directory.
+     */
     private String isabelleHome;
+    /**
+     * SWI-Prolog home directory.
+     */
     private String swiplHome;
+    /**
+     * SWI-Prolog library directory.
+     */
     private String swiplLib;
+    /**
+     * Isabelle session directory.
+     */
     private String isabelleSessionDir;
 
+    /**
+     * The properties within the settings file.
+     */
     private Properties properties;
 
+    /**
+     * The settings file.
+     */
     private File configFile;
 
     private ConfigReader() {
-        VIRAGE_FOLDER_PATH = System.getProperty("user.home") + File.separator + ".virage"
+        virageFolderPath = System.getProperty("user.home") + File.separator + ".virage"
                 + File.separator;
-        CONFIG_PATH = VIRAGE_FOLDER_PATH + "settings";
+        configPath = virageFolderPath + "settings";
 
         // This is only to ensure unit-tests are working.
         try {
@@ -74,12 +122,16 @@ public final class ConfigReader {
         }
     }
 
+    /**
+     * Simple getter.
+     * @return the config path
+     */
     public static String getConfigPath() {
-        VIRAGE_FOLDER_PATH = System.getProperty("user.home") + File.separator + ".virage"
+        virageFolderPath = System.getProperty("user.home") + File.separator + ".virage"
                 + File.separator;
-        CONFIG_PATH = VIRAGE_FOLDER_PATH + "settings";
+        configPath = virageFolderPath + "settings";
 
-        return CONFIG_PATH;
+        return configPath;
     }
 
     /**
@@ -98,12 +150,13 @@ public final class ConfigReader {
     /**
      * Checks whether all external software is available and prints the version numbers of said
      * software.
+     * @return string representation of all software and versions
      */
     public String checkAvailabilityAndGetVersions() {
         String res = "External dependency versions:\n\n";
 
         // JAVA
-        res += "Java: \t\t" + System.getProperty("java.version") + "\n";
+        res += "Java: \t\t" + System.getProperty("java.version") + System.lineSeparator();
 
         // ISABELLE
         try {
@@ -194,11 +247,15 @@ public final class ConfigReader {
         return output.split("=")[1].trim();
     }
 
+    /**
+     * Copies settings from src/resources to $USER_HOME/.virage.
+     * @throws IOException if io fails
+     */
     public void copyConfigToExpectedPath() throws IOException {
         final SimpleFileReader reader = new SimpleFileReader();
         final SimpleFileWriter writer = new SimpleFileWriter();
 
-        final File oldPropertiesFile = new File(VIRAGE_FOLDER_PATH + "old_settings");
+        final File oldPropertiesFile = new File(virageFolderPath + "old_settings");
         if (!oldPropertiesFile.exists()) {
             oldPropertiesFile.createNewFile();
         }
@@ -229,6 +286,10 @@ public final class ConfigReader {
         }
     }
 
+    /**
+     * Simple getter.
+     * @return the additional properties.
+     */
     public List<String> getAdditionalProperties() {
         String prop = this.properties.getProperty("SESSION_SPECIFIC_ASSUMPTIONS");
         prop = this.replaceTypeAliases(prop);
@@ -236,6 +297,10 @@ public final class ConfigReader {
         return this.readAndSplitList(prop);
     }
 
+    /**
+     * Returns all defined properties.
+     * @return the properties
+     */
     public Map<String, String> getAllProperties() {
         final Map<String, String> result = new HashMap<String, String>();
 
@@ -246,6 +311,10 @@ public final class ConfigReader {
         return result;
     }
 
+    /**
+     * Simple getter.
+     * @return the value of "SESSION_SPECIFIC_ATOMIC_TyPES"
+     */
     public List<String> getAtomicTypes() {
         String prop = this.properties.getProperty("SESSION_SPECIFIC_ATOMIC_TYPES");
         prop = this.replaceTypeAliases(prop);
@@ -253,6 +322,10 @@ public final class ConfigReader {
         return this.readAndSplitList(prop);
     }
 
+    /**
+     * Simple getter.
+     * @return value of "SYSTEM_DEFAULT_OUTPUT_PATH"
+     */
     public String getDefaultOutputPath() {
         final String defaultPath = "./target/generated-sources/";
 
@@ -371,7 +444,7 @@ public final class ConfigReader {
                 final String output = ProcessUtils.runTerminatingProcess(
                         this.properties.getProperty(SWIPL_BIN) + " --dump-runtime-variables")
                         .getFirstValue();
-                final String[] lines = output.split("\n");
+                final String[] lines = output.split(System.lineSeparator());
                 String value = "";
                 for (final String line : lines) {
                     if (line.startsWith("PLBASE")) {
@@ -415,7 +488,7 @@ public final class ConfigReader {
                 final String output = ProcessUtils.runTerminatingProcess(
                         this.properties.getProperty(SWIPL_BIN) + " --dump-runtime-variables")
                         .getFirstValue();
-                final String[] lines = output.split("\n");
+                final String[] lines = output.split(System.lineSeparator());
                 String value = "";
                 String path = "";
                 for (final String line : lines) {
@@ -434,7 +507,7 @@ public final class ConfigReader {
                     }
 
                     if (value.isEmpty()) {
-                        logger.error("$PLARCH is undefined as well.");
+                        LOGGER.error("$PLARCH is undefined as well.");
                         throw new ExternalSoftwareUnavailableException();
                     } else {
                         String tmp = value.split("=")[1];
@@ -494,26 +567,50 @@ public final class ConfigReader {
         return res;
     }
 
+    /**
+     * Simple getter.
+     * @return true iff Isabelle is available
+     */
     public boolean hasIsabelle() {
         return this.isabelleAvailable;
     }
 
+    /**
+     * Simple getter.
+     * @return true iff JPL is available
+     */
     public boolean hasJpl() {
         return this.jplAvailable;
     }
 
+    /**
+     * Simple getter.
+     * @return true iff "ISABELLE_PATH_TO_ROOT_FILE" is specified
+     */
     public boolean hasPathToRootFile() {
         return this.properties.containsKey("ISABELLE_PATH_TO_ROOT_FILE");
     }
 
+    /**
+     * Simple getter.
+     * @return true iff "ISABELLE_SESSION_NAME" is specified
+     */
     public boolean hasSessionName() {
         return this.properties.containsKey("ISABELLE_SESSION_NAME");
     }
 
+    /**
+     * Simple getter.
+     * @return true iff "SESSION_SPECIFIC_TYPE_ALIASES" is specified
+     */
     private boolean hasTypeAliases() {
         return this.properties.containsKey("SESSION_SPECIFIC_TYPE_ALIASES");
     }
 
+    /**
+     * Attempts to open settings file via xdg-open, "SYSTEM_TEXT_EDITOR" and $EDITOR.
+     * @throws ExternalSoftwareUnavailableException if no editor is found
+     */
     public void openConfigFileForEditing() throws ExternalSoftwareUnavailableException {
         String editorExecutable = "";
 
@@ -569,8 +666,8 @@ public final class ConfigReader {
     public void readConfigFile(final boolean overwriteIfNecessary) throws IOException {
         this.properties = new Properties();
 
-        final File virageDir = new File(VIRAGE_FOLDER_PATH);
-        this.configFile = new File(CONFIG_PATH);
+        final File virageDir = new File(virageFolderPath);
+        this.configFile = new File(configPath);
         if (!this.configFile.exists()) {
             virageDir.mkdir();
             this.configFile.createNewFile();
@@ -591,7 +688,7 @@ public final class ConfigReader {
             if (overwriteIfNecessary) {
                 this.copyConfigToExpectedPath();
             } else {
-                throw new InvalidConfigVersionException("The settings file at " + CONFIG_PATH
+                throw new InvalidConfigVersionException("The settings file at " + configPath
                         + " is missing the following keys: "
                         + StringUtils.printCollection(configCompatibility.getSecondValue()));
 
@@ -633,22 +730,30 @@ public final class ConfigReader {
         final Parameters params = new Parameters();
         final FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
                 PropertiesConfiguration.class)
-                .configure(params.properties().setFileName(CONFIG_PATH));
+                .configure(params.properties().setFileName(configPath));
         final Configuration config;
         try {
             config = builder.getConfiguration();
             config.setProperty(name, newValue);
             builder.save();
         } catch (final ConfigurationException e) {
-            logger.error("Updating \"" + name + "\" failed.");
+            LOGGER.error("Updating \"" + name + "\" failed.");
         }
     }
 
-    public void updateValueForLdLibraryPath(final String newValue) {
+    /**
+     * Updates value of "SWI_PROLOG_LIBRARIES_PATH".
+     * @param newValue the new value
+     */
+    public void updateValueForSwiPrologLibrariesPath(final String newValue) {
         this.updateValue("SWI_PROLOG_LIBRARIES_PATH", newValue);
     }
 
-    public void updateValueForLdPreload(final String newValue) {
+    /**
+     * Updates value of "SWI_PROLOG_LIBSWIPL_PATH".
+     * @param newValue the new value
+     */
+    public void updateValueForLibswiplPath(final String newValue) {
         this.updateValue("SWI_PROLOG_LIBSWIPL_PATH", newValue);
     }
 }

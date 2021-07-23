@@ -20,19 +20,32 @@ import com.fr2501.virage.types.FrameworkRepresentation;
  *
  */
 public class ExtendedPrologParserTest {
-    private final Logger LOGGER = LogManager.getLogger(ExtendedPrologParserTest.class);
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(ExtendedPrologParserTest.class);
 
+    /**
+     * Tests loading a non-existing file.
+     * @throws IOException if io fails
+     * @throws MalformedEplFileException if the file is not valid (E)PL
+     */
     @Test(expected = FileNotFoundException.class)
     public void loadNonExistingFile() throws IOException, MalformedEplFileException {
-        this.LOGGER.info("loadNonExistingFile()");
+        LOGGER.info("loadNonExistingFile()");
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
         parser.parseFramework(new File(""), false);
     }
 
+    /**
+     * Tests loading an invalid (E)PL file.
+     * @throws IOException if io fails
+     * @throws MalformedEplFileException if the file is not valid (E)PL
+     */
     @Test(expected = MalformedEplFileException.class)
     public void loadInvalidFile() throws IOException, MalformedEplFileException {
-        this.LOGGER.info("loadInvalidFile()");
+        LOGGER.info("loadInvalidFile()");
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
         parser.parseFramework(new File("src/test/resources/invalid_test.pl"), false);
@@ -49,7 +62,7 @@ public class ExtendedPrologParserTest {
      * @throws MalformedEplFileException if the file violates the EPL format
      */
     public void loadValidFile() throws IOException, MalformedEplFileException {
-        this.LOGGER.info("loadValidFile()");
+        LOGGER.info("loadValidFile()");
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
         final FrameworkRepresentation framework = parser
@@ -63,13 +76,18 @@ public class ExtendedPrologParserTest {
         assertTrue(framework.getCompositionRules().size() == 4);
     }
 
+    /**
+     * Tests loading a valid file.
+     * @throws IOException if io fails
+     * @throws MalformedEplFileException if the file is not valid (E)PL
+     */
     @Test
     public void loadFrameworkFile() throws IOException, MalformedEplFileException {
-        this.LOGGER.info("loadFrameworkFile()");
+        LOGGER.info("loadFrameworkFile()");
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
 
         final FrameworkRepresentation framework = parser
                 .parseFramework(new File("src/test/resources/framework.pl"), false);
-        this.LOGGER.debug(framework.toString());
+        LOGGER.debug(framework.toString());
     }
 }

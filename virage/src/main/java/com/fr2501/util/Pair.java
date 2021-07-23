@@ -7,9 +7,20 @@ package com.fr2501.util;
  * @param <T> type of the second value
  */
 public final class Pair<S, T> {
+    /**
+     * First value.
+     */
     private final S firstValue;
+    /**
+     * Second value.
+     */
     private final T secondValue;
 
+    /**
+     * Simple constructor.
+     * @param firstValue the first value
+     * @param secondValue the second value
+     */
     public Pair(final S firstValue, final T secondValue) {
         this.firstValue = firstValue;
         this.secondValue = secondValue;

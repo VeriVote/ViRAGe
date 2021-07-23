@@ -31,17 +31,39 @@ import com.fr2501.virage.types.ValueNotPresentException;
  *
  */
 public final class JplFacade {
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(JplFacade.class);
+    /**
+     * Default timeout in milliseconds.
+     */
     private static final long DEFAULT_TIMEOUT = 10000;
 
+    /**
+     * Counter to find new filenames.
+     */
     private static int fileCounter;
 
+    /**
+     * Timeout in milliseconds.
+     */
     private long timeout;
 
+    /**
+     * The Prolog parser.
+     */
     private final PrologParser parser;
 
+    /**
+     * True iff ViRAGe runs in compatibility mode for SWI-Prolog 7.X.
+     */
     private boolean compatibilityMode;
 
+    /**
+     * Simple constructor.
+     * @throws ExternalSoftwareUnavailableException if JPL is unavailable
+     */
     public JplFacade() throws ExternalSoftwareUnavailableException {
         this(JplFacade.DEFAULT_TIMEOUT);
     }

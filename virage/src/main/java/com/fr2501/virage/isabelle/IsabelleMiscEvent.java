@@ -8,10 +8,17 @@ import java.util.Map;
  *
  */
 public class IsabelleMiscEvent extends IsabelleEvent {
+    /**
+     * Simple constructor.
+     */
     public IsabelleMiscEvent() {
-        super(new HashMap<String, String>());
+        this(new HashMap<String, String>());
     }
 
+    /**
+     * Simple constructor.
+     * @param parameters the parameters.
+     */
     public IsabelleMiscEvent(final Map<String, String> parameters) {
         super(parameters);
     }

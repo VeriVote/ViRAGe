@@ -7,5 +7,9 @@ import java.util.List;
  *
  */
 public interface Parameterized {
-    public List<ComponentType> getParameters();
+    /**
+     * Simple getter.
+     * @return the parameters types
+     */
+    List<ComponentType> getParameters();
 }

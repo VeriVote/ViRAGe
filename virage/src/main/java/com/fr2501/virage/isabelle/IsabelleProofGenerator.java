@@ -22,20 +22,53 @@ import com.fr2501.virage.types.Property;
  *
  */
 public class IsabelleProofGenerator {
-    private static final Logger logger = LogManager.getLogger(IsabelleProofGenerator.class);
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(IsabelleProofGenerator.class);
+    /**
+     * Template for proof generation.
+     */
     private static String proofTemplate = "";
 
-    private static final String varTheoremName = "$THEOREM_NAME";
-    private static final String varGoal = "$GOAL";
-    private static final String varProofSteps = "$PROOF_STEPS";
-    private static final String VAR_SUBGOAL_IDS = "$SUBGOAL_IDS";
-    private static final String VAR_ASSUMPTIONS = "$ASSUMPTIONS";
-
+    /**
+     * True.
+     */
     private static final String TRUE = "true";
 
+    /**
+     * Theorem name variable.
+     */
+    private final String varTheoremName = "$THEOREM_NAME";
+    /**
+     * Goal variable.
+     */
+    private final String varGoal = "$GOAL";
+    /**
+     * Proof steps variable.
+     */
+    private final String varProofSteps = "$PROOF_STEPS";
+    /**
+     * Subgoal ID variable.
+     */
+    private final String varSubgoalId = "$SUBGOAL_IDS";
+    /**
+     * Assumptions variable.
+     */
+    private final String varAssumptions = "$ASSUMPTIONS";
+
+    /**
+     * The Isabelle proof step generator associated to this.
+     */
     private final IsabelleProofStepGenerator generator;
+    /**
+     * Functions and definitions from an Isabelle session.
+     */
     private final Map<String, String> functionsAndDefinitions;
 
+    /**
+     * The parent theory generator.
+     */
     private final IsabelleTheoryGenerator parent;
 
     /**
@@ -53,7 +86,7 @@ public class IsabelleProofGenerator {
             try {
                 IOUtils.copy(proofTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
-                logger.error("Something went wrong.", e);
+                LOGGER.error("Something went wrong.", e);
                 e.printStackTrace();
             }
             proofTemplate = writer.toString();
@@ -145,11 +178,11 @@ public class IsabelleProofGenerator {
             final String proofSteps, final String subgoalIds, final String assumptions) {
         String res = proofTemplate;
 
-        res = res.replace(varTheoremName, theoremName);
-        res = res.replace(varGoal, goal);
-        res = res.replace(varProofSteps, proofSteps);
-        res = res.replace(VAR_SUBGOAL_IDS, subgoalIds);
-        res = res.replace(VAR_ASSUMPTIONS, assumptions);
+        res = res.replace(this.varTheoremName, theoremName);
+        res = res.replace(this.varGoal, goal);
+        res = res.replace(this.varProofSteps, proofSteps);
+        res = res.replace(this.varSubgoalId, subgoalIds);
+        res = res.replace(this.varAssumptions, assumptions);
 
         return res;
     }

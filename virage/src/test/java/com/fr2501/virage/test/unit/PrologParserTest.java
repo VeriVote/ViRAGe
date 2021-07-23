@@ -19,8 +19,14 @@ import com.fr2501.virage.prolog.SimplePrologParser;
  *
  */
 public class PrologParserTest {
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(PrologParserTest.class);
 
+    /**
+     * Tests behavior on empty clause.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void parseEmptyClause() {
         LOGGER.info("parseEmptyClause()");
@@ -30,6 +36,9 @@ public class PrologParserTest {
         parser.parseSingleClause(clause);
     }
 
+    /**
+     * Tests equality of parsed clauses.
+     */
     @Test
     public void testEquals() {
         LOGGER.info("testEquals()");
@@ -101,6 +110,9 @@ public class PrologParserTest {
         }
     }
 
+    /**
+     * Tests parser on a fact.
+     */
     @Test
     public void parseFact() {
         LOGGER.info("parseFact()");
@@ -114,6 +126,9 @@ public class PrologParserTest {
         assertTrue(parsed.equals(res));
     }
 
+    /**
+     * Tests parser on a simple clause.
+     */
     @Test
     public void parseSimpleClause() {
         LOGGER.info("parseSimpleClause()");
@@ -130,6 +145,9 @@ public class PrologParserTest {
         assertTrue(parsed.equals(res));
     }
 
+    /**
+     * Tests parser on a complex clause.
+     */
     @Test
     public void parseComplexClause() {
         LOGGER.info("parseComplexClause()");
@@ -160,6 +178,9 @@ public class PrologParserTest {
         assertTrue(parse.equals(res));
     }
 
+    /**
+     * Tests parser on a clause from the Voting Rule Framework.
+     */
     @Test
     public void parseRealClause() {
         LOGGER.info("parseRealClause()");

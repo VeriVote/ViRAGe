@@ -77,7 +77,7 @@ public class SimpleFileReader {
 
         String res = "";
         for (final String s : list) {
-            res += s + "\n";
+            res += s + System.lineSeparator();
         }
 
         return res;

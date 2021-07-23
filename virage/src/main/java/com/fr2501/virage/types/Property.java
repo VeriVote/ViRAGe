@@ -9,8 +9,17 @@ import com.fr2501.util.StringUtils;
  *
  */
 public final class Property implements Parameterized {
+    /**
+     * The name.
+     */
     private final String name;
+    /**
+     * The arity.
+     */
     private final int arity;
+    /**
+     * The types of the parameters.
+     */
     private final List<ComponentType> parameters;
 
     /**

@@ -38,7 +38,7 @@ public abstract class VirageJobWithExplicitResult<T> extends VirageJob<T> {
             resultString = this.result.toString();
         }
 
-        res += "Result: " + resultString + "\n";
+        res += "Result: " + resultString + System.lineSeparator();
 
         return res;
     }

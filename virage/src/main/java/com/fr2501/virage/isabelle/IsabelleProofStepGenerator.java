@@ -22,17 +22,47 @@ import com.fr2501.virage.types.CompositionRule;
  *
  */
 public class IsabelleProofStepGenerator {
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(IsabelleProofStepGenerator.class);
+    /**
+     * Template for proof step generation.
+     */
     private static String proofStepTemplate = "";
 
+    /**
+     * Goal ID variable.
+     */
     private static String varGoalId = "$GOAL_ID";
+    /**
+     * Goal variable.
+     */
     private static String varGoal = "$GOAL";
+    /**
+     * Subgoal ID variable.
+     */
     private static String varSubgoalIds = "$SUBGOAL_IDS";
+    /**
+     * Rule variable.
+     */
     private static String varRule = "$RULE";
+    /**
+     * Solver variable.
+     */
     private static String varSolver = "$SOLVER";
 
+    /**
+     * Functions and definitions from an Isabelle session.
+     */
     private final Map<String, String> functionsAndDefinitions;
+    /**
+     * The Prolog parser.
+     */
     private final PrologParser parser;
+    /**
+     * The parent Isabelle Proof generator.
+     */
     private final IsabelleProofGenerator parent;
 
     /**

@@ -23,14 +23,30 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
  *
  */
 public class IsabelleCodeGeneratorTest {
+    /**
+     * Path to an (E)PL file.
+     */
     private static final String EPL_PATH = "src/test/resources/framework_new.pl";
-    private static final String THEORY_PATH = "src/test/resources/verifiedVotingRuleConstruction/theories";
-    private static final String SMC = "sequential_composition(" + "loop_composition("
-            + "parallel_composition(" + "sequential_composition(" + "pass_module(2,_),"
+    /**
+     * Path to Isabelle theories.
+     */
+    private static final String THEORY_PATH =
+            "src/test/resources/verifiedVotingRuleConstruction/theories";
+    /**
+     * String representation of SMC.
+     */
+    private static final String SMC = "sequential_composition(loop_composition("
+            + "parallel_composition(" + "sequential_composition(pass_module(2,_),"
             + "sequential_composition(" + "revision_composition(" + "plurality),"
             + "pass_module(1,_)))," + "drop_module(2,_)," + "max_aggregator),"
             + "defer_equal_condition(1))," + "elect_module)";
+    /**
+     * A compositional framework.
+     */
     private FrameworkRepresentation framework;
+    /**
+     * The theory generator.
+     */
     private IsabelleTheoryGenerator generator;
 
     /**
@@ -47,6 +63,14 @@ public class IsabelleCodeGeneratorTest {
         this.generator = new IsabelleTheoryGenerator(THEORY_PATH, this.framework);
     }
 
+    /**
+     * Test based on elect_module.
+     * @throws IOException if io fails.
+     * @throws InterruptedException if thread is interrupted
+     * @throws CompilationFailedException if the code cannot be compiled
+     * @throws IsabelleBuildFailedException if the Isabelle build process fails
+     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     */
     @Test
     public void electTest() throws IOException, InterruptedException, CompilationFailedException,
             IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
@@ -60,6 +84,14 @@ public class IsabelleCodeGeneratorTest {
         codeGenerator.generateScalaCodeAndCompile(theory);
     }
 
+    /**
+     * Test based on drop_module.
+     * @throws IOException if io fails.
+     * @throws InterruptedException if thread is interrupted
+     * @throws CompilationFailedException if the code cannot be compiled
+     * @throws IsabelleBuildFailedException if the Isabelle build process fails
+     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     */
     @Test
     public void dropTest() throws IOException, InterruptedException, CompilationFailedException,
             IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
@@ -70,6 +102,14 @@ public class IsabelleCodeGeneratorTest {
         codeGenerator.generateScalaCodeAndCompile(module);
     }
 
+    /**
+     * Test based on plurality_module.
+     * @throws IOException if io fails.
+     * @throws InterruptedException if thread is interrupted
+     * @throws CompilationFailedException if the code cannot be compiled
+     * @throws IsabelleBuildFailedException if the Isabelle build process fails
+     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     */
     @Test
     public void pluralityTest()
             throws IOException, InterruptedException, CompilationFailedException,
@@ -84,6 +124,14 @@ public class IsabelleCodeGeneratorTest {
         codeGenerator.generateScalaCodeAndCompile(theory);
     }
 
+    /**
+     * Test based on smc.
+     * @throws IOException if io fails.
+     * @throws InterruptedException if thread is interrupted
+     * @throws CompilationFailedException if the code cannot be compiled
+     * @throws IsabelleBuildFailedException if the Isabelle build process fails
+     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     */
     @Test
     public void smcTest() throws IOException, InterruptedException, CompilationFailedException,
             IsabelleBuildFailedException, ExternalSoftwareUnavailableException {

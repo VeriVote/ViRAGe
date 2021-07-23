@@ -7,7 +7,10 @@ import java.util.Map;
  *
  */
 public final class IsabelleFinishedEvent extends IsabelleEvent {
-
+    /**
+     * Simple constructor.
+     * @param parameters the parameters
+     */
     public IsabelleFinishedEvent(final Map<String, String> parameters) {
         super(parameters);
     }

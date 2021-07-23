@@ -28,9 +28,18 @@ import com.fr2501.virage.types.Property;
  *
  */
 public final class IsabelleFrameworkExtractor {
+    /**
+     * The logger.
+     */
     private final Logger logger = LogManager.getRootLogger();
 
+    /**
+     * The Prolog parser.
+     */
     private final PrologParser parser;
+    /**
+     * List of Prolog Strings.
+     */
     private final List<String> prologStrings;
 
     /**
@@ -80,7 +89,7 @@ public final class IsabelleFrameworkExtractor {
                     params.add(this.findOrAdd(framework, paramName));
                 }
 
-                if (compReturnTypeName.equals("(HOL.bool)")) {
+                if ("(HOL.bool)".equals(compReturnTypeName)) {
                     final Property prop = new Property(compName, params);
                     framework.add(prop);
                 } else {
@@ -207,6 +216,14 @@ public final class IsabelleFrameworkExtractor {
         return res;
     }
 
+    /**
+     * Extracts an (E)PL file from an Isabelle session.
+     * @param sessionDir the session directory
+     * @param sessionName the session name
+     * @return the compositional framework
+     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable.
+     * @throws IsabelleBuildFailedException if the session cannot be built
+     */
     public FrameworkRepresentation extract(final String sessionDir, final String sessionName)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
 
@@ -219,6 +236,7 @@ public final class IsabelleFrameworkExtractor {
      *
      * @param sessionDir the directory of the session
      * @param sessionName the name of the session
+     * @param fileName the name of the new (E)PL file
      * @return a framework representation of the session
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
      * @throws IsabelleBuildFailedException if the session build fails

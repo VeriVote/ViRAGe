@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
+import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.prolog.ExtendedPrologStrings;
 import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
@@ -34,35 +35,85 @@ import com.fr2501.virage.types.Parameterized;
  *
  */
 public final class IsabelleTheoryGenerator {
+    /**
+     * Module name variable.
+     */
     protected static final String VAR_MODULE_NAME = "$MODULE_NAME";
+    /**
+     * Module parameters variable.
+     */
     protected static final String VAR_MODULE_PARAMETERS = "$MODULE_PARAMETERS";
 
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(IsabelleTheoryGenerator.class);
 
+    /**
+     * The theory name variable.
+     */
     private static final String VAR_THEORY_NAME = "$THEORY_NAME";
+    /**
+     * The imports variable.
+     */
     private static final String VAR_IMPORTS = "$IMPORTS";
+    /**
+     * The module parameter types variable.
+     */
     private static final String VAR_MODULE_PARAM_TYPES = "$MODULE_PARAM_TYPES";
+    /**
+     * The module definition variable.
+     */
     private static final String VAR_MODULE_DEF = "$MODULE_DEF";
+    /**
+     * The proofs variable.
+     */
     private static final String VAR_PROOFS = "$PROOFS";
 
+    /**
+     * The name of generated theories.
+     */
     private static final String THEORY_NAME = "generated_theory";
+    /**
+     * The name of generated modules.
+     */
     private static final String MODULE_NAME = "Generated_module";
-    private static final String RIGHT_ARROW = " => ";
-    private static final String TYPE = "'a ";
 
-    // TODO config
-    private static final String DEFAULT_PATH = "../virage/target/generated-sources";
-
+    /**
+     * The template for generated theories.
+     */
     private static String theoryTemplate = "";
+    /**
+     * Theory counter to generate unique names.
+     */
     private static int theoryCounter;
+    /**
+     * Functions and definitions within the session.
+     */
     private Map<String, String> functionsAndDefinitions;
+    /**
+     * The compositional framework.
+     */
     private final FrameworkRepresentation framework;
 
+    /**
+     * The associated proof generator.
+     */
     private final IsabelleProofGenerator generator;
+    /**
+     * The Prolog parser.
+     */
     private final PrologParser parser;
 
+    /**
+     * Mapping from variables to their types.
+     */
     private Map<String, String> typedVariables;
 
+    /**
+     * Simple constructor.
+     * @param framework the compositional framework
+     */
     public IsabelleTheoryGenerator(final FrameworkRepresentation framework) {
         this(framework.getTheoryPath(), framework);
     }
@@ -128,7 +179,7 @@ public final class IsabelleTheoryGenerator {
         }
 
         if (usingUnprovenFacts) {
-            res += "\n\n" + "(* * * * * * * * * * * * * * * * * * * * * * * *)\n"
+            res += "\n\n(* * * * * * * * * * * * * * * * * * * * * * * *)\n"
                     + "(* Some proofs appear to rely on facts not yet *)\n"
                     + "(*  proven within Isabelle/HOL. Check Isabelle *)\n"
                     + "(*     error messages for more information.    *)\n"
@@ -138,17 +189,25 @@ public final class IsabelleTheoryGenerator {
         return res;
     }
 
+    /**
+     * Generate an Isabelle theory file.
+     *
+     * @param composition the composition
+     * @param proofs the proofs
+     * @return the theory file
+     */
     public File generateTheoryFile(final String composition, final List<CompositionProof> proofs) {
-        return this.generateTheoryFile(composition, proofs, DEFAULT_PATH);
+        return this.generateTheoryFile(composition, proofs,
+                ConfigReader.getInstance().getDefaultOutputPath());
     }
 
     /**
      * This method takes a Set of {@link CompositionProof} objects and a composition, translates
      * this information to Isabelle syntax and writes its result to a file.
      *
-     * @param composition the composition
+     * @param passedComposition the composition
      * @param proofs proofs for all the claimed properties
-     * @param outputPath a path to the folder to which the result shall be written. If path points
+     * @param passedOutputPath a path to the folder to which the result shall be written. If path points
      *      to a file, this file will be overwritten and the name will most probably not correspond to
      *      the theory inside, so Isabelle won't be able to verify it.
      * @return the {@link File} containing the results
@@ -189,10 +248,10 @@ public final class IsabelleTheoryGenerator {
                     String moduleParamType = "";
                     // Simple types like nat don't require an "'a".
                     if (!IsabelleUtils.isSimpleType(type)) {
-                        moduleParamType = TYPE;
+                        moduleParamType = IsabelleUtils.TYPE_ALIAS;
                     }
 
-                    moduleParamType += type + RIGHT_ARROW;
+                    moduleParamType += type + IsabelleUtils.RIGHTARROW;
                     moduleParamTypesList.add(i, moduleParamType);
                 }
             }

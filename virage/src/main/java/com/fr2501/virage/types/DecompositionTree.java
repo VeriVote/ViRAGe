@@ -11,12 +11,26 @@ import com.fr2501.virage.prolog.PrologPredicate;
  *
  */
 public final class DecompositionTree {
+    /**
+     * The label.
+     */
     private final String label;
+    /**
+     * The arity.
+     */
     private final int arity;
+    /**
+     * The children.
+     */
     private final List<DecompositionTree> children;
 
-    @Deprecated // This is very easy to confuse with DecompositionTree.parseString.
-    // Use DecompositionTree(label, new LinkedList<DecompositionTree>()) instead.
+    /**
+     * Simple constructor.
+     * <b>This is very easy to confuse with DecompositionTree.parseString.
+     * Use DecompositionTree(label, new LinkedList...) instead.</b>
+     * @param label the label
+     */
+    @Deprecated
     public DecompositionTree(final String label) {
         this(label, new LinkedList<DecompositionTree>());
     }
@@ -51,7 +65,7 @@ public final class DecompositionTree {
     /**
      * Creates a DecompositionTree object from a string in bracket notation.
      *
-     * @param s the string
+     * @param passedString the string
      *
      * @return a DecompositionTree representing s
      */
@@ -177,6 +191,12 @@ public final class DecompositionTree {
         }
     }
 
+    /**
+     * Creates string representation where all variable nodes are replaced by their
+     * respective types.
+     * @param framework the compositional framework
+     * @return the string representation
+     */
     public String toStringWithTypesInsteadOfVariables(final FrameworkRepresentation framework) {
         String res = "";
 

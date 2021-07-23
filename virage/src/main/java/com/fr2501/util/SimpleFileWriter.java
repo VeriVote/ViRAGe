@@ -34,7 +34,7 @@ public class SimpleFileWriter {
             this.writer = new FileWriter(new File(path).getCanonicalFile());
 
             for (final Object o : collection) {
-                this.writer.write(o.toString() + "\n");
+                this.writer.write(o.toString() + System.lineSeparator());
             }
         } catch (final IOException e) {
             LOGGER.error("Writing to " + path + " was impossible.");
