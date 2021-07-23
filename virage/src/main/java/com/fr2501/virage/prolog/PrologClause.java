@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * Represents a single Prolog clause.
  *
+ * @author VeriVote
  */
 public final class PrologClause {
     /**

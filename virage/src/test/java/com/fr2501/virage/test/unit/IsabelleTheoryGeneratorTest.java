@@ -23,6 +23,7 @@ import com.fr2501.virage.types.Property;
 /**
  * Test suite for {@link IsabelleTheoryGenerator}.
  *
+ * @author VeriVote
  */
 public final class IsabelleTheoryGeneratorTest {
     /**
@@ -90,7 +91,8 @@ public final class IsabelleTheoryGeneratorTest {
         properties.add(this.framework.getProperty("condorcet_consistency"));
 
         this.proveClaims(properties,
-                "sequential_composition(elimination_module(copeland_score,max,less), elect_module)");
+                "sequential_composition("
+                + "elimination_module(copeland_score,max,less), elect_module)");
     }
 
     /**

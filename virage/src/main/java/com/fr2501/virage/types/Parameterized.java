@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * Parts of the framework which have parameters.
  *
+ * @author VeriVote
  */
 public interface Parameterized {
     /**

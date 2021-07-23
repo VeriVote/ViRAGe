@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.fr2501.util.Pair;
 import com.fr2501.util.SimpleFileWriter;
+import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.ComposableModule;
@@ -22,15 +23,16 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 /**
  * Generator to create C code from compositions.
  *
+ * @author VeriVote
  */
 public final class CCodeGenerator {
     private final String codeFileTemplate;
     private final String compositionsTemplate;
 
-    private final FrameworkRepresentation framework;
+    private final FrameworkRepresentation frameworkField;
 
     public CCodeGenerator(final FrameworkRepresentation framework) {
-        this.framework = framework;
+        this.frameworkField = framework;
 
         final StringWriter writer = new StringWriter();
         final InputStream codeFileTemplateStream = this.getClass().getClassLoader()
@@ -59,7 +61,7 @@ public final class CCodeGenerator {
         String head = "";
         String body = "";
 
-        final ComposableModule currentModule = this.framework
+        final ComposableModule currentModule = this.frameworkField
                 .getComposableModule(composition.getLabel());
         if (currentModule != null) {
             head = composition.getLabel() + "(";
@@ -68,8 +70,8 @@ public final class CCodeGenerator {
                 final DecompositionTree child = composition.getChildren().get(i);
                 final String childLabel = child.getLabel();
 
-                if ("_".equals(childLabel)) {
-                    final ComponentType childType = this.framework
+                if (PrologPredicate.ANONYMOUS.equals(childLabel)) {
+                    final ComponentType childType = this.frameworkField
                             .getComponent(composition.getLabel()).getParameters().get(i);
 
                     if (childType.getName().equals("nat")) {
@@ -88,7 +90,7 @@ public final class CCodeGenerator {
             head += "p,r)";
         }
 
-        final CompositionalStructure currentStructure = this.framework
+        final CompositionalStructure currentStructure = this.frameworkField
                 .getCompositionalStructure(composition.getLabel());
         if (currentStructure != null) {
             final String structure = composition.getLabel();
@@ -104,8 +106,9 @@ public final class CCodeGenerator {
 
                 int moduleCounter = 1;
                 for (final DecompositionTree child : composition.getChildren()) {
-                    if (this.framework.getComposableModule(child.getLabel()) != null
-                            || this.framework.getCompositionalStructure(child.getLabel()) != null) {
+                    if (this.frameworkField.getComposableModule(child.getLabel()) != null
+                            || this.frameworkField
+                                    .getCompositionalStructure(child.getLabel()) != null) {
                         final Pair<Pair<String, String>, Integer> childCode = this
                                 .getCCodeFromComposition(child, ctr + 1);
 
@@ -115,8 +118,8 @@ public final class CCodeGenerator {
                                 "$MODULE_" + String.valueOf(moduleCounter),
                                 childCode.getFirstValue().getFirstValue());
                         moduleCounter++;
-                    } else if (this.framework.getComponent(child.getLabel()) != null) {
-                        final Component currentComponent = this.framework
+                    } else if (this.frameworkField.getComponent(child.getLabel()) != null) {
+                        final Component currentComponent = this.frameworkField
                                 .getComponent(child.getLabel());
                         final ComponentType type = currentComponent.getType();
 

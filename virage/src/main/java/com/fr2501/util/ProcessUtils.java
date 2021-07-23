@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Collection of utilities for parallel process interaction and execution of external programs.
  *
+ * @author VeriVote
  */
 public class ProcessUtils {
     /**

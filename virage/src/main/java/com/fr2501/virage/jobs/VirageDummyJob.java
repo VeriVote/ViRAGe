@@ -6,6 +6,7 @@ import com.fr2501.virage.core.VirageUserInterface;
  * A {@link VirageJob} that does nothing, can be used if something goes wrong while creating the
  * actual job, but a return value is still required.
  *
+ * @author VeriVote
  */
 public final class VirageDummyJob extends VirageJobWithoutExplicitResult {
     /**

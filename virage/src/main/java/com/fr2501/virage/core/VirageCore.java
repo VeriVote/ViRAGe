@@ -33,6 +33,7 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
 /**
  * The main application.
  *
+ * @author VeriVote
  */
 
 // This is required due to Commons CLI still recommending the deprecated way of building Options.

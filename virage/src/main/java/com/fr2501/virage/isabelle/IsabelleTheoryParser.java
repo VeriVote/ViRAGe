@@ -13,6 +13,7 @@ import com.fr2501.util.StringUtils;
 /**
  * Very simple parser for Isabelle theories, nowhere near complete.
  *
+ * @author VeriVote
  */
 @Deprecated
 public class IsabelleTheoryParser {

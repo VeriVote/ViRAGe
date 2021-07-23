@@ -21,6 +21,7 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
 /**
  * A test suite for {@link IsabelleCodeGenerator}.
  *
+ * @author VeriVote
  */
 public class IsabelleCodeGeneratorTest {
     /**

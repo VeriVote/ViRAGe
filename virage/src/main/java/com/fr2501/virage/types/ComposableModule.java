@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * A composable module (a special type of components) for the modular framework.
  *
+ * @author VeriVote
  */
 @Deprecated
 public class ComposableModule extends Component {

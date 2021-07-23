@@ -18,6 +18,7 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 /**
  * Test suite for {@link ExtendedPrologParser}.
  *
+ * @author VeriVote
  */
 public class ExtendedPrologParserTest {
     /**

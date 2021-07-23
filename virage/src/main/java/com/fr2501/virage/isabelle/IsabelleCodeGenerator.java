@@ -32,6 +32,7 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
 /**
  * This class is used to engage the Isabelle Code Generation process and produce Scala code.
  *
+ * @author VeriVote
  */
 public final class IsabelleCodeGenerator {
     /**
@@ -141,15 +142,15 @@ public final class IsabelleCodeGenerator {
     /**
      * Simple constructor that reads templates from resources.
      *
-     * @param framework the framework representation to be used
+     * @param frameworkValue the framework representation to be used
      * @throws IOException if template reading fails
      */
-    public IsabelleCodeGenerator(final FrameworkRepresentation framework) throws IOException {
-        this.framework = framework;
+    public IsabelleCodeGenerator(final FrameworkRepresentation frameworkValue) throws IOException {
+        this.framework = frameworkValue;
 
         this.reader = new SimpleFileReader();
         this.parser = new IsabelleTheoryParser();
-        this.generator = new IsabelleTheoryGenerator(framework);
+        this.generator = new IsabelleTheoryGenerator(frameworkValue);
 
         if (exportTemplate.isEmpty()) {
             StringWriter writer = new StringWriter();
@@ -460,8 +461,8 @@ public final class IsabelleCodeGenerator {
             final File moduleFile, final boolean setExplicitParameters) throws IOException {
         final File dir = moduleFile.getParentFile();
 
-        final SimpleFileReader reader = new SimpleFileReader();
-        final String code = reader.readFile(moduleFile);
+        final SimpleFileReader localReader = new SimpleFileReader();
+        final String code = localReader.readFile(moduleFile);
 
         String result = votingContextTemplate.replace(THEORY_NAME_VAR, theoryName)
                 .replace(MODULE_NAME_VAR, moduleName);

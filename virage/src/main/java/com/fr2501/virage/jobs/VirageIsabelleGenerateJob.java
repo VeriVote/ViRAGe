@@ -10,6 +10,7 @@ import com.fr2501.virage.types.CompositionProof;
 /**
  * A {@link VirageJob} used to generate Isabelle code.
  *
+ * @author VeriVote
  */
 public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult<File> {
     /**

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * A set of system utility functions.
  *
+ * @author VeriVote
  */
 public class SystemUtils {
     /**
@@ -103,6 +104,25 @@ public class SystemUtils {
         LOGGER.info("New value: " + System.getenv(name));
         if (!System.getenv(name).equals(value)) {
             LOGGER.error("Setting environment variable " + name + " to " + value + " failed.");
+        }
+    }
+
+    /**
+     * Helper method to let a thread sleep for 100ms without worrying about exceptions.
+     */
+    public static void semiBusyWaitingHelper() {
+        semiBusyWaitingHelper(100);
+    }
+
+    /**
+     * Helper method to let a thread sleep without worrying about exceptions.
+     * @param timeout the sleep duration
+     */
+    public static void semiBusyWaitingHelper(final long timeout) {
+        try {
+            Thread.sleep(timeout);
+        } catch (final InterruptedException e) {
+            // No-op
         }
     }
 }

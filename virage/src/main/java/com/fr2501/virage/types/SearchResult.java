@@ -6,6 +6,8 @@ import com.fr2501.virage.prolog.QueryState;
  * A class encapsulating the result of a search. Since searches can fail in general, some wrapper is
  * required.
  *
+ * @author VeriVote
+ *
  * @param <T> the type of the encapsulated value
  */
 public final class SearchResult<T> {

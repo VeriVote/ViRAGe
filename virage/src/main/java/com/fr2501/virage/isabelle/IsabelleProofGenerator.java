@@ -20,6 +20,7 @@ import com.fr2501.virage.types.Property;
 /**
  * This class is meant to translate a single {@link CompositionProof} to Isabelle syntax.
  *
+ * @author VeriVote
  */
 public class IsabelleProofGenerator {
     /**
@@ -74,11 +75,11 @@ public class IsabelleProofGenerator {
     /**
      * Simple constructor.
      *
-     * @param parent the corresponding theory generator
-     * @param functionsAndDefinitions set of all functions and definitions in parent's session
+     * @param parentValue the corresponding theory generator
+     * @param functionsAndDefinitionsValue set of all functions and definitions in parent's session
      */
-    public IsabelleProofGenerator(final IsabelleTheoryGenerator parent,
-            final Map<String, String> functionsAndDefinitions) {
+    public IsabelleProofGenerator(final IsabelleTheoryGenerator parentValue,
+            final Map<String, String> functionsAndDefinitionsValue) {
         if (proofTemplate.isEmpty()) {
             final InputStream proofTemplateStream = this.getClass().getClassLoader()
                     .getResourceAsStream("proof.template");
@@ -92,9 +93,9 @@ public class IsabelleProofGenerator {
             proofTemplate = writer.toString();
         }
 
-        this.functionsAndDefinitions = functionsAndDefinitions;
+        this.functionsAndDefinitions = functionsAndDefinitionsValue;
         this.generator = new IsabelleProofStepGenerator(this, this.functionsAndDefinitions);
-        this.parent = parent;
+        this.parent = parentValue;
     }
 
     /**

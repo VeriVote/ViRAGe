@@ -5,6 +5,7 @@ import java.util.Map;
 /**
  * An {@link IsabelleEvent} raised when a command finishes (not necessarily successful).
  *
+ * @author VeriVote
  */
 public final class IsabelleFinishedEvent extends IsabelleEvent {
     /**

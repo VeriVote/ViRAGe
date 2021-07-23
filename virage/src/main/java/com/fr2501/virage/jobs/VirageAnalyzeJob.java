@@ -16,6 +16,7 @@ import com.fr2501.virage.types.SearchResult;
 /**
  * A {@link VirageJob} used to analyze a composition.
  *
+ * @author VeriVote
  */
 public final class VirageAnalyzeJob
     extends VirageJobWithExplicitResult<List<List<SearchResult<BooleanWithUncertainty>>>> {

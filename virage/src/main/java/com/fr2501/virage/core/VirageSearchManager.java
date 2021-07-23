@@ -13,12 +13,13 @@ import com.fr2501.virage.types.SearchResult;
 /**
  * A class used to enable the use of different solvers without having to change application code.
  *
+ * @author VeriVote
  */
 public class VirageSearchManager {
     /**
      * Error message for missing analyzers.
      */
-    private final static String NO_ANALYZERS = "No analyzers available!";
+    private static final String NO_ANALYZERS = "No analyzers available!";
 
     /**
      * The list of analyzers to be used by this manager.

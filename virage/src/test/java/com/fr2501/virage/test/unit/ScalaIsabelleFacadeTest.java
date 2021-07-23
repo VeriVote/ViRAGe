@@ -9,6 +9,7 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
 /**
  * Test suite for {@link ScalaIsabelleFacade}.
  *
+ * @author VeriVote
  */
 public class ScalaIsabelleFacadeTest {
     /**

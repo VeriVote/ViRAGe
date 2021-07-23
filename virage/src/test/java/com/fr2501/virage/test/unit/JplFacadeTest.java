@@ -17,6 +17,7 @@ import com.fr2501.virage.types.SearchResult;
 /**
  * Test suite for {@link JplFacade}.
  *
+ * @author VeriVote
  */
 public class JplFacadeTest {
     /**

@@ -14,6 +14,7 @@ import com.fr2501.virage.types.SearchResult;
 /**
  * A {@link VirageJob} used for generating compositions.
  *
+ * @author VeriVote
  */
 public final class VirageGenerateJob
         extends VirageJobWithExplicitResult<List<SearchResult<DecompositionTree>>> {

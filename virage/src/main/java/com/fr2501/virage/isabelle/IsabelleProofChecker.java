@@ -405,7 +405,7 @@ public final class IsabelleProofChecker {
         this.sendCommandAndWaitForTermination(command);
 
         final String result = this.lastEvent.getValue("ok");
-        if (result.equals("true")) {
+        if ("true".equals(result)) {
             LOGGER.info("Verification successful.");
 
             final String adHocSessionName = this.buildSessionRoot(
@@ -420,7 +420,8 @@ public final class IsabelleProofChecker {
             return new Pair<Boolean, File>(true, theory);
         } else {
             LOGGER.info(
-                    "Verification failed. Attempting to solve automatically by employing different solvers.");
+                    "Verification failed. Attempting to solve automatically "
+                    + "by employing different solvers.");
             final String errors = this.lastEvent.getValue("errors");
 
             command = "purge_theories {\"session_id\": \"" + this.sessionId + "\", "

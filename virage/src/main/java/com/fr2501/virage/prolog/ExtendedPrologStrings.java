@@ -3,6 +3,7 @@ package com.fr2501.virage.prolog;
 /**
  * Magic strings required to parse the extended Prolog format.
  *
+ * @author VeriVote
  */
 
 public abstract class ExtendedPrologStrings {

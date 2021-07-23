@@ -3,6 +3,7 @@ package com.fr2501.virage.types;
 /**
  * Signals a mismatch of program and config file version.
  *
+ * @author VeriVote
  */
 public class InvalidConfigVersionException extends RuntimeException {
 

@@ -10,6 +10,7 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
 /**
  * Test suite for {@link IsabelleFrameworkExtractor}.
  *
+ * @author VeriVote
  */
 public class IsabelleFrameworkExtractorTest {
     /**

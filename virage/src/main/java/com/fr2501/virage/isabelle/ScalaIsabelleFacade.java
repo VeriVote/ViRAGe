@@ -40,6 +40,7 @@ import scala.concurrent.Future;
 /**
  * A facade for scala-isabelle by Dominique Unruh.
  *
+ * @author VeriVote
  */
 public final class ScalaIsabelleFacade {
     /**
@@ -183,20 +184,20 @@ public final class ScalaIsabelleFacade {
 
         final MLFunction<Theory, scala.collection.immutable.List<String>>
             mlFunToExtractAllNames = MLValue
-                .compileFunction("fn thy => " + "(map " + "(fn x => " + "(#description " + "(hd "
-                        + "(snd(x))" + ")" + ")" + ") " + "(filter "
-                        + "(fn x => "
+                .compileFunction("fn thy => " + "(map "
+                        + "(fn x => " + "(#description " + "(hd "
+                        + "(snd(x))" + "))) (filter (fn x => "
                         + "(String.isPrefix " + "(Context.theory_name thy) " + "(snd (fst (x))"
-                        + ")" + ")" + ")" + "(Defs.all_specifications_of (Theory.defs_of thy))))",
-                        ScalaIsabelleFacade.isabelle, global(), Implicits.theoryConverter(), LIST_CONVERTER);
+                        + ")))(Defs.all_specifications_of (Theory.defs_of thy))))",
+                            ScalaIsabelleFacade.isabelle, global(), Implicits.theoryConverter(),
+                            LIST_CONVERTER);
 
         final String extractConstFunString = "#constants (Consts.dest (Sign.consts_of thy))";
 
         final String toStringFunction = "(fn x => let fun typ_to_string "
                 + "(x: Basic_Term.typ): string = case x of\n"
                 + "Type x => \"(\" ^ (fst x) ^ String.concat (map (typ_to_string) (snd x)) "
-                + "^ \")\"\n"
-                + "| _ => \"(?\'a)\" in typ_to_string x end)";
+                + "^ \")\"\n| _ => \"(?\'a)\" in typ_to_string x end)";
 
         final MLFunction<Theory, scala.collection.immutable.List<Tuple2<String, String>>>
             mlFunToExtractSigns = MLValue
@@ -261,7 +262,8 @@ public final class ScalaIsabelleFacade {
         final MLFunction<Theory, scala.collection.immutable.List<String>> mlFun = MLValue
                 .compileFunction(
                         "fn thy => map (fn x => fst (snd x)) (Global_Theory.dest_thm_names thy) ",
-                        ScalaIsabelleFacade.isabelle, global(), Implicits.theoryConverter(), LIST_CONVERTER);
+                        ScalaIsabelleFacade.isabelle, global(), Implicits.theoryConverter(),
+                        LIST_CONVERTER);
         final MLFunction<Thm, String> convString = MLValue.compileFunction(
                 "fn thm => (Syntax.string_of_term_global (hd (Theory.ancestors_of "
                         + "(Thm.theory_of_thm thm))) (Thm.prop_of thm))",
@@ -307,7 +309,8 @@ public final class ScalaIsabelleFacade {
 
         final MLFunction0<scala.collection.immutable.List<String>> mlFun = MLValue.compileFunction0(
                 "Thy_Info.get_names", ScalaIsabelleFacade.isabelle, global(), LIST_CONVERTER);
-        final var thys = mlFun.apply(ScalaIsabelleFacade.isabelle, global()).retrieveNow(LIST_CONVERTER,
+        final var thys = mlFun.apply(ScalaIsabelleFacade.isabelle, global())
+                .retrieveNow(LIST_CONVERTER,
                 ScalaIsabelleFacade.isabelle, global());
 
         for (final String thy : JavaConverters.asJava(thys)) {

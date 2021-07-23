@@ -16,10 +16,11 @@ import com.fr2501.virage.types.FrameworkRepresentation;
  * Generates a new Prolog file containing admission guards from a given
  * {@link FrameworkRepresentation}.
  *
+ * @author VeriVote
  */
 public class AdmissionGuardGenerator {
     /** The framework representation used throughout. */
-    private final FrameworkRepresentation framework;
+    private final FrameworkRepresentation frameworkField;
 
     /**
      * Simple constructor.
@@ -27,7 +28,7 @@ public class AdmissionGuardGenerator {
      * @param framework the framework representation to be used
      */
     public AdmissionGuardGenerator(final FrameworkRepresentation framework) {
-        this.framework = framework;
+        this.frameworkField = framework;
     }
 
     private PrologPredicate copyAndAnonymizeVariables(final PrologPredicate predicate) {
@@ -74,7 +75,7 @@ public class AdmissionGuardGenerator {
     }
 
     private List<CompositionRule> generateAdmissionGuards() {
-        final List<CompositionRule> originalRules = this.framework.getCompositionRules();
+        final List<CompositionRule> originalRules = this.frameworkField.getCompositionRules();
         final List<CompositionRule> newRules = new LinkedList<CompositionRule>();
 
         // First, generate the rules that introduce the admission guards.

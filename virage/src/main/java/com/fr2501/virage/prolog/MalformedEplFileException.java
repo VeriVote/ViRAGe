@@ -3,6 +3,7 @@ package com.fr2501.virage.prolog;
 /**
  * Exception that is thrown whenever parsing an extended Prolog format file fails.
  *
+ * @author VeriVote
  */
 
 public class MalformedEplFileException extends Exception {

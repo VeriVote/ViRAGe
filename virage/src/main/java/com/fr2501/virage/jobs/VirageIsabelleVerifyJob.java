@@ -10,6 +10,7 @@ import com.fr2501.virage.isabelle.IsabelleProofChecker;
 /**
  * A {@link VirageJob} that invokes Isabelle to automatically attempt proof verification.
  *
+ * @author VeriVote
  */
 public final class VirageIsabelleVerifyJob
         extends VirageJobWithExplicitResult<Pair<Boolean, File>> {

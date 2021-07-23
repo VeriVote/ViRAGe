@@ -20,6 +20,7 @@ import com.fr2501.virage.types.ValueNotPresentException;
 /**
  * Simple implementation of the {@link CompositionAnalyzer}, using Prolog with iterative deepening.
  *
+ * @author VeriVote
  */
 public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologCompositionAnalyzer {
     /** The logger. */

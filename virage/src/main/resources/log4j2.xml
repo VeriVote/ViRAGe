@@ -6,7 +6,8 @@
             <!-- <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36}
                 - %msg%n " /> -->
             <!-- Use this line if console does support colors -->
-            <PatternLayout pattern="%highlight{%d [%t] %-5level: %msg%n%throwable}" />
+            <PatternLayout
+                pattern="%highlight{%d [%t] %-5level: %msg%n%throwable}" />
         </Console>
     </Appenders>
     <Loggers>

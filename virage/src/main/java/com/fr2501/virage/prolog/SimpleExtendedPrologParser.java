@@ -23,6 +23,7 @@ import com.fr2501.virage.types.Property;
 /**
  * A very simple implementation of the {@link ExtendedPrologParser}.
  *
+ * @author VeriVote
  */
 public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
     /**
@@ -54,6 +55,105 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
         final List<String> framework = this.fileReader.readFileByLine(file);
 
         return this.parseFramework(framework, file.getAbsolutePath(), addDummies);
+    }
+
+    /**
+     * This method does the actual parsing.
+     *
+     * @param representation a line-by-line representation of the extended Prolog file.
+     * @param path the path to the framework (required for compatibility reasons)
+     * @param addDummies true iff dummy rules shall be added as specified in settings file
+     * @return a {@link FrameworkRepresentation} of the input.
+     * @throws MalformedEplFileException if the input does not follow the specification of the
+     *      extended Prolog format.
+     */
+    private FrameworkRepresentation parseFramework(final List<String> representation,
+            final String path, final boolean addDummies) throws MalformedEplFileException {
+        final FrameworkRepresentation framework = new FrameworkRepresentation(path);
+        framework.setTheoryPath("undefined");
+
+        ParserState state = ParserState.STARTING;
+
+        final List<String> compositionTypeSection = new LinkedList<String>();
+        final List<String> composableModuleSection = new LinkedList<String>();
+        final List<String> compositionalStructureSection = new LinkedList<String>();
+        final List<String> propertySection = new LinkedList<String>();
+        final List<String> compositionRuleSection = new LinkedList<String>();
+
+        for (int lineNumber = 0; lineNumber < representation.size(); lineNumber++) {
+            String currentLine = representation.get(lineNumber);
+
+            // Skip comments
+            if (currentLine.startsWith("%%")) {
+                continue;
+            }
+
+            if (currentLine.contains(ExtendedPrologStrings.THEORY_PATH_PREFIX)) {
+                String line = currentLine;
+
+                if (line.contains(" - ")) {
+                    final String[] splits = line.split(" - ");
+
+                    line = splits[0];
+                    framework.setSessionName(splits[1]);
+                }
+
+                line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
+                line = line.replace(ExtendedPrologStrings.COMMENT, "");
+                line = StringUtils.removeWhitespace(line);
+
+                if (line.endsWith("ROOT")) {
+                    line = line.substring(0, line.length() - "ROOT".length());
+                }
+
+                framework.setTheoryPath(line);
+                continue;
+            }
+
+            // Remove Prolog comment markings, they are not necessary any more.
+            currentLine = currentLine.replace("% ", "");
+            currentLine = currentLine.replace("%", "");
+
+            // Skip empty lines. (Careful: currentLine is not actually sanitized after
+            // this!)
+            if (this.sanitizeLine(currentLine).equals("")) {
+                continue;
+            }
+
+            state = this.newState(currentLine, state);
+
+            switch (state) {
+            case COMPOSITION_TYPE:
+                compositionTypeSection.add(currentLine);
+                break;
+            case COMPOSABLE_MODULE:
+                composableModuleSection.add(currentLine);
+                break;
+            case COMPOSITIONAL_STRUCTURE:
+                compositionalStructureSection.add(currentLine);
+                break;
+            case PROPERTY:
+                propertySection.add(currentLine);
+                break;
+            case COMPOSITION_RULE:
+                compositionRuleSection.add(currentLine);
+                break;
+            default: // no-op, invalid call.
+            }
+        }
+
+        this.parseSection(framework, compositionTypeSection, ParserState.COMPOSITION_TYPE);
+        this.parseSection(framework, composableModuleSection, ParserState.COMPOSABLE_MODULE);
+        this.parseSection(framework, compositionalStructureSection,
+                ParserState.COMPOSITIONAL_STRUCTURE);
+        this.parseSection(framework, propertySection, ParserState.PROPERTY);
+        this.parseSection(framework, compositionRuleSection, ParserState.COMPOSITION_RULE);
+
+        if (addDummies) {
+            framework.addDummyRulesIfNecessary();
+        }
+
+        return framework;
     }
 
     private List<ComponentType> extractParameters(final String component)
@@ -191,105 +291,6 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
                 framework.add(new Component(currentType, currentLine, parameters));
             }
         }
-    }
-
-    /**
-     * This method does the actual parsing.
-     *
-     * @param representation a line-by-line representation of the extended Prolog file.
-     * @param path the path to the framework (required for compatibility reasons)
-     * @param addDummies true iff dummy rules shall be added as specified in settings file
-     * @return a {@link FrameworkRepresentation} of the input.
-     * @throws MalformedEplFileException if the input does not follow the specification of the
-     *      extended Prolog format.
-     */
-    private FrameworkRepresentation parseFramework(final List<String> representation,
-            final String path, final boolean addDummies) throws MalformedEplFileException {
-        final FrameworkRepresentation framework = new FrameworkRepresentation(path);
-        framework.setTheoryPath("undefined");
-
-        ParserState state = ParserState.STARTING;
-
-        final List<String> compositionTypeSection = new LinkedList<String>();
-        final List<String> composableModuleSection = new LinkedList<String>();
-        final List<String> compositionalStructureSection = new LinkedList<String>();
-        final List<String> propertySection = new LinkedList<String>();
-        final List<String> compositionRuleSection = new LinkedList<String>();
-
-        for (int lineNumber = 0; lineNumber < representation.size(); lineNumber++) {
-            String currentLine = representation.get(lineNumber);
-
-            // Skip comments
-            if (currentLine.startsWith("%%")) {
-                continue;
-            }
-
-            if (currentLine.contains(ExtendedPrologStrings.THEORY_PATH_PREFIX)) {
-                String line = currentLine;
-
-                if (line.contains(" - ")) {
-                    final String[] splits = line.split(" - ");
-
-                    line = splits[0];
-                    framework.setSessionName(splits[1]);
-                }
-
-                line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
-                line = line.replace(ExtendedPrologStrings.COMMENT, "");
-                line = StringUtils.removeWhitespace(line);
-
-                if (line.endsWith("ROOT")) {
-                    line = line.substring(0, line.length() - "ROOT".length());
-                }
-
-                framework.setTheoryPath(line);
-                continue;
-            }
-
-            // Remove Prolog comment markings, they are not necessary any more.
-            currentLine = currentLine.replace("% ", "");
-            currentLine = currentLine.replace("%", "");
-
-            // Skip empty lines. (Careful: currentLine is not actually sanitized after
-            // this!)
-            if (this.sanitizeLine(currentLine).equals("")) {
-                continue;
-            }
-
-            state = this.newState(currentLine, state);
-
-            switch (state) {
-            case COMPOSITION_TYPE:
-                compositionTypeSection.add(currentLine);
-                break;
-            case COMPOSABLE_MODULE:
-                composableModuleSection.add(currentLine);
-                break;
-            case COMPOSITIONAL_STRUCTURE:
-                compositionalStructureSection.add(currentLine);
-                break;
-            case PROPERTY:
-                propertySection.add(currentLine);
-                break;
-            case COMPOSITION_RULE:
-                compositionRuleSection.add(currentLine);
-                break;
-            default: // no-op, invalid call.
-            }
-        }
-
-        this.parseSection(framework, compositionTypeSection, ParserState.COMPOSITION_TYPE);
-        this.parseSection(framework, composableModuleSection, ParserState.COMPOSABLE_MODULE);
-        this.parseSection(framework, compositionalStructureSection,
-                ParserState.COMPOSITIONAL_STRUCTURE);
-        this.parseSection(framework, propertySection, ParserState.PROPERTY);
-        this.parseSection(framework, compositionRuleSection, ParserState.COMPOSITION_RULE);
-
-        if (addDummies) {
-            framework.addDummyRulesIfNecessary();
-        }
-
-        return framework;
     }
 
     private void parseSection(final FrameworkRepresentation framework, final List<String> lines,

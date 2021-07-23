@@ -20,6 +20,7 @@ import com.fr2501.virage.types.CompositionRule;
 /**
  * This class is meant to translate single proof steps into Isabelle syntax.
  *
+ * @author VeriVote
  */
 public class IsabelleProofStepGenerator {
     /**
@@ -68,11 +69,11 @@ public class IsabelleProofStepGenerator {
     /**
      * Simple constructor.
      *
-     * @param parent the corresponding proof generator
-     * @param functionsAndDefinitions set of all functions and definitions in parent's session
+     * @param parentValue the corresponding proof generator
+     * @param functionsAndDefinitionsValue set of all functions and definitions in parent's session
      */
-    public IsabelleProofStepGenerator(final IsabelleProofGenerator parent,
-            final Map<String, String> functionsAndDefinitions) {
+    public IsabelleProofStepGenerator(final IsabelleProofGenerator parentValue,
+            final Map<String, String> functionsAndDefinitionsValue) {
         if (proofStepTemplate.isEmpty()) {
             final InputStream proofStepTemplateStream = this.getClass().getClassLoader()
                     .getResourceAsStream("proof_step.template");
@@ -86,9 +87,9 @@ public class IsabelleProofStepGenerator {
             proofStepTemplate = writer.toString();
         }
 
-        this.functionsAndDefinitions = functionsAndDefinitions;
+        this.functionsAndDefinitions = functionsAndDefinitionsValue;
         this.parser = new SimplePrologParser();
-        this.parent = parent;
+        this.parent = parentValue;
     }
 
     /**

@@ -26,6 +26,7 @@ import com.fr2501.virage.types.Property;
 /**
  * Extracts a {@link FrameworkRepresentation} from an Isabelle session.
  *
+ * @author VeriVote
  */
 public final class IsabelleFrameworkExtractor {
     /**
@@ -74,7 +75,8 @@ public final class IsabelleFrameworkExtractor {
         for (final String thyName : compsRaw.keySet()) {
             final Map<String, String> currentThyContent = compsRaw.get(thyName);
 
-            for (String compName : currentThyContent.keySet()) {
+            for (final String compNameIterated : currentThyContent.keySet()) {
+                String compName = compNameIterated;
                 final String typeString = currentThyContent.get(compName);
                 compName = compName.replace(thyName.split("\\.")[1] + ".", "");
 

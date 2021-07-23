@@ -5,6 +5,7 @@ import java.util.Map;
 /**
  * Is raised whenever the Isabelle CLI throws errors.
  *
+ * @author VeriVote
  */
 public class IsabelleErrorEvent extends IsabelleEvent {
     /**

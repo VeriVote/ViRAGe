@@ -8,6 +8,7 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 /**
  * A parser for the extended Prolog format developed for representation of the modular framework.
  *
+ * @author VeriVote
  */
 public interface ExtendedPrologParser {
     /**

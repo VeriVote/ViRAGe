@@ -167,9 +167,12 @@ public abstract class VirageJob<T> {
         String res = "----------- " + this.getClass().getCanonicalName() + System.lineSeparator();
         res += "ID: " + this.id + System.lineSeparator();
 
-        res += "Issued: " + Instant.ofEpochMilli(this.timeIssued).toString() + System.lineSeparator();
-        res += "Started: " + Instant.ofEpochMilli(this.timeStarted).toString() + System.lineSeparator();
-        res += "Finished: " + Instant.ofEpochMilli(this.timeFinished).toString() + System.lineSeparator();
+        res += "Issued: " + Instant.ofEpochMilli(this.timeIssued).toString()
+                + System.lineSeparator();
+        res += "Started: " + Instant.ofEpochMilli(this.timeStarted).toString()
+                + System.lineSeparator();
+        res += "Finished: " + Instant.ofEpochMilli(this.timeFinished).toString()
+                + System.lineSeparator();
         res += "Time elapsed: " + (this.timeFinished - this.timeStarted) + " milliseconds \n";
         res += "-----\n";
         res += "State: " + this.state + System.lineSeparator();

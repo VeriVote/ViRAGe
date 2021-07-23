@@ -799,7 +799,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                         + ")");
             }
 
-            if (path.equals("")) {
+            if (path.isEmpty()) {
                 path = defaultPath;
             }
 

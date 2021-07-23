@@ -27,16 +27,17 @@ public final class CompositionRule implements Comparable<CompositionRule> {
     /**
      * Simple constructor.
      *
-     * @param name the name
-     * @param origin the origin
-     * @param clause the clause
+     * @param nameValue the name
+     * @param originValue the origin
+     * @param clauseValue the clause
      */
-    public CompositionRule(final String name, final String origin, final PrologClause clause) {
-        this.name = name;
-        this.origin = origin;
+    public CompositionRule(final String nameValue, final String originValue,
+            final PrologClause clauseValue) {
+        this.name = nameValue;
+        this.origin = originValue;
 
-        clause.anonymizeSingletons();
-        this.clause = clause;
+        clauseValue.anonymizeSingletons();
+        this.clause = clauseValue;
     }
 
     @Override

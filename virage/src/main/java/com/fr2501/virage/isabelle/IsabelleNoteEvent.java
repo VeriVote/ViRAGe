@@ -6,6 +6,7 @@ import java.util.Map;
  * An {@link IsabelleEvent} raised by Isabelle for informing the user about intermediate changes,
  * e.g. progress of a command.
  *
+ * @author VeriVote
  */
 public class IsabelleNoteEvent extends IsabelleEvent {
     /**

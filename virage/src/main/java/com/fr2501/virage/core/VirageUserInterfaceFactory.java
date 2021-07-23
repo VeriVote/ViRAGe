@@ -3,6 +3,7 @@ package com.fr2501.virage.core;
 /**
  * A factory for {@link VirageUserInterface}.
  *
+ * @author VeriVote
  */
 public class VirageUserInterfaceFactory {
     /**

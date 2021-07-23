@@ -14,6 +14,7 @@ import com.fr2501.virage.types.DecompositionTree;
 /**
  * Test suite for {@link DecompositionTree}.
  *
+ * @author VeriVote
  */
 public class DecompositionTreeTest {
     /**

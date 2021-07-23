@@ -3,6 +3,7 @@ package com.fr2501.virage.prolog;
 /**
  * A simple parsing interface for handling single Prolog clauses.
  *
+ * @author VeriVote
  */
 public interface PrologParser {
     /**

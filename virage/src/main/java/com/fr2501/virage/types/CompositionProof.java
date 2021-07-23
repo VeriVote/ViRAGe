@@ -31,27 +31,27 @@ public final class CompositionProof {
     /**
      * Simple constructor for a terminal proof step.
      *
-     * @param goal the goal
-     * @param rule the rule
+     * @param goalValue the goal
+     * @param ruleValue the rule
      */
-    public CompositionProof(final String goal, final CompositionRule rule) {
-        this.goal = goal;
+    public CompositionProof(final String goalValue, final CompositionRule ruleValue) {
+        this.goal = goalValue;
         this.subgoals = new LinkedList<CompositionProof>();
-        this.rule = rule;
+        this.rule = ruleValue;
     }
 
     /**
      * Simple constructor.
      *
-     * @param goal the goal
-     * @param subgoals the subgoals
-     * @param rule the rule
+     * @param goalValue the goal
+     * @param subgoalsValue the subgoals
+     * @param ruleValue the rule
      */
-    public CompositionProof(final String goal, final List<CompositionProof> subgoals,
-            final CompositionRule rule) {
-        this.goal = goal;
-        this.subgoals = subgoals;
-        this.rule = rule;
+    public CompositionProof(final String goalValue, final List<CompositionProof> subgoalsValue,
+            final CompositionRule ruleValue) {
+        this.goal = goalValue;
+        this.subgoals = subgoalsValue;
+        this.rule = ruleValue;
     }
 
     /**
@@ -79,8 +79,8 @@ public final class CompositionProof {
         final Set<String> origins = new HashSet<String>();
 
         final Set<CompositionRule> allRules = this.getAllCompositionRules();
-        for (final CompositionRule rule : allRules) {
-            origins.add(rule.getOrigin());
+        for (final CompositionRule localRule : allRules) {
+            origins.add(localRule.getOrigin());
         }
 
         return origins;
@@ -122,13 +122,13 @@ public final class CompositionProof {
     /**
      * Assigns a unique id to each step of the proof.
      *
-     * @param id the id
+     * @param newId the id
      */
-    public void setId(final String id) {
-        this.id = id;
+    public void setId(final String newId) {
+        this.id = newId;
 
         for (int i = 0; i < this.subgoals.size(); i++) {
-            this.subgoals.get(i).setId(id + i);
+            this.subgoals.get(i).setId(newId + i);
         }
     }
 

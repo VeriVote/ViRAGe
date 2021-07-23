@@ -2,6 +2,8 @@ package com.fr2501.virage.types;
 
 /**
  * Typed parts of the framework.
+ *
+ * @author VeriVote
  */
 public interface Typed {
     /**

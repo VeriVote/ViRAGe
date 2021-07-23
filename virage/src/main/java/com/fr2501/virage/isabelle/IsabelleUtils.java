@@ -12,6 +12,7 @@ import com.fr2501.virage.prolog.PrologPredicate;
 /**
  * This class contains some useful utility functions for interaction with Isabelle.
  *
+ * @author VeriVote
  */
 public class IsabelleUtils {
     /**

@@ -3,6 +3,7 @@ package com.fr2501.virage.types;
 /**
  * An exception signalling missing external software.
  *
+ * @author VeriVote
  */
 public class ExternalSoftwareUnavailableException extends Exception {
 

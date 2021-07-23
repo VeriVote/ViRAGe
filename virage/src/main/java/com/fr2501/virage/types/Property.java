@@ -7,6 +7,7 @@ import com.fr2501.util.StringUtils;
 /**
  * Represents a property defined in the modular framework.
  *
+ * @author VeriVote
  */
 public final class Property implements Parameterized {
     /**

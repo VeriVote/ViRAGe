@@ -96,10 +96,10 @@ public final class FrameworkRepresentation {
     /**
      * Simple constructor.
      *
-     * @param absolutePath path to the EPL file
+     * @param absolutePathValue path to the EPL file
      */
-    public FrameworkRepresentation(final String absolutePath) {
-        this.absolutePath = absolutePath;
+    public FrameworkRepresentation(final String absolutePathValue) {
+        this.absolutePath = absolutePathValue;
 
         this.componentTypes = new HashSet<ComponentType>();
         this.components = new HashSet<Component>();
@@ -387,34 +387,34 @@ public final class FrameworkRepresentation {
         return this.typeSynonyms;
     }
 
-    public void setAbsolutePath(final String absolutePath) {
-        this.absolutePath = absolutePath;
+    public void setAbsolutePath(final String newAbsolutePath) {
+        this.absolutePath = newAbsolutePath;
     }
 
     public void setAlias(final String alias) {
         this.composableModuleAlias = alias;
     }
 
-    public void setSessionName(final String sessionName) {
-        this.sessionName = sessionName;
+    public void setSessionName(final String newSessionName) {
+        this.sessionName = newSessionName;
     }
 
     /**
      * Simple setter.
-     * @param theoryPath the theory path.
+     * @param newTheoryPath the theory path.
      */
-    public void setTheoryPath(final String theoryPath) {
-        String theoryPathCopy = theoryPath;
+    public void setTheoryPath(final String newTheoryPath) {
+        String theoryPathCopy = newTheoryPath;
 
-        if (!theoryPath.endsWith(File.separator)) {
-            theoryPathCopy = theoryPath + File.separator;
+        if (!newTheoryPath.endsWith(File.separator)) {
+            theoryPathCopy = newTheoryPath + File.separator;
         }
 
         this.theoryPath = theoryPathCopy;
     }
 
-    public void setTypeSynonyms(final List<Pair<String, String>> typeSynonyms) {
-        this.typeSynonyms = typeSynonyms;
+    public void setTypeSynonyms(final List<Pair<String, String>> newTypeSynonyms) {
+        this.typeSynonyms = newTypeSynonyms;
     }
 
     /**
@@ -427,7 +427,8 @@ public final class FrameworkRepresentation {
 
         String res = this.createHeader();
 
-        res += "% ==== " + this.theoryPath + "ROOT" + " - " + this.sessionName + System.lineSeparator();
+        res += "% ==== " + this.theoryPath + "ROOT" + " - "
+                + this.sessionName + System.lineSeparator();
 
         res += "%\n";
 

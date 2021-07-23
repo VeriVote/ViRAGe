@@ -3,9 +3,12 @@ package com.fr2501.virage.core;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fr2501.util.SystemUtils;
+
 /**
  * The main entry point.
  *
+ * @author VeriVote
  */
 public class VirageMain {
     /**
@@ -25,7 +28,7 @@ public class VirageMain {
             coreThread.start();
 
             while (true) {
-                // NO-OP
+                SystemUtils.semiBusyWaitingHelper();
             }
             // Last point of failure, no idea what is thrown this far.
             // If this is ever executed, something has gone so wrong

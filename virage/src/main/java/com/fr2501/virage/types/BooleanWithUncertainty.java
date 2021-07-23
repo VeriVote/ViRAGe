@@ -2,6 +2,8 @@ package com.fr2501.virage.types;
 
 /**
  * A type to represent logical values of different confidence levels.
+ *
+ * @author VeriVote
  */
 public enum BooleanWithUncertainty {
     /**

@@ -32,6 +32,7 @@ import com.fr2501.virage.types.ValueNotPresentException;
 /**
  * Tests that each implementation of {@link CompositionAnalyzer} must pass.
  *
+ * @author VeriVote
  */
 public abstract class CompositionAnalyzerTest {
     /**
@@ -85,8 +86,8 @@ public abstract class CompositionAnalyzerTest {
     public void testSequentialMajorityComparison()
             throws ValueNotPresentException, IOException, ExternalSoftwareUnavailableException {
         LOGGER.info("testSequentialMajorityComparison()");
-        final String smc = "sequential_composition(" + "loop_composition(" + "parallel_composition("
-                + "sequential_composition(" + "pass_module(2,_)," + "sequential_composition("
+        final String smc = "sequential_composition(loop_composition(" + "parallel_composition("
+                + "sequential_composition(" + "pass_module(2,_),sequential_composition("
                 + "revision_composition(" + "plurality)," + "pass_module(1,_))),"
                 + "drop_module(2,_)," + "max_aggregator)," + "defer_equal_condition(1)),"
                 + "elect_module)";
@@ -120,18 +121,18 @@ public abstract class CompositionAnalyzerTest {
     @Test
     public void testRandomPropertySets() throws IOException, ExternalSoftwareUnavailableException {
         LOGGER.info("testRandomPropertySets()");
-        final int _runs = 100;
-        final int _timeout = 10;
+        final int runs = 100;
+        final int timeout = 10;
 
         int success = 0;
-        int timeout = 0;
+        int timeouts = 0;
         int failure = 0;
         int error = 0;
 
         final CompositionAnalyzer analyzer = this.createInstance();
-        analyzer.setTimeout(_timeout);
+        analyzer.setTimeout(timeout);
 
-        for (int i = 0; i < _runs; i++) {
+        for (int i = 0; i < runs; i++) {
             final int amount = (int) (5 * Math.random()) + 1;
 
             final List<Property> properties = this.generator
@@ -146,7 +147,7 @@ public abstract class CompositionAnalyzerTest {
                 LOGGER.debug("Result: " + result.getValue().toString());
             } else {
                 if (result.getState() == QueryState.TIMEOUT) {
-                    timeout++;
+                    timeouts++;
                     LOGGER.debug("Query timed out.");
                 } else if (result.getState() == QueryState.FAILED) {
                     failure++;
@@ -159,9 +160,9 @@ public abstract class CompositionAnalyzerTest {
         }
 
         LOGGER.debug("\nSucceeded:\t" + success + "\nFailed:\t\t" + failure + "\nTimed out:\t"
-                + timeout + "\nErrors:\t\t" + error);
+                + timeouts + "\nErrors:\t\t" + error);
 
-        if (failure == 100 || success == 100 || timeout == 100) {
+        if (failure == 100 || success == 100 || timeouts == 100) {
             LOGGER.warn("A highly unlikely result occured in the test.\n"
                     + "This might happen by (a very small) chance, "
                     + "so rerunning the test might help.\n"
@@ -184,11 +185,11 @@ public abstract class CompositionAnalyzerTest {
                 this.framework);
         final CompositionAnalyzer self = this.createInstance();
 
-        final int _runs = 100;
-        final int _timeout = 10;
+        final int runs = 100;
+        final int timeout = 10;
 
-        spca.setTimeout(_timeout);
-        self.setTimeout(_timeout);
+        spca.setTimeout(timeout);
+        self.setTimeout(timeout);
 
         int conflicts = 0;
         int errors = 0;
@@ -201,7 +202,7 @@ public abstract class CompositionAnalyzerTest {
         int selfFailure = 0;
         int trustedFailure = 0;
 
-        for (int i = 0; i < _runs; i++) {
+        for (int i = 0; i < runs; i++) {
             final int amount = (int) (3 * Math.random()) + 1;
 
             final List<Property> properties = this.generator
@@ -291,7 +292,8 @@ public abstract class CompositionAnalyzerTest {
         // Prolog variable names are not always the same.
         final String proofString = proof.get(0).toString().replaceAll("_[0-9]+", "R");
 
-        final String reference = ": monotonicity(sequential_composition(pass_module(1,R),elect_module)) "
+        final String reference =
+                ": monotonicity(sequential_composition(pass_module(1,R),elect_module)) "
                 + "by seq_comp_mono\n"
                 + "\t: defer_lift_invariance(pass_module(1,R)) by pass_mod_dl_inv\n"
                 + "\t: non_electing(pass_module(1,R)) by pass_mod_non_electing\n"

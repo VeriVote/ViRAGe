@@ -13,6 +13,7 @@ import com.fr2501.virage.types.ValueNotPresentException;
 /**
  * Tests suite for {@link SimplePrologCompositionAnalyzer}.
  *
+ * @author VeriVote
  */
 public final class SimplePrologCompositionAnalyzerTest extends CompositionAnalyzerTest {
     /**

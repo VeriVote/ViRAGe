@@ -14,6 +14,7 @@ import com.fr2501.virage.types.Property;
 /**
  * A {@link VirageJob} used to prove claims about properties of compositions.
  *
+ * @author VeriVote
  */
 public final class VirageProveJob
         extends VirageJobWithExplicitResult<List<List<CompositionProof>>> {

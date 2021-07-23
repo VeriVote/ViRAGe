@@ -5,6 +5,7 @@ import java.util.Map;
 /**
  * A class to represent the events raised by the Isabelle CLI.
  *
+ * @author VeriVote
  */
 public abstract class IsabelleEvent {
     /**
@@ -14,10 +15,10 @@ public abstract class IsabelleEvent {
 
     /**
      * Simple constructor.
-     * @param parameters the parameters.
+     * @param parametersValue the parameters.
      */
-    public IsabelleEvent(final Map<String, String> parameters) {
-        this.parameters = parameters;
+    public IsabelleEvent(final Map<String, String> parametersValue) {
+        this.parameters = parametersValue;
     }
 
     /**

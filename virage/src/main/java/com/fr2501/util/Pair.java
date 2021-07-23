@@ -3,8 +3,11 @@ package com.fr2501.util;
 /**
  * Simple wrapper for a pair of two values.
  *
+ * @author VeriVote
+ *
  * @param <S> type of the first value
  * @param <T> type of the second value
+ *
  */
 public final class Pair<S, T> {
     /**
@@ -36,8 +39,8 @@ public final class Pair<S, T> {
 
     @Override
     public String toString() {
-        String first = "null";
-        String second = "null";
+        String first = "";
+        String second = "";
 
         if (this.firstValue != null) {
             first = this.firstValue.toString();

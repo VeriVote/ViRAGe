@@ -3,6 +3,7 @@ package com.fr2501.virage.core;
 /**
  * Collection of Strings required by ViRAGe.
  *
+ * @author VeriVote
  */
 public class VirageStrings {
     /**

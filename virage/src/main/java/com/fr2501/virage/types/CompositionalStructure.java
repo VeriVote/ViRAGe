@@ -7,6 +7,7 @@ import com.fr2501.util.StringUtils;
 /**
  * A compositional structure for the modular framework.
  *
+ * @author VeriVote
  */
 @Deprecated
 public final class CompositionalStructure implements TypedAndParameterized {
@@ -25,15 +26,15 @@ public final class CompositionalStructure implements TypedAndParameterized {
 
     /**
      * Simple constructor.
-     * @param name the name
-     * @param type the type
-     * @param parameters the parameters
+     * @param nameValue the name
+     * @param typeValue the type
+     * @param parametersValue the parameters
      */
-    public CompositionalStructure(final String name, final ComponentType type,
-            final List<ComponentType> parameters) {
-        this.name = name;
-        this.parameters = parameters;
-        this.type = type;
+    public CompositionalStructure(final String nameValue, final ComponentType typeValue,
+            final List<ComponentType> parametersValue) {
+        this.name = nameValue;
+        this.parameters = parametersValue;
+        this.type = typeValue;
     }
 
     public String getName() {

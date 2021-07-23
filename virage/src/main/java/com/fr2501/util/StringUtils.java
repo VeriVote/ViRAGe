@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 /**
  * A collection of useful String utilities.
  *
+ * @author VeriVote
  */
 public class StringUtils {
 

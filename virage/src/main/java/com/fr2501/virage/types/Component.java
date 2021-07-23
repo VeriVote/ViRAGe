@@ -8,20 +8,21 @@ import com.fr2501.util.StringUtils;
 /**
  * A component of the modular framework (e.g. composable modules, aggregators ...)
  *
+ * @author VeriVote
  */
 public class Component implements TypedAndParameterized {
     /**
      * The type.
      */
-    private final ComponentType type;
+    private final ComponentType typeField;
     /**
      * The name.
      */
-    private final String name;
+    private final String nameField;
     /**
      * The list of parameter types.
      */
-    private final List<ComponentType> parameters;
+    private final List<ComponentType> parametersField;
 
     /**
      * Simple constructor for components without parameters.
@@ -42,9 +43,9 @@ public class Component implements TypedAndParameterized {
      */
     public Component(final ComponentType type, final String name,
             final List<ComponentType> parameters) {
-        this.type = type;
-        this.name = name;
-        this.parameters = parameters;
+        this.typeField = type;
+        this.nameField = name;
+        this.parametersField = parameters;
     }
 
     /**
@@ -52,7 +53,7 @@ public class Component implements TypedAndParameterized {
      * @return the name
      */
     public String getName() {
-        return this.name;
+        return this.nameField;
     }
 
     /**
@@ -60,7 +61,7 @@ public class Component implements TypedAndParameterized {
      */
     @Override
     public List<ComponentType> getParameters() {
-        return this.parameters;
+        return this.parametersField;
     }
 
     /**
@@ -68,7 +69,7 @@ public class Component implements TypedAndParameterized {
      */
     @Override
     public ComponentType getType() {
-        return this.type;
+        return this.typeField;
     }
 
     /**
@@ -76,8 +77,8 @@ public class Component implements TypedAndParameterized {
      */
     @Override
     public String toString() {
-        final String res = "(" + this.type + ") " + this.name + "("
-                + StringUtils.printCollection(this.parameters) + ")";
+        final String res = "(" + this.typeField + ") " + this.nameField + "("
+                + StringUtils.printCollection(this.parametersField) + ")";
 
         return res;
     }
@@ -88,7 +89,8 @@ public class Component implements TypedAndParameterized {
      * @return a string representation of this
      */
     public String toStringWithoutTypeSignature() {
-        final String res = this.name + "(" + StringUtils.printCollection(this.parameters) + ")";
+        final String res = this.nameField + "("
+                + StringUtils.printCollection(this.parametersField) + ")";
 
         return res;
     }

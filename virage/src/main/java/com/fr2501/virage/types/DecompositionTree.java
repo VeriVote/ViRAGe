@@ -9,6 +9,7 @@ import com.fr2501.virage.prolog.PrologPredicate;
 /**
  * A class for representing decomposition trees.
  *
+ * @author VeriVote
  */
 public final class DecompositionTree {
     /**
@@ -28,46 +29,45 @@ public final class DecompositionTree {
      * Simple constructor.
      * <b>This is very easy to confuse with DecompositionTree.parseString.
      * Use DecompositionTree(label, new LinkedList...) instead.</b>
-     * @param label the label
+     * @param labelValue the label
      */
     @Deprecated
-    public DecompositionTree(final String label) {
-        this(label, new LinkedList<DecompositionTree>());
+    public DecompositionTree(final String labelValue) {
+        this(labelValue, new LinkedList<DecompositionTree>());
     }
 
     /**
      * Simple constructor for trees with only one child.
      *
-     * @param label the label
+     * @param labelValue the label
      * @param child the child
      */
-    public DecompositionTree(final String label, final DecompositionTree child) {
-        final List<DecompositionTree> children = new LinkedList<DecompositionTree>();
-        children.add(child);
+    public DecompositionTree(final String labelValue, final DecompositionTree child) {
+        this.children = new LinkedList<DecompositionTree>();
+        this.children.add(child);
 
-        this.label = label;
+        this.label = labelValue;
         this.arity = 1;
-        this.children = children;
     }
 
     /**
      * Simple constructor.
      *
-     * @param label the label
-     * @param children the children
+     * @param labelValue the label
+     * @param childrenValue the children
      */
-    public DecompositionTree(final String label, final List<DecompositionTree> children) {
-        this.label = label;
-        this.arity = children.size();
-        this.children = children;
+    public DecompositionTree(final String labelValue, final List<DecompositionTree> childrenValue) {
+        this.label = labelValue;
+        this.arity = childrenValue.size();
+        this.children = childrenValue;
     }
 
     /**
      * Creates a DecompositionTree object from a string in bracket notation.
      *
      * @param passedString the string
-     *
      * @return a DecompositionTree representing s
+     * @throws IllegalArgumentException if bracket expression is invalid
      */
     public static DecompositionTree parseString(final String passedString) {
         final String s = StringUtils.removeWhitespace(passedString);

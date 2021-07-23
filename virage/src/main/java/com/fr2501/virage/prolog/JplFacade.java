@@ -29,6 +29,7 @@ import com.fr2501.virage.types.ValueNotPresentException;
 /**
  * A class used to interface with JPL7.
  *
+ * @author VeriVote
  */
 public final class JplFacade {
     /**
@@ -105,10 +106,12 @@ public final class JplFacade {
             compatQuery.hasSolution();
         } catch (final JPLException e) {
             LOGGER.warn("Outdated version of SWI-Prolog detected. "
-                    + "ViRAGe attempts to run in compatibility mode, but results might be unexpected. "
+                    + "ViRAGe attempts to run in compatibility mode, "
+                    + "but results might be unexpected. "
                     + "Especially, queries that result in Prolog terms containing variables will "
                     + "always fail.\n"
-                    + "Please consider upgrading to SWI-Prolog 8.0.0 or newer to avoid this in the future.");
+                    + "Please consider upgrading to SWI-Prolog 8.0.0 "
+                    + "or newer to avoid this in the future.");
             this.compatibilityMode = true;
         }
     }
@@ -473,8 +476,10 @@ public final class JplFacade {
                 } catch (final JPLException e) {
                     if (this.compatibilityMode) {
                         LOGGER.error(
-                                "The JPL/SWI-Prolog compatibility mode was unable to handle this query. "
-                                        + "Please consider upgrading at least to SWI-Prolog 8.0.0.");
+                                "The JPL/SWI-Prolog compatibility mode "
+                                        + "was unable to handle this query. "
+                                        + "Please consider upgrading at least to SWI-Prolog "
+                                        + "8.0.0.");
 
                         throw e;
                     }

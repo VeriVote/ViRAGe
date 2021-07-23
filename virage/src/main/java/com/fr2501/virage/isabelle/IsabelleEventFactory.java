@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * A factory for Isabelle events, parses the Strings given by the Isabelle CLI.
  *
+ * @author VeriVote
  */
 public class IsabelleEventFactory {
     /**

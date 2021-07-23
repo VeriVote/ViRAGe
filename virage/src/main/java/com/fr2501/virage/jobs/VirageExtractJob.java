@@ -10,6 +10,7 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
 /**
  * A {@link VirageJob} to extract a {@link FrameworkRepresentation} from an Isabelle session.
  *
+ * @author VeriVote
  */
 public final class VirageExtractJob extends VirageJobWithExplicitResult<FrameworkRepresentation> {
     /**

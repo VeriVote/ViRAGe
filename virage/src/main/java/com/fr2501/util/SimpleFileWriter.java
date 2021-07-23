@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Utility class to write files line by line.
  *
+ * @author VeriVote
  */
 public class SimpleFileWriter {
     /**

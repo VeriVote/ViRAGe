@@ -12,6 +12,7 @@ import com.fr2501.virage.types.SearchResult;
  * The interface defining the methods required for analyzing and generating compositions (e.g.
  * voting rules)
  *
+ * @author VeriVote
  */
 public interface CompositionAnalyzer {
     /**

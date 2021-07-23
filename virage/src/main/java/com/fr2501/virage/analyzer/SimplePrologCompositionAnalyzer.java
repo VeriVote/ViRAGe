@@ -27,6 +27,7 @@ import com.fr2501.virage.types.ValueNotPresentException;
 /**
  * Simple implementation of the {@link CompositionAnalyzer}, using Prolog with iterative deepening.
  *
+ * @author VeriVote
  */
 public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
     /**
@@ -69,10 +70,14 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
         this.consultKnowledgeBase();
     }
 
+    /**
+     * Safe to override.
+     */
     @Override
     public List<SearchResult<BooleanWithUncertainty>> analyzeComposition(
             final DecompositionTree composition, final List<Property> properties) {
-        final List<SearchResult<BooleanWithUncertainty>> result = new LinkedList<SearchResult<BooleanWithUncertainty>>();
+        final List<SearchResult<BooleanWithUncertainty>> result =
+                new LinkedList<SearchResult<BooleanWithUncertainty>>();
 
         for (final Property property : properties) {
             if (property.getArity() != 1) {
@@ -108,6 +113,9 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
         return result;
     }
 
+    /**
+     * Safe to override.
+     */
     @Override
     public SearchResult<DecompositionTree> generateComposition(final List<Property> properties) {
         for (final Property property : properties) {
@@ -204,6 +212,9 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
         return res;
     }
 
+    /**
+     * Safe to override.
+     */
     @Override
     public void setTimeout(final long millis) {
         this.facade.setTimeout(millis);

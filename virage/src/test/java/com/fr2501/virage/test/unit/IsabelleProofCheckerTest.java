@@ -35,6 +35,7 @@ import com.fr2501.virage.types.SearchResult;
 /**
  * Test suite for {@link IsabelleProofChecker}.
  *
+ * @author VeriVote
  */
 public final class IsabelleProofCheckerTest {
     /**
@@ -189,30 +190,32 @@ public final class IsabelleProofCheckerTest {
     // @Test
     public void testRandomPropertySets() throws Exception {
         LOGGER.info("testRandomPropertySets()");
-        final int _runs = 3;
-        final int _timeout = 10;
+        final int runs = 3;
+        final int timeout = 10;
 
         int success = 0;
-        int timeout = 0;
+        int timeouts = 0;
         int failure = 0;
         int error = 0;
 
-        final CompositionAnalyzer analyzer = new AdmissionCheckPrologCompositionAnalyzer(
+        final CompositionAnalyzer localAnalyzer = new AdmissionCheckPrologCompositionAnalyzer(
                 this.framework);
-        analyzer.setTimeout(_timeout);
+        localAnalyzer.setTimeout(timeout);
 
         final IsabelleProofChecker checker = IsabelleProofChecker
                 .getInstance(this.framework.getSessionName(), this.framework.getTheoryPath());
 
-        for (int i = 0; i < _runs; i++) {
+        for (int i = 0; i < runs; i++) {
             final int amount = (int) (5 * Math.random()) + 1;
 
-            final TestDataGenerator generator = new TestDataGenerator(this.framework);
-            final List<Property> properties = generator.getRandomComposableModuleProperties(amount);
+            final TestDataGenerator localGenerator = new TestDataGenerator(this.framework);
+            final List<Property> properties =
+                    localGenerator.getRandomComposableModuleProperties(amount);
 
             LOGGER.debug("Query: " + StringUtils.printCollection(properties));
 
-            final SearchResult<DecompositionTree> result = analyzer.generateComposition(properties);
+            final SearchResult<DecompositionTree> result =
+                    localAnalyzer.generateComposition(properties);
 
             if (result.hasValue()) {
                 success++;
@@ -222,7 +225,7 @@ public final class IsabelleProofCheckerTest {
                 checker.verifyTheoryFile(this.file, this.framework);
             } else {
                 if (result.getState() == QueryState.TIMEOUT) {
-                    timeout++;
+                    timeouts++;
                     LOGGER.debug("Query timed out.");
                 } else if (result.getState() == QueryState.FAILED) {
                     failure++;
@@ -235,11 +238,12 @@ public final class IsabelleProofCheckerTest {
         }
 
         LOGGER.debug("\nSucceeded:\t" + success + "\nFailed:\t\t" + failure + "\nTimed out:\t"
-                + timeout + "\nErrors:\t\t" + error);
+                + timeouts + "\nErrors:\t\t" + error);
 
-        if (failure == 100 || success == 100 || timeout == 100) {
+        if (failure == 100 || success == 100 || timeouts == 100) {
             LOGGER.warn("A highly unlikely result occured in the test.\n"
-                    + "This might happen by (a very small) chance, so rerunning the test might help.\n"
+                    + "This might happen by (a very small) chance, "
+                    + "so rerunning the test might help.\n"
                     + "If the problem persists, something has gone wrong.");
             fail();
         }

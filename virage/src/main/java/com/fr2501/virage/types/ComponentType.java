@@ -2,6 +2,8 @@ package com.fr2501.virage.types;
 
 /**
  * A type for components of the modular framework.
+ *
+ * @author VeriVote
  */
 public class ComponentType {
     /**
@@ -11,10 +13,10 @@ public class ComponentType {
 
     /**
      * Simple constructor.
-     * @param name the name
+     * @param nameValue the name
      */
-    public ComponentType(final String name) {
-        this.name = name;
+    public ComponentType(final String nameValue) {
+        this.name = nameValue;
     }
 
     /**

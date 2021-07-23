@@ -9,6 +9,7 @@ import com.fr2501.virage.core.VirageUserInterface;
 /**
  * A {@link VirageJob} used to invoke Isabelle code generation.
  *
+ * @author VeriVote
  */
 public final class VirageGenerateCCodeJob extends VirageJobWithExplicitResult<File> {
     /**

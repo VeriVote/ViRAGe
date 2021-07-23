@@ -728,7 +728,8 @@ public final class ConfigReader {
 
     private void updateValue(final String name, final String newValue) {
         final Parameters params = new Parameters();
-        final FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
+        final FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
+                new FileBasedConfigurationBuilder<FileBasedConfiguration>(
                 PropertiesConfiguration.class)
                 .configure(params.properties().setFileName(configPath));
         final Configuration config;

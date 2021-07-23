@@ -6,8 +6,15 @@ import java.util.List;
 /**
  * A simple data object to contain a single Prolog predicate and its parameters.
  *
+ * @author VeriVote
  */
 public final class PrologPredicate {
+
+    /**
+     * Name of anonymous variables in Prolog.
+     */
+    public static final String ANONYMOUS = "_";
+
     /**
      * The name.
      */
@@ -56,12 +63,88 @@ public final class PrologPredicate {
     }
 
     /**
+     * Returns all children of a predicate.
+     *
+     * @return the children
+     */
+    public List<PrologPredicate> getAllChildren() {
+        final List<PrologPredicate> res = new LinkedList<PrologPredicate>();
+        res.add(this);
+
+        for (final PrologPredicate child : this.parameters) {
+            res.addAll(child.getAllChildren());
+        }
+
+        return res;
+    }
+
+    public int getArity() {
+        return this.arity;
+    }
+
+    public int getDepth() {
+        return this.depth;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public List<PrologPredicate> getParameters() {
+        return this.parameters;
+    }
+
+    /**
+     * Checks whether a PrologPredicate is a variable.
+     *
+     * @return true if this is a variable, false otherwise
+     */
+    public boolean isVariable() {
+        return PrologPredicate.isVariable(this.name);
+    }
+
+    /**
      * Checks whether a string represents a Prolog variable.
      * @param s the string
      * @return true if s is a Prolog variable name, false otherwise
      */
     public static boolean isVariable(final String s) {
         return s.matches("[A-Z_][a-zA-Z_0-9]*");
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.arity;
+        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        result = prime * result + ((this.parameters == null) ? 0 : this.parameters.hashCode());
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        String res = "";
+
+        res += this.name;
+        if (this.arity > 0) {
+            res += "(";
+
+            for (int i = 0; i < this.arity; i++) {
+                res += this.parameters.get(i).toString();
+                if (i < this.arity - 1) {
+                    res += ",";
+                }
+            }
+
+            res += ")";
+        }
+
+        return res;
     }
 
     @Override
@@ -103,81 +186,5 @@ public final class PrologPredicate {
         }
 
         return true;
-    }
-
-    /**
-     * Returns all children of a predicate.
-     *
-     * @return the children
-     */
-    public List<PrologPredicate> getAllChildren() {
-        final List<PrologPredicate> res = new LinkedList<PrologPredicate>();
-        res.add(this);
-
-        for (final PrologPredicate child : this.parameters) {
-            res.addAll(child.getAllChildren());
-        }
-
-        return res;
-    }
-
-    public int getArity() {
-        return this.arity;
-    }
-
-    public int getDepth() {
-        return this.depth;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public List<PrologPredicate> getParameters() {
-        return this.parameters;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.arity;
-        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-        result = prime * result + ((this.parameters == null) ? 0 : this.parameters.hashCode());
-        return result;
-    }
-
-    /**
-     * Checks whether a PrologPredicate is a variable.
-     *
-     * @return true if this is a variable, false otherwise
-     */
-    public boolean isVariable() {
-        return PrologPredicate.isVariable(this.name);
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        String res = "";
-
-        res += this.name;
-        if (this.arity > 0) {
-            res += "(";
-
-            for (int i = 0; i < this.arity; i++) {
-                res += this.parameters.get(i).toString();
-                if (i < this.arity - 1) {
-                    res += ",";
-                }
-            }
-
-            res += ")";
-        }
-
-        return res;
     }
 }

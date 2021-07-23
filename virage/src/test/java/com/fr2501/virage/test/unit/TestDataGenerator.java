@@ -10,6 +10,7 @@ import com.fr2501.virage.types.Property;
 /**
  * Creates different kinds of test data.
  *
+ * @author VeriVote
  */
 public class TestDataGenerator {
     /**

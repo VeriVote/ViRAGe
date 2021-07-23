@@ -33,6 +33,7 @@ import com.fr2501.virage.types.Parameterized;
  * Generates a complete Isabelle theory file containing a module definition and (possibly) several
  * proofs.
  *
+ * @author VeriVote
  */
 public final class IsabelleTheoryGenerator {
     /**
@@ -112,20 +113,20 @@ public final class IsabelleTheoryGenerator {
 
     /**
      * Simple constructor.
-     * @param framework the compositional framework
+     * @param frameworkValue the compositional framework
      */
-    public IsabelleTheoryGenerator(final FrameworkRepresentation framework) {
-        this(framework.getTheoryPath(), framework);
+    public IsabelleTheoryGenerator(final FrameworkRepresentation frameworkValue) {
+        this(frameworkValue.getTheoryPath(), frameworkValue);
     }
 
     /**
      * Simple constructor.
      *
      * @param theoryPath the path of the generated theory
-     * @param framework the framework representation
+     * @param frameworkValue the framework representation
      */
     public IsabelleTheoryGenerator(final String theoryPath,
-            final FrameworkRepresentation framework) {
+            final FrameworkRepresentation frameworkValue) {
         if (theoryTemplate.isEmpty()) {
             final InputStream theoryTemplateStream = this.getClass().getClassLoader()
                     .getResourceAsStream("theory.template");
@@ -146,7 +147,7 @@ public final class IsabelleTheoryGenerator {
             LOGGER.error("Something went wrong.", e);
         }
 
-        this.framework = framework;
+        this.framework = frameworkValue;
         this.generator = new IsabelleProofGenerator(this, this.functionsAndDefinitions);
         this.parser = new SimplePrologParser();
         this.typedVariables = new HashMap<String, String>();
@@ -207,13 +208,13 @@ public final class IsabelleTheoryGenerator {
      *
      * @param passedComposition the composition
      * @param proofs proofs for all the claimed properties
-     * @param passedOutputPath a path to the folder to which the result shall be written. If path points
-     *      to a file, this file will be overwritten and the name will most probably not correspond to
-     *      the theory inside, so Isabelle won't be able to verify it.
+     * @param passedOutputPath a path to the folder to which the result shall be written. If path
+     *     points to a file, this file will be overwritten and the name will most probably not
+     *     correspond to the theory inside, so Isabelle won't be able to verify it.
      * @return the {@link File} containing the results
      */
-    public File generateTheoryFile(final String passedComposition, final List<CompositionProof> proofs,
-            final String passedOutputPath) {
+    public File generateTheoryFile(final String passedComposition,
+            final List<CompositionProof> proofs, final String passedOutputPath) {
         final String composition = StringUtils.removeWhitespace(passedComposition);
 
         this.typedVariables = new HashMap<String, String>();

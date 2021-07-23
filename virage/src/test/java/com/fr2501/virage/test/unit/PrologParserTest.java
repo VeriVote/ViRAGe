@@ -17,6 +17,7 @@ import com.fr2501.virage.prolog.SimplePrologParser;
 /**
  * Test suite for {@link PrologParser}.
  *
+ * @author VeriVote
  */
 public class PrologParserTest {
     /**
@@ -42,72 +43,65 @@ public class PrologParserTest {
     @Test
     public void testEquals() {
         LOGGER.info("testEquals()");
-        {
-            final PrologClause clause1 = new PrologClause(new PrologPredicate("a"));
-            assertTrue(clause1.equals(clause1));
-        }
 
-        {
-            final LinkedList<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
-            antecedents.add(new PrologPredicate("b"));
-            antecedents.add(new PrologPredicate("c"));
-            final PrologClause clause2 = new PrologClause(new PrologPredicate("a"), antecedents);
-            assertTrue(clause2.equals(clause2));
-        }
+        final PrologClause clause1 = new PrologClause(new PrologPredicate("a"));
+        assertTrue(clause1.equals(clause1));
 
-        {
-            final List<PrologPredicate> x = new LinkedList<PrologPredicate>();
-            x.add(new PrologPredicate("X"));
-            final List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
-            xy.add(new PrologPredicate("X"));
-            xy.add(new PrologPredicate("Y"));
+        final LinkedList<PrologPredicate> antecedents1 = new LinkedList<PrologPredicate>();
+        antecedents1.add(new PrologPredicate("b"));
+        antecedents1.add(new PrologPredicate("c"));
+        final PrologClause clause2 = new PrologClause(new PrologPredicate("a"), antecedents1);
+        assertTrue(clause2.equals(clause2));
 
-            final PrologPredicate a = new PrologPredicate("a", xy);
-            final PrologPredicate b = new PrologPredicate("b");
-            final PrologPredicate c = new PrologPredicate("c", x);
-            final PrologPredicate d = new PrologPredicate("d", xy);
+        final List<PrologPredicate> x = new LinkedList<PrologPredicate>();
+        x.add(new PrologPredicate("X"));
+        final List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
+        xy.add(new PrologPredicate("X"));
+        xy.add(new PrologPredicate("Y"));
 
-            final List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
-            antecedents.add(b);
-            antecedents.add(c);
-            antecedents.add(d);
+        final PrologPredicate a = new PrologPredicate("a", xy);
+        final PrologPredicate b = new PrologPredicate("b");
+        final PrologPredicate c = new PrologPredicate("c", x);
+        final PrologPredicate d = new PrologPredicate("d", xy);
 
-            final PrologClause clause3 = new PrologClause(a, antecedents);
-            assertTrue(clause3.equals(clause3));
-        }
+        final List<PrologPredicate> antecedents2 = new LinkedList<PrologPredicate>();
+        antecedents2.add(b);
+        antecedents2.add(c);
+        antecedents2.add(d);
 
-        {
-            final List<PrologPredicate> x = new LinkedList<PrologPredicate>();
-            x.add(new PrologPredicate("X"));
-            final List<PrologPredicate> y = new LinkedList<PrologPredicate>();
-            x.add(new PrologPredicate("Y"));
-            final List<PrologPredicate> xy = new LinkedList<PrologPredicate>();
-            xy.add(new PrologPredicate("X"));
-            xy.add(new PrologPredicate("Y"));
-            final List<PrologPredicate> x1 = new LinkedList<PrologPredicate>();
-            x1.add(new PrologPredicate("X"));
-            x1.add(new PrologPredicate("1"));
+        final PrologClause clause3 = new PrologClause(a, antecedents2);
+        assertTrue(clause3.equals(clause3));
 
-            final PrologPredicate seq = new PrologPredicate("sequential_composition", xy);
-            final PrologPredicate dli = new PrologPredicate("defer_lift_invariant", x);
-            final PrologPredicate nel = new PrologPredicate("non_electing", x);
-            final PrologPredicate ele = new PrologPredicate("electing", y);
-            final PrologPredicate def = new PrologPredicate("defers", x1);
+        final List<PrologPredicate> x2 = new LinkedList<PrologPredicate>();
+        x2.add(new PrologPredicate("X"));
+        final List<PrologPredicate> y = new LinkedList<PrologPredicate>();
+        x2.add(new PrologPredicate("Y"));
+        final List<PrologPredicate> xy2 = new LinkedList<PrologPredicate>();
+        xy2.add(new PrologPredicate("X"));
+        xy2.add(new PrologPredicate("Y"));
+        final List<PrologPredicate> x1 = new LinkedList<PrologPredicate>();
+        x1.add(new PrologPredicate("X"));
+        x1.add(new PrologPredicate("1"));
 
-            final List<PrologPredicate> param = new LinkedList<PrologPredicate>();
-            param.add(seq);
+        final PrologPredicate seq = new PrologPredicate("sequential_composition", xy2);
+        final PrologPredicate dli = new PrologPredicate("defer_lift_invariant", x2);
+        final PrologPredicate nel = new PrologPredicate("non_electing", x2);
+        final PrologPredicate ele = new PrologPredicate("electing", y);
+        final PrologPredicate def = new PrologPredicate("defers", x1);
 
-            final PrologPredicate mono = new PrologPredicate("monotone", param);
+        final List<PrologPredicate> param = new LinkedList<PrologPredicate>();
+        param.add(seq);
 
-            final List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
-            antecedents.add(dli);
-            antecedents.add(nel);
-            antecedents.add(ele);
-            antecedents.add(def);
+        final PrologPredicate mono = new PrologPredicate("monotone", param);
 
-            final PrologClause clause4 = new PrologClause(mono, antecedents);
-            assertTrue(clause4.equals(clause4));
-        }
+        final List<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
+        antecedents.add(dli);
+        antecedents.add(nel);
+        antecedents.add(ele);
+        antecedents.add(def);
+
+        final PrologClause clause4 = new PrologClause(mono, antecedents);
+        assertTrue(clause4.equals(clause4));
     }
 
     /**

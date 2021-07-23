@@ -9,6 +9,7 @@ import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 /**
  * Tests for AdmissionCheckPrologCompositionAnalyzerTest.
  *
+ * @author VeriVote
  */
 public final class AdmissionCheckPrologCompositionAnalyzerTest extends CompositionAnalyzerTest {
 

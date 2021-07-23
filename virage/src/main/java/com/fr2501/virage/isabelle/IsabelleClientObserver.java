@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Observes an Isabelle client process and creates {@link IsabelleEvent}s if necessary.
  *
+ * @author VeriVote
  */
 public final class IsabelleClientObserver implements Runnable {
     /**
@@ -39,10 +40,10 @@ public final class IsabelleClientObserver implements Runnable {
      */
     private final BufferedReader stderrReader;
 
-    private IsabelleClientObserver(final IsabelleProofChecker listener,
-            final Process isabelleClient) {
-        this.listener = listener;
-        this.isabelleClient = isabelleClient;
+    private IsabelleClientObserver(final IsabelleProofChecker listenerValue,
+            final Process isabelleClientValue) {
+        this.listener = listenerValue;
+        this.isabelleClient = isabelleClientValue;
         this.factory = new IsabelleEventFactory();
 
         this.stdoutReader = new BufferedReader(
