@@ -27,6 +27,11 @@ public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologC
     private static final Logger LOGGER = LogManager.getLogger();
 
     /**
+     * Default variable name.
+     */
+    private static final String DEFAULT_VARIABLE = "X";
+
+    /**
      * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
      *
      * @param framework the framework
@@ -75,9 +80,9 @@ public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologC
         final List<String> admitStrings = new LinkedList<String>();
         final List<String> propertyStrings = new LinkedList<String>();
         for (final Property property : properties) {
-            admitStrings.add(AdmissionGuardStrings.ADMITS + property.getInstantiatedString("X"));
+            admitStrings.add(AdmissionGuardStrings.ADMITS + property.getInstantiatedString(DEFAULT_VARIABLE));
             propertyStrings.add(property.getName() + AdmissionGuardStrings.SUFFIX
-                    + property.getInstantiatedStringWithoutName("X"));
+                    + property.getInstantiatedStringWithoutName(DEFAULT_VARIABLE));
         }
         admitStrings.addAll(propertyStrings);
 
@@ -95,7 +100,7 @@ public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologC
                 LOGGER.warn(e);
             }
 
-            final String solution = resultMap.get("X");
+            final String solution = resultMap.get(DEFAULT_VARIABLE);
             final DecompositionTree solutionTree = DecompositionTree.parseString(solution);
 
             return new SearchResult<DecompositionTree>(result.getState(), solutionTree);

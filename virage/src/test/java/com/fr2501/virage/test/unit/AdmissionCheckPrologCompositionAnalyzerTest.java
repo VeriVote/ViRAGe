@@ -16,6 +16,6 @@ public final class AdmissionCheckPrologCompositionAnalyzerTest extends Compositi
     @Override
     protected CompositionAnalyzer createInstance()
             throws IOException, ExternalSoftwareUnavailableException {
-        return new AdmissionCheckPrologCompositionAnalyzer(this.framework);
+        return new AdmissionCheckPrologCompositionAnalyzer(this.getFramework());
     }
 }

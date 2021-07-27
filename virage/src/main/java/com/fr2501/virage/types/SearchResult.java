@@ -22,12 +22,12 @@ public final class SearchResult<T> {
 
     /**
      * Simple constructor.
-     * @param state the state
-     * @param value the value
+     * @param stateValue the state
+     * @param valueValue the value
      */
-    public SearchResult(final QueryState state, final T value) {
-        this.state = state;
-        this.value = value;
+    public SearchResult(final QueryState stateValue, final T valueValue) {
+        this.state = stateValue;
+        this.value = valueValue;
     }
 
     public synchronized QueryState getState() {
@@ -56,12 +56,12 @@ public final class SearchResult<T> {
         return this.value != null;
     }
 
-    public synchronized void setState(final QueryState state) {
-        this.state = state;
+    public synchronized void setState(final QueryState stateValue) {
+        this.state = stateValue;
     }
 
-    public void setValue(final T value) {
-        this.value = value;
+    public void setValue(final T valueValue) {
+        this.value = valueValue;
     }
 
     @Override

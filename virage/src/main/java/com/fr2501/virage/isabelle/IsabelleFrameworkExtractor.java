@@ -256,7 +256,6 @@ public final class IsabelleFrameworkExtractor {
         try {
             plFile.createNewFile();
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -333,7 +332,7 @@ public final class IsabelleFrameworkExtractor {
         boolean readingFirst = false;
 
         // Omit "(fun" and trailing ")".
-        for (int i = 4; i < funString.length() - 1; i++) {
+        for (int i = "fun ".length(); i < funString.length() - 1; i++) {
             final char current = funString.charAt(i);
 
             if (current == '(') {

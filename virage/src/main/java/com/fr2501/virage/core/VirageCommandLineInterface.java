@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.StringUtils;
+import com.fr2501.util.SystemUtils;
 import com.fr2501.virage.jobs.VirageAnalyzeJob;
 import com.fr2501.virage.jobs.VirageDummyJob;
 import com.fr2501.virage.jobs.VirageExitJob;
@@ -48,6 +49,7 @@ import com.fr2501.virage.types.Property;
 /**
  * A simple command line interface for ViRAGe.
  *
+ * @author VeriVote
  */
 public final class VirageCommandLineInterface implements VirageUserInterface {
     /**
@@ -93,15 +95,16 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     /**
      * Simple constructor.
      *
-     * @param core the ViRAGe core this UI will be attached to.
+     * @param coreValue the ViRAGe core this UI will be attached to.
      */
-    protected VirageCommandLineInterface(final VirageCore core) {
-        this.outputWriter = new BufferedWriter(new OutputStreamWriter(System.out), 256);
+    protected VirageCommandLineInterface(final VirageCore coreValue) {
+        final int bufferSize = 4096;
+        this.outputWriter = new BufferedWriter(new OutputStreamWriter(System.out), bufferSize);
 
         LOGGER.info("Initialising VirageCommandLineInterface.");
 
         this.scanner = new Scanner(System.in);
-        this.core = core;
+        this.core = coreValue;
 
         this.printSeparator(); /* ----- */
 
@@ -170,7 +173,6 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                     }
                 }
             } catch (final ExternalSoftwareUnavailableException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
 
@@ -209,7 +211,6 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                     }
                 }
             } catch (final ExternalSoftwareUnavailableException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
 
@@ -235,14 +236,9 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                             + "as possible will be transferred. "
                             + "Do you want to let ViRAGe perform this operation?")) {
                 try {
-                    try {
-                        ConfigReader.getInstance().readConfigFile(true);
-                    } catch (final InvalidConfigVersionException e1) {
-                        // NO-OP, this cannot happen.
-                        // readConfigFile(true) overwrites the old config.
-                    }
-                } catch (final IOException e1) {
-                    // TODO Auto-generated catch block
+                    ConfigReader.getInstance().readConfigFile(true);
+                } catch (final IOException | InvalidConfigVersionException e1) {
+
                     e1.printStackTrace();
                 }
             } else {
@@ -255,7 +251,6 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             }
 
         } catch (final IOException e) {
-            // TODO
             e.printStackTrace();
         }
     }
@@ -426,7 +421,6 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             this.outputWriter.append("? \033[1A\n");
             this.outputWriter.flush();
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -437,7 +431,6 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             this.outputWriter.append(message + System.lineSeparator());
             this.outputWriter.flush();
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -536,12 +529,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
         // Unelegant, but prevents race condition where user prompt is printed
         // before the result.
-        try {
-            Thread.sleep(100);
-        } catch (final InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        SystemUtils.semiBusyWaitingHelper();
 
         if (!parseJob.getState().equals(VirageJobState.FINISHED)) {
             return null;
@@ -818,17 +806,17 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             VirageJob<?> job = null;
 
             // TODO Refactor to enum
-            if (arg.equals("g")) {
+            if ("g".equals(arg)) {
                 job = this.createGenerationQuery();
-            } else if (arg.equals("a")) {
+            } else if ("a".equals(arg)) {
                 job = this.createAnalysisQuery();
-            } else if (arg.equals("p")) {
+            } else if ("p".equals(arg)) {
                 job = this.createProofQuery();
-            } else if (arg.equals("I")) {
+            } else if ("I".equals(arg)) {
                 job = this.createIsabelleQuery();
-            } else if (arg.equals("S")) {
+            } else if ("S".equals(arg)) {
                 job = this.createCodeGenerationQuery();
-            } else if (arg.equals("C")) {
+            } else if ("C".equals(arg)) {
                 job = this.createCCodeGenerationQuery();
             } else {
                 this.displayMessage("Please try again.");

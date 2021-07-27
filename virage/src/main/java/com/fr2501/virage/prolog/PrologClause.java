@@ -30,24 +30,26 @@ public final class PrologClause {
 
     /**
      * Simple constructor.
-     * @param succedent the succedent
-     * @param antecedents the antecedents
+     * @param succedentValue the succedent
+     * @param antecedentsValue the antecedents
      */
-    public PrologClause(final PrologPredicate succedent, final List<PrologPredicate> antecedents) {
-        this.succedent = succedent;
-        this.antecedents = antecedents;
+    public PrologClause(final PrologPredicate succedentValue,
+            final List<PrologPredicate> antecedentsValue) {
+        this.succedent = succedentValue;
+        this.antecedents = antecedentsValue;
     }
 
     /**
      * Simple constructor for clauses with a single antecedent.
      *
-     * @param succedent the succedent
-     * @param antecedent the antecedent
+     * @param succedentValue the succedent
+     * @param antecedentValue the antecedent
      */
-    public PrologClause(final PrologPredicate succedent, final PrologPredicate antecedent) {
-        this.succedent = succedent;
+    public PrologClause(final PrologPredicate succedentValue,
+            final PrologPredicate antecedentValue) {
+        this.succedent = succedentValue;
         this.antecedents = new LinkedList<PrologPredicate>();
-        this.antecedents.add(antecedent);
+        this.antecedents.add(antecedentValue);
     }
 
     /**

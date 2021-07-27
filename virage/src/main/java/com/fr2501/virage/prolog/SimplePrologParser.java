@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * A simple implementation of the {@link PrologParser} interface.
  *
+ * @author VeriVote
  */
 public final class SimplePrologParser implements PrologParser {
     @Override

@@ -52,17 +52,20 @@ public class IsabelleEventFactory {
     public IsabelleEvent createEvent(final String s) {
         final Map<String, String> parameters = this.extractParameters(s);
 
+        final IsabelleEvent res;
         if (s.startsWith(OK_STRING)) {
-            return new IsabelleOkEvent(parameters);
+            res = new IsabelleOkEvent(parameters);
         } else if (s.startsWith(ERROR_STRING)) {
-            return new IsabelleErrorEvent(parameters);
+            res = new IsabelleErrorEvent(parameters);
         } else if (s.startsWith(NOTE_STRING)) {
-            return new IsabelleNoteEvent(parameters);
+            res = new IsabelleNoteEvent(parameters);
         } else if (s.startsWith(FINISHED_STRING)) {
-            return new IsabelleFinishedEvent(parameters);
+            res = new IsabelleFinishedEvent(parameters);
+        } else {
+            res = new IsabelleMiscEvent();
         }
 
-        return new IsabelleMiscEvent();
+        return res;
     }
 
     private Map<String, String> extractParameters(final String s) {

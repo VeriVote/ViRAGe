@@ -24,6 +24,7 @@ import com.fr2501.virage.prolog.PrologPredicate;
  * The data model required to represent the compositional framework as a whole It is designed for
  * the electoral module framework, but not at all limited to it.
  *
+ * @author VeriVote
  */
 public final class FrameworkRepresentation {
     /**

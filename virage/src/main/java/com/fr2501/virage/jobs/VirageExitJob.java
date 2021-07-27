@@ -17,12 +17,12 @@ public final class VirageExitJob extends VirageJobWithoutExplicitResult {
      * Simple constructor.
      *
      * @param issuer the issuer
-     * @param statusCode the intended exit code
+     * @param statusCodeValue the intended exit code
      */
-    public VirageExitJob(final VirageUserInterface issuer, final int statusCode) {
+    public VirageExitJob(final VirageUserInterface issuer, final int statusCodeValue) {
         super(issuer);
 
-        this.statusCode = statusCode;
+        this.statusCode = statusCodeValue;
     }
 
     @Override

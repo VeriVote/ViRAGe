@@ -31,29 +31,29 @@ public final class VirageExtractJob extends VirageJobWithExplicitResult<Framewor
      * shall be created.
      *
      * @param issuer the issuer
-     * @param path the path to the session
-     * @param sessionName the name of the session
+     * @param pathValue the path to the session
+     * @param sessionNameValue the name of the session
      */
-    public VirageExtractJob(final VirageUserInterface issuer, final String path,
-            final String sessionName) {
-        this(issuer, path, sessionName, null);
+    public VirageExtractJob(final VirageUserInterface issuer, final String pathValue,
+            final String sessionNameValue) {
+        this(issuer, pathValue, sessionNameValue, null);
     }
 
     /**
      * Simple constructor.
      *
      * @param issuer the issuer
-     * @param path the path to the session
-     * @param sessionName the name of the session
-     * @param fileName the name of the (E)PL file to be generated.
+     * @param pathValue the path to the session
+     * @param sessionNameValue the name of the session
+     * @param fileNameValue the name of the (E)PL file to be generated.
      */
-    public VirageExtractJob(final VirageUserInterface issuer, final String path,
-            final String sessionName, final String fileName) {
+    public VirageExtractJob(final VirageUserInterface issuer, final String pathValue,
+            final String sessionNameValue, final String fileNameValue) {
         super(issuer);
 
-        this.sessionName = sessionName;
-        this.path = path;
-        this.fileName = fileName;
+        this.sessionName = sessionNameValue;
+        this.path = pathValue;
+        this.fileName = fileNameValue;
     }
 
     @Override

@@ -34,6 +34,7 @@ import com.fr2501.virage.types.InvalidConfigVersionException;
 /**
  * A class to interact with a ViRAGe config file.
  *
+ * @author VeriVote
  */
 public final class ConfigReader {
     /**
@@ -170,10 +171,8 @@ public final class ConfigReader {
             res += "Isabelle: \t\tNOT FOUND\n";
             this.isabelleAvailable = false;
         } catch (final InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (final ExternalSoftwareUnavailableException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -187,7 +186,6 @@ public final class ConfigReader {
             this.swiplAvailable = false;
             this.jplAvailable = false;
         } catch (final InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -368,13 +366,10 @@ public final class ConfigReader {
             try {
                 this.isabelleHome = this.computeIsabelleHome();
             } catch (final IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (final InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (final ExternalSoftwareUnavailableException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -397,13 +392,10 @@ public final class ConfigReader {
             try {
                 this.isabelleSessionDir = this.computeIsabelleSessionDir();
             } catch (final IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (final InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (final ExternalSoftwareUnavailableException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -460,10 +452,8 @@ public final class ConfigReader {
                     this.swiplHome = this.swiplHome + File.separator;
                 }
             } catch (final IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (final InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -529,10 +519,8 @@ public final class ConfigReader {
 
                 this.swiplLib = path;
             } catch (final IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (final InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -544,18 +532,19 @@ public final class ConfigReader {
      * Returns the list of type synonyms defined in "SESSION_SPECIFIC_TYPE_SYNONYMS".
      *
      * @return the list
+     * @throws IllegalArgumentException if the settings option is malformed
      */
-    public List<Pair<String, String>> getTypeSynonyms() {
+    public List<Pair<String, String>> getTypeSynonyms() throws IllegalArgumentException {
         final List<Pair<String, String>> res = new LinkedList<Pair<String, String>>();
 
         String prop = this.properties.getProperty("SESSION_SPECIFIC_TYPE_SYNONYMS");
         prop = this.replaceTypeAliases(prop);
         final List<String> typeSynonyms = this.readAndSplitList(prop);
 
-        for (String synonym : typeSynonyms) {
-            synonym = this.replaceTypeAliases(synonym);
+        for (final String synonym : typeSynonyms) {
+            final String synonymCopy = this.replaceTypeAliases(synonym);
 
-            final String[] splits = synonym.split("->");
+            final String[] splits = synonymCopy.split("->");
 
             if (splits.length != 2) {
                 throw new IllegalArgumentException();
@@ -620,9 +609,9 @@ public final class ConfigReader {
             process.waitFor();
             return;
         } catch (final IOException e) {
-            // TODO
+            e.printStackTrace();
         } catch (final InterruptedException e) {
-            // TODO
+            e.printStackTrace();
         }
 
         if (this.properties.containsKey("SYSTEM_TEXT_EDITOR")
@@ -640,9 +629,8 @@ public final class ConfigReader {
                     this.configFile.getAbsolutePath()).directory(null).start();
             process.waitFor();
         } catch (final InterruptedException e) {
-            // TODO
+            e.printStackTrace();
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -661,7 +649,10 @@ public final class ConfigReader {
     /**
      * Reads the settings-file supplied to ViRAGe.
      *
+     * @param overwriteIfNecessary true if the existing settings file shall be
+     *      overwritten by a fresh one
      * @throws IOException if reading the file is impossible
+     * @throws InvalidConfigVersionException if the settings file is outdated
      */
     public void readConfigFile(final boolean overwriteIfNecessary) throws IOException {
         this.properties = new Properties();

@@ -139,10 +139,10 @@ public final class IsabelleTheoryGenerator {
             theoryTemplate = writer.toString();
         }
 
-        final IsabelleTheoryParser parser = new IsabelleTheoryParser();
+        final IsabelleTheoryParser localParser = new IsabelleTheoryParser();
 
         try {
-            this.functionsAndDefinitions = parser.getAllFunctionsAndDefinitions(theoryPath);
+            this.functionsAndDefinitions = localParser.getAllFunctionsAndDefinitions(theoryPath);
         } catch (final IOException e) {
             LOGGER.error("Something went wrong.", e);
         }
@@ -212,6 +212,7 @@ public final class IsabelleTheoryGenerator {
      *     points to a file, this file will be overwritten and the name will most probably not
      *     correspond to the theory inside, so Isabelle won't be able to verify it.
      * @return the {@link File} containing the results
+     * @throws IllegalArgumentException if any of the arguments is malformed
      */
     public File generateTheoryFile(final String passedComposition,
             final List<CompositionProof> proofs, final String passedOutputPath) {
@@ -334,6 +335,7 @@ public final class IsabelleTheoryGenerator {
      * Replaces variable symbols used by Prolog with those used by Isabelle.
      *
      * @param predicate the Prolog predicate
+     * @throws IllegalArgumentException if the predicate component is unknown
      */
     protected void replacePrologVariables(final PrologPredicate predicate) {
         for (int i = 0; i < predicate.getParameters().size(); i++) {

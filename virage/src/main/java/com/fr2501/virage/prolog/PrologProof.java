@@ -9,6 +9,7 @@ import com.fr2501.util.StringUtils;
  * Using the meta interpreter in src/java/main/resources, this class is able to make the Prolog
  * search process more transparent, exposing goals and subgoals for every proof step.
  *
+ * @author VeriVote
  */
 public final class PrologProof {
     /**
@@ -37,13 +38,13 @@ public final class PrologProof {
      */
     private final List<PrologProof> subgoals;
 
-    private PrologProof(final String goal) {
-        this(goal, new LinkedList<PrologProof>());
+    private PrologProof(final String goalValue) {
+        this(goalValue, new LinkedList<PrologProof>());
     }
 
-    private PrologProof(final String goal, final List<PrologProof> subgoals) {
-        this.goal = goal;
-        this.subgoals = subgoals;
+    private PrologProof(final String goalValue, final List<PrologProof> subgoalsValue) {
+        this.goal = goalValue;
+        this.subgoals = subgoalsValue;
     }
 
     /**

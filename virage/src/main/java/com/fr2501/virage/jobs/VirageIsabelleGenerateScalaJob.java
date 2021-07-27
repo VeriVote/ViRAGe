@@ -26,13 +26,13 @@ public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitR
      * Simple constructor.
      *
      * @param issuer the issuing ui
-     * @param composition the composition
+     * @param compositionValue the composition
      */
     public VirageIsabelleGenerateScalaJob(final VirageUserInterface issuer,
-            final String composition) {
+            final String compositionValue) {
         super(issuer);
 
-        this.composition = composition;
+        this.composition = compositionValue;
     }
 
     @Override

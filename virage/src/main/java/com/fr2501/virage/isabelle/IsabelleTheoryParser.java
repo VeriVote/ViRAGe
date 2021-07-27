@@ -128,6 +128,7 @@ public class IsabelleTheoryParser {
      * @param theory the theory file
      * @return a String representing the definition
      * @throws IOException if file system interaction fails
+     * @throws IllegalArgumentException if the definition is not found
      */
     @Deprecated
     public String getDefinitionByName(final String name, final File theory) throws IOException {

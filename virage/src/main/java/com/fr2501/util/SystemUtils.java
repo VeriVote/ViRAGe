@@ -88,16 +88,12 @@ public class SystemUtils {
             field.setAccessible(true);
             ((Map<String, String>) field.get(env)).put(name, value);
         } catch (final NoSuchFieldException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (final SecurityException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (final IllegalArgumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (final IllegalAccessException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -111,7 +107,9 @@ public class SystemUtils {
      * Helper method to let a thread sleep for 100ms without worrying about exceptions.
      */
     public static void semiBusyWaitingHelper() {
-        semiBusyWaitingHelper(100);
+        final int defaultWait = 100;
+
+        semiBusyWaitingHelper(defaultWait);
     }
 
     /**

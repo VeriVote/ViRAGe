@@ -9,6 +9,7 @@ import java.util.Set;
  * A class representing a proof using a {@link CompositionRule} for each subgoal, thus making the
  * reasoning of the proof transparent.
  *
+ * @author VeriVote
  */
 public final class CompositionProof {
     /**

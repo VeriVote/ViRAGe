@@ -26,13 +26,13 @@ public final class Property implements Parameterized {
     /**
      * Simple constructor.
      *
-     * @param name the name
-     * @param parameters the parameters
+     * @param nameValue the name
+     * @param parametersValue the parameters
      */
-    public Property(final String name, final List<ComponentType> parameters) {
-        this.name = name;
-        this.arity = parameters.size();
-        this.parameters = parameters;
+    public Property(final String nameValue, final List<ComponentType> parametersValue) {
+        this.name = nameValue;
+        this.arity = parametersValue.size();
+        this.parameters = parametersValue;
     }
 
     @Override
@@ -69,6 +69,7 @@ public final class Property implements Parameterized {
      *
      * @param strings the parameters
      * @return the instantiated string
+     * @throws IllegalArgumentException if this has a wrong number of parameters
      */
     public String getInstantiatedString(final List<String> strings) {
         if (strings.size() != this.parameters.size()) {
@@ -85,6 +86,7 @@ public final class Property implements Parameterized {
      *
      * @param string the instantiation string
      * @return the instantiated string
+     * @throws IllegalArgumentException if this has more than one parameter
      */
     public String getInstantiatedString(final String string) {
         if (this.parameters.size() != 1) {
@@ -101,6 +103,7 @@ public final class Property implements Parameterized {
      *
      * @param strings the parameters
      * @return the instantiated string
+     *  @throws IllegalArgumentException if this has more than one parameter
      */
     public String getInstantiatedStringWithoutName(final List<String> strings) {
         if (strings.size() != this.parameters.size()) {
@@ -117,6 +120,7 @@ public final class Property implements Parameterized {
      *
      * @param string the instantiation string
      * @return the instantiated string
+     * @throws IllegalArgumentException if this has more than one parameter
      */
     public String getInstantiatedStringWithoutName(final String string) {
         if (this.parameters.size() != 1) {

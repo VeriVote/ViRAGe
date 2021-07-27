@@ -35,17 +35,18 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
      * Simple constructor.
      *
      * @param issuer the issuing ui
-     * @param composition the composition
-     * @param proofs the proofs
-     * @param outputPath the path for the generated theories
+     * @param compositionValue the composition
+     * @param proofsValue the proofs
+     * @param outputPathValue the path for the generated theories
      */
-    public VirageIsabelleGenerateJob(final VirageUserInterface issuer, final String composition,
-            final List<CompositionProof> proofs, final String outputPath) {
+    public VirageIsabelleGenerateJob(final VirageUserInterface issuer,
+            final String compositionValue, final List<CompositionProof> proofsValue,
+            final String outputPathValue) {
         super(issuer);
 
-        this.composition = composition;
-        this.proofs = proofs;
-        this.outputPath = outputPath;
+        this.composition = compositionValue;
+        this.proofs = proofsValue;
+        this.outputPath = outputPathValue;
     }
 
     @Override

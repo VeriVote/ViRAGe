@@ -10,6 +10,7 @@ import com.fr2501.virage.types.FrameworkRepresentation;
 /**
  * A {@link VirageJob} used to parse an (E)PL file and pass it to its executing core.
  *
+ * @author VeriVote
  */
 public final class VirageParseJob extends VirageJobWithExplicitResult<FrameworkRepresentation> {
     /**
@@ -21,12 +22,12 @@ public final class VirageParseJob extends VirageJobWithExplicitResult<FrameworkR
      * Simple constructor.
      *
      * @param issuer the issuing ui
-     * @param file the file
+     * @param fileValue the file
      */
-    public VirageParseJob(final VirageUserInterface issuer, final File file) {
+    public VirageParseJob(final VirageUserInterface issuer, final File fileValue) {
         super(issuer);
 
-        this.file = file;
+        this.file = fileValue;
     }
 
     @Override

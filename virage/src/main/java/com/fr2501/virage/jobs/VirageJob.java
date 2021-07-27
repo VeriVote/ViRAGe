@@ -10,6 +10,7 @@ import com.fr2501.virage.core.VirageUserInterface;
  * Wrapper class for all tasks to be completed by {@link com.fr2501.virage.core.VirageCore}. Require
  * a {@link VirageUserInterface} as listener.
  *
+ * @author VeriVote
  * @param <T> the result type
  */
 public abstract class VirageJob<T> {
@@ -58,10 +59,10 @@ public abstract class VirageJob<T> {
     /**
      * Simple constructor.
      *
-     * @param issuer the issuing ui
+     * @param issuerValue the issuing ui
      */
-    public VirageJob(final VirageUserInterface issuer) {
-        this.issuer = issuer;
+    public VirageJob(final VirageUserInterface issuerValue) {
+        this.issuer = issuerValue;
         this.id = VirageJob.nextID;
         VirageJob.nextID++;
 
@@ -145,14 +146,14 @@ public abstract class VirageJob<T> {
     /**
      * Sets the current state, also updates the timestamps if applicable.
      *
-     * @param state the new state
+     * @param newState the new state
      */
-    public void setState(final VirageJobState state) {
-        this.state = state;
+    public void setState(final VirageJobState newState) {
+        this.state = newState;
 
-        if (state == VirageJobState.RUNNING) {
+        if (newState == VirageJobState.RUNNING) {
             this.timeStarted = System.currentTimeMillis();
-        } else if (state == VirageJobState.FAILED || state == VirageJobState.FINISHED) {
+        } else if (newState == VirageJobState.FAILED || newState == VirageJobState.FINISHED) {
             this.timeFinished = System.currentTimeMillis();
 
             this.issuer.notify(this);
@@ -196,12 +197,7 @@ public abstract class VirageJob<T> {
                 return;
             }
 
-            try {
-                Thread.sleep(100);
-            } catch (final InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            SystemUtils.semiBusyWaitingHelper();
         }
     }
 

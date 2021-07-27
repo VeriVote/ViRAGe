@@ -104,24 +104,24 @@ public final class ScalaIsabelleFacade {
     /**
      * Simple constructor.
      *
-     * @param sessionDir the session base directory
-     * @param sessionName the session name
+     * @param sessionDirValue the session base directory
+     * @param sessionNameValue the session name
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
      * @throws IsabelleBuildFailedException if the build process fails
      */
-    public ScalaIsabelleFacade(final String sessionDir, final String sessionName)
+    public ScalaIsabelleFacade(final String sessionDirValue, final String sessionNameValue)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
-        this.sessionDir = new File(sessionDir).getAbsolutePath();
-        this.sessionName = sessionName;
+        this.sessionDir = new File(sessionDirValue).getAbsolutePath();
+        this.sessionName = sessionNameValue;
 
         this.theoryNames = new HashSet<String>();
 
         final List<Path> sessionDirs = new LinkedList<Path>();
         sessionDirs.add(Path.of(this.sessionDir));
 
-        this.setup = new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()), sessionName,
+        this.setup = new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()), sessionNameValue,
                 new Some<Path>(Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
-                Path.of(sessionDir),
+                Path.of(sessionDirValue),
                 JavaConverters.asScalaIteratorConverter(sessionDirs.iterator()).asScala().toSeq(),
                 true, null);
 
@@ -130,7 +130,7 @@ public final class ScalaIsabelleFacade {
             // TODO Don't.
         } catch (/* IsabelleBuild */final Exception e) {
             e.printStackTrace();
-            LOGGER.error("Building session " + sessionName
+            LOGGER.error("Building session " + sessionNameValue
                     + " failed. Restarting ViRAGe or building"
                     + " the session manually within Isabelle might help. If the session is supposed"
                     + " to generate documentation, texlive is required!");
@@ -164,7 +164,7 @@ public final class ScalaIsabelleFacade {
                 true, null);
 
         try {
-            final Isabelle isabelle = new Isabelle(setup);
+            isabelle = new Isabelle(setup);
             isabelle.destroy();
         } catch (/* IsabelleBuild */final Exception e) {
             LOGGER.error("Building session " + sessionName
@@ -346,30 +346,30 @@ public final class ScalaIsabelleFacade {
     private static class JavaStringConverter extends Converter<String> {
 
         @Override
-        public String exnToValue(final Isabelle isabelle, final ExecutionContext ec) {
-            return StringConverter.exnToValue(isabelle, ec);
+        public String exnToValue(final Isabelle localIsabelle, final ExecutionContext ec) {
+            return StringConverter.exnToValue(localIsabelle, ec);
         }
 
         @Override
-        public String mlType(final Isabelle isabelle, final ExecutionContext ec) {
-            return StringConverter.mlType(isabelle, ec);
+        public String mlType(final Isabelle localIsabelle, final ExecutionContext ec) {
+            return StringConverter.mlType(localIsabelle, ec);
         }
 
         @Override
-        public Future<String> retrieve(final MLValue<String> value, final Isabelle isabelle,
+        public Future<String> retrieve(final MLValue<String> value, final Isabelle localIsabelle,
                 final ExecutionContext ec) {
-            return StringConverter.retrieve(value, isabelle, ec);
+            return StringConverter.retrieve(value, localIsabelle, ec);
         }
 
         @Override
-        public MLValue<String> store(final String value, final Isabelle isabelle,
+        public MLValue<String> store(final String value, final Isabelle localIsabelle,
                 final ExecutionContext ec) {
-            return StringConverter.store(value, isabelle, ec);
+            return StringConverter.store(value, localIsabelle, ec);
         }
 
         @Override
-        public String valueToExn(final Isabelle isabelle, final ExecutionContext ec) {
-            return StringConverter.valueToExn(isabelle, ec);
+        public String valueToExn(final Isabelle localIsabelle, final ExecutionContext ec) {
+            return StringConverter.valueToExn(localIsabelle, ec);
         }
 
     }

@@ -36,6 +36,11 @@ import com.fr2501.virage.types.ValueNotPresentException;
  */
 public abstract class CompositionAnalyzerTest {
     /**
+     * The default timeout for the tests.
+     */
+    private static final long DEFAULT_TIMEOUT = 10000;
+
+    /**
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getLogger(CompositionAnalyzerTest.class);
@@ -47,20 +52,12 @@ public abstract class CompositionAnalyzerTest {
     /**
      * The test data generator.
      */
-    protected TestDataGenerator generator;
+    private TestDataGenerator generator;
+
     /**
      * The framework representation.
      */
-    protected FrameworkRepresentation framework;
-
-    /**
-     * Instance creation to allow reuse for all implementations.
-     * @return an instance of the respective class
-     * @throws IOException if io fails
-     * @throws ExternalSoftwareUnavailableException if external software is unavailablw
-     */
-    protected abstract CompositionAnalyzer createInstance()
-            throws IOException, ExternalSoftwareUnavailableException;
+    private FrameworkRepresentation framework;
 
     /**
      * Performs setup for the following tests.
@@ -74,101 +71,6 @@ public abstract class CompositionAnalyzerTest {
         this.framework = parser.parseFramework(new File(FRAMEWORK_PATH), false);
 
         this.generator = new TestDataGenerator(this.framework);
-    }
-
-    /**
-     * Tests SMC proof.
-     * @throws ValueNotPresentException if proof process fails
-     * @throws IOException if io fails
-     * @throws ExternalSoftwareUnavailableException if external software is unavailable
-     */
-    @Test
-    public void testSequentialMajorityComparison()
-            throws ValueNotPresentException, IOException, ExternalSoftwareUnavailableException {
-        LOGGER.info("testSequentialMajorityComparison()");
-        final String smc = "sequential_composition(loop_composition(" + "parallel_composition("
-                + "sequential_composition(" + "pass_module(2,_),sequential_composition("
-                + "revision_composition(" + "plurality)," + "pass_module(1,_))),"
-                + "drop_module(2,_)," + "max_aggregator)," + "defer_equal_condition(1)),"
-                + "elect_module)";
-
-        final DecompositionTree smcTree = DecompositionTree.parseString(smc);
-
-        final CompositionAnalyzer analyzer = this.createInstance();
-        analyzer.setTimeout(10000);
-
-        final List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("monotonicity"));
-
-        final List<SearchResult<BooleanWithUncertainty>> resultList = analyzer
-                .analyzeComposition(smcTree, properties);
-        final SearchResult<BooleanWithUncertainty> result = resultList.get(0);
-
-        if (result.getState() == QueryState.TIMEOUT) {
-            LOGGER.warn("The current CompositionAnalyzer is very slow. "
-                    + "This is not an error by definition, but something" + "seems to be wrong.");
-        }
-
-        assertTrue(result.hasValue());
-        assertTrue(result.getValue() == BooleanWithUncertainty.TRUE);
-    }
-
-    /**
-     * Tests random property sets.
-     * @throws IOException if io fails
-     * @throws ExternalSoftwareUnavailableException if external software is unavailable
-     */
-    @Test
-    public void testRandomPropertySets() throws IOException, ExternalSoftwareUnavailableException {
-        LOGGER.info("testRandomPropertySets()");
-        final int runs = 100;
-        final int timeout = 10;
-
-        int success = 0;
-        int timeouts = 0;
-        int failure = 0;
-        int error = 0;
-
-        final CompositionAnalyzer analyzer = this.createInstance();
-        analyzer.setTimeout(timeout);
-
-        for (int i = 0; i < runs; i++) {
-            final int amount = (int) (5 * Math.random()) + 1;
-
-            final List<Property> properties = this.generator
-                    .getRandomComposableModuleProperties(amount);
-
-            LOGGER.debug("Query: " + StringUtils.printCollection(properties));
-
-            final SearchResult<DecompositionTree> result = analyzer.generateComposition(properties);
-
-            if (result.hasValue()) {
-                success++;
-                LOGGER.debug("Result: " + result.getValue().toString());
-            } else {
-                if (result.getState() == QueryState.TIMEOUT) {
-                    timeouts++;
-                    LOGGER.debug("Query timed out.");
-                } else if (result.getState() == QueryState.FAILED) {
-                    failure++;
-                    LOGGER.debug("No solution exists.");
-                } else if (result.getState() == QueryState.ERROR) {
-                    error++;
-                    LOGGER.error("An error occured");
-                }
-            }
-        }
-
-        LOGGER.debug("\nSucceeded:\t" + success + "\nFailed:\t\t" + failure + "\nTimed out:\t"
-                + timeouts + "\nErrors:\t\t" + error);
-
-        if (failure == 100 || success == 100 || timeouts == 100) {
-            LOGGER.warn("A highly unlikely result occured in the test.\n"
-                    + "This might happen by (a very small) chance, "
-                    + "so rerunning the test might help.\n"
-                    + "If the problem persists, something has gone wrong.");
-            fail();
-        }
     }
 
     /**
@@ -273,6 +175,101 @@ public abstract class CompositionAnalyzerTest {
     }
 
     /**
+     * Tests random property sets.
+     * @throws IOException if io fails
+     * @throws ExternalSoftwareUnavailableException if external software is unavailable
+     */
+    @Test
+    public void testRandomPropertySets() throws IOException, ExternalSoftwareUnavailableException {
+        LOGGER.info("testRandomPropertySets()");
+        final int runs = 100;
+        final int timeout = 10;
+
+        int success = 0;
+        int timeouts = 0;
+        int failure = 0;
+        int error = 0;
+
+        final CompositionAnalyzer analyzer = this.createInstance();
+        analyzer.setTimeout(timeout);
+
+        for (int i = 0; i < runs; i++) {
+            final int amount = (int) (5 * Math.random()) + 1;
+
+            final List<Property> properties = this.generator
+                    .getRandomComposableModuleProperties(amount);
+
+            LOGGER.debug("Query: " + StringUtils.printCollection(properties));
+
+            final SearchResult<DecompositionTree> result = analyzer.generateComposition(properties);
+
+            if (result.hasValue()) {
+                success++;
+                LOGGER.debug("Result: " + result.getValue().toString());
+            } else {
+                if (result.getState() == QueryState.TIMEOUT) {
+                    timeouts++;
+                    LOGGER.debug("Query timed out.");
+                } else if (result.getState() == QueryState.FAILED) {
+                    failure++;
+                    LOGGER.debug("No solution exists.");
+                } else if (result.getState() == QueryState.ERROR) {
+                    error++;
+                    LOGGER.error("An error occured");
+                }
+            }
+        }
+
+        LOGGER.debug("\nSucceeded:\t" + success + "\nFailed:\t\t" + failure + "\nTimed out:\t"
+                + timeouts + "\nErrors:\t\t" + error);
+
+        if (failure == runs || success == runs || timeouts == runs) {
+            LOGGER.warn("A highly unlikely result occured in the test.\n"
+                    + "This might happen by (a very small) chance, "
+                    + "so rerunning the test might help.\n"
+                    + "If the problem persists, something has gone wrong.");
+            fail();
+        }
+    }
+
+    /**
+     * Tests SMC proof.
+     * @throws ValueNotPresentException if proof process fails
+     * @throws IOException if io fails
+     * @throws ExternalSoftwareUnavailableException if external software is unavailable
+     */
+    @Test
+    public void testSequentialMajorityComparison()
+            throws ValueNotPresentException, IOException, ExternalSoftwareUnavailableException {
+        LOGGER.info("testSequentialMajorityComparison()");
+        final String smc = "sequential_composition(loop_composition(" + "parallel_composition("
+                + "sequential_composition(" + "pass_module(2,_),sequential_composition("
+                + "revision_composition(" + "plurality)," + "pass_module(1,_))),"
+                + "drop_module(2,_)," + "max_aggregator)," + "defer_equal_condition(1)),"
+                + "elect_module)";
+
+        final DecompositionTree smcTree = DecompositionTree.parseString(smc);
+
+        final CompositionAnalyzer analyzer = this.createInstance();
+        analyzer.setTimeout(DEFAULT_TIMEOUT);
+
+        final List<Property> properties = new LinkedList<Property>();
+        properties.add(this.framework.getProperty("monotonicity"));
+
+        final List<SearchResult<BooleanWithUncertainty>> resultList = analyzer
+                .analyzeComposition(smcTree, properties);
+        final SearchResult<BooleanWithUncertainty> result = resultList.get(0);
+
+        if (result.getState() == QueryState.TIMEOUT) {
+            LOGGER.warn("The current CompositionAnalyzer is very slow. "
+                    + "This is not an error by definition, but something" + "seems to be wrong.");
+        }
+
+        assertTrue(result.hasValue());
+        assertTrue(result.getValue() == BooleanWithUncertainty.TRUE);
+    }
+
+    /**
      * Tests simple proofs.
      * @throws IOException if io fails
      * @throws ExternalSoftwareUnavailableException if external software is unavailable
@@ -301,5 +298,31 @@ public abstract class CompositionAnalyzerTest {
                 + "\t: electing(elect_module) by elect_mod_electing";
         LOGGER.debug(proofString);
         assertTrue(proofString.equals(reference));
+    }
+
+    /**
+     * Instance creation to allow reuse for all implementations.
+     * @return an instance of the respective class
+     * @throws IOException if io fails
+     * @throws ExternalSoftwareUnavailableException if external software is unavailablw
+     */
+    protected abstract CompositionAnalyzer createInstance()
+            throws IOException, ExternalSoftwareUnavailableException;
+
+    /**
+     * Simple getter.
+     *
+     * @return the framework
+     */
+    protected FrameworkRepresentation getFramework() {
+        return this.framework;
+    }
+
+    /**
+     * Simple getter.
+     * @return the generator
+     */
+    protected TestDataGenerator getGenerator() {
+        return this.generator;
     }
 }

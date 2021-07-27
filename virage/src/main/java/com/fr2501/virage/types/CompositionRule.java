@@ -9,6 +9,7 @@ import com.fr2501.virage.prolog.PrologPredicate;
  * A composition rule stating different kinds of relations between components, compositional
  * structures and properties.
  *
+ * @author VeriVote
  */
 public final class CompositionRule implements Comparable<CompositionRule> {
     /**
@@ -50,13 +51,16 @@ public final class CompositionRule implements Comparable<CompositionRule> {
             return this.getSuccedent().getName().compareTo(rule.getSuccedent().getName());
         }
 
+        final int toReturn;
         if (this.getAntecedents().size() < rule.getAntecedents().size()) {
-            return -1;
+            toReturn = -1;
         } else if (this.getAntecedents().size() == rule.getAntecedents().size()) {
-            return 0;
+            toReturn = 0;
         } else {
-            return 1;
+            toReturn = 1;
         }
+
+        return toReturn;
     }
 
     @Override

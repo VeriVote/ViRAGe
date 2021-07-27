@@ -57,14 +57,14 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
     /**
      * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
      *
-     * @param framework the framework
+     * @param frameworkValue the framework
      * @throws IOException but should actually not
      * @throws ExternalSoftwareUnavailableException if swipl is unavailable
      */
-    public SimplePrologCompositionAnalyzer(final FrameworkRepresentation framework)
+    public SimplePrologCompositionAnalyzer(final FrameworkRepresentation frameworkValue)
             throws IOException, ExternalSoftwareUnavailableException {
         LOGGER.info("Initialising SimplePrologCompositionAnalyzer.");
-        this.framework = framework;
+        this.framework = frameworkValue;
 
         this.facade = new JplFacade(DEFAULT_TIMEOUT);
         this.consultKnowledgeBase();

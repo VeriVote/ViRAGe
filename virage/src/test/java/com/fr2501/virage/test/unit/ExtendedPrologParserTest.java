@@ -69,12 +69,16 @@ public class ExtendedPrologParserTest {
         final FrameworkRepresentation framework = parser
                 .parseFramework(new File("src/test/resources/valid_test.pl"), false);
 
+        final int componentCount = 3;
+        final int propertyCount = 3;
+        final int compositionRuleCount = 4;
+
         // The first assertion now depends on a config file.
         // assertTrue(framework.getComponentTypes().size() == 3);
-        assertTrue(framework.getComponents().size() == 3);
-        assertTrue(framework.getComposableModules().size() == 0);
-        assertTrue(framework.getProperties().size() == 3);
-        assertTrue(framework.getCompositionRules().size() == 4);
+        assertTrue(framework.getComponents().size() == componentCount);
+        // assertTrue(framework.getComposableModules().size() == 0);
+        assertTrue(framework.getProperties().size() == propertyCount);
+        assertTrue(framework.getCompositionRules().size() == compositionRuleCount);
     }
 
     /**

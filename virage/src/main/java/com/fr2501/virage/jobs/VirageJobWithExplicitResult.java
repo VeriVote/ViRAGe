@@ -5,6 +5,9 @@ import com.fr2501.virage.core.VirageUserInterface;
 /**
  * A {@link VirageJob} that offers an explicit result. It might still have side effects.
  *
+ * @author VeriVote
+ *
+ * @param <T> the type of the result
  */
 public abstract class VirageJobWithExplicitResult<T> extends VirageJob<T> {
     /**

@@ -97,6 +97,7 @@ public class IsabelleProofStepGenerator {
      *
      * @param step the proof step
      * @return a String representing the step in Isabelle syntax
+     * @throws IllegalArgumentException sometimes
      */
     public String generateIsabelleProofStep(final CompositionProof step) {
         final String goalId = step.getId();

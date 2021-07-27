@@ -26,12 +26,12 @@ public final class VirageGenerateCCodeJob extends VirageJobWithExplicitResult<Fi
      * Simple constructor.
      *
      * @param issuer the issuing ui
-     * @param composition the composition
+     * @param compositionValue the composition
      */
-    public VirageGenerateCCodeJob(final VirageUserInterface issuer, final String composition) {
+    public VirageGenerateCCodeJob(final VirageUserInterface issuer, final String compositionValue) {
         super(issuer);
 
-        this.composition = composition;
+        this.composition = compositionValue;
     }
 
     @Override

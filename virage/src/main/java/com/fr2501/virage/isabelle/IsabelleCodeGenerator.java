@@ -86,7 +86,6 @@ public final class IsabelleCodeGenerator {
      */
     private static final String PARENT_NAME_VAR = "$PARENT_NAME";
 
-    // TODO: This feels too "hard-coded"
     /**
      * Enum string.
      */

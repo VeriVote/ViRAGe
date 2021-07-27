@@ -40,15 +40,15 @@ public final class VirageProveJob
      * Simple constructor.
      *
      * @param issuer the issuing ui
-     * @param tree the tree
-     * @param properties the properties
+     * @param treeValue the tree
+     * @param propertiesValue the properties
      */
-    public VirageProveJob(final VirageUserInterface issuer, final String tree,
-            final List<String> properties) {
+    public VirageProveJob(final VirageUserInterface issuer, final String treeValue,
+            final List<String> propertiesValue) {
         super(issuer);
 
-        this.tree = DecompositionTree.parseString(tree);
-        this.propertyStrings = properties;
+        this.tree = DecompositionTree.parseString(treeValue);
+        this.propertyStrings = propertiesValue;
     }
 
     @Override

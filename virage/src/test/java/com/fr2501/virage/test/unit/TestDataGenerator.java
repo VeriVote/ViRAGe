@@ -25,10 +25,10 @@ public class TestDataGenerator {
     /**
      * Simple constructor.
      *
-     * @param framework the framework
+     * @param frameworkValue the framework
      */
-    public TestDataGenerator(final FrameworkRepresentation framework) {
-        this.framework = framework;
+    public TestDataGenerator(final FrameworkRepresentation frameworkValue) {
+        this.framework = frameworkValue;
         this.eligibleProperties = new LinkedList<Property>();
 
         for (final Property property : this.framework.getProperties()) {
@@ -77,6 +77,7 @@ public class TestDataGenerator {
      *
      * @param amount size of the set to be generated
      * @return the set of properties
+     *  @throws IllegalArgumentException if too many properties are requested
      */
     public List<Property> getRandomComposableModuleProperties(final int amount)
             throws IllegalArgumentException {

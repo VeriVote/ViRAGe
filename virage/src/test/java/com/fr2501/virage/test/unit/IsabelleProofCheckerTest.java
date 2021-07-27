@@ -240,7 +240,7 @@ public final class IsabelleProofCheckerTest {
         LOGGER.debug("\nSucceeded:\t" + success + "\nFailed:\t\t" + failure + "\nTimed out:\t"
                 + timeouts + "\nErrors:\t\t" + error);
 
-        if (failure == 100 || success == 100 || timeouts == 100) {
+        if (failure == runs || success == runs || timeouts == runs) {
             LOGGER.warn("A highly unlikely result occured in the test.\n"
                     + "This might happen by (a very small) chance, "
                     + "so rerunning the test might help.\n"

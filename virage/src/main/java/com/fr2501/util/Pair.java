@@ -13,11 +13,11 @@ public final class Pair<S, T> {
     /**
      * First value.
      */
-    private final S firstValue;
+    private final S first;
     /**
      * Second value.
      */
-    private final T secondValue;
+    private final T second;
 
     /**
      * Simple constructor.
@@ -25,32 +25,32 @@ public final class Pair<S, T> {
      * @param secondValue the second value
      */
     public Pair(final S firstValue, final T secondValue) {
-        this.firstValue = firstValue;
-        this.secondValue = secondValue;
+        this.first = firstValue;
+        this.second = secondValue;
     }
 
     public S getFirstValue() {
-        return this.firstValue;
+        return this.first;
     }
 
     public T getSecondValue() {
-        return this.secondValue;
+        return this.second;
     }
 
     @Override
     public String toString() {
-        String first = "";
-        String second = "";
+        String firstString = "";
+        String secondString = "";
 
-        if (this.firstValue != null) {
-            first = this.firstValue.toString();
+        if (this.first != null) {
+            firstString = this.first.toString();
         }
 
-        if (this.secondValue != null) {
-            second = this.secondValue.toString();
+        if (this.second != null) {
+            secondString = this.second.toString();
         }
 
-        return "(" + first + ", " + second + ")";
+        return "(" + firstString + ", " + secondString + ")";
 
     }
 }

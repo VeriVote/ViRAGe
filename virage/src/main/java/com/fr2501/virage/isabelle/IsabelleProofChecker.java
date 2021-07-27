@@ -22,6 +22,7 @@ import com.fr2501.util.Pair;
 import com.fr2501.util.ProcessUtils;
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
+import com.fr2501.util.SystemUtils;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
@@ -32,6 +33,7 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
  * to attempt automatic proof verification. It is meant to be a singleton, as every instance would
  * spawn new processes.
  *
+ * @author VeriVote
  */
 public final class IsabelleProofChecker {
     /**
@@ -118,7 +120,7 @@ public final class IsabelleProofChecker {
      */
     private IsabelleEvent lastEvent;
 
-    private IsabelleProofChecker(final String sessionName, final String theoryPath)
+    private IsabelleProofChecker(final String sessionNameValue, final String theoryPathValue)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
         this.runtime = Runtime.getRuntime();
 
@@ -126,17 +128,16 @@ public final class IsabelleProofChecker {
 
         // Use scala-isabelle to build the session, as my own solution
         // might not terminate when session build fails.
-        ScalaIsabelleFacade.buildSession(theoryPath, sessionName);
+        ScalaIsabelleFacade.buildSession(theoryPathValue, sessionNameValue);
 
         try {
-            // TODO: Remove quick_and_dirty as soon as possible (or make optional?)
             final Process process = Runtime.getRuntime()
                     .exec(ConfigReader.getInstance().getIsabelleExecutable()
                             + " build -o browser_info -b -D `pwd`");
             process.waitFor();
 
             this.initServer();
-            this.initClient(sessionName, theoryPath);
+            this.initClient(sessionNameValue, theoryPathValue);
 
             if (this.rootTemplate.isEmpty()) {
                 StringWriter writer = new StringWriter();
@@ -171,12 +172,12 @@ public final class IsabelleProofChecker {
      * @param sessionName a name for the session to be created
      * @param theoryPath the path to the theory folder
      * @return the instance
-     * @throws ExternalSoftwareUnavailableException
-     * @throws IsabelleBuildFailedException
+     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     * @throws IsabelleBuildFailedException if the build process fails
      */
     public static IsabelleProofChecker getInstance(final String sessionName,
             final String theoryPath)
-                    throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
         if (instance == null || instance.sessionName == null
                 || !instance.sessionName.equals(sessionName)
                 || !instance.theoryPath.equals(theoryPath)) {
@@ -191,16 +192,16 @@ public final class IsabelleProofChecker {
         // of
         // rebuilding single sessions without triggering full rebuilds.
         // TODO: Is there a way to do it?
-        final String sessionName = "ad_hoc_session_"
+        final String localSessionName = "ad_hoc_session_"
                 + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
-        String result = this.rootTemplate.replace(SESSION_NAME_VAR, sessionName)
+        String result = this.rootTemplate.replace(SESSION_NAME_VAR, localSessionName)
                 .replace(THEORY_NAME_VAR, theoryName);
         result = result.replace(PARENT_NAME_VAR, this.parentName);
         final SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(theory.getParent() + File.separator + "ROOT", result);
 
-        return sessionName;
+        return localSessionName;
     }
 
     /**
@@ -214,8 +215,8 @@ public final class IsabelleProofChecker {
     }
 
     private void generateProofDocument(final File theory, final String adHocSessionName,
-            final String theoryPath) throws IOException, InterruptedException,
-        IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+            final String localTheoryPath) throws IOException, InterruptedException,
+            IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
         final String generatedPath = theory.getParent();
 
         final File docFolder = new File(
@@ -227,7 +228,7 @@ public final class IsabelleProofChecker {
         writer.writeToFile(texDoc, this.texTemplate);
 
         final String isabelleCommand = ConfigReader.getInstance().getIsabelleExecutable()
-                + " build -e -D " + generatedPath + " -D " + theoryPath
+                + " build -e -D " + generatedPath + " -D " + localTheoryPath
                 + " -o quick_and_dirty -o browser_info -b " + adHocSessionName;
 
         final int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
@@ -247,7 +248,7 @@ public final class IsabelleProofChecker {
         return this.lastEvent;
     }
 
-    private void initClient(final String sessionName, final String theoryPath)
+    private void initClient(final String localSessionName, final String localTheoryPath)
             throws IOException, ExternalSoftwareUnavailableException {
         this.client = this.runtime.exec(
                 ConfigReader.getInstance().getIsabelleExecutable() + " client -n " + SERVER_NAME);
@@ -255,8 +256,8 @@ public final class IsabelleProofChecker {
 
         IsabelleClientObserver.start(this, this.client);
 
-        this.sendCommandAndWaitForTermination("session_start {\"session\":\"" + sessionName + "\","
-                + "\"dirs\": [\"" + theoryPath + "\"]}");
+        this.sendCommandAndWaitForTermination("session_start {\"session\":\"" + localSessionName
+                + "\"," + "\"dirs\": [\"" + localTheoryPath + "\"]}");
         this.sessionId = this.lastEvent.getValue("session_id");
     }
 
@@ -269,6 +270,7 @@ public final class IsabelleProofChecker {
         final BufferedReader reader = new BufferedReader(
                 new InputStreamReader(this.server.getInputStream()));
         while (!reader.ready()) {
+            SystemUtils.semiBusyWaitingHelper();
         }
     }
 
@@ -297,15 +299,16 @@ public final class IsabelleProofChecker {
 
         try {
             final List<String> lines = reader.readFileByLine(theory);
-            final String theoryPath = theory.getCanonicalPath();
+            final String localTheoryPath = theory.getCanonicalPath();
 
             final Pattern pattern = Pattern.compile("_v[0-9]+" + IsabelleUtils.FILE_EXTENSION);
-            final Matcher matcher = pattern.matcher(theoryPath);
+            final Matcher matcher = pattern.matcher(localTheoryPath);
 
             int fileVersion = 1;
-            String theoryPathWithoutSuffix = theoryPath.substring(0, theoryPath.length() - 4);
+            String theoryPathWithoutSuffix = localTheoryPath.substring(0,
+                    localTheoryPath.length() - ".thy".length());
             if (matcher.find()) {
-                final String fileVersionString = theoryPath.substring(matcher.start() + 2,
+                final String fileVersionString = localTheoryPath.substring(matcher.start() + 2,
                         matcher.end() - 4);
                 fileVersion = Integer.parseInt(fileVersionString) + 1;
 
@@ -329,12 +332,13 @@ public final class IsabelleProofChecker {
                     lines.set(lineNum, line);
 
                     String result = "";
-                    for (String s : lines) {
+                    for (final String s : lines) {
+                        String actualS = s;
                         if (s.contains(theoryName)) {
-                            s = s.replace(theoryName, newTheoryName);
+                            actualS = s.replace(theoryName, newTheoryName);
                         }
 
-                        result += s + System.lineSeparator();
+                        result += actualS + System.lineSeparator();
                     }
 
                     theory.delete();
@@ -356,7 +360,7 @@ public final class IsabelleProofChecker {
 
         // TODO: There is probably a better solution for this.
         while (!(this.getLastEvent() instanceof IsabelleOkEvent)) {
-
+            SystemUtils.semiBusyWaitingHelper();
         }
 
         this.lastEvent = new IsabelleMiscEvent();
@@ -369,12 +373,12 @@ public final class IsabelleProofChecker {
         this.waitForFinish();
     }
 
-    public synchronized void setFinished(final boolean finished) {
-        this.finished = finished;
+    public synchronized void setFinished(final boolean newFinished) {
+        this.finished = newFinished;
     }
 
-    public void setSolvers(final List<String> solvers) {
-        this.solvers = solvers;
+    public void setSolvers(final List<String> newSolvers) {
+        this.solvers = newSolvers;
     }
 
     /**
@@ -419,8 +423,7 @@ public final class IsabelleProofChecker {
 
             return new Pair<Boolean, File>(true, theory);
         } else {
-            LOGGER.info(
-                    "Verification failed. Attempting to solve automatically "
+            LOGGER.info("Verification failed. Attempting to solve automatically "
                     + "by employing different solvers.");
             final String errors = this.lastEvent.getValue("errors");
 
@@ -454,6 +457,7 @@ public final class IsabelleProofChecker {
 
     private void waitForFinish() {
         while (!this.getFinished()) {
+            SystemUtils.semiBusyWaitingHelper();
         }
         this.finished = false;
     }

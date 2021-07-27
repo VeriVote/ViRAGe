@@ -35,10 +35,10 @@ public final class PrologPredicate {
     /**
      * Creates a predicate without any parameters (arity 0).
      *
-     * @param name the name of the predicate
+     * @param nameValue the name of the predicate
      */
-    public PrologPredicate(final String name) {
-        this.name = name;
+    public PrologPredicate(final String nameValue) {
+        this.name = nameValue;
         this.parameters = new LinkedList<PrologPredicate>();
         this.arity = 0;
     }
@@ -46,13 +46,13 @@ public final class PrologPredicate {
     /**
      * Simple constructor.
      *
-     * @param name the name
-     * @param parameters the parameters
+     * @param nameValue the name
+     * @param parametersValue the parameters
      */
-    public PrologPredicate(final String name, final List<PrologPredicate> parameters) {
-        this.name = name;
-        this.parameters = parameters;
-        this.arity = parameters.size();
+    public PrologPredicate(final String nameValue, final List<PrologPredicate> parametersValue) {
+        this.name = nameValue;
+        this.parameters = parametersValue;
+        this.arity = parametersValue.size();
 
         this.depth = 0;
         for (final PrologPredicate parameter : this.parameters) {
@@ -112,8 +112,8 @@ public final class PrologPredicate {
         return s.matches("[A-Z_][a-zA-Z_0-9]*");
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public void setName(final String newName) {
+        this.name = newName;
     }
 
     @Override

@@ -28,12 +28,12 @@ public final class VirageIsabelleVerifyJob
      * Simple constructor.
      *
      * @param issuer the issuing ui
-     * @param file the file
+     * @param fileValue the file
      */
-    public VirageIsabelleVerifyJob(final VirageUserInterface issuer, final File file) {
+    public VirageIsabelleVerifyJob(final VirageUserInterface issuer, final File fileValue) {
         super(issuer);
 
-        this.file = file;
+        this.file = fileValue;
     }
 
     @Override

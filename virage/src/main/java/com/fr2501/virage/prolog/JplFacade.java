@@ -72,13 +72,13 @@ public final class JplFacade {
     /**
      * Simple constructor.
      *
-     * @param timeout query timeout
+     * @param timeoutValue query timeout
      * @throws ExternalSoftwareUnavailableException if JPL is unavailable
      * @throws UnsatisfiedLinkError if SWI-Prolog library directory is not in LD_LIBRARY_PATH
      */
-    public JplFacade(final long timeout)
+    public JplFacade(final long timeoutValue)
             throws ExternalSoftwareUnavailableException, UnsatisfiedLinkError {
-        this.timeout = timeout;
+        this.timeout = timeoutValue;
         this.parser = new SimplePrologParser();
 
         if (!ConfigReader.getInstance().hasJpl()) {
@@ -239,7 +239,8 @@ public final class JplFacade {
         Compound toReturn = new Compound(",",
                 new Term[] {terms.get(predCount - 2), terms.get(predCount - 1)});
 
-        for (int i = predCount - 3; i > 0; i--) {
+        final int alreadyHandledParts = 3;
+        for (int i = predCount - alreadyHandledParts; i > 0; i--) {
             toReturn = new Compound(",", new Term[] {terms.get(i), toReturn});
         }
 
@@ -298,11 +299,11 @@ public final class JplFacade {
      * A query not containing variables, only asking for true or false, using default timeout.
      *
      * @param queryString the query
-     * @param timeout the timeout
+     * @param timeoutValue the timeout
      * @return a SearchResult representing the result of the query
      */
-    public SearchResult<Boolean> factQuery(final String queryString, final long timeout) {
-        final long endTime = System.currentTimeMillis() + timeout;
+    public SearchResult<Boolean> factQuery(final String queryString, final long timeoutValue) {
+        final long endTime = System.currentTimeMillis() + timeoutValue;
 
         final String unusedVariable = findUnusedVariable(queryString);
 
@@ -367,12 +368,12 @@ public final class JplFacade {
      * A query containing variables.
      *
      * @param queryString the query
-     * @param timeout the timeout
+     * @param customTimeout the timeout
      * @return a SearchResult representing the result of the query
      */
     public SearchResult<Map<String, String>> iterativeDeepeningQuery(final String queryString,
-            final long timeout) {
-        final long endTime = System.currentTimeMillis() + timeout;
+            final long customTimeout) {
+        final long endTime = System.currentTimeMillis() + customTimeout;
 
         final String unusedVariable = findUnusedVariable(queryString);
 
@@ -436,22 +437,24 @@ public final class JplFacade {
         return res;
     }
 
-    public void setTimeout(final long timeout) {
-        this.timeout = timeout;
+    public void setTimeout(final long newTimeout) {
+        this.timeout = newTimeout;
     }
 
     /**
      * Simple Prolog query, returns only the first result due to Prolog limitations.
      *
      * @param queryString the query
-     * @param timeout the timeout
+     * @param customTimeout the timeout
      * @return a {@link Map} containing the result. If no solution is found within timeout, an empty
      *      Map is returned. If no solution exists, return null.
      * @throws PrologException if query is malformed.
+     * @throws IllegalArgumentException if query is malformed
      */
-    public Map<String, String> simpleQueryWithTimeout(final String queryString, final long timeout)
+    public Map<String, String> simpleQueryWithTimeout(final String queryString,
+            final long customTimeout)
             throws PrologException {
-        final float timeoutInSeconds = timeout / 1000.0f;
+        final float timeoutInSeconds = customTimeout / 1000.0f;
 
         final String actualQuery = "call_with_time_limit(" + timeoutInSeconds + "," + "("
                 + queryString + ")" + ")";

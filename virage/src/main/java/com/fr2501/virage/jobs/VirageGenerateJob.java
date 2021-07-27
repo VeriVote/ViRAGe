@@ -36,12 +36,12 @@ public final class VirageGenerateJob
      * Simple constructor.
      *
      * @param issuer the issuing ui
-     * @param properties the properties
+     * @param propertiesValue the properties
      */
-    public VirageGenerateJob(final VirageUserInterface issuer, final List<String> properties) {
+    public VirageGenerateJob(final VirageUserInterface issuer, final List<String> propertiesValue) {
         super(issuer);
 
-        this.propertyStrings = properties;
+        this.propertyStrings = propertiesValue;
     }
 
     @Override

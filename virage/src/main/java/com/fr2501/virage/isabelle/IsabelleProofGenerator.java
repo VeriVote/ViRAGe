@@ -131,7 +131,6 @@ public class IsabelleProofGenerator {
             if (subgoal.getAllCompositionRules().size() == 1) {
                 final CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
 
-                // TODO Don't just continue, but collect assumptions.
                 if (rule.getOrigin().equals("ASSUMPTION")) {
                     final Property p = this.parent.getFramework()
                             .getProperty(rule.getSuccedent().getName());

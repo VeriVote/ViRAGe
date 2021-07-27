@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpl7.JPLException;
 
+import com.fr2501.util.SystemUtils;
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import com.fr2501.virage.beast.CCodeGenerator;
 import com.fr2501.virage.isabelle.IsabelleCodeGenerator;
@@ -100,12 +101,12 @@ public final class VirageCore implements Runnable {
     /**
      * Initialises VirageCore with the given arguments.
      *
-     * @param args the arguments
+     * @param argsValue the arguments
      */
-    public VirageCore(final String[] args) {
+    public VirageCore(final String[] argsValue) {
         LOGGER.info("Initialising VirageCore.");
 
-        this.args = args;
+        this.args = argsValue;
         this.jobs = new LinkedBlockingQueue<VirageJob<?>>();
     }
 
@@ -154,8 +155,8 @@ public final class VirageCore implements Runnable {
         return this.searchManager;
     }
 
-    private void init(final String[] args) throws ParseException {
-        this.parseCommandLine(args);
+    private void init(final String[] argsValue) throws ParseException {
+        this.parseCommandLine(argsValue);
 
         // Initialise UserInterface
         final VirageUserInterfaceFactory factory = new VirageUserInterfaceFactory();
@@ -203,7 +204,6 @@ public final class VirageCore implements Runnable {
                     ConfigReader.getInstance().updateValueForSwiPrologLibrariesPath(newValue);
                 }
             } catch (final ExternalSoftwareUnavailableException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
 
@@ -223,7 +223,6 @@ public final class VirageCore implements Runnable {
                     ConfigReader.getInstance().updateValueForLibswiplPath(newValue);
                 }
             } catch (final ExternalSoftwareUnavailableException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
 
@@ -247,19 +246,16 @@ public final class VirageCore implements Runnable {
 
                 this.scalaCodeGenerator = new IsabelleCodeGenerator(this.framework);
             } catch (final IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (final ExternalSoftwareUnavailableException e) {
-                // TODO
                 e.printStackTrace();
             } catch (final IsabelleBuildFailedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
     }
 
-    private void parseCommandLine(final String[] args) throws ParseException {
+    private void parseCommandLine(final String[] argsValue) throws ParseException {
         final Options options = new Options();
 
         OptionBuilder.withArgName("interface");
@@ -274,7 +270,7 @@ public final class VirageCore implements Runnable {
 
         final CommandLineParser parser = new DefaultParser();
         try {
-            this.cl = parser.parse(options, args);
+            this.cl = parser.parse(options, argsValue);
         } catch (final ParseException e) {
             LOGGER.fatal("Something went wrong while parsing the command line parameters.");
 
@@ -320,12 +316,7 @@ public final class VirageCore implements Runnable {
                 }
             } else {
                 // No jobs, busy waiting
-                try {
-                    Thread.sleep(100);
-                } catch (final InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                SystemUtils.semiBusyWaitingHelper();
             }
         }
     }
@@ -333,10 +324,10 @@ public final class VirageCore implements Runnable {
     /**
      * Sets the core's {@link FrameworkRepresentation} and reinitializes its analyzers.
      *
-     * @param framework the new {@link FrameworkRepresentation}
+     * @param newFramework the new {@link FrameworkRepresentation}
      */
-    public void setFrameworkRepresentation(final FrameworkRepresentation framework) {
-        this.framework = framework;
+    public void setFrameworkRepresentation(final FrameworkRepresentation newFramework) {
+        this.framework = newFramework;
 
         this.initAnalyzers();
     }

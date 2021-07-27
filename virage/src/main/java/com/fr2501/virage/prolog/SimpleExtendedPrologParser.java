@@ -196,27 +196,22 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
     }
 
     private ParserState newState(final String line, final ParserState oldState) {
+        ParserState toReturn = oldState;
+
         if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSITION_TYPE_HEADER)) {
-            return ParserState.COMPOSITION_TYPE;
+            toReturn = ParserState.COMPOSITION_TYPE;
+        } else if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSABLE_MODULE_HEADER)) {
+            toReturn = ParserState.COMPOSABLE_MODULE;
+        } else if (line.toUpperCase()
+                .contains(ExtendedPrologStrings.COMPOSITIONAL_STRUCTURE_HEADER)) {
+            toReturn = ParserState.COMPOSITIONAL_STRUCTURE;
+        } else if (line.toUpperCase().contains(ExtendedPrologStrings.PROPERTY_HEADER)) {
+            toReturn = ParserState.PROPERTY;
+        } else if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSITION_RULE_HEADER)) {
+            toReturn = ParserState.COMPOSITION_RULE;
         }
 
-        if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSABLE_MODULE_HEADER)) {
-            return ParserState.COMPOSABLE_MODULE;
-        }
-
-        if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSITIONAL_STRUCTURE_HEADER)) {
-            return ParserState.COMPOSITIONAL_STRUCTURE;
-        }
-
-        if (line.toUpperCase().contains(ExtendedPrologStrings.PROPERTY_HEADER)) {
-            return ParserState.PROPERTY;
-        }
-
-        if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSITION_RULE_HEADER)) {
-            return ParserState.COMPOSITION_RULE;
-        }
-
-        return oldState;
+        return toReturn;
     }
 
     private void parseCompositionRuleSection(final FrameworkRepresentation framework,
