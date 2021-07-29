@@ -33,8 +33,9 @@ public final class VirageParseJob extends VirageJobWithExplicitResult<FrameworkR
     @Override
     public void concreteExecute() throws IOException, MalformedEplFileException {
 
-        this.result = this.executingCore.getExtendedPrologParser().parseFramework(this.file, true);
-        this.executingCore.setFrameworkRepresentation(this.result);
+        this.result = this.getExecutingCore()
+                .getExtendedPrologParser().parseFramework(this.file, true);
+        this.getExecutingCore().setFrameworkRepresentation(this.result);
 
     }
 

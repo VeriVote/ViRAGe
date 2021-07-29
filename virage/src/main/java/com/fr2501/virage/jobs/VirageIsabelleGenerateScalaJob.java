@@ -52,7 +52,7 @@ public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitR
 
     @Override
     protected void concreteExecute() throws Exception {
-        this.generator = this.executingCore.getIsabelleCodeGenerator();
+        this.generator = this.getExecutingCore().getIsabelleCodeGenerator();
 
         this.result = this.generator.generateScalaCodeAndCompile(this.composition);
     }

@@ -53,7 +53,7 @@ public final class VirageProveJob
 
     @Override
     public void concreteExecute() {
-        this.framework = this.executingCore.getFrameworkRepresentation();
+        this.framework = this.getExecutingCore().getFrameworkRepresentation();
 
         this.properties = new LinkedList<Property>();
 
@@ -61,7 +61,8 @@ public final class VirageProveJob
             this.properties.add(this.framework.getProperty(s));
         }
 
-        this.result = this.executingCore.getSearchManager().proveClaims(this.tree, this.properties);
+        this.result = this.getExecutingCore().getSearchManager().proveClaims(this.tree,
+                this.properties);
     }
 
     @Override

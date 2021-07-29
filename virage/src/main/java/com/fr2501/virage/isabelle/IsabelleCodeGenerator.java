@@ -199,7 +199,7 @@ public final class IsabelleCodeGenerator {
                 theoryName);
         result = result.replace(PARENT_NAME_VAR, this.framework.getSessionName());
         final SimpleFileWriter writer = new SimpleFileWriter();
-        writer.writeToFile(theory.getParent() + File.separator + "ROOT", result);
+        writer.writeToFile(theory.getParent() + File.separator + IsabelleUtils.ROOT, result);
 
         return sessionName;
     }
@@ -394,7 +394,7 @@ public final class IsabelleCodeGenerator {
         final File[] generatedFiles = codeDir.listFiles();
 
         // Delete ROOT file, it has served its purpose
-        final File root = new File(generatedPath + File.separator + "ROOT");
+        final File root = new File(generatedPath + File.separator + IsabelleUtils.ROOT);
         root.delete();
 
         // Isabelle puts everything into one file when generating Scala and OCaml code

@@ -36,7 +36,7 @@ public final class VirageGenerateCCodeJob extends VirageJobWithExplicitResult<Fi
 
     @Override
     protected void concreteExecute() throws Exception {
-        this.generator = this.executingCore.getCCodeGenerator();
+        this.generator = this.getExecutingCore().getCCodeGenerator();
 
         this.result = this.generator.getCCodeFromComposition(this.composition);
     }

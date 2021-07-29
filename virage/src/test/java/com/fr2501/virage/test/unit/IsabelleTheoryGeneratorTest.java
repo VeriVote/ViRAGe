@@ -1,7 +1,6 @@
 package com.fr2501.virage.test.unit;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,11 +11,9 @@ import com.fr2501.virage.analyzer.CompositionAnalyzer;
 import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
-import com.fr2501.virage.prolog.MalformedEplFileException;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
-import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 
@@ -33,9 +30,9 @@ public final class IsabelleTheoryGeneratorTest {
     /**
      * String representation of SMC.
      */
-    private static final String SMC = "sequential_composition(" + "loop_composition("
-            + "parallel_composition(" + "sequential_composition(" + "pass_module(2,_),"
-            + "sequential_composition(" + "revision_composition(" + "plurality),"
+    private static final String SMC = "sequential_composition(loop_composition("
+            + "parallel_composition(" + "sequential_composition(pass_module(2,_),"
+            + "sequential_composition(revision_composition(plurality),"
             + "pass_module(1,_)))," + "drop_module(2,_)," + "max_aggregator),"
             + "defer_equal_condition(1))," + "elect_module)";
     /**
@@ -50,13 +47,10 @@ public final class IsabelleTheoryGeneratorTest {
     /**
      * Initialization for the following tests.
      *
-     * @throws IOException if file system interaction fails
-     * @throws MalformedEplFileException if the input file violates the EPL format
-     * @throws ExternalSoftwareUnavailableException if Isabelle or swipl is unavailable
+     * @throws Exception if something goes wrong
      */
     @Before
-    public void init()
-            throws IOException, MalformedEplFileException, ExternalSoftwareUnavailableException {
+    public void init() throws Exception {
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
         this.framework = parser.parseFramework(new File(PATH), false);
 

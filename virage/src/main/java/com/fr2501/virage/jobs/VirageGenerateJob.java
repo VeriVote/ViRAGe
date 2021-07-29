@@ -46,12 +46,13 @@ public final class VirageGenerateJob
 
     @Override
     public void concreteExecute() {
-        this.manager = this.executingCore.getSearchManager();
+        this.manager = this.getExecutingCore().getSearchManager();
 
         this.properties = new LinkedList<Property>();
 
         for (final String s : this.propertyStrings) {
-            this.properties.add(this.executingCore.getFrameworkRepresentation().getProperty(s));
+            this.properties
+                    .add(this.getExecutingCore().getFrameworkRepresentation().getProperty(s));
         }
 
         this.result = this.manager.generateComposition(this.properties);
@@ -80,7 +81,7 @@ public final class VirageGenerateJob
                 final DecompositionTree tree = treeResult.getValue();
 
                 results.add(tree.toStringWithTypesInsteadOfVariables(
-                        this.executingCore.getFrameworkRepresentation()));
+                        this.getExecutingCore().getFrameworkRepresentation()));
             }
         }
 

@@ -59,8 +59,8 @@ public final class VirageAnalyzeJob
 
     @Override
     public void concreteExecute() {
-        this.framework = this.executingCore.getFrameworkRepresentation();
-        this.manager = this.executingCore.getSearchManager();
+        this.framework = this.getExecutingCore().getFrameworkRepresentation();
+        this.manager = this.getExecutingCore().getSearchManager();
 
         this.properties = new LinkedList<Property>();
 

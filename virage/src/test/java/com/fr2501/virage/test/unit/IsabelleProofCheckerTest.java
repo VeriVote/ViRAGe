@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,14 +20,11 @@ import com.fr2501.virage.analyzer.SimplePrologCompositionAnalyzer;
 import com.fr2501.virage.isabelle.IsabelleProofChecker;
 import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
-import com.fr2501.virage.prolog.MalformedEplFileException;
 import com.fr2501.virage.prolog.QueryState;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.DecompositionTree;
-import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
-import com.fr2501.virage.types.IsabelleBuildFailedException;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
 
@@ -80,13 +76,10 @@ public final class IsabelleProofCheckerTest {
     /**
      * Initialization for the following tests.
      *
-     * @throws IOException if file system interaction fails
-     * @throws MalformedEplFileException if the input file does not satisfy the EPL format
-     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     * @throws Exception if something goes wrong
      */
     @Before
-    public void init()
-            throws IOException, MalformedEplFileException, ExternalSoftwareUnavailableException {
+    public void init() throws Exception {
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
         this.framework = parser.parseFramework(new File(EPL_PATH), false);
 
@@ -109,14 +102,10 @@ public final class IsabelleProofCheckerTest {
     // Takes long, not performed by default.
     /**
      * Simple test.
-     * @throws IOException if io operation fails
-     * @throws InterruptedException if execution is interrupted
-     * @throws ExternalSoftwareUnavailableException if Isabelle or JPL are unavailable
-     * @throws IsabelleBuildFailedException if the build process fails
+     * @throws Exception if something goes wrong
      */
     @Test
-    public void simpleFrameworkTest() throws IOException, InterruptedException,
-        ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+    public void simpleFrameworkTest() throws Exception {
         final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty("electing"));
 
@@ -155,14 +144,10 @@ public final class IsabelleProofCheckerTest {
     /**
      * Runs an exemplary proof and check process.
      *
-     * @throws IOException if file operations fail
-     * @throws InterruptedException if the process is interrupted
-     * @throws ExternalSoftwareUnavailableException if Isabelle or JPL is unavailable
-     * @throws IsabelleBuildFailedException if the build process fails
+     * @throws Exception if something goes wrong
      */
     // @Test
-    public void smcTest() throws IOException, InterruptedException,
-        ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+    public void smcTest() throws Exception {
         final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty("electing"));
         properties.add(this.framework.getProperty("monotonicity"));

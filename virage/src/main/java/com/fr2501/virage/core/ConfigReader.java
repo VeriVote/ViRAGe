@@ -48,6 +48,11 @@ public final class ConfigReader {
     private static final String LIST_SEPARATOR = ";";
 
     /**
+     * The separator between keys and values.
+     */
+    private static final String KEY_VALUE_SEPARATOR = "=";
+
+    /**
      * Name of the option containing the Isabelle binary.
      */
     private static final String ISABELLE_BIN = "ISABELLE_EXECUTABLE";
@@ -233,7 +238,7 @@ public final class ConfigReader {
                 .runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME")
                 .getFirstValue();
 
-        return output.split("=")[1].trim();
+        return output.split(KEY_VALUE_SEPARATOR)[1].trim();
     }
 
     private String computeIsabelleSessionDir()
@@ -242,7 +247,7 @@ public final class ConfigReader {
                 .runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME_USER")
                 .getFirstValue();
 
-        return output.split("=")[1].trim();
+        return output.split(KEY_VALUE_SEPARATOR)[1].trim();
     }
 
     /**
@@ -444,7 +449,7 @@ public final class ConfigReader {
                     }
                 }
 
-                final String path = value.split("=")[1];
+                final String path = value.split(KEY_VALUE_SEPARATOR)[1];
 
                 this.swiplHome = path.substring(1, path.length() - 2);
 
@@ -484,7 +489,7 @@ public final class ConfigReader {
                 for (final String line : lines) {
                     if (line.startsWith("PLLIBDIR")) {
                         value = line;
-                        path = value.split("=")[1];
+                        path = value.split(KEY_VALUE_SEPARATOR)[1];
                     }
                 }
 
@@ -500,7 +505,7 @@ public final class ConfigReader {
                         LOGGER.error("$PLARCH is undefined as well.");
                         throw new ExternalSoftwareUnavailableException();
                     } else {
-                        String tmp = value.split("=")[1];
+                        String tmp = value.split(KEY_VALUE_SEPARATOR)[1];
                         tmp = tmp.substring(1, tmp.length() - 2);
                         path = this.swiplHome + "lib" + File.separator + tmp;
                     }

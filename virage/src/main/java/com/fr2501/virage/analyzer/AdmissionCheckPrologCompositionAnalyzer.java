@@ -80,7 +80,8 @@ public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologC
         final List<String> admitStrings = new LinkedList<String>();
         final List<String> propertyStrings = new LinkedList<String>();
         for (final Property property : properties) {
-            admitStrings.add(AdmissionGuardStrings.ADMITS + property.getInstantiatedString(DEFAULT_VARIABLE));
+            admitStrings.add(AdmissionGuardStrings.ADMITS
+                    + property.getInstantiatedString(DEFAULT_VARIABLE));
             propertyStrings.add(property.getName() + AdmissionGuardStrings.SUFFIX
                     + property.getInstantiatedStringWithoutName(DEFAULT_VARIABLE));
         }

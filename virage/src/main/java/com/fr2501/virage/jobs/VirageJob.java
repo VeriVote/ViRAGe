@@ -22,16 +22,12 @@ public abstract class VirageJob<T> {
     /**
      * The core object executing this job.
      */
-    protected VirageCore executingCore;
+    private VirageCore executingCore;
+
     /**
      * The current state of this job.
      */
-    protected VirageJobState state;
-
-    /**
-     * A message containing the cause of an error, if one occurred.
-     */
-    protected String errorMessage = "";
+    private VirageJobState state;
 
     /**
      * The issuing ui.
@@ -47,15 +43,16 @@ public abstract class VirageJob<T> {
      * Time when this job was accepted by a core.
      */
     private final long timeIssued;
+
     /**
      * Starting time of this job.
      */
     private long timeStarted;
+
     /**
      * Finishing time of this job.
      */
     private long timeFinished;
-
     /**
      * Simple constructor.
      *
@@ -70,7 +67,6 @@ public abstract class VirageJob<T> {
 
         this.state = VirageJobState.PENDING;
     }
-
     /**
      * Runs the job and notifies its issuer on termination. Should only be ran after checking
      * isReadyToExecute(), otherwise behaviour is undefined.
@@ -135,7 +131,6 @@ public abstract class VirageJob<T> {
             res += this.presentConcreteResult() + System.lineSeparator();
         } else {
             res += "Something went wrong while executing this job.\n";
-            res += this.errorMessage;
         }
 
         res += "----------";
@@ -208,4 +203,20 @@ public abstract class VirageJob<T> {
      *     object
      */
     protected abstract void concreteExecute() throws Exception;
+
+    /**
+     * Simple getter.
+     * @return the executingCore
+     */
+    protected VirageCore getExecutingCore() {
+        return this.executingCore;
+    }
+
+    /**
+     * Simple setter.
+     * @param executingCoreValue the executingCore to set
+     */
+    protected void setExecutingCore(final VirageCore executingCoreValue) {
+        this.executingCore = executingCoreValue;
+    }
 }

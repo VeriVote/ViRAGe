@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.StringUtils;
+import com.fr2501.virage.isabelle.IsabelleUtils;
 import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.ComposableModule;
@@ -102,8 +103,8 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
                 line = line.replace(ExtendedPrologStrings.COMMENT, "");
                 line = StringUtils.removeWhitespace(line);
 
-                if (line.endsWith("ROOT")) {
-                    line = line.substring(0, line.length() - "ROOT".length());
+                if (line.endsWith(IsabelleUtils.ROOT)) {
+                    line = line.substring(0, line.length() - IsabelleUtils.ROOT.length());
                 }
 
                 framework.setTheoryPath(line);

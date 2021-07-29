@@ -27,7 +27,6 @@ import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.Property;
 import com.fr2501.virage.types.SearchResult;
-import com.fr2501.virage.types.ValueNotPresentException;
 
 /**
  * Tests that each implementation of {@link CompositionAnalyzer} must pass.
@@ -234,13 +233,10 @@ public abstract class CompositionAnalyzerTest {
 
     /**
      * Tests SMC proof.
-     * @throws ValueNotPresentException if proof process fails
-     * @throws IOException if io fails
-     * @throws ExternalSoftwareUnavailableException if external software is unavailable
+     * @throws Exception if something goes wrong
      */
     @Test
-    public void testSequentialMajorityComparison()
-            throws ValueNotPresentException, IOException, ExternalSoftwareUnavailableException {
+    public void testSequentialMajorityComparison() throws Exception {
         LOGGER.info("testSequentialMajorityComparison()");
         final String smc = "sequential_composition(loop_composition(" + "parallel_composition("
                 + "sequential_composition(" + "pass_module(2,_),sequential_composition("

@@ -12,11 +12,8 @@ import com.fr2501.virage.isabelle.IsabelleTheoryGenerator;
 import com.fr2501.virage.prolog.ExtendedPrologParser;
 import com.fr2501.virage.prolog.MalformedEplFileException;
 import com.fr2501.virage.prolog.SimpleExtendedPrologParser;
-import com.fr2501.virage.types.CompilationFailedException;
 import com.fr2501.virage.types.CompositionProof;
-import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
-import com.fr2501.virage.types.IsabelleBuildFailedException;
 
 /**
  * A test suite for {@link IsabelleCodeGenerator}.
@@ -31,8 +28,8 @@ public class IsabelleCodeGeneratorTest {
     /**
      * Path to Isabelle theories.
      */
-    private static final String THEORY_PATH =
-            "src/test/resources/verifiedVotingRuleConstruction/theories";
+    private static final String THEORY_PATH
+        = "src/test/resources/verifiedVotingRuleConstruction/theories";
     /**
      * String representation of SMC.
      */
@@ -66,15 +63,10 @@ public class IsabelleCodeGeneratorTest {
 
     /**
      * Test based on elect_module.
-     * @throws IOException if io fails.
-     * @throws InterruptedException if thread is interrupted
-     * @throws CompilationFailedException if the code cannot be compiled
-     * @throws IsabelleBuildFailedException if the Isabelle build process fails
-     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     * @throws Exception if something goes wrong.
      */
     @Test
-    public void electTest() throws IOException, InterruptedException, CompilationFailedException,
-            IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+    public void electTest() throws Exception {
         final IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
         final String module = "elect_module";
@@ -87,15 +79,11 @@ public class IsabelleCodeGeneratorTest {
 
     /**
      * Test based on drop_module.
-     * @throws IOException if io fails.
-     * @throws InterruptedException if thread is interrupted
-     * @throws CompilationFailedException if the code cannot be compiled
-     * @throws IsabelleBuildFailedException if the Isabelle build process fails
-     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     *
+     * @throws Exception if something goes wrong
      */
     @Test
-    public void dropTest() throws IOException, InterruptedException, CompilationFailedException,
-            IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+    public void dropTest() throws Exception {
         final IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
         final String module = "drop_module(1,_)";
@@ -105,16 +93,12 @@ public class IsabelleCodeGeneratorTest {
 
     /**
      * Test based on plurality_module.
-     * @throws IOException if io fails.
-     * @throws InterruptedException if thread is interrupted
-     * @throws CompilationFailedException if the code cannot be compiled
-     * @throws IsabelleBuildFailedException if the Isabelle build process fails
-     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     *
+     * @throws Exception if something goes wrong
      */
     @Test
     public void pluralityTest()
-            throws IOException, InterruptedException, CompilationFailedException,
-            IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+            throws Exception {
         final IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
         final String module = "plurality";
@@ -127,15 +111,11 @@ public class IsabelleCodeGeneratorTest {
 
     /**
      * Test based on smc.
-     * @throws IOException if io fails.
-     * @throws InterruptedException if thread is interrupted
-     * @throws CompilationFailedException if the code cannot be compiled
-     * @throws IsabelleBuildFailedException if the Isabelle build process fails
-     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
+     *
+     * @throws Exception if something goes wrong
      */
     @Test
-    public void smcTest() throws IOException, InterruptedException, CompilationFailedException,
-            IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
+    public void smcTest() throws Exception {
         final IsabelleCodeGenerator codeGenerator = new IsabelleCodeGenerator(this.framework);
 
         final String module = SMC;

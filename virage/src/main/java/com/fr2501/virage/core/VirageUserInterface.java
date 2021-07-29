@@ -14,9 +14,10 @@ public interface VirageUserInterface extends Runnable {
      * Displays a list of alternatives and lets user choose one.
      * @param message additional message
      * @param alternatives the alternatives to choose from
+     * @param allowChoosingNone allow choosing none of the alternatives, returns -1 in that case
      * @return the index of the user's choice
      */
-    int chooseAlternative(String message, List<?> alternatives);
+    int chooseAlternative(String message, List<?> alternatives, boolean allowChoosingNone);
 
     /**
      * Display error message.

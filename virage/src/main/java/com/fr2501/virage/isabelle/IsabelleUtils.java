@@ -1,12 +1,18 @@
 package com.fr2501.virage.isabelle;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.fr2501.util.SimpleFileReader;
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.PrologPredicate;
 
 /**
@@ -50,6 +56,11 @@ public class IsabelleUtils {
      * String used by Isabelle for anonymous types.
      */
     public static final String TYPE_ALIAS = "'a";
+
+    /**
+     * Isabelle ROOT keyword.
+     */
+    public static final String ROOT = "ROOT";
 
     /**
      * This method tries, along with other things, to match Prolog predicates to Isabelle entities.
@@ -143,5 +154,26 @@ public class IsabelleUtils {
                 return unused + i;
             }
         }
+    }
+
+    public static List<String> getSessionNamesFromRootFile(final File root) throws IOException {
+        final List<String> res = new LinkedList<String>();
+
+        final SimpleFileReader reader = new SimpleFileReader();
+        final List<String> lines = reader.readFileByLine(root);
+
+        final Pattern pattern = Pattern.compile("session(.*)=.*");
+
+        for(final String line: lines) {
+            final String lineWithoutWhitespace = StringUtils.removeWhitespace(line);
+
+            final Matcher matcher = pattern.matcher(lineWithoutWhitespace);
+
+            if(matcher.matches()) {
+                res.add(matcher.group(1));
+            }
+        }
+
+        return res;
     }
 }

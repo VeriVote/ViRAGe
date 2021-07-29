@@ -66,7 +66,7 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
 
     @Override
     protected void concreteExecute() throws Exception {
-        this.generator = this.executingCore.getIsabelleTheoryGenerator();
+        this.generator = this.getExecutingCore().getIsabelleTheoryGenerator();
 
         this.result = this.generator.generateTheoryFile(this.composition, this.proofs,
                 this.outputPath);

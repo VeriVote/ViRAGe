@@ -119,7 +119,8 @@ public final class ScalaIsabelleFacade {
         final List<Path> sessionDirs = new LinkedList<Path>();
         sessionDirs.add(Path.of(this.sessionDir));
 
-        this.setup = new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()), sessionNameValue,
+        this.setup = new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()),
+                sessionNameValue,
                 new Some<Path>(Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
                 Path.of(sessionDirValue),
                 JavaConverters.asScalaIteratorConverter(sessionDirs.iterator()).asScala().toSeq(),
@@ -127,7 +128,9 @@ public final class ScalaIsabelleFacade {
 
         try {
             isabelle = new Isabelle(this.setup);
-            // TODO Don't.
+            // Scala has no checked Exceptions and the constructor is not annotated.
+            // Therefore, javac thinks that the (implicitly checked) IsabelleBuildException
+            // cannot be thrown.
         } catch (/* IsabelleBuild */final Exception e) {
             e.printStackTrace();
             LOGGER.error("Building session " + sessionNameValue
@@ -141,6 +144,7 @@ public final class ScalaIsabelleFacade {
 
     /**
      * Triggers the Isabelle build process for a given session.
+     *
      * @param sessionDir the session directory
      * @param sessionName the session name
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
@@ -166,6 +170,9 @@ public final class ScalaIsabelleFacade {
         try {
             isabelle = new Isabelle(setup);
             isabelle.destroy();
+            // Scala has no checked Exceptions and the constructor is not annotated.
+            // Therefore, javac thinks that the (implicitly checked) IsabelleBuildException
+            // cannot be thrown.
         } catch (/* IsabelleBuild */final Exception e) {
             LOGGER.error("Building session " + sessionName
                     + " failed. Restarting ViRAGe or building"
@@ -182,15 +189,15 @@ public final class ScalaIsabelleFacade {
     public void extractFunctionsAndDefinitions() {
         this.functionsAndDefinitions = new HashMap<String, Map<String, String>>();
 
-        final MLFunction<Theory, scala.collection.immutable.List<String>>
-            mlFunToExtractAllNames = MLValue
-                .compileFunction("fn thy => " + "(map "
-                        + "(fn x => " + "(#description " + "(hd "
-                        + "(snd(x))" + "))) (filter (fn x => "
-                        + "(String.isPrefix " + "(Context.theory_name thy) " + "(snd (fst (x))"
-                        + ")))(Defs.all_specifications_of (Theory.defs_of thy))))",
-                            ScalaIsabelleFacade.isabelle, global(), Implicits.theoryConverter(),
-                            LIST_CONVERTER);
+        final MLFunction<Theory, scala.collection.immutable.List<String>> mlFunToExtractAllNames
+            = MLValue
+                .compileFunction(
+                        "fn thy => " + "(map " + "(fn x => " + "(#description " + "(hd "
+                                + "(snd(x))" + "))) (filter (fn x => " + "(String.isPrefix "
+                                + "(Context.theory_name thy) " + "(snd (fst (x))"
+                                + ")))(Defs.all_specifications_of (Theory.defs_of thy))))",
+                        ScalaIsabelleFacade.isabelle, global(), Implicits.theoryConverter(),
+                        LIST_CONVERTER);
 
         final String extractConstFunString = "#constants (Consts.dest (Sign.consts_of thy))";
 
@@ -201,8 +208,8 @@ public final class ScalaIsabelleFacade {
 
         final MLFunction<Theory, scala.collection.immutable.List<Tuple2<String, String>>>
             mlFunToExtractSigns = MLValue
-                .compileFunction("fn thy => ListPair.zip ((map (fn x => (fst x)) ("
-                        + extractConstFunString
+                .compileFunction(
+                        "fn thy => ListPair.zip ((map (fn x => (fst x)) (" + extractConstFunString
                                 + ")),map " + toStringFunction + "(map (fn x => (fst (snd x))) ("
                                 + extractConstFunString + ")))",
                         ScalaIsabelleFacade.isabelle, global(), Implicits.theoryConverter(),
@@ -310,8 +317,7 @@ public final class ScalaIsabelleFacade {
         final MLFunction0<scala.collection.immutable.List<String>> mlFun = MLValue.compileFunction0(
                 "Thy_Info.get_names", ScalaIsabelleFacade.isabelle, global(), LIST_CONVERTER);
         final var thys = mlFun.apply(ScalaIsabelleFacade.isabelle, global())
-                .retrieveNow(LIST_CONVERTER,
-                ScalaIsabelleFacade.isabelle, global());
+                .retrieveNow(LIST_CONVERTER, ScalaIsabelleFacade.isabelle, global());
 
         for (final String thy : JavaConverters.asJava(thys)) {
             if (thy.startsWith(prefix)) {

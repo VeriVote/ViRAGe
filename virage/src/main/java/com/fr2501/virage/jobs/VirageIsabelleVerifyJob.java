@@ -59,10 +59,10 @@ public final class VirageIsabelleVerifyJob
 
     @Override
     protected void concreteExecute() throws Exception {
-        this.checker = this.executingCore.getIsabelleProofChecker();
+        this.checker = this.getExecutingCore().getIsabelleProofChecker();
 
         this.result = this.checker.verifyTheoryFile(this.file,
-                this.executingCore.getFrameworkRepresentation());
+                this.getExecutingCore().getFrameworkRepresentation());
     }
 
 }

@@ -7,6 +7,11 @@ package com.fr2501.virage.prolog;
  */
 public interface PrologParser {
     /**
+     * The Prolog file extension.
+     */
+    String PROLOG_FILE_EXTENSION = ".pl";
+
+    /**
      * Parses a single Prolog predicate.
      *
      * @param predicate the predicate to be parsed
