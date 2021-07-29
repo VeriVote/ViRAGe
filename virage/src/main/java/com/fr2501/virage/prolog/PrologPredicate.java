@@ -116,6 +116,17 @@ public final class PrologPredicate {
         this.name = newName;
     }
 
+    public static PrologPredicate copy(final PrologPredicate pred) {
+        final String newName = pred.getName();
+
+        final List<PrologPredicate> newChildren = new LinkedList<PrologPredicate>();
+        for(final PrologPredicate child: pred.getParameters()) {
+            newChildren.add(PrologPredicate.copy(child));
+        }
+
+        return new PrologPredicate(newName, newChildren);
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

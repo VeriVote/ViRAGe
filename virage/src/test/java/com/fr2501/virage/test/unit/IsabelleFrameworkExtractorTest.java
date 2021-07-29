@@ -6,6 +6,7 @@ import com.fr2501.virage.isabelle.IsabelleFrameworkExtractor;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
+import com.fr2501.virage.types.MalformedSettingsValueException;
 
 /**
  * Test suite for {@link IsabelleFrameworkExtractor}.
@@ -17,10 +18,11 @@ public class IsabelleFrameworkExtractorTest {
      * Simple test.
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
      * @throws IsabelleBuildFailedException if the build process fails
+     * @throws MalformedSettingsValueException
      */
     @Test
     public void simpleTest()
-            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException, MalformedSettingsValueException {
         final IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
 
         final FrameworkRepresentation framework = extractor.extract(

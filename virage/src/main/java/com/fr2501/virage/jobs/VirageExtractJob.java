@@ -6,6 +6,7 @@ import com.fr2501.virage.isabelle.IsabelleFrameworkExtractor;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
+import com.fr2501.virage.types.MalformedSettingsValueException;
 
 /**
  * A {@link VirageJob} to extract a {@link FrameworkRepresentation} from an Isabelle session.
@@ -58,7 +59,7 @@ public final class VirageExtractJob extends VirageJobWithExplicitResult<Framewor
 
     @Override
     protected void concreteExecute()
-            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException, MalformedSettingsValueException {
         final IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
         final FrameworkRepresentation framework = extractor.extract(this.path, this.sessionName,
                 this.fileName);

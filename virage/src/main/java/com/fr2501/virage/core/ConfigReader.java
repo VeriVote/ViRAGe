@@ -53,6 +53,11 @@ public final class ConfigReader {
     private static final String KEY_VALUE_SEPARATOR = "=";
 
     /**
+     * The separator for mappings.
+     */
+    private static final String PAIR_SEPARATOR = "->";
+
+    /**
      * Name of the option containing the Isabelle binary.
      */
     private static final String ISABELLE_BIN = "ISABELLE_EXECUTABLE";
@@ -60,6 +65,11 @@ public final class ConfigReader {
      * Name of the option containing the SWI-Prolog binary.
      */
     private static final String SWIPL_BIN = "SWI_PROLOG_EXECUTABLE";
+
+    /**
+     * Name of the option containing session specific component aliases.
+     */
+    private static final String COMPONENT_ALIASES = "SESSION_SPECIFIC_COMPONENT_ALIASES";
 
     /**
      * Singleton instance.
@@ -123,7 +133,7 @@ public final class ConfigReader {
         // This is only to ensure unit-tests are working.
         try {
             this.readConfigFile(false);
-        } catch (final IOException e) {
+        } catch (final IOException | InvalidConfigVersionException e) {
             // Nothing to be done
         }
     }
@@ -423,6 +433,19 @@ public final class ConfigReader {
 
     public String getSessionName() {
         return this.properties.getProperty("ISABELLE_SESSION_NAME");
+    }
+
+    public Map<String, String> getComponentAliases() {
+        final Map<String, String> toReturn = new HashMap<String, String>();
+        final List<String> pairStrings = this.readAndSplitList(
+                this.properties.getProperty("SESSION_SPECIFIC_COMPONENT_ALIASES"));
+
+        for(final String pairString: pairStrings) {
+            final String[] elements = pairString.split(PAIR_SEPARATOR);
+            toReturn.put(elements[0], elements[1]);
+        }
+
+        return toReturn;
     }
 
     /**

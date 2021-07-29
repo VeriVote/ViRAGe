@@ -2,6 +2,7 @@ package com.fr2501.virage.isabelle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import com.fr2501.util.Pair;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.prolog.PrologParser;
+import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
 import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComponentType;
@@ -21,6 +23,7 @@ import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
+import com.fr2501.virage.types.MalformedSettingsValueException;
 import com.fr2501.virage.types.Property;
 
 /**
@@ -109,6 +112,15 @@ public final class IsabelleFrameworkExtractor {
 
     private void convertCompositionRules(final FrameworkRepresentation framework,
             final Map<String, Map<String, String>> compRulesRaw) {
+        Map<PrologPredicate, List<PrologPredicate>> componentAliases =
+                new HashMap<PrologPredicate, List<PrologPredicate>>();
+        try {
+             componentAliases = this.computeTransitiveClosureOfComponentAliases();
+        } catch (final MalformedSettingsValueException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
         for (final String thyName : compRulesRaw.keySet()) {
             thmLoop: for (final String thmName : compRulesRaw.get(thyName).keySet()) {
                 String sign = compRulesRaw.get(thyName).get(thmName);
@@ -154,16 +166,29 @@ public final class IsabelleFrameworkExtractor {
                     }
                 }
 
-                final String prologString = this.buildPrologClauseString(succedent, antecedents);
+                final List<String> prologStringList = new LinkedList<String>();
+                prologStringList.add(this.buildPrologClauseString(succedent, antecedents));
+                for(final PrologPredicate alias: componentAliases.keySet()) {
+                    for (final PrologPredicate expansion : componentAliases.get(alias)) {
+                        final String toBeAdded = this.buildPrologClauseString(
+                                this.replaceAlias(this.parser.parsePredicate(succedent), alias,
+                                        expansion).toString(), antecedents);
+                        if(!prologStringList.contains(toBeAdded)) {
+                            prologStringList.add(toBeAdded);
+                        }
+                    }
+                }
 
                 try {
-                    final CompositionRule rule = new CompositionRule(thmName,
-                            thyName.split("\\.")[1] + ".thy",
-                            this.parser.parseSingleClause(prologString));
+                    for(final String prologString: prologStringList) {
+                        final CompositionRule rule = new CompositionRule(thmName,
+                                thyName.split("\\.")[1] + ".thy",
+                                this.parser.parseSingleClause(prologString));
 
-                    framework.add(rule);
+                        framework.add(rule);
 
-                    this.prologStrings.add(prologString);
+                        this.prologStrings.add(prologString);
+                    }
                 } catch (final IllegalArgumentException e) {
                     this.logger.warn(e);
                 }
@@ -220,14 +245,17 @@ public final class IsabelleFrameworkExtractor {
 
     /**
      * Extracts an (E)PL file from an Isabelle session.
+     *
      * @param sessionDir the session directory
      * @param sessionName the session name
      * @return the compositional framework
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable.
      * @throws IsabelleBuildFailedException if the session cannot be built
+     * @throws MalformedSettingsValueException
      */
     public FrameworkRepresentation extract(final String sessionDir, final String sessionName)
-            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException,
+            MalformedSettingsValueException {
 
         return this.extract(sessionDir, sessionName,
                 "framework" + System.currentTimeMillis() + ".pl");
@@ -242,10 +270,11 @@ public final class IsabelleFrameworkExtractor {
      * @return a framework representation of the session
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
      * @throws IsabelleBuildFailedException if the session build fails
+     * @throws MalformedSettingsValueException
      */
     public FrameworkRepresentation extract(final String sessionDir, final String sessionName,
-            final String fileName)
-                    throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+            final String fileName) throws ExternalSoftwareUnavailableException,
+            IsabelleBuildFailedException, MalformedSettingsValueException {
         if (fileName == null) {
             return this.extract(sessionDir, sessionName);
         }
@@ -276,6 +305,106 @@ public final class IsabelleFrameworkExtractor {
         framework.addDummyRulesIfNecessary();
 
         return framework;
+    }
+
+    private Map<PrologPredicate, List<PrologPredicate>> computeTransitiveClosureOfComponentAliases()
+            throws MalformedSettingsValueException {
+        final Map<String, String> input = ConfigReader.getInstance().getComponentAliases();
+
+        final Map<PrologPredicate, List<PrologPredicate>> toReturn =
+                new HashMap<PrologPredicate, List<PrologPredicate>>();
+
+        for (final String predString : input.keySet()) {
+            try {
+                final List<PrologPredicate> toBePassed = new LinkedList<PrologPredicate>();
+                toBePassed.add(this.parser.parsePredicate(input.get(predString)));
+
+                toReturn.put(this.parser.parsePredicate(predString), toBePassed);
+            } catch (final IllegalArgumentException e) {
+                System.out.println(predString);
+                throw new MalformedSettingsValueException(predString);
+            }
+        }
+
+        boolean changesMade = true;
+        while (changesMade) {
+            changesMade = false;
+
+            for (final PrologPredicate alias : toReturn.keySet()) {
+                final List<PrologPredicate> aliasExpansions = toReturn.get(alias);
+
+                for (final PrologPredicate candidate : toReturn.keySet()) {
+                    if(candidate == alias) {
+                        continue;
+                    }
+
+                    final List<PrologPredicate> candidateExpansions = toReturn.get(candidate);
+
+                    final List<PrologPredicate> newValues = this.computeAllExpansions(alias,
+                            aliasExpansions, candidateExpansions);
+
+                    for (final PrologPredicate newValue : newValues) {
+                        if (!candidateExpansions.contains(newValue)) {
+                            candidateExpansions.add(newValue);
+                            changesMade = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return toReturn;
+    }
+
+    private List<PrologPredicate> computeAllExpansions(final PrologPredicate alias,
+            final List<PrologPredicate> aliasExpansions,
+            final List<PrologPredicate> candidateExpansions) {
+        final List<PrologPredicate> toReturn = new LinkedList<PrologPredicate>();
+
+        for (final PrologPredicate candidateExpansion : candidateExpansions) {
+            final List<PrologPredicate> children = candidateExpansion.getAllChildren();
+
+            for (final PrologPredicate child : children) {
+                if (child.getName().equals(alias.getName())) {
+                    for (final PrologPredicate aliasExpansion : aliasExpansions) {
+                        toReturn.add(this.replaceAlias(candidateExpansion, child, aliasExpansion));
+                    }
+                }
+            }
+        }
+
+        return toReturn;
+    }
+
+    private PrologPredicate replaceAlias(final PrologPredicate original, final PrologPredicate toBeReplaced,
+            final PrologPredicate replacement) {
+
+        if(original.equals(toBeReplaced)) {
+            final PrologPredicate copyOfReplacement = PrologPredicate.copy(replacement);
+
+            final List<PrologPredicate> originalParameters =
+                    PrologPredicate.copy(toBeReplaced).getParameters();
+
+            int oldParamIndex = 0;
+            for(int i = 0; i < copyOfReplacement.getArity(); i++) {
+                if(copyOfReplacement.getParameters().get(i).isVariable()) {
+                    copyOfReplacement.getParameters().set(i,
+                            PrologPredicate.copy(originalParameters.get(oldParamIndex)));
+                    oldParamIndex++;
+                }
+            }
+
+            return copyOfReplacement;
+        } else {
+            final PrologPredicate copyOfOriginal = PrologPredicate.copy(original);
+
+            for (int i = 0; i < copyOfOriginal.getArity(); i++) {
+                copyOfOriginal.getParameters().set(i, this.replaceAlias(
+                        copyOfOriginal.getParameters().get(i), toBeReplaced, replacement));
+            }
+
+            return copyOfOriginal;
+        }
     }
 
     /**

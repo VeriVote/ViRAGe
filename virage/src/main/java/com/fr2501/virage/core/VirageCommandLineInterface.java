@@ -811,7 +811,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 firstTry = false;
             } else {
                 path = this.requestString("Please input the path to an (E)PL file or "
-                        + "an Isabelle ROOT file containing exactly one session specification. "
+                        + "an Isabelle ROOT file. "
                         + "(Press ENTER for default: " + this.addQuotationsToPath(defaultPath)
                         + ")");
             }
