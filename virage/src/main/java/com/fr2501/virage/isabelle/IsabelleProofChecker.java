@@ -146,7 +146,7 @@ public final class IsabelleProofChecker {
                 try {
                     IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
                 } catch (final IOException e) {
-                    LOGGER.error("Something went wrong.", e);
+                    LOGGER.error(e);
                 }
                 this.rootTemplate = writer.toString();
 
@@ -156,12 +156,12 @@ public final class IsabelleProofChecker {
                 try {
                     IOUtils.copy(texTemplateStream, writer, StandardCharsets.UTF_8);
                 } catch (final IOException e) {
-                    LOGGER.error("Something went wrong.", e);
+                    LOGGER.error(e);
                 }
                 this.texTemplate = writer.toString();
             }
         } catch (IOException | InterruptedException e) {
-            LOGGER.error("Something went wrong.", e);
+            LOGGER.error(e);
             e.printStackTrace();
         }
     }

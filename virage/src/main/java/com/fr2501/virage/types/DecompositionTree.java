@@ -170,6 +170,11 @@ public final class DecompositionTree {
         return this.label;
     }
 
+    /**
+     * Fills levels of the tree according to arities in framework.
+     * @param framework the framework
+     * @throws IllegalArgumentException if a level is already too large
+     */
     public void fillMissingVariables(final FrameworkRepresentation framework) {
         if(PrologPredicate.isVariable(this.label)) {
             return;
@@ -207,7 +212,7 @@ public final class DecompositionTree {
             return this.label;
         } else {
             String res = this.label;
-            res += "(" + StringUtils.printCollection(this.children) + ")";
+            res += StringUtils.parenthesize(StringUtils.printCollection(this.children));
             return res;
         }
     }
@@ -236,13 +241,14 @@ public final class DecompositionTree {
                 final DecompositionTree currentChild = this.children.get(i);
 
                 if (PrologPredicate.isVariable(currentChild.getLabel())) {
-                    res += thisComponent.getParameters().get(i).getName() + ",";
+                    res += thisComponent.getParameters().get(i).getName()
+                            + PrologPredicate.SEPARATOR;
                 } else {
                     res += currentChild.toStringWithTypesInsteadOfVariables(framework);
                 }
             }
 
-            if (res.endsWith(",")) {
+            if (res.endsWith(PrologPredicate.SEPARATOR)) {
                 res = res.substring(0, res.length() - 1);
             }
 

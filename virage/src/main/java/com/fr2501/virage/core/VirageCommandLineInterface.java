@@ -60,9 +60,15 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     private static final Logger LOGGER = LogManager.getLogger(VirageCommandLineInterface.class);
 
     /**
+     * Name of libswipl.so.
+     */
+    private static final String LIBSWIPL_SO = "libswipl.so";
+
+    /**
      * The separator.
      */
-    private static final String SEPARATOR = "###########################################################";
+    private static final String SEPARATOR
+        = "###########################################################";
     /**
      * The banner.
      */
@@ -78,6 +84,16 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
      * Character to print before lines.
      */
     private static final String HEADER_LINE_START = "# ";
+
+    /**
+     * List separator.
+     */
+    private static final String LIST_SEPARATOR = ",";
+
+    /**
+     * Ask user to retry.
+     */
+    private static final String TRY_AGAIN = "Please try again.";
 
     /**
      * A Scanner to read input.
@@ -137,7 +153,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     private String addQuotationsToPath(final String pathString) {
-        return "\'" + pathString + "\'";
+        final String pathDelimiter = "\'";
+        return pathDelimiter + pathString + pathDelimiter;
     }
 
     private void checkEnvironment() {
@@ -202,16 +219,18 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     private void setupLibswipl() {
-        this.displayError("A required SWI-Prolog library (\"libswipl.so\") could not be located.");
+        this.displayError("A required SWI-Prolog library (\""
+                + LIBSWIPL_SO + "\") could not be located.");
 
         String newValue;
         try {
             while (true) {
-                newValue = this.requestString("Please input the path to libswipl.so. "
+                newValue = this.requestString(StringUtils.appendPeriod("Please input the path to "
+                        + LIBSWIPL_SO) + " "
                         + "For your setup of SWI-Prolog, typical values are "
-                        + this.addQuotationsToPath("/usr/lib/libswipl.so") + "or "
+                        + this.addQuotationsToPath("/usr/lib/" + LIBSWIPL_SO) + "or "
                         + this.addQuotationsToPath(
-                                ConfigReader.getInstance().getSwiplLib() + "libswipl.so")
+                                ConfigReader.getInstance().getSwiplLib() + LIBSWIPL_SO)
                         + ", but this might differ on your system.");
 
                 if (!newValue.isEmpty()) {
@@ -221,8 +240,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                         continue;
                     }
 
-                    if (!newValue.endsWith("libswipl.so")) {
-                        this.displayError("This is not \"libswipl.so\". Please try again.");
+                    if (!newValue.endsWith(LIBSWIPL_SO)) {
+                        this.displayError("This is not \"" + LIBSWIPL_SO + "\". Please try again.");
                         continue;
                     }
 
@@ -282,7 +301,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             if (allowChoosingNone) {
                 requestMessage += " or leave empty to choose none of the above.";
             } else {
-                requestMessage += ".";
+                requestMessage = StringUtils.appendPeriod(requestMessage);
             }
 
             final String input = this.requestString(requestMessage);
@@ -303,7 +322,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 // NO-OP
             }
 
-            this.displayError("Please try again." + System.lineSeparator());
+            this.displayError(TRY_AGAIN + System.lineSeparator());
         }
     }
 
@@ -312,7 +331,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
         final String propertyString = this.requestPropertyString();
 
-        final List<String> properties = StringUtils.separate(",", propertyString);
+        final List<String> properties = StringUtils.separate(LIST_SEPARATOR, propertyString);
 
         final VirageAnalyzeJob res = new VirageAnalyzeJob(this, composition, properties);
         return res;
@@ -336,7 +355,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     private VirageGenerateJob createGenerationQuery() {
         final String propertyString = this.requestPropertyString();
 
-        final List<String> properties = StringUtils.separate(",", propertyString);
+        final List<String> properties = StringUtils.separate(LIST_SEPARATOR, propertyString);
 
         final VirageGenerateJob res = new VirageGenerateJob(this, properties);
         return res;
@@ -349,8 +368,9 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
         final String defaultPath = ConfigReader.getInstance().getDefaultOutputPath();
         String outputPath = this.requestString("Please specify a directory for the "
-                + "generated theory file. (Press ENTER for default: "
-                + this.addQuotationsToPath(defaultPath) + ")");
+                + "generated theory file."
+                + StringUtils.parenthesize("Press ENTER for default: "
+                + this.addQuotationsToPath(defaultPath)));
         if (outputPath.isEmpty()) {
             outputPath = defaultPath;
         }
@@ -405,7 +425,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     private VirageProveJob createProofQuery(final String composition, final String propertyString) {
-        final List<String> properties = StringUtils.separate(",", propertyString);
+        final List<String> properties = StringUtils.separate(LIST_SEPARATOR, propertyString);
 
         final VirageProveJob res = new VirageProveJob(this, composition, properties);
         return res;
@@ -590,8 +610,9 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     private void printSettings() {
-        this.displayMessage(HEADER_LINE_START + "Reading configuration from "
-                + this.addQuotationsToPath(ConfigReader.getConfigPath()) + ".");
+        this.displayMessage(StringUtils.appendPeriod(HEADER_LINE_START
+                + "Reading configuration from "
+                + this.addQuotationsToPath(ConfigReader.getConfigPath())));
         this.displayMessage(HEADER_LINE_START);
         this.displayMessage(HEADER_LINE_START + "The following settings were found: ");
 
@@ -602,10 +623,11 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         Collections.sort(propertyNames);
 
         String lastPrefix = "";
+        final String prefixSeparator = "_";
         for (final String s : propertyNames) {
-            if (!lastPrefix.equals(s.split("_")[0])) {
+            if (!lastPrefix.equals(s.split(prefixSeparator)[0])) {
                 this.displayMessage("#");
-                lastPrefix = s.split("_")[0];
+                lastPrefix = s.split(prefixSeparator)[0];
             }
 
             String value = ConfigReader.getInstance().getAllProperties().get(s).replaceAll(";",
@@ -681,15 +703,15 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         if (compositionString.isEmpty() || invalid) {
             final List<String> sortedStrings = new ArrayList<String>();
             for (final Component c : this.core.getFrameworkRepresentation().getComponents()) {
-                sortedStrings.add("\t" + c.toString());
+                sortedStrings.add(StringUtils.indentWithTab(c.toString()));
             }
             for (final ComposableModule c : this.core.getFrameworkRepresentation()
                     .getComposableModules()) {
-                sortedStrings.add("\t" + c.toString());
+                sortedStrings.add(StringUtils.indentWithTab(c.toString()));
             }
             for (final CompositionalStructure c : this.core.getFrameworkRepresentation()
                     .getCompositionalStructures()) {
-                sortedStrings.add("\t" + c.toString());
+                sortedStrings.add(StringUtils.indentWithTab(c.toString()));
             }
             Collections.sort(sortedStrings);
             for (final String s : sortedStrings) {
@@ -718,7 +740,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 return false;
             }
 
-            this.displayMessage("Please try again.");
+            this.displayMessage(TRY_AGAIN);
         }
     }
 
@@ -734,7 +756,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         boolean invalid = false;
 
         if (!propertiesString.isEmpty()) {
-            final String[] propertyStrings = propertiesString.split(",");
+            final String[] propertyStrings = propertiesString.split(LIST_SEPARATOR);
             for (final String propertyString : propertyStrings) {
                 final Property property = framework.getProperty(propertyString);
 
@@ -750,8 +772,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         if (propertiesString.isEmpty() || invalid) {
             final List<String> sortedProps = new ArrayList<String>();
             for (final Property p : this.core.getFrameworkRepresentation().getProperties()) {
-                if (p.getArity() == 1) {
-                    sortedProps.add("\t" + p.getName());
+                if (p.getArity() == 1 && !p.isAtomic()) {
+                    sortedProps.add(StringUtils.indentWithTab(p.getName()));
                 }
             }
             Collections.sort(sortedProps);
@@ -854,7 +876,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             } else if ("C".equals(arg)) {
                 job = this.createCCodeGenerationQuery();
             } else {
-                this.displayMessage("Please try again.");
+                this.displayMessage(TRY_AGAIN);
                 continue;
             }
 

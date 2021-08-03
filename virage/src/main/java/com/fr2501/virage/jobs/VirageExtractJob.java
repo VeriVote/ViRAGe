@@ -59,7 +59,8 @@ public final class VirageExtractJob extends VirageJobWithExplicitResult<Framewor
 
     @Override
     protected void concreteExecute()
-            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException, MalformedSettingsValueException {
+            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException,
+            MalformedSettingsValueException {
         final IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
         final FrameworkRepresentation framework = extractor.extract(this.path, this.sessionName,
                 this.fileName);

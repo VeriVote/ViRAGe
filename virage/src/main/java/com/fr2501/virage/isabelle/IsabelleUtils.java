@@ -62,6 +62,11 @@ public class IsabelleUtils {
     public static final String ROOT = "ROOT";
 
     /**
+     * String used to separate session and theory names.
+     */
+    public static final String THEORY_NAME_SEPARATOR = ".";
+
+    /**
      * This method tries, along with other things, to match Prolog predicates to Isabelle entities.
      * It is case-insensitive, so no two Isabelle entities may share the same name with different
      * capitalization.
@@ -155,6 +160,12 @@ public class IsabelleUtils {
         }
     }
 
+    /**
+     * Extracts session names from a ROOT file.
+     * @param root the ROOT file
+     * @return the sessions defined within it
+     * @throws IOException if IO operations fail
+     */
     public static List<String> getSessionNamesFromRootFile(final File root) throws IOException {
         final List<String> res = new LinkedList<String>();
 

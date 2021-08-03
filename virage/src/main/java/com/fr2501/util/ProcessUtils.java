@@ -28,8 +28,6 @@ public class ProcessUtils {
      */
     public static int runTerminatingProcessAndLogOutput(final String command)
             throws IOException, InterruptedException {
-        LOGGER.info("Running command: " + command);
-
         final Runtime rt = Runtime.getRuntime();
 
         final Process p = rt.exec(command);
@@ -60,8 +58,6 @@ public class ProcessUtils {
      */
     public static int runTerminatingProcessAndPrintOutput(final String command)
             throws IOException, InterruptedException {
-        LOGGER.info("Running command: " + command);
-
         final Runtime rt = Runtime.getRuntime();
 
         final Process p = rt.exec(command);
@@ -92,8 +88,6 @@ public class ProcessUtils {
      */
     public static Pair<String, String> runTerminatingProcess(final String command)
             throws IOException, InterruptedException {
-        LOGGER.info("Running command: " + command);
-
         final Runtime rt = Runtime.getRuntime();
 
         final Process p = rt.exec(command);

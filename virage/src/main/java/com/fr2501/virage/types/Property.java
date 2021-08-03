@@ -3,6 +3,7 @@ package com.fr2501.virage.types;
 import java.util.List;
 
 import com.fr2501.util.StringUtils;
+import com.fr2501.virage.core.ConfigReader;
 
 /**
  * Represents a property defined in the modular framework.
@@ -24,6 +25,11 @@ public final class Property implements Parameterized {
     private final List<ComponentType> parameters;
 
     /**
+     * Marks whether a property is atomic.
+     */
+    private boolean isAtomic = false;
+
+    /**
      * Simple constructor.
      *
      * @param nameValue the name
@@ -33,6 +39,9 @@ public final class Property implements Parameterized {
         this.name = nameValue;
         this.arity = parametersValue.size();
         this.parameters = parametersValue;
+
+        final List<String> atomicProperties = ConfigReader.getInstance().getAdditionalProperties();
+        this.isAtomic = atomicProperties.contains(this.name);
     }
 
     @Override
@@ -64,6 +73,14 @@ public final class Property implements Parameterized {
         return this.arity;
     }
 
+    public boolean isAtomic() {
+        return this.isAtomic;
+    }
+
+    public void setAtomic(final boolean atomic) {
+        this.isAtomic = atomic;
+    }
+
     /**
      * Instantiates a property with values in the given order.
      *
@@ -76,7 +93,8 @@ public final class Property implements Parameterized {
             throw new IllegalArgumentException();
         }
 
-        final String res = this.name + "(" + StringUtils.printCollection(strings) + ")";
+        final String res = this.name
+                + StringUtils.parenthesize(StringUtils.printCollection(strings));
 
         return res;
     }
@@ -93,7 +111,7 @@ public final class Property implements Parameterized {
             throw new IllegalArgumentException();
         }
 
-        final String res = this.name + "(" + string + ")";
+        final String res = this.name + StringUtils.parenthesize(string);
 
         return res;
     }
@@ -110,7 +128,7 @@ public final class Property implements Parameterized {
             throw new IllegalArgumentException();
         }
 
-        final String res = "(" + StringUtils.printCollection(strings) + ")";
+        final String res = StringUtils.parenthesize(StringUtils.printCollection(strings));
 
         return res;
     }
@@ -127,7 +145,7 @@ public final class Property implements Parameterized {
             throw new IllegalArgumentException();
         }
 
-        final String res = "(" + string + ")";
+        final String res = StringUtils.parenthesize(string);
 
         return res;
     }

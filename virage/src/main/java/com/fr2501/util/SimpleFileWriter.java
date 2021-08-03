@@ -38,12 +38,12 @@ public class SimpleFileWriter {
                 this.writer.write(o.toString() + System.lineSeparator());
             }
         } catch (final IOException e) {
-            LOGGER.error("Writing to " + path + " was impossible.");
+            LOGGER.error(e);
         } finally {
             try {
                 this.writer.close();
             } catch (final IOException e) {
-                LOGGER.warn("Closing the FileWriter was impossible.");
+                LOGGER.warn(e);
             }
         }
     }
@@ -61,12 +61,12 @@ public class SimpleFileWriter {
             this.writer = new FileWriter(file);
             this.writer.write(contents);
         } catch (final IOException e) {
-            LOGGER.error("Writing to " + path + " was impossible.");
+            LOGGER.error(e);
         } finally {
             try {
                 this.writer.close();
             } catch (final IOException e) {
-                LOGGER.warn("Closing the FileWriter was impossible.");
+                LOGGER.warn(e);
             }
         }
     }

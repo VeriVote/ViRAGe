@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.Pair;
 import com.fr2501.util.SimpleFileWriter;
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageCore;
 import com.fr2501.virage.prolog.ExtendedPrologStrings;
@@ -213,6 +214,8 @@ public final class FrameworkRepresentation {
                 for (int i = 0; i < p.getParameters().size(); i++) {
                     params.add(new PrologPredicate("_"));
                 }
+
+                p.setAtomic(true);
 
                 final PrologPredicate pred = new PrologPredicate(p.getName(), params);
                 final PrologClause clause = new PrologClause(pred);
@@ -490,37 +493,37 @@ public final class FrameworkRepresentation {
 
         res += "ComponentTypes:\n";
         for (final ComponentType ct : this.componentTypes) {
-            res += "\t" + ct.toString() + System.lineSeparator();
+            res += StringUtils.indentWithTab(ct.toString() + System.lineSeparator());
         }
         res += System.lineSeparator();
 
         res += "Components:\n";
         for (final Component c : this.components) {
-            res += "\t" + c.toString() + System.lineSeparator();
+            res += StringUtils.indentWithTab(c.toString() + System.lineSeparator());
         }
         res += System.lineSeparator();
 
         res += "ComposableModules:\n";
         for (final ComposableModule cm : this.composableModules) {
-            res += "\t" + cm.toString() + System.lineSeparator();
+            res += StringUtils.indentWithTab(cm.toString() + System.lineSeparator());
         }
         res += System.lineSeparator();
 
         res += "CompositionalStructures:\n";
         for (final CompositionalStructure cs : this.compositionalStructures) {
-            res += "\t" + cs.toString() + System.lineSeparator();
+            res += StringUtils.indentWithTab(cs.toString() + System.lineSeparator());
         }
         res += System.lineSeparator();
 
         res += "Property:\n";
         for (final Property p : this.properties) {
-            res += "\t" + p.toString() + System.lineSeparator();
+            res += StringUtils.indentWithTab(p.toString() + System.lineSeparator());
         }
         res += System.lineSeparator();
 
         res += "CompositionRules:\n";
         for (final CompositionRule cr : this.compositionRules) {
-            res += "\t" + cr.toString() + System.lineSeparator();
+            res += StringUtils.indentWithTab(cr.toString() + System.lineSeparator());
         }
         res += System.lineSeparator();
 

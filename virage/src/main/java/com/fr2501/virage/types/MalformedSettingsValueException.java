@@ -14,6 +14,9 @@ public class MalformedSettingsValueException extends IOException {
      */
     private static final long serialVersionUID = 3566709391218079822L;
 
+    /**
+     * The malformed value that triggered this exception.
+     */
     private final String malformedValue;
 
     /**
@@ -25,7 +28,7 @@ public class MalformedSettingsValueException extends IOException {
     }
 
     @Override
-    public String getMessage() {
+    public final String getMessage() {
         return "Malformed setting value: " + this.malformedValue;
     }
 

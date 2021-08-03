@@ -86,18 +86,19 @@ public final class VirageGenerateJob
         }
 
         if (results.isEmpty()) {
-            return "No composition found with " + prop + " "
-                    + StringUtils.printCollection(this.properties) + ".";
+            return StringUtils.appendPeriod("No composition found with " + prop + " "
+                    + StringUtils.printCollection(this.properties));
         }
 
         if (results.contains("")) {
-            return "Any component of type "
+            return StringUtils.appendPeriod("Any component of type "
                     + this.properties.get(0).getParameters().get(0).getName() + " satisfies the "
-                    + prop + " " + StringUtils.printCollection(this.properties) + ".";
+                    + prop + " " + StringUtils.printCollection(this.properties));
         }
 
-        return "Generated the " + this.properties.get(0).getParameters().get(0).getName() + " \""
+        return StringUtils.appendPeriod("Generated the "
+                + this.properties.get(0).getParameters().get(0).getName() + " \""
                 + StringUtils.printCollection(results) + "\" with the " + prop + " "
-                + StringUtils.printCollection(this.properties) + ".";
+                + StringUtils.printCollection(this.properties));
     }
 }

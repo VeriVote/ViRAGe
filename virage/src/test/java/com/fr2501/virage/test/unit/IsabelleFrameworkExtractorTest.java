@@ -22,7 +22,8 @@ public class IsabelleFrameworkExtractorTest {
      */
     @Test
     public void simpleTest()
-            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException, MalformedSettingsValueException {
+            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException,
+            MalformedSettingsValueException {
         final IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
 
         final FrameworkRepresentation framework = extractor.extract(

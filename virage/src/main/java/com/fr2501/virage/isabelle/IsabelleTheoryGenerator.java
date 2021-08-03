@@ -134,7 +134,7 @@ public final class IsabelleTheoryGenerator {
             try {
                 IOUtils.copy(theoryTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
-                LOGGER.error("Something went wrong.", e);
+                LOGGER.error(e);
             }
             theoryTemplate = writer.toString();
         }
@@ -144,7 +144,7 @@ public final class IsabelleTheoryGenerator {
         try {
             this.functionsAndDefinitions = localParser.getAllFunctionsAndDefinitions(theoryPath);
         } catch (final IOException e) {
-            LOGGER.error("Something went wrong.", e);
+            LOGGER.error(e);
         }
 
         this.framework = frameworkValue;
@@ -176,7 +176,8 @@ public final class IsabelleTheoryGenerator {
         }
 
         for (final String origin : originStrings) {
-            res += this.framework.getSessionName() + "." + origin + " ";
+            res += this.framework.getSessionName() + IsabelleUtils.THEORY_NAME_SEPARATOR
+                    + origin + " ";
         }
 
         if (usingUnprovenFacts) {
@@ -220,8 +221,9 @@ public final class IsabelleTheoryGenerator {
 
         this.typedVariables = new HashMap<String, String>();
 
-        final String theoryName = THEORY_NAME + "_" + theoryCounter;
-        final String moduleName = MODULE_NAME + "_" + theoryCounter;
+        final String nameSeparator = "_";
+        final String theoryName = THEORY_NAME + nameSeparator + theoryCounter;
+        final String moduleName = MODULE_NAME + nameSeparator + theoryCounter;
         theoryCounter++;
 
         final PrologPredicate proofPredicate = this.parser.parsePredicate(composition);

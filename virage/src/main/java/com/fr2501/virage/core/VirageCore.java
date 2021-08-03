@@ -290,7 +290,7 @@ public final class VirageCore implements Runnable {
         try {
             this.init(this.args);
         } catch (final ParseException e) {
-            LOGGER.error("An error occured.", e);
+            e.printStackTrace();
             return;
         }
 

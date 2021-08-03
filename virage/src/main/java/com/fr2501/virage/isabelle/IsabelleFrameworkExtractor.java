@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.Pair;
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.prolog.JplFacade;
 import com.fr2501.virage.prolog.PrologParser;
@@ -69,7 +70,7 @@ public final class IsabelleFrameworkExtractor {
             res = res.substring(0, res.length() - 2);
         }
 
-        res += ".";
+        res = StringUtils.appendPeriod(res);
 
         return res;
     }
@@ -112,15 +113,11 @@ public final class IsabelleFrameworkExtractor {
     }
 
     private void convertCompositionRules(final FrameworkRepresentation framework,
-            final Map<String, Map<String, String>> compRulesRaw) throws ExternalSoftwareUnavailableException {
+            final Map<String, Map<String, String>> compRulesRaw)
+                    throws ExternalSoftwareUnavailableException {
         Map<PrologPredicate, List<PrologPredicate>> componentAliases =
                 new HashMap<PrologPredicate, List<PrologPredicate>>();
-        try {
-             componentAliases = this.computeTransitiveClosureOfComponentAliases();
-        } catch (final MalformedSettingsValueException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+        componentAliases = this.computeTransitiveClosureOfComponentAliases();
 
         for (final String thyName : compRulesRaw.keySet()) {
             thmLoop: for (final String thmName : compRulesRaw.get(thyName).keySet()) {
@@ -250,7 +247,7 @@ public final class IsabelleFrameworkExtractor {
 
                     res += this.convertIsabelleToProlog(copyOfs.substring(i + 1, endIdx));
                     if (endIdx < copyOfs.length() - 1 && copyOfs.charAt(endIdx + 1) != ')') {
-                        res += ",";
+                        res += PrologPredicate.SEPARATOR;
                     }
                     i = endIdx + 1;
                 } else {
@@ -340,8 +337,8 @@ public final class IsabelleFrameworkExtractor {
         return framework;
     }
 
-    private Map<PrologPredicate, List<PrologPredicate>> computeTransitiveClosureOfComponentAliases()
-            throws MalformedSettingsValueException, ExternalSoftwareUnavailableException {
+    private Map<PrologPredicate, List<PrologPredicate>>
+            computeTransitiveClosureOfComponentAliases() {
         final Map<String, String> input = ConfigReader.getInstance().getComponentAliases();
 
         final Map<PrologPredicate, List<PrologPredicate>> res =
@@ -402,7 +399,8 @@ public final class IsabelleFrameworkExtractor {
 
     private List<PrologPredicate> computeAllExpansions(final PrologPredicate alias,
             final List<PrologPredicate> aliasExpansions,
-            final List<PrologPredicate> candidateExpansions) throws ExternalSoftwareUnavailableException {
+            final List<PrologPredicate> candidateExpansions)
+                    throws ExternalSoftwareUnavailableException {
         final List<PrologPredicate> toReturn = new LinkedList<PrologPredicate>();
 
         for (final PrologPredicate candidateExpansion : candidateExpansions) {
@@ -420,7 +418,8 @@ public final class IsabelleFrameworkExtractor {
         return toReturn;
     }
 
-    private PrologPredicate replaceAlias(final PrologPredicate original, final PrologPredicate toBeReplaced,
+    private PrologPredicate replaceAlias(final PrologPredicate original,
+            final PrologPredicate toBeReplaced,
             final PrologPredicate replacement) throws ExternalSoftwareUnavailableException {
 
         final JplFacade facade = new JplFacade();

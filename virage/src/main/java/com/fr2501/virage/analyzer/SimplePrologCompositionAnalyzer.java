@@ -81,8 +81,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 
         for (final Property property : properties) {
             if (property.getArity() != 1) {
-                throw new IllegalArgumentException(
-                        "For now, only unary " + "properties can be used in queries.");
+                this.throwArityException();
             }
         }
 
@@ -120,15 +119,16 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
     public SearchResult<DecompositionTree> generateComposition(final List<Property> properties) {
         for (final Property property : properties) {
             if (property.getArity() != 1) {
-                throw new IllegalArgumentException(
-                        "For now, only unary " + "properties can be used in queries.");
+                this.throwArityException();
             }
         }
+
+        final String variable = "X";
 
         // Safety measure to ensure all properties talking about the same element.
         final List<String> propertyStrings = new LinkedList<String>();
         for (final Property property : properties) {
-            propertyStrings.add(property.getInstantiatedString("X"));
+            propertyStrings.add(property.getInstantiatedString(variable));
         }
 
         final String query = StringUtils.printCollection(propertyStrings);
@@ -145,13 +145,22 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
                 LOGGER.warn(e);
             }
 
-            final String solution = resultMap.get("X");
+            final String solution = resultMap.get(variable);
             final DecompositionTree solutionTree = DecompositionTree.parseString(solution);
 
             return new SearchResult<DecompositionTree>(result.getState(), solutionTree);
         } else {
             return new SearchResult<DecompositionTree>(result.getState(), null);
         }
+    }
+
+    /**
+     * Called when arities mismatch, only throws an exception.
+     * @throws IllegalArgumentException as that is its purpose
+     */
+    private void throwArityException() {
+        throw new IllegalArgumentException(
+                "For now, only unary properties can be used in queries.");
     }
 
     /**
@@ -279,7 +288,8 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
                     // valid solution, as they are not prefix free, e.g. replacing X by c in
                     // "a(X,X1)"
                     // would yield "a(c,c1").
-                    final Pattern pattern = Pattern.compile("[^\\w_]" + key + "[^\\w_]");
+                    final String nonWord = "[^\\w_]";
+                    final Pattern pattern = Pattern.compile(nonWord + key + nonWord);
                     Matcher matcher = pattern.matcher(generic);
 
                     while (matcher.find()) {

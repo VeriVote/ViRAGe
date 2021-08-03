@@ -58,6 +58,21 @@ public final class ConfigReader {
     private static final String PAIR_SEPARATOR = "->";
 
     /**
+     * The default virage folder name.
+     */
+    private static final String VIRAGE_FOLDER = ".virage";
+
+    /**
+     * Name of the settings file.
+     */
+    private static final String SETTINGS = "settings";
+
+    /**
+     * The user.home system property.
+     */
+    private static final String USER_HOME = "user.home";
+
+    /**
      * Name of the option containing the Isabelle binary.
      */
     private static final String ISABELLE_BIN = "ISABELLE_EXECUTABLE";
@@ -70,6 +85,26 @@ public final class ConfigReader {
      * Name of the option containing session specific component aliases.
      */
     private static final String COMPONENT_ALIASES = "SESSION_SPECIFIC_COMPONENT_ALIASES";
+
+    /**
+     * Name of the option containing the path to a ROOT file.
+     */
+    private static final String ISABELLE_PATH_TO_ROOT_FILE = "ISABELLE_PATH_TO_ROOT_FILE";
+
+    /**
+     * Name of the option containing the system text editor.
+     */
+    private static final String SYSTEM_TEXT_EDITOR = "SYSTEM_TEXT_EDITOR";
+
+    /**
+     * Name of the option containing type aliases.
+     */
+    private static final String SESSION_SPECIFIC_TYPE_ALIASES = "SESSION_SPECIFIC_TYPE_ALIASES";
+
+    /**
+     * The environment variable containing the default text editor.
+     */
+    private static final String EDITOR = "EDITOR";
 
     /**
      * Singleton instance.
@@ -126,9 +161,9 @@ public final class ConfigReader {
     private File configFile;
 
     private ConfigReader() {
-        virageFolderPath = System.getProperty("user.home") + File.separator + ".virage"
+        virageFolderPath = System.getProperty(USER_HOME) + File.separator + VIRAGE_FOLDER
                 + File.separator;
-        configPath = virageFolderPath + "settings";
+        configPath = virageFolderPath + SETTINGS;
 
         // This is only to ensure unit-tests are working.
         try {
@@ -143,9 +178,9 @@ public final class ConfigReader {
      * @return the config path
      */
     public static String getConfigPath() {
-        virageFolderPath = System.getProperty("user.home") + File.separator + ".virage"
+        virageFolderPath = System.getProperty(USER_HOME) + File.separator + VIRAGE_FOLDER
                 + File.separator;
-        configPath = virageFolderPath + "settings";
+        configPath = virageFolderPath + SETTINGS;
 
         return configPath;
     }
@@ -224,7 +259,7 @@ public final class ConfigReader {
 
         final Properties newProperties = new Properties();
         final InputStream newPropertiesStream = this.getClass().getClassLoader()
-                .getResourceAsStream("settings");
+                .getResourceAsStream(SETTINGS);
         newProperties.load(newPropertiesStream);
 
         final List<String> missingKeys = new LinkedList<String>();
@@ -279,7 +314,7 @@ public final class ConfigReader {
         oldProperties.load(new FileInputStream(oldPropertiesFile));
 
         final InputStream configFromResourcesStream = this.getClass().getClassLoader()
-                .getResourceAsStream("settings");
+                .getResourceAsStream(SETTINGS);
         final StringWriter stringWriter = new StringWriter();
         IOUtils.copy(configFromResourcesStream, stringWriter, StandardCharsets.UTF_8);
 
@@ -340,16 +375,10 @@ public final class ConfigReader {
      * @return value of "SYSTEM_DEFAULT_OUTPUT_PATH"
      */
     public String getDefaultOutputPath() {
-        final String defaultPath = "./target/generated-sources/";
-
         final String configValue = (String) this.properties
-                .getOrDefault("SYSTEM_DEFAULT_OUTPUT_PATH", "./target/generated-sources/");
+                .get("SYSTEM_DEFAULT_OUTPUT_PATH");
 
-        if (configValue.isEmpty()) {
-            return defaultPath;
-        } else {
-            return configValue;
-        }
+        return configValue;
     }
 
     /**
@@ -428,17 +457,17 @@ public final class ConfigReader {
     }
 
     public String getPathToRootFile() {
-        return this.properties.getProperty("ISABELLE_PATH_TO_ROOT_FILE");
+        return this.properties.getProperty(ISABELLE_PATH_TO_ROOT_FILE);
     }
 
-    public String getSessionName() {
-        return this.properties.getProperty("ISABELLE_SESSION_NAME");
-    }
-
+    /**
+     * Retrieves the component aliases.
+     * @return the component aliases
+     */
     public Map<String, String> getComponentAliases() {
         final Map<String, String> toReturn = new HashMap<String, String>();
         final List<String> pairStrings = this.readAndSplitList(
-                this.properties.getProperty("SESSION_SPECIFIC_COMPONENT_ALIASES"));
+                this.properties.getProperty(COMPONENT_ALIASES));
 
         for(final String pairString: pairStrings) {
             final String[] elements = pairString.split(PAIR_SEPARATOR);
@@ -572,7 +601,7 @@ public final class ConfigReader {
         for (final String synonym : typeSynonyms) {
             final String synonymCopy = this.replaceTypeAliases(synonym);
 
-            final String[] splits = synonymCopy.split("->");
+            final String[] splits = synonymCopy.split(PAIR_SEPARATOR);
 
             if (splits.length != 2) {
                 throw new IllegalArgumentException();
@@ -605,15 +634,7 @@ public final class ConfigReader {
      * @return true iff "ISABELLE_PATH_TO_ROOT_FILE" is specified
      */
     public boolean hasPathToRootFile() {
-        return this.properties.containsKey("ISABELLE_PATH_TO_ROOT_FILE");
-    }
-
-    /**
-     * Simple getter.
-     * @return true iff "ISABELLE_SESSION_NAME" is specified
-     */
-    public boolean hasSessionName() {
-        return this.properties.containsKey("ISABELLE_SESSION_NAME");
+        return this.properties.containsKey(ISABELLE_PATH_TO_ROOT_FILE);
     }
 
     /**
@@ -621,7 +642,7 @@ public final class ConfigReader {
      * @return true iff "SESSION_SPECIFIC_TYPE_ALIASES" is specified
      */
     private boolean hasTypeAliases() {
-        return this.properties.containsKey("SESSION_SPECIFIC_TYPE_ALIASES");
+        return this.properties.containsKey(SESSION_SPECIFIC_TYPE_ALIASES);
     }
 
     /**
@@ -642,12 +663,12 @@ public final class ConfigReader {
             e.printStackTrace();
         }
 
-        if (this.properties.containsKey("SYSTEM_TEXT_EDITOR")
-                && !this.properties.getProperty("SYSTEM_TEXT_EDITOR").toString().isEmpty()) {
-            editorExecutable = this.properties.getProperty("SYSTEM_TEXT_EDITOR");
-        } else if (System.getenv().containsKey("EDITOR")
-                && !System.getenv().get("EDITOR").isEmpty()) {
-            editorExecutable = System.getenv().get("EDITOR");
+        if (this.properties.containsKey(SYSTEM_TEXT_EDITOR)
+                && !this.properties.getProperty(SYSTEM_TEXT_EDITOR).toString().isEmpty()) {
+            editorExecutable = this.properties.getProperty(SYSTEM_TEXT_EDITOR);
+        } else if (System.getenv().containsKey(EDITOR)
+                && !System.getenv().get(EDITOR).isEmpty()) {
+            editorExecutable = System.getenv().get(EDITOR);
         } else {
             throw new ExternalSoftwareUnavailableException();
         }
@@ -725,12 +746,12 @@ public final class ConfigReader {
         }
 
         final List<String> replacements = this
-                .readAndSplitList(this.properties.getProperty("SESSION_SPECIFIC_TYPE_ALIASES"));
+                .readAndSplitList(this.properties.getProperty(SESSION_SPECIFIC_TYPE_ALIASES));
 
         final Map<String, String> replMap = new HashMap<String, String>();
 
         for (final String repl : replacements) {
-            final String[] parts = repl.split("->");
+            final String[] parts = repl.split(PAIR_SEPARATOR);
             if (parts.length != 2) {
                 throw new IllegalArgumentException();
             }

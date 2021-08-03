@@ -17,6 +17,11 @@ public final class PrologPredicate {
     public static final String ANONYMOUS = "_";
 
     /**
+     * Character used to separate children in Strings.
+     */
+    public static final String SEPARATOR = ",";
+
+    /**
      * The name.
      */
     private String name;
@@ -117,6 +122,11 @@ public final class PrologPredicate {
         this.name = newName;
     }
 
+    /**
+     * Create a deep copy of the given predicate.
+     * @param pred the predicate to be copied
+     * @return the copy
+     */
     public static PrologPredicate copy(final PrologPredicate pred) {
         final String newName = pred.getName();
 
@@ -128,26 +138,10 @@ public final class PrologPredicate {
         return new PrologPredicate(newName, newChildren);
     }
 
-    public void replaceDFSFirstVariableOccurrence(final PrologPredicate replacement) {
-        for(int i = 0; i < this.arity; i++) {
-            final PrologPredicate candidate = this.getParameters().get(i);
-            final PrologPredicate oldCandidate = PrologPredicate.copy(candidate);
-
-            final PrologPredicate copyOfReplacement = PrologPredicate.copy(replacement);
-
-            if(candidate.isVariable()) {
-                this.getParameters().set(i, copyOfReplacement);
-                return;
-            } else {
-                candidate.replaceDFSFirstVariableOccurrence(copyOfReplacement);
-
-                if(!candidate.equals(oldCandidate)) {
-                    return;
-                }
-            }
-        }
-    }
-
+    /**
+     * Replaces variables in this predicate according to the given map.
+     * @param replacements the replacements
+     */
     public void replaceVariables(final Map<String, String> replacements) {
         if(replacements.keySet().contains(this.name)) {
             this.name = replacements.get(this.name);
@@ -179,7 +173,7 @@ public final class PrologPredicate {
             for (int i = 0; i < this.arity; i++) {
                 res += this.parameters.get(i).toString();
                 if (i < this.arity - 1) {
-                    res += ",";
+                    res += SEPARATOR;
                 }
             }
 

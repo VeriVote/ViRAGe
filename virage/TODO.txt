@@ -6,16 +6,8 @@ re-enable C generation
 jar?
 module?
 
-=== Refactoring
-checkstyle (mvn checkstyle:checkstyle)!
-
-=== (E)PL
-add explaining constants to (E)PL
-
 === Improve UI
 add possibility to check all available properties at once
-omit anonymous variables and fill automatically
-do not display atomic properties
 
 === Miscellaneous
 interactively launch scala and generate test instances
@@ -84,3 +76,5 @@ fix line breaks, try to add '>' (still seems impossible, but colors removed)
 display types instead of Prolog variables in the end
 consistency check via keySet instead of version check
 resolve synonyms (kind of)
+omit anonymous variables and fill automatically
+do not display atomic properties

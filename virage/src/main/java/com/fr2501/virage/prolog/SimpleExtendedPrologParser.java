@@ -92,8 +92,9 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
             if (currentLine.contains(ExtendedPrologStrings.THEORY_PATH_PREFIX)) {
                 String line = currentLine;
 
-                if (line.contains(" - ")) {
-                    final String[] splits = line.split(" - ");
+                final String nameLineSeparator = " - ";
+                if (line.contains(nameLineSeparator)) {
+                    final String[] splits = line.split(nameLineSeparator);
 
                     line = splits[0];
                     framework.setSessionName(splits[1]);

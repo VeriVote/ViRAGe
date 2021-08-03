@@ -44,11 +44,6 @@ import scala.concurrent.Future;
  */
 public final class ScalaIsabelleFacade {
     /**
-     * The character used by Isabelle to separate Theory names and their Session prefix.
-     */
-    private static final String ISA_SEPARATOR = ".";
-
-    /**
      * The Isabelle instance.
      */
     private static Isabelle isabelle;
@@ -238,9 +233,10 @@ public final class ScalaIsabelleFacade {
                     continue;
                 }
 
-                if (name.endsWith("_def") || name.endsWith("_def_raw")) {
+                final String defSuffix = "_def";
+                if (name.endsWith(defSuffix) || name.endsWith("_def_raw")) {
                     name = name.replace("_raw", "");
-                    name = name.replace("_def", "");
+                    name = name.replace(defSuffix, "");
 
                     if (name.endsWith("_rel") || name.endsWith("_graph")
                             || name.endsWith("_sumC")) {
@@ -312,7 +308,7 @@ public final class ScalaIsabelleFacade {
     }
 
     private void extractTheoryNames() {
-        final String prefix = this.sessionName + ISA_SEPARATOR;
+        final String prefix = this.sessionName + IsabelleUtils.THEORY_NAME_SEPARATOR;
 
         final MLFunction0<scala.collection.immutable.List<String>> mlFun = MLValue.compileFunction0(
                 "Thy_Info.get_names", ScalaIsabelleFacade.isabelle, global(), LIST_CONVERTER);

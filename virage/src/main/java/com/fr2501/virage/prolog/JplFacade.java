@@ -168,7 +168,7 @@ public final class JplFacade {
         for (int i = 1; i < replacements.length; i++) {
             String replacement = replacements[i];
 
-            if (replacement.endsWith(",")) {
+            if (replacement.endsWith(PrologPredicate.SEPARATOR)) {
                 // Remove trailing comma, if it exists.
                 replacement = replacement.substring(0, replacement.length() - 1);
             }
@@ -176,7 +176,7 @@ public final class JplFacade {
             // Remove bracket pair.
             replacement = replacement.substring(1, replacement.length() - 1);
 
-            final String[] splits = replacement.split(",");
+            final String[] splits = replacement.split(PrologPredicate.SEPARATOR);
 
             final String key = splits[0];
 
@@ -184,7 +184,7 @@ public final class JplFacade {
             // several parts.
             String value = splits[1];
             for (int j = 2; j < splits.length; j++) {
-                value += "," + splits[j];
+                value += PrologPredicate.SEPARATOR + splits[j];
             }
 
             result.put(key, value);
@@ -195,7 +195,7 @@ public final class JplFacade {
 
     private Term buildConjunction(final String paramString) {
         String string = paramString;
-        while (paramString.startsWith("(") && paramString.endsWith(")")) {
+        while (paramString.equals(StringUtils.parenthesize(paramString))) {
             string = paramString.substring(0, paramString.length() - 1);
         }
 
@@ -236,12 +236,12 @@ public final class JplFacade {
             return terms.get(0);
         }
 
-        Compound toReturn = new Compound(",",
+        Compound toReturn = new Compound(PrologPredicate.SEPARATOR,
                 new Term[] {terms.get(predCount - 2), terms.get(predCount - 1)});
 
         final int alreadyHandledParts = 3;
         for (int i = predCount - alreadyHandledParts; i > 0; i--) {
-            toReturn = new Compound(",", new Term[] {terms.get(i), toReturn});
+            toReturn = new Compound(PrologPredicate.SEPARATOR, new Term[] {terms.get(i), toReturn});
         }
 
         return toReturn;
@@ -311,8 +311,10 @@ public final class JplFacade {
         while (System.currentTimeMillis() < endTime) {
             LOGGER.debug("Current maxDepth: " + maxDepth);
             final long remainingTime = endTime - System.currentTimeMillis();
-            final String actualQuery = "call_with_depth_limit(" + "(" + queryString + ")" + ","
-                    + maxDepth + "," + unusedVariable + ")";
+            final String actualQuery = "call_with_depth_limit"
+                    + StringUtils.parenthesize(StringUtils.parenthesize(queryString)
+                    + PrologPredicate.SEPARATOR + maxDepth + PrologPredicate.SEPARATOR
+                    + unusedVariable);
 
             Map<String, String> result = new HashMap<String, String>();
 
@@ -322,26 +324,25 @@ public final class JplFacade {
                 return new SearchResult<Boolean>(QueryState.ERROR, null);
             }
 
+            SearchResult<Boolean> toReturn = null;
             if (result == null) {
                 // No solution, query failed.
-                return new SearchResult<Boolean>(QueryState.FAILED, false);
-            }
-
-            if (!result.containsKey(unusedVariable)) {
+                toReturn = new SearchResult<Boolean>(QueryState.FAILED, false);
+            } else if (!result.containsKey(unusedVariable)) {
                 // Empty Map was received, timeout.
-                return new SearchResult<Boolean>(QueryState.TIMEOUT, null);
-            }
-
-            if (result.get(unusedVariable).equals("depth_limit_exceeded")) {
+                toReturn = new SearchResult<Boolean>(QueryState.TIMEOUT, null);
+            } else if (result.get(unusedVariable).equals("depth_limit_exceeded")) {
                 // Depth limit exceeded, increase and try again.
                 maxDepth++;
                 continue;
-            }
-
-            if (StringUtils.isNumeric(result.get(unusedVariable))) {
+            } else if (StringUtils.isNumeric(result.get(unusedVariable))) {
                 // Query succeeded.
                 result.remove(unusedVariable);
-                return new SearchResult<Boolean>(QueryState.SUCCESS, true);
+                toReturn = new SearchResult<Boolean>(QueryState.SUCCESS, true);
+            }
+
+            if(toReturn != null) {
+                return toReturn;
             }
 
             maxDepth++;
@@ -381,8 +382,10 @@ public final class JplFacade {
         while (System.currentTimeMillis() < endTime) {
             LOGGER.debug("Current maxDepth: " + maxDepth);
             final long remainingTime = endTime - System.currentTimeMillis();
-            final String actualQuery = "call_with_depth_limit(" + "(" + queryString + ")" + ","
-                    + maxDepth + "," + unusedVariable + ")";
+            final String actualQuery = "call_with_depth_limit"
+                    + StringUtils.parenthesize(StringUtils.parenthesize(queryString)
+                            + PrologPredicate.SEPARATOR
+                    + maxDepth + PrologPredicate.SEPARATOR + unusedVariable);
 
             Map<String, String> result = new HashMap<String, String>();
 
@@ -456,8 +459,9 @@ public final class JplFacade {
             throws PrologException {
         final float timeoutInSeconds = customTimeout / 1000.0f;
 
-        final String actualQuery = "call_with_time_limit(" + timeoutInSeconds + "," + "("
-                + queryString + ")" + ")";
+        final String actualQuery = "call_with_time_limit"
+                + StringUtils.parenthesize(timeoutInSeconds + PrologPredicate.SEPARATOR
+                + StringUtils.parenthesize(queryString));
 
         final Query query = this.constructQuery(actualQuery);
 
@@ -534,7 +538,7 @@ public final class JplFacade {
             String name = pred.getName();
 
             if (name.isEmpty()) {
-                name = ",";
+                name = PrologPredicate.SEPARATOR;
             }
 
             final Term[] children = new Term[pred.getArity()];
@@ -561,7 +565,8 @@ public final class JplFacade {
      * @return true if specific is a specification of generic, false otherwise.
      */
     public boolean subsumesTerm(final String generic, final String specific) {
-        final String query = "subsumes_term(" + generic + "," + specific + ")";
+        final String query = "subsumes_term" + StringUtils.parenthesize(generic
+                + PrologPredicate.SEPARATOR + specific);
 
         final SearchResult<Boolean> result = this.factQuery(query);
         if (result.hasValue()) {
@@ -585,10 +590,10 @@ public final class JplFacade {
      * @throws IllegalArgumentException if a and b are not unifiable
      */
     public Map<String, String> unifiable(final String a, final String b) {
-        String query = "unifiable(" + a + "," + b;
+        String query = "unifiable(" + a + PrologPredicate.SEPARATOR + b;
 
         final String unusedVariable = JplFacade.findUnusedVariable(query);
-        query += "," + unusedVariable + ")";
+        query += PrologPredicate.SEPARATOR + unusedVariable + ")";
 
         final SearchResult<Map<String, String>> result = this
                 .iterativeDeepeningQueryWithoutTimeout(query);

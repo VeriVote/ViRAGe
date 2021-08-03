@@ -21,6 +21,11 @@ public class SystemUtils {
      */
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+    /**
+     * The java.library.path system property.
+     */
+    private static final String JAVA_LIBRARY_PATH = "java.library.path";
+
     // See
     // https://stackoverflow.com/questions/5419039/
     // is-djava-library-path-equivalent-to-system-setpropertyjava-library-path
@@ -47,8 +52,8 @@ public class SystemUtils {
             System.arraycopy(paths, 0, tmp, 0, paths.length);
             tmp[paths.length] = s;
             field.set(null, tmp);
-            System.setProperty("java.library.path",
-                    System.getProperty("java.library.path") + File.pathSeparator + s);
+            System.setProperty(JAVA_LIBRARY_PATH,
+                    System.getProperty(JAVA_LIBRARY_PATH) + File.pathSeparator + s);
         } catch (final IllegalAccessException e) {
             throw new IOException("Failed to get permissions to set library path");
         } catch (final NoSuchFieldException e) {
@@ -76,9 +81,6 @@ public class SystemUtils {
      */
     @SuppressWarnings("unchecked")
     public static void setUnixEnvironmentVariable(final String name, final String value) {
-        LOGGER.info("Attempting to change environment variable " + name + " to " + value);
-        LOGGER.info("Old value: " + System.getenv(name));
-
         final Map<String, String> env = System.getenv();
 
         final Field field;

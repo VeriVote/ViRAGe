@@ -77,4 +77,31 @@ public class StringUtils {
 
         return res;
     }
+
+    /**
+     * Puts parentheses around a String.
+     * @param s the string
+     * @return (s)
+     */
+    public static String parenthesize(final String s) {
+        return "(" + s + ")";
+    }
+
+    /**
+     * Indents a String by a single tab.
+     * @param s the string
+     * @return \ts
+     */
+    public static String indentWithTab(final String s) {
+        return "\t" + s;
+    }
+
+    /**
+     * Appends a period to a String.
+     * @param s the string
+     * @return s.
+     */
+    public static String appendPeriod(final String s) {
+        return s + ".";
+    }
 }

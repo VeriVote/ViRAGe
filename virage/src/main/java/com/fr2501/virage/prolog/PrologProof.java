@@ -24,10 +24,6 @@ public final class PrologProof {
      * Indicator for closed branch.
      */
     private static final String BRANCH_CLOSE = "true";
-    /**
-     * Separator string.
-     */
-    private static final String SEPARATOR = ",";
 
     /**
      * The proof's goal.
@@ -80,7 +76,7 @@ public final class PrologProof {
             closesBranch[i] = subgoals[i].contains(BRANCH_CLOSE);
             if (closesBranch[i]) {
                 // Remove "true" and following brackets, they have served their purpose.
-                final String regex = SEPARATOR + BRANCH_CLOSE + ".*";
+                final String regex = PrologPredicate.SEPARATOR + BRANCH_CLOSE + ".*";
                 subgoals[i] = subgoals[i].replaceAll(regex, "");
             }
 
@@ -93,7 +89,7 @@ public final class PrologProof {
                 subgoals[i] = subgoals[i].substring(0, subgoals[i].length() - 2);
             }
 
-            if (subgoals[i].endsWith(",")) {
+            if (subgoals[i].endsWith(PrologPredicate.SEPARATOR)) {
                 subgoals[i] = subgoals[i].substring(0, subgoals[i].length() - 1);
             }
         }

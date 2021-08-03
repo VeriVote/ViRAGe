@@ -116,6 +116,16 @@ public final class IsabelleCodeGenerator {
     private static final String OPTION2_COMMENT = "OPTION2";
 
     /**
+     * String opening a Scala comment.
+     */
+    private static final String SCALA_COMMENT_OPEN = "/* ";
+
+    /**
+     * String closing a Scala comment.
+     */
+    private static final String SCALA_COMMENT_CLOSE = " */";
+
+    /**
      * The compositional framework.
      */
     private final FrameworkRepresentation framework;
@@ -159,7 +169,7 @@ public final class IsabelleCodeGenerator {
             try {
                 IOUtils.copy(exportTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
-                LOGGER.error("Something went wrong.", e);
+                LOGGER.error(e);
             }
             exportTemplate = writer.toString();
 
@@ -169,7 +179,7 @@ public final class IsabelleCodeGenerator {
             try {
                 IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
-                LOGGER.error("Something went wrong.", e);
+                LOGGER.error(e);
             }
             rootTemplate = writer.toString();
 
@@ -179,7 +189,7 @@ public final class IsabelleCodeGenerator {
             try {
                 IOUtils.copy(votingContextTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
-                LOGGER.error("Something went wrong.", e);
+                LOGGER.error(e);
             }
             votingContextTemplate = writer.toString();
         }
@@ -248,8 +258,8 @@ public final class IsabelleCodeGenerator {
 
             return codeFile;
         } catch (final IsabelleBuildFailedException e) {
-            LOGGER.error(
-                    "Isabelle code generation failed for file " + theory.getCanonicalPath() + ".");
+            LOGGER.error(StringUtils.appendPeriod(
+                    "Isabelle code generation failed for file " + theory.getCanonicalPath()));
 
             throw e;
         }
@@ -474,21 +484,25 @@ public final class IsabelleCodeGenerator {
 
         // Enable the required optional parts of the votingContextTemplate
         if (containsEnum) {
-            result = result.replace("/* " + ENUM_COMMENT, "").replace(ENUM_COMMENT + " */", "");
+            result = result.replace(SCALA_COMMENT_OPEN + ENUM_COMMENT, "")
+                    .replace(ENUM_COMMENT + SCALA_COMMENT_CLOSE, "");
             parameters.add("bounded");
         }
 
         if (containsEquality) {
-            result = result.replace("/* " + EQUALITY_COMMENT, "").replace(EQUALITY_COMMENT + " */",
+            result = result.replace(SCALA_COMMENT_OPEN + EQUALITY_COMMENT, "")
+                    .replace(EQUALITY_COMMENT + SCALA_COMMENT_CLOSE,
                     "");
             parameters.add("eq");
         }
 
         if (requiresRelation) {
-            result = result.replace("/* " + OPTION2_COMMENT, "").replace(OPTION2_COMMENT + " */",
+            result = result.replace(SCALA_COMMENT_OPEN + OPTION2_COMMENT, "")
+                    .replace(OPTION2_COMMENT + SCALA_COMMENT_CLOSE,
                     "");
         } else {
-            result = result.replace("/* " + OPTION1_COMMENT, "").replace(OPTION1_COMMENT + " */",
+            result = result.replace(SCALA_COMMENT_OPEN + OPTION1_COMMENT, "")
+                    .replace(OPTION1_COMMENT + SCALA_COMMENT_CLOSE,
                     "");
         }
 

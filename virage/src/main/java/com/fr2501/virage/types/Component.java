@@ -77,8 +77,8 @@ public class Component implements TypedAndParameterized {
      */
     @Override
     public String toString() {
-        final String res = "(" + this.typeField + ") " + this.nameField + "("
-                + StringUtils.printCollection(this.parametersField) + ")";
+        final String res = StringUtils.parenthesize(this.typeField.toString()) + this.nameField
+                + StringUtils.parenthesize(StringUtils.printCollection(this.parametersField));
 
         return res;
     }
