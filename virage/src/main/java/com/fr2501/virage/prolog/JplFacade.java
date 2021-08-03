@@ -612,6 +612,14 @@ public final class JplFacade {
                 }
             }
 
+            for(final String var : res.keySet()) {
+                for(final String otherVar : resultMap.keySet()) {
+                    if(res.get(var).equals(resultMap.get(otherVar))) {
+                        res.put(var, otherVar);
+                    }
+                }
+            }
+
             return res;
         } catch (final ValueNotPresentException e) {
             throw new IllegalArgumentException();

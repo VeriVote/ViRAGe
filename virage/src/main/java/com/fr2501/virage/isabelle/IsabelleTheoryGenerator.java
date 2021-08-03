@@ -250,10 +250,10 @@ public final class IsabelleTheoryGenerator {
                     String moduleParamType = "";
                     // Simple types like nat don't require an "'a".
                     if (!IsabelleUtils.isSimpleType(type)) {
-                        moduleParamType = IsabelleUtils.TYPE_ALIAS;
+                        moduleParamType = IsabelleUtils.TYPE_ALIAS + " ";
                     }
 
-                    moduleParamType += type + IsabelleUtils.RIGHTARROW;
+                    moduleParamType += type + " " + IsabelleUtils.RIGHTARROW + " ";
                     moduleParamTypesList.add(i, moduleParamType);
                 }
             }

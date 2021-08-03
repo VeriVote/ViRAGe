@@ -2,6 +2,7 @@ package com.fr2501.virage.prolog;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple data object to contain a single Prolog predicate and its parameters.
@@ -125,6 +126,36 @@ public final class PrologPredicate {
         }
 
         return new PrologPredicate(newName, newChildren);
+    }
+
+    public void replaceDFSFirstVariableOccurrence(final PrologPredicate replacement) {
+        for(int i = 0; i < this.arity; i++) {
+            final PrologPredicate candidate = this.getParameters().get(i);
+            final PrologPredicate oldCandidate = PrologPredicate.copy(candidate);
+
+            final PrologPredicate copyOfReplacement = PrologPredicate.copy(replacement);
+
+            if(candidate.isVariable()) {
+                this.getParameters().set(i, copyOfReplacement);
+                return;
+            } else {
+                candidate.replaceDFSFirstVariableOccurrence(copyOfReplacement);
+
+                if(!candidate.equals(oldCandidate)) {
+                    return;
+                }
+            }
+        }
+    }
+
+    public void replaceVariables(final Map<String, String> replacements) {
+        if(replacements.keySet().contains(this.name)) {
+            this.name = replacements.get(this.name);
+        } else {
+            for(final PrologPredicate parameter: this.parameters) {
+                parameter.replaceVariables(replacements);
+            }
+        }
     }
 
     @Override

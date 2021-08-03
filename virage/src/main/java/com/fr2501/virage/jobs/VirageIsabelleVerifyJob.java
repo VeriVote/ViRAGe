@@ -52,8 +52,7 @@ public final class VirageIsabelleVerifyJob
             return "Isabelle theory \'" + this.result.getSecondValue().getAbsolutePath()
                     + "\' was verified successfully.";
         } else {
-            return "Verification of Isabelle theory \'"
-                    + this.result.getSecondValue().getAbsolutePath() + "\' failed.";
+            return "Verification of Isabelle theory failed.";
         }
     }
 

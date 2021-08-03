@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.Pair;
 import com.fr2501.virage.core.ConfigReader;
+import com.fr2501.virage.prolog.JplFacade;
 import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.prolog.SimplePrologParser;
@@ -111,7 +112,7 @@ public final class IsabelleFrameworkExtractor {
     }
 
     private void convertCompositionRules(final FrameworkRepresentation framework,
-            final Map<String, Map<String, String>> compRulesRaw) {
+            final Map<String, Map<String, String>> compRulesRaw) throws ExternalSoftwareUnavailableException {
         Map<PrologPredicate, List<PrologPredicate>> componentAliases =
                 new HashMap<PrologPredicate, List<PrologPredicate>>();
         try {
@@ -168,14 +169,46 @@ public final class IsabelleFrameworkExtractor {
 
                 final List<String> prologStringList = new LinkedList<String>();
                 prologStringList.add(this.buildPrologClauseString(succedent, antecedents));
+
+                final JplFacade facade = new JplFacade();
                 for(final PrologPredicate alias: componentAliases.keySet()) {
-                    for (final PrologPredicate expansion : componentAliases.get(alias)) {
-                        final String toBeAdded = this.buildPrologClauseString(
-                                this.replaceAlias(this.parser.parsePredicate(succedent), alias,
-                                        expansion).toString(), antecedents);
-                        if(!prologStringList.contains(toBeAdded)) {
-                            prologStringList.add(toBeAdded);
+                    try {
+                        //  TODO This is only possible for unary properties!
+                        // Build a more flexible solution?
+                        final PrologPredicate succPred = this.parser.parsePredicate(succedent);
+                        if(succPred.getArity() != 1) {
+                            continue;
                         }
+
+                        final PrologPredicate succChild =
+                                succPred.getParameters().get(0);
+                        if(succChild.isVariable()) {
+                            continue;
+                        }
+
+                        final Map<String, String> replacements
+                            = facade.unifiable(succChild.toString(), alias.toString());
+                        for(final PrologPredicate expansion : componentAliases.get(alias)) {
+                            succPred.getParameters().set(0, PrologPredicate.copy(expansion));
+                            succPred.replaceVariables(replacements);
+                            final String succedentString = succPred.toString();
+
+                            final List<String> antecedentStrings = new LinkedList<String>();
+                            for(final String antecedentString : antecedents) {
+                                final PrologPredicate antecedent
+                                    = this.parser.parsePredicate(antecedentString);
+                                antecedent.replaceVariables(replacements);
+                                antecedentStrings.add(antecedent.toString());
+                            }
+
+                            final String toBeAdded = this.buildPrologClauseString(
+                                    succedentString, antecedents);
+                            if(!prologStringList.contains(toBeAdded)) {
+                                prologStringList.add(toBeAdded);
+                            }
+                        }
+                    } catch (final IllegalArgumentException e) {
+                        // NO-OP
                     }
                 }
 
@@ -308,10 +341,21 @@ public final class IsabelleFrameworkExtractor {
     }
 
     private Map<PrologPredicate, List<PrologPredicate>> computeTransitiveClosureOfComponentAliases()
-            throws MalformedSettingsValueException {
+            throws MalformedSettingsValueException, ExternalSoftwareUnavailableException {
         final Map<String, String> input = ConfigReader.getInstance().getComponentAliases();
 
-        final Map<PrologPredicate, List<PrologPredicate>> toReturn =
+        final Map<PrologPredicate, List<PrologPredicate>> res =
+                    new HashMap<PrologPredicate, List<PrologPredicate>>();
+
+        for(final String inString : input.keySet()) {
+            res.put(this.parser.parsePredicate(inString),
+                    List.of(this.parser.parsePredicate(input.get(inString))));
+        }
+
+        return res;
+
+        // TODO Fix bug and actually compute transitive closure!
+        /* final Map<PrologPredicate, List<PrologPredicate>> toReturn =
                 new HashMap<PrologPredicate, List<PrologPredicate>>();
 
         for (final String predString : input.keySet()) {
@@ -353,12 +397,12 @@ public final class IsabelleFrameworkExtractor {
             }
         }
 
-        return toReturn;
+        return toReturn; */
     }
 
     private List<PrologPredicate> computeAllExpansions(final PrologPredicate alias,
             final List<PrologPredicate> aliasExpansions,
-            final List<PrologPredicate> candidateExpansions) {
+            final List<PrologPredicate> candidateExpansions) throws ExternalSoftwareUnavailableException {
         final List<PrologPredicate> toReturn = new LinkedList<PrologPredicate>();
 
         for (final PrologPredicate candidateExpansion : candidateExpansions) {
@@ -377,22 +421,39 @@ public final class IsabelleFrameworkExtractor {
     }
 
     private PrologPredicate replaceAlias(final PrologPredicate original, final PrologPredicate toBeReplaced,
-            final PrologPredicate replacement) {
+            final PrologPredicate replacement) throws ExternalSoftwareUnavailableException {
 
-        if(original.equals(toBeReplaced)) {
+        final JplFacade facade = new JplFacade();
+        boolean unifiable = true;
+        Map<String, String> replacements = new HashMap<String, String>();
+        try {
+            replacements = facade.unifiable(toBeReplaced.toString(), original.toString());
+        } catch (final IllegalArgumentException e) {
+            unifiable = false;
+        }
+        if(replacements.keySet().contains(PrologPredicate.ANONYMOUS)) {
+            replacements.remove(PrologPredicate.ANONYMOUS);
+        }
+
+        final boolean onlyOneVariable = original.isVariable() && !toBeReplaced.isVariable()
+                || !original.isVariable() && toBeReplaced.isVariable();
+
+        if(unifiable && !onlyOneVariable) {
             final PrologPredicate copyOfReplacement = PrologPredicate.copy(replacement);
+            copyOfReplacement.replaceVariables(replacements);
+            replacements.clear();
+
 
             final List<PrologPredicate> originalParameters =
                     PrologPredicate.copy(toBeReplaced).getParameters();
 
-            int oldParamIndex = 0;
-            for(int i = 0; i < copyOfReplacement.getArity(); i++) {
-                if(copyOfReplacement.getParameters().get(i).isVariable()) {
-                    copyOfReplacement.getParameters().set(i,
-                            PrologPredicate.copy(originalParameters.get(oldParamIndex)));
-                    oldParamIndex++;
+            final int oldIdx = 0;
+            for(final PrologPredicate pred : copyOfReplacement.getAllChildren()) {
+                if(pred.isVariable()) {
+                    replacements.put(pred.getName(), originalParameters.get(oldIdx).toString());
                 }
             }
+            copyOfReplacement.replaceVariables(replacements);
 
             return copyOfReplacement;
         } else {

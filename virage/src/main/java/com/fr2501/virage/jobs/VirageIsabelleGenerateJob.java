@@ -61,7 +61,7 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
 
     @Override
     public String presentConcreteResult() {
-        return "Generated theory file at \'" + this.outputPath + "\'.";
+        return "Generated theory file at \'" + this.result.getAbsolutePath() + "\'.";
     }
 
     @Override

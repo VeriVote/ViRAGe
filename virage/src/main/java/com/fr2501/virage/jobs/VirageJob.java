@@ -82,6 +82,7 @@ public abstract class VirageJob<T> {
             this.setState(VirageJobState.FINISHED);
             // this.concreteExecute() can throw virtually any runtime exception.
         } catch (final Exception e) {
+            e.printStackTrace();
             this.setState(VirageJobState.FAILED);
         }
     }
