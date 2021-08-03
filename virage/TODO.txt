@@ -1,12 +1,6 @@
 == HIGH PRIORITY
 refactoring + checkstyle
-resolve synonyms
 re-enable C generation
-
---- Done
-fix line breaks, try to add '>' (still seems impossible, but colors removed)
-display types instead of Prolog variables in the end
-consistency check via keySet instead of version check
 
 === maven stuff
 jar?
@@ -19,24 +13,20 @@ checkstyle (mvn checkstyle:checkstyle)!
 add explaining constants to (E)PL
 
 === Improve UI
-check necessity of log messages
 add possibility to check all available properties at once
 omit anonymous variables and fill automatically
 do not display atomic properties
 
 === Miscellaneous
-experiment with snap on Ubuntu
 interactively launch scala and generate test instances
 optionally run jobs in parallel on CLI
 document program states
 run on different sessions to see behavior
-only compile scala code twice if the second run might work
 cross-verification of Scala and C programs
 add more C snippets
 include jEdit (or find some other solution? xdg-open?)
 termination of text editor (exit codes? descendants?)
 timestamp in config
-check why scala-isabelle requires a name
 
 === FINISHED
 move config to a reasonable place (URGENT!!!)
@@ -88,3 +78,9 @@ fixed generation of (E)PL files to tmp
 VCLI constructor
 ---
 document
+---
+check necessity of log messages
+fix line breaks, try to add '>' (still seems impossible, but colors removed)
+display types instead of Prolog variables in the end
+consistency check via keySet instead of version check
+resolve synonyms (kind of)
