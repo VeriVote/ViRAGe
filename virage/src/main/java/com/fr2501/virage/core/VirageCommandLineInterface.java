@@ -435,11 +435,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     private void displayInputMarker() {
-        // Set background to white and text to black to signal input opportunity.
-        // ">" would be nicer, but this appears to conflict with mvn exec:exec,
-        // see https://github.com/mojohaus/exec-maven-plugin/issues/159.
         try {
-            this.outputWriter.append("? \033[1A\n");
+            this.outputWriter.append(".......... \033[1A\n");
             this.outputWriter.flush();
         } catch (final IOException e) {
             e.printStackTrace();
@@ -668,7 +665,12 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
         if (!compositionString.isEmpty()) {
             try {
-                DecompositionTree.parseString(compositionString);
+                final DecompositionTree tree = DecompositionTree.parseString(compositionString);
+                tree.fillMissingVariables(this.core.getFrameworkRepresentation());
+
+                this.displayMessage("Interpreted input as " + tree.toString() + ".");
+
+                return tree.toString();
             } catch (final IllegalArgumentException e) {
                 LOGGER.error("\"" + compositionString
                         + "\" could not be parsed. Please check the brackets and try again.");

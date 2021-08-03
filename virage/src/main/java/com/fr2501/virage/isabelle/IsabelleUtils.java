@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.fr2501.util.SimpleFileReader;
-import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.PrologPredicate;
 
 /**
@@ -162,12 +161,10 @@ public class IsabelleUtils {
         final SimpleFileReader reader = new SimpleFileReader();
         final List<String> lines = reader.readFileByLine(root);
 
-        final Pattern pattern = Pattern.compile("session(.*)=.*");
+        final Pattern pattern = Pattern.compile("session[\\s]+(.*)[\\s]+=.*");
 
         for(final String line: lines) {
-            final String lineWithoutWhitespace = StringUtils.removeWhitespace(line);
-
-            final Matcher matcher = pattern.matcher(lineWithoutWhitespace);
+            final Matcher matcher = pattern.matcher(line);
 
             if(matcher.matches()) {
                 res.add(matcher.group(1));

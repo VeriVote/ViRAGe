@@ -443,7 +443,6 @@ public final class IsabelleFrameworkExtractor {
             copyOfReplacement.replaceVariables(replacements);
             replacements.clear();
 
-
             final List<PrologPredicate> originalParameters =
                     PrologPredicate.copy(toBeReplaced).getParameters();
 

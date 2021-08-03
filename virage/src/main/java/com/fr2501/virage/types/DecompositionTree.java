@@ -19,7 +19,7 @@ public final class DecompositionTree {
     /**
      * The arity.
      */
-    private final int arity;
+    private int arity;
     /**
      * The children.
      */
@@ -168,6 +168,27 @@ public final class DecompositionTree {
 
     public String getLabel() {
         return this.label;
+    }
+
+    public void fillMissingVariables(final FrameworkRepresentation framework) {
+        if(PrologPredicate.isVariable(this.label)) {
+            return;
+        }
+
+        final Component thisComponent = framework.getComponent(this.label);
+
+        if(thisComponent == null || this.children.size() > thisComponent.getParameters().size()) {
+            throw new IllegalArgumentException();
+        }
+
+        for(final DecompositionTree child : this.children) {
+            child.fillMissingVariables(framework);
+        }
+
+        while(this.children.size() != thisComponent.getParameters().size()) {
+            this.children.add(new DecompositionTree(PrologPredicate.ANONYMOUS));
+            this.arity++;
+        }
     }
 
     @Override
