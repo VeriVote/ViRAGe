@@ -2,14 +2,16 @@
 
 int find_index(profile p, int alternative) {
   return alternative;
+}
 
-  /*for(int i=0; i<C; i++) {
-    if(p.alternatives[i] == alternative) {
-      return i;
-    }
+result rescpy(result to_be_copied) {
+  result to_return;
+
+  for(int i=0; i<C; i++) {
+    to_return.values[i] = to_be_copied.values[i];
   }
 
-  return -1;*/
+  return to_return;
 }
 
 rel get_default_ordering(profile p) {

@@ -177,7 +177,7 @@ public final class IsabelleTheoryGenerator {
 
         for (final String origin : originStrings) {
             res += this.framework.getSessionName() + IsabelleUtils.THEORY_NAME_SEPARATOR
-                    + origin + " ";
+                    + origin + StringUtils.SPACE;
         }
 
         if (usingUnprovenFacts) {
@@ -242,7 +242,7 @@ public final class IsabelleTheoryGenerator {
 
         Collections.sort(moduleParametersList);
         for (final String param : moduleParametersList) {
-            moduleParameters += " " + param;
+            moduleParameters += StringUtils.SPACE + param;
         }
 
         final List<String> moduleParamTypesList = new LinkedList<String>();
@@ -252,10 +252,11 @@ public final class IsabelleTheoryGenerator {
                     String moduleParamType = "";
                     // Simple types like nat don't require an "'a".
                     if (!IsabelleUtils.isSimpleType(type)) {
-                        moduleParamType = IsabelleUtils.TYPE_ALIAS + " ";
+                        moduleParamType = IsabelleUtils.TYPE_ALIAS + StringUtils.SPACE;
                     }
 
-                    moduleParamType += type + " " + IsabelleUtils.RIGHTARROW + " ";
+                    moduleParamType += type + StringUtils.SPACE + IsabelleUtils.RIGHTARROW
+                            + StringUtils.SPACE;
                     moduleParamTypesList.add(i, moduleParamType);
                 }
             }
@@ -289,8 +290,8 @@ public final class IsabelleTheoryGenerator {
                         .replace(IsabelleUtils.FILE_EXTENSION, "");
 
                 if (!imports.contains(importStringWithoutSuffix)) {
-                    imports += " " + this.framework.getSessionName() + "."
-                            + importStringWithoutSuffix + " ";
+                    imports += StringUtils.SPACE + this.framework.getSessionName() + "."
+                            + importStringWithoutSuffix + StringUtils.SPACE;
                 }
             }
         }

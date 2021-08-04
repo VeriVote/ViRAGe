@@ -5,18 +5,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fr2501.util.Pair;
 import com.fr2501.util.SimpleFileWriter;
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.types.Component;
-import com.fr2501.virage.types.ComponentType;
-import com.fr2501.virage.types.ComposableModule;
-import com.fr2501.virage.types.CompositionalStructure;
 import com.fr2501.virage.types.DecompositionTree;
 import com.fr2501.virage.types.FrameworkRepresentation;
 
@@ -26,10 +30,16 @@ import com.fr2501.virage.types.FrameworkRepresentation;
  * @author VeriVote
  */
 public final class CCodeGenerator {
+    private static final Logger LOGGER = LogManager.getRootLogger();
+
     private final String codeFileTemplate;
     private final String compositionsTemplate;
+    private final Map<String, String> templates;
+    private final Map<String, List<String>> signatures;
 
     private final FrameworkRepresentation frameworkField;
+
+    private static final String[] additionalFiles = {"types.c", "types.h", "voting_rule.h", "wrapper.c"};
 
     public CCodeGenerator(final FrameworkRepresentation framework) {
         this.frameworkField = framework;
@@ -46,7 +56,7 @@ public final class CCodeGenerator {
         this.codeFileTemplate = writer.toString();
 
         final InputStream compositionsTemplateStream = this.getClass().getClassLoader()
-                .getResourceAsStream("c_implementations/compositions.template");
+                .getResourceAsStream("c_implementations/components.template");
         try {
             IOUtils.copy(compositionsTemplateStream, writer, StandardCharsets.UTF_8);
         } catch (final IOException e) {
@@ -54,6 +64,47 @@ public final class CCodeGenerator {
         }
 
         this.compositionsTemplate = writer.toString();
+
+        this.templates = new HashMap<String, String>();
+        this.signatures = new HashMap<String, List<String>>();
+
+        final String componentNameGroup = "componentName";
+        final String implementationGroup = "implementation";
+        final String signatureGroup = "signature";
+        final Pattern pattern = Pattern.compile("\\/\\/[ ]*(?<" + componentNameGroup
+                + ">\\w+)\n(?<" + implementationGroup + ">[^\\(]*(?<"
+                + signatureGroup + ">[^\\)]*\\)).*)\\/\\/[ ]*\\k<" + componentNameGroup + ">\n",
+                Pattern.DOTALL);
+        final Matcher matcher = pattern.matcher(this.compositionsTemplate);
+
+        while(matcher.find()) {
+            this.templates.put(matcher.group(componentNameGroup), matcher.group(implementationGroup));
+
+            String rawSignature = matcher.group(signatureGroup);
+
+            // Remove brackets.
+            rawSignature = rawSignature.substring(0,rawSignature.length()-1);
+
+            final List<String> parameterNames = new LinkedList<String>();
+            final String[] parameters = rawSignature.split(",");
+            for(int i = 0; i < parameters.length; i++) {
+                parameters[i] = parameters[i].strip();
+
+                final String[] parameterNameArray = parameters[i].split(" ");
+                // Correct name is the last entry, as all trailing whitespace was removed.
+                final String parameterName = parameterNameArray[parameterNameArray.length - 1];
+                parameterNames.add(parameterName);
+            }
+            this.signatures.put(matcher.group(componentNameGroup), parameterNames);
+        }
+    }
+
+    private String buildParameterString(final String name) {
+        if(!this.signatures.containsKey(name)) {
+            return "";
+        }
+
+        return StringUtils.parenthesize(StringUtils.printCollection(this.signatures.get(name)));
     }
 
     private Pair<Pair<String, String>, Integer> getCCodeFromComposition(
@@ -61,112 +112,125 @@ public final class CCodeGenerator {
         String head = "";
         String body = "";
 
-        final ComposableModule currentModule = this.frameworkField
-                .getComposableModule(composition.getLabel());
-        if (currentModule != null) {
-            head = composition.getLabel() + "(";
+        final Component currentComponent = this.frameworkField
+                .getComponent(composition.getLabel());
+        if (currentComponent != null) {
+            final String componentName = composition.getLabel();
 
-            for (int i = 0; i < composition.getChildren().size(); i++) {
-                final DecompositionTree child = composition.getChildren().get(i);
-                final String childLabel = child.getLabel();
+            if (this.templates.containsKey(componentName)) {
+                String componentTemplate = this.templates.get(componentName);
 
-                if (PrologPredicate.ANONYMOUS.equals(childLabel)) {
-                    final ComponentType childType = this.frameworkField
-                            .getComponent(composition.getLabel()).getParameters().get(i);
-
-                    if (childType.getName().equals("nat")) {
-                        head += "1";
-                    } else if (childType.getName().equals("rel")) {
-                        head += "get_default_ordering(p)";
-                    }
-                } else {
-                    head += this.getCCodeFromComposition(child, ctr).getFirstValue()
-                            .getFirstValue();
-                }
-
-                head += ",";
-            }
-
-            head += "p,r)";
-        }
-
-        final CompositionalStructure currentStructure = this.frameworkField
-                .getCompositionalStructure(composition.getLabel());
-        if (currentStructure != null) {
-            final String structure = composition.getLabel();
-
-            final Pattern pattern = Pattern.compile("// " + structure + ".*" + "// " + structure,
-                    Pattern.DOTALL);
-            final Matcher matcher = pattern.matcher(this.compositionsTemplate);
-
-            if (matcher.find()) {
-                String structureTemplate = matcher.group();
-
-                structureTemplate = structureTemplate.replace("$IDX", String.valueOf(ctr));
+                componentTemplate = componentTemplate.replace("$IDX", String.valueOf(ctr));
 
                 int moduleCounter = 1;
-                for (final DecompositionTree child : composition.getChildren()) {
-                    if (this.frameworkField.getComposableModule(child.getLabel()) != null
-                            || this.frameworkField
-                                    .getCompositionalStructure(child.getLabel()) != null) {
+                for (int i=0; i<composition.getArity(); i++) {
+                    final DecompositionTree child = composition.getChildren().get(i);
+
+                    String replacement;
+                    if(PrologPredicate.isVariable(child.getLabel())) {
+                        replacement = "DEFAULT_" + currentComponent.getParameters().get(i).toString().toUpperCase();
+                    } else {
                         final Pair<Pair<String, String>, Integer> childCode = this
-                                .getCCodeFromComposition(child, ctr + 1);
+                                .getCCodeFromComposition(child, ctr+1);
 
                         body += childCode.getFirstValue().getSecondValue() + System.lineSeparator();
-
-                        structureTemplate = structureTemplate.replace(
-                                "$MODULE_" + String.valueOf(moduleCounter),
-                                childCode.getFirstValue().getFirstValue());
-                        moduleCounter++;
-                    } else if (this.frameworkField.getComponent(child.getLabel()) != null) {
-                        final Component currentComponent = this.frameworkField
-                                .getComponent(child.getLabel());
-                        final ComponentType type = currentComponent.getType();
-
-                        if (type.getName().equals("aggregator")) {
-                            structureTemplate = structureTemplate.replace("$AGGREGATOR",
-                                    currentComponent.getName());
-                        } else if (type.getName().equals("termination_condition")) {
-                            // TODO: This is completely non-generic and only admissible for the
-                            // defer_eq_condition.
-                            structureTemplate = structureTemplate.replace("$TERMINATION_CONDITION",
-                                    currentComponent.getName() + "("
-                                            + child.getChildren().get(0).getLabel() + ",p,r)");
-                        }
+                        replacement = childCode.getFirstValue().getFirstValue() + this.buildParameterString(child.getLabel());
                     }
+
+                    componentTemplate = componentTemplate.replace(
+                            "$PARAM_" + String.valueOf(moduleCounter),
+                            replacement);
+                    moduleCounter++;
                 }
 
-                body += structureTemplate;
-                head = structure + "_" + String.valueOf(ctr) + "(p,r)";
-            } else {
-                throw new IllegalArgumentException();
+                body += componentTemplate;
+                head = componentName + "_" + String.valueOf(ctr);
             }
         }
 
-        if (currentModule == null && currentStructure == null) {
+        if (currentComponent == null || !this.templates.containsKey(currentComponent.getName())) {
             head = composition.getLabel();
         }
 
         return new Pair<Pair<String, String>, Integer>(new Pair<String, String>(head, body), ctr);
     }
 
+    private List<String> findMissingTemplates(final DecompositionTree composition) {
+        return this.findMissingTemplates(composition, new LinkedList<String>());
+    }
+
+    private List<String> findMissingTemplates(final DecompositionTree composition, final List<String> found) {
+        if(!this.templates.keySet().contains(composition.getLabel())) {
+            found.add(composition.getLabel());
+        }
+
+        for(final DecompositionTree child : composition.getChildren()) {
+            this.findMissingTemplates(child, found);
+        }
+
+        return found;
+    }
+
     public File getCCodeFromComposition(final String compositionString) {
         final DecompositionTree composition = DecompositionTree.parseString(compositionString);
-        final String cCode = "";
 
-        final String entryName = "composition";
+        final List<String> missingTemplates = this.findMissingTemplates(composition);
+
+        for(final String missingTemplate : missingTemplates) {
+            LOGGER.warn("Template missing for component: " + missingTemplate);
+        }
 
         final Pair<Pair<String, String>, Integer> res = this.getCCodeFromComposition(composition,
                 0);
 
         String fileContents = this.codeFileTemplate.replace("$CONTENT",
                 res.getFirstValue().getSecondValue());
-        fileContents = fileContents.replace("$ENTRY", res.getFirstValue().getFirstValue());
+        fileContents = fileContents.replace("$ENTRY", res.getFirstValue().getFirstValue() + this.buildParameterString(composition.getLabel()));
 
-        final File result = new File("target/generated-sources/voting_rule.c");
+        final File result = new File("target/generated-sources/voting_rule" + System.currentTimeMillis() + ".c");
         (new SimpleFileWriter()).writeToFile(result.getAbsolutePath(), fileContents);
 
         return result;
     }
+
+    /*public File generateAndCompileCCodeFromComposition(final String compositionString,
+            final int numVoters, final int numCandidates) throws IOException, InterruptedException, CompilationFailedException {
+        final File votingRuleFile = this.getCCodeFromComposition(compositionString);
+
+        String cFiles = "";
+        String resourceLocation = "";
+        for(final String s : additionalFiles) {
+            final String location = "c_implementations" + File.separator + s;
+
+            cFiles += StringUtils.SPACE + this.getClass().getClassLoader().getResource(location).getFile();
+
+            if(resourceLocation.isEmpty()) {
+                resourceLocation = new File(this.getClass().getClassLoader().getResource(location).getFile()).getParent();
+            }
+        }
+
+        final File tmpVotingRuleFile = new File(resourceLocation + File.separator + "tmp_voting_rule.c");
+        if(tmpVotingRuleFile.exists()) {
+            tmpVotingRuleFile.delete();
+        }
+        Files.copy(votingRuleFile.toPath(), tmpVotingRuleFile.toPath());
+
+        final File exeFile = new File("target/generated_sources/voting_rule.x").getAbsoluteFile();
+        final String gccCommand = ConfigReader.getInstance().getGccExecutable() + StringUtils.SPACE + tmpVotingRuleFile.getAbsolutePath()
+                + cFiles + " -o " + exeFile.getAbsolutePath() + " -D V=" + numVoters + " -D C=" + numCandidates;
+
+        final Pair<String, String> output = ProcessUtils.runTerminatingProcess(gccCommand);
+        if(!output.getFirstValue().isEmpty()) {
+            LOGGER.warn(output.getFirstValue());
+        }
+
+        if(!output.getSecondValue().isEmpty()) {
+            LOGGER.error(output.getSecondValue());
+
+            throw new CompilationFailedException("Compilation failed, invoked as follows: " + gccCommand);
+        }
+
+        return exeFile;
+    }*/
 
 }

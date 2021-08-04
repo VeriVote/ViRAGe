@@ -27,7 +27,7 @@ public final class Property implements Parameterized {
     /**
      * Marks whether a property is atomic.
      */
-    private boolean isAtomic = false;
+    private boolean isAtomic;
 
     /**
      * Simple constructor.

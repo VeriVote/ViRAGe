@@ -13,6 +13,11 @@ import java.util.regex.Pattern;
 public class StringUtils {
 
     /**
+     * Checkstyle pleaser.
+     */
+    public static final String SPACE = " ";
+
+    /**
      * Checks whether a String is a number.
      *
      * @param strNum the String to be checked

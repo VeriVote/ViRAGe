@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
       printf("%s ",order[i]);
     }
   }
-  printf(System.lineSeparator());
+  printf("\n");
 
   exit(EXIT_SUCCESS);
 }

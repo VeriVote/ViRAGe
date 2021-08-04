@@ -318,7 +318,8 @@ public final class IsabelleCodeGenerator {
         int status;
         status = ProcessUtils.runTerminatingProcessAndLogOutput(
                 ConfigReader.getInstance().getIsabelleExecutable() + " scalac "
-                        + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath()
+                        + codeFile.getCanonicalPath() + StringUtils.SPACE
+                        + votingContext.getCanonicalPath()
                         + " -d " + jarPath);
 
         if (status != 0) {
@@ -327,7 +328,8 @@ public final class IsabelleCodeGenerator {
 
             status = ProcessUtils.runTerminatingProcessAndLogOutput(
                     ConfigReader.getInstance().getIsabelleExecutable() + " scalac "
-                            + codeFile.getCanonicalPath() + " " + votingContext.getCanonicalPath()
+                            + codeFile.getCanonicalPath() + StringUtils.SPACE
+                            + votingContext.getCanonicalPath()
                             + " -d " + jarPath);
 
             if (status != 0) {

@@ -181,6 +181,9 @@ public final class DecompositionTree {
         }
 
         final Component thisComponent = framework.getComponent(this.label);
+        if(thisComponent == null && this.children.isEmpty()) {
+            return;
+        }
 
         if(thisComponent == null || this.children.size() > thisComponent.getParameters().size()) {
             throw new IllegalArgumentException();

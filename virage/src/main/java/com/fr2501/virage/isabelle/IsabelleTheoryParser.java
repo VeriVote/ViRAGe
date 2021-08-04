@@ -58,7 +58,7 @@ public class IsabelleTheoryParser {
 
             for (final String line : lines) {
                 if (line.startsWith(DEFINITION) || line.startsWith(FUNCTION)) {
-                    final String[] splits = line.split(" ");
+                    final String[] splits = line.split(StringUtils.SPACE);
                     // Name of the object is second "word" on the line.
                     res.put(splits[1], file.getName());
                 }
@@ -102,7 +102,7 @@ public class IsabelleTheoryParser {
 
         for (final String line : lines) {
             if (line.contains(IsabelleUtils.IMPORTS)) {
-                final String[] splits = line.split(" ");
+                final String[] splits = line.split(StringUtils.SPACE);
 
                 for (final String split : splits) {
                     if (StringUtils.removeWhitespace(split).equals("")

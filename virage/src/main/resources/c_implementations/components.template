@@ -1,0 +1,178 @@
+// sequential_composition
+result sequential_composition_$IDX(profile profile_1, result result_1) {
+	result_1 = $PARAM_1;
+	result_1 = $PARAM_2;
+	return result_1;
+}
+// sequential_composition
+
+// parallel_composition
+result parallel_composition_$IDX(profile profile_1, result result_1) {
+	result tmp_copy = rescpy(result_1);
+
+	result tmp_result_1 = $PARAM_1;
+
+	result_1 = tmp_copy;
+	result result_2 = $PARAM_2;
+
+	result_1 = tmp_result_1;
+
+	return $PARAM_3;
+}
+// parallel_composition
+
+// loop_composition
+result loop_composition_$IDX(profile profile_1, result result_1) {
+	while(!$PARAM_2) {
+	  result_1 = $PARAM_1;
+	}
+
+	return result_1;
+}
+// loop_composition
+
+// revision_composition
+result revision_composition_$IDX(profile profile_1, result result_1) {
+	result_1 = $PARAM_1;
+	for(int i=0; i<C; i++) {
+		if(result_1.values[i] == ELECTED) {
+			result_1.values[i] = DEFERRED;
+		} else {
+			result_1.values[i] = REJECTED;
+		}
+	}
+
+	return result_1;
+}
+// revision_composition
+
+// max_aggregator
+result max_aggregator_$IDX(result result_1, result result_2) {
+  result new_result;
+
+  for(int i=0; i<C; i++) {
+    if(result_1.values[i] == ELECTED || result_2.values[i] == ELECTED) {
+      new_result.values[i] = ELECTED;
+    } else if(result_1.values[i] == DEFERRED || result_2.values[i] == DEFERRED) {
+      new_result.values[i] = DEFERRED;
+    } else {
+      new_result.values[i] = REJECTED;
+    }
+  }
+
+  return new_result;
+}
+// max_aggregator
+
+// elect_module
+result elect_module_$IDX(profile profile_1, result result_1) {
+  for(int i=0; i<C; i++) {
+    if(result_1.values[i] == DEFERRED) {
+      result_1.values[i] = ELECTED;
+    }
+  }
+
+  return result_1;
+}
+// elect_module
+
+// pass_module
+result pass_module_$IDX(profile profile_1, result result_1) {
+	int n = $PARAM_1;
+	rel relation = $PARAM_2;
+
+  for(int i=0; i<C; i++) {
+    int current_alternative = relation.elements[i];
+    int idx = find_index(profile_1, current_alternative);
+
+    if(result_1.values[idx] == DEFERRED) {
+      if(n>0) {
+        result_1.values[idx] = DEFERRED;
+        n--;
+      } else {
+        result_1.values[idx] = REJECTED;
+      }
+    }
+  }
+
+  return result_1;
+}
+// pass_module
+
+// drop_module
+result drop_module_$IDX(profile profile_1, result result_1) {
+	int n = $PARAM_1;
+	rel relation = $PARAM_2;
+
+  for(int i=0; i<C; i++) {
+    int current_alternative = relation.elements[i];
+    int idx = find_index(profile_1, current_alternative);
+
+    if(result_1.values[idx] == DEFERRED) {
+      if(n>0) {
+        result_1.values[idx] = REJECTED;
+        n--;
+      } else {
+        result_1.values[idx] = DEFERRED;
+      }
+    }
+  }
+
+  return result_1;
+}
+// drop_module
+
+// plurality
+result plurality_$IDX(profile profile_1, result result_1) {
+  int wins[C];
+  for(int i=0; i<C; i++) {
+    wins[i] = 0;
+  }
+
+  for(int v=0; v<V; v++) {
+    for(int c=0; c<C; c++) {
+      int current_alternative = profile_1.votes[v][c];
+
+      int idx = find_index(profile_1, current_alternative);
+
+      if(result_1.values[idx] == DEFERRED) {
+        wins[idx]++;
+
+        // bool flag
+        break;
+      }
+    }
+  }
+
+  int max = 0;
+  for(int i=0; i<C; i++) {
+    if(wins[i] > max) max = wins[i];
+  }
+
+  for(int i=0; i<C; i++) {
+    if(result_1.values[i] == DEFERRED) {
+      if(wins[i] == max) {
+        result_1.values[i] = ELECTED;
+      } else {
+        result_1.values[i] = REJECTED;
+      }
+    }
+  }
+
+  return result_1;
+}
+// plurality
+
+// defer_equal_condition
+bool defer_equal_condition_$IDX(result result_1) {
+	int n = $PARAM_1;
+
+  int ctr = 0;
+
+  for(int i=0; i<C; i++) {
+    if(result_1.values[i] == DEFERRED) ctr++;
+  }
+
+  return (ctr == n);
+}
+// defer_equal_condition

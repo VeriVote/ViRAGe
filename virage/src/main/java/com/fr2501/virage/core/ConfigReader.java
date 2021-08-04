@@ -82,6 +82,11 @@ public final class ConfigReader {
     private static final String SWIPL_BIN = "SWI_PROLOG_EXECUTABLE";
 
     /**
+     * Name of the option containing the GCC binary.
+     */
+    private static final String GCC_BIN = "GCC_EXECUTABLE";
+
+    /**
      * Name of the option containing session specific component aliases.
      */
     private static final String COMPONENT_ALIASES = "SESSION_SPECIFIC_COMPONENT_ALIASES";
@@ -379,6 +384,10 @@ public final class ConfigReader {
                 .get("SYSTEM_DEFAULT_OUTPUT_PATH");
 
         return configValue;
+    }
+
+    public String getGccExecutable() {
+        return this.properties.getProperty(GCC_BIN);
     }
 
     /**

@@ -1,21 +1,18 @@
+#include <stdbool.h>
 #include "types.h"
-#include "modules.h"
-#include "aggregators.h"
-#include "termination_conditions.h"
-
-extern profile p;
-extern result r;
 
 $CONTENT
 
 result voting_rule(profile input) {
-  p = input;
+  profile profile_1 = input;
+
+  result result_1;
 
   for(int i=0; i<C; i++) {
-    r.values[i] = DEFERRED;
+    result_1.values[i] = DEFERRED;
   }
 
-  r = $ENTRY;
+  result_1 = $ENTRY;
 
-  return r;
+  return result_1;
 }

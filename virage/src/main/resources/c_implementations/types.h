@@ -28,5 +28,6 @@ typedef struct {
 
 int find_index(profile p, int alternative);
 rel get_default_ordering(profile p);
+result rescpy(result to_be_copied);
 
 #endif

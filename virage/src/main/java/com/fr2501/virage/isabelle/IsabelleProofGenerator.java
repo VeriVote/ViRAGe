@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fr2501.util.StringUtils;
 import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.CompositionProof;
 import com.fr2501.virage.types.CompositionRule;
@@ -122,7 +123,8 @@ public class IsabelleProofGenerator {
         final String property = splits[0];
 
         final String theoremName = IsabelleTheoryGenerator.VAR_MODULE_NAME + "_" + property + ":";
-        final String goal = property + " (" + IsabelleTheoryGenerator.VAR_MODULE_NAME + " "
+        final String goal = property + " (" + IsabelleTheoryGenerator.VAR_MODULE_NAME
+                + StringUtils.SPACE
                 + IsabelleTheoryGenerator.VAR_MODULE_PARAMETERS + ")";
 
         final Set<String> assumptions = new HashSet<String>();
@@ -135,7 +137,8 @@ public class IsabelleProofGenerator {
                     final Property p = this.parent.getFramework()
                             .getProperty(rule.getSuccedent().getName());
 
-                    String newAssumptions = "\"" + rule.getSuccedent().getName() + " ";
+                    String newAssumptions = "\"" + rule.getSuccedent().getName()
+                            + StringUtils.SPACE;
                     for (final ComponentType child : p.getParameters()) {
                         // Only parameters defined within the module definition can be referenced,
                         // so if
@@ -146,7 +149,7 @@ public class IsabelleProofGenerator {
                         }
 
                         newAssumptions += this.getParent().getTypedVariables().get(child.getName())
-                                + " ";
+                                + StringUtils.SPACE;
 
                         newAssumptions += "\"";
                         assumptions.add(newAssumptions);

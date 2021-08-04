@@ -436,12 +436,14 @@ public final class FrameworkRepresentation {
 
         res += "%\n";
 
-        res += "% " + ExtendedPrologStrings.COMPOSITION_TYPE_HEADER + System.lineSeparator();
+        res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
+                + ExtendedPrologStrings.COMPOSITION_TYPE_HEADER + System.lineSeparator();
         for (final ComponentType type : this.componentTypes) {
             res += "% == " + type.getName() + System.lineSeparator();
             for (final Component comp : this.components) {
                 if (comp.getType().equals(type)) {
-                    res += "% " + comp.toStringWithoutTypeSignature() + System.lineSeparator();
+                    res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
+                            + comp.toStringWithoutTypeSignature() + System.lineSeparator();
                 }
             }
         }
@@ -458,19 +460,23 @@ public final class FrameworkRepresentation {
          * res += "%\n";
          */
 
-        res += "% " + ExtendedPrologStrings.PROPERTY_HEADER + System.lineSeparator();
+        res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
+                + ExtendedPrologStrings.PROPERTY_HEADER + System.lineSeparator();
         for (final Property prop : this.properties) {
-            res += "% " + prop.toString() + System.lineSeparator();
+            res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
+                    + prop.toString() + System.lineSeparator();
         }
         final List<String> additionalProperties = ConfigReader.getInstance()
                 .getAdditionalProperties();
         for (final String prop : additionalProperties) {
-            res += "% " + prop + System.lineSeparator();
+            res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE + prop
+                    + System.lineSeparator();
         }
 
         res += "%\n";
 
-        res += "% " + ExtendedPrologStrings.COMPOSITION_RULE_HEADER + System.lineSeparator();
+        res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
+                + ExtendedPrologStrings.COMPOSITION_RULE_HEADER + System.lineSeparator();
         for (final CompositionRule rule : this.compositionRules) {
             res += rule.toEplString() + System.lineSeparator();
         }
