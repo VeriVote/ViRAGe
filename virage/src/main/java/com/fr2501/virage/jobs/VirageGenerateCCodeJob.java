@@ -3,7 +3,6 @@ package com.fr2501.virage.jobs;
 import java.io.File;
 
 import com.fr2501.virage.beast.CCodeGenerator;
-import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageUserInterface;
 
 /**
@@ -39,11 +38,6 @@ public final class VirageGenerateCCodeJob extends VirageJobWithExplicitResult<Fi
         this.generator = this.getExecutingCore().getCCodeGenerator();
 
         this.result = this.generator.getCCodeFromComposition(this.composition);
-    }
-
-    @Override
-    public boolean externalSoftwareAvailable() {
-        return ConfigReader.getInstance().hasIsabelle();
     }
 
     @Override
