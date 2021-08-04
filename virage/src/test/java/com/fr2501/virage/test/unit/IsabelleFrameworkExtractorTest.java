@@ -18,7 +18,7 @@ public class IsabelleFrameworkExtractorTest {
      * Simple test.
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
      * @throws IsabelleBuildFailedException if the build process fails
-     * @throws MalformedSettingsValueException
+     * @throws MalformedSettingsValueException if a settings value is malformed
      */
     @Test
     public void simpleTest()

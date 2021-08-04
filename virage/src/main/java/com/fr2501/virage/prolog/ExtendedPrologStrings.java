@@ -60,4 +60,9 @@ public abstract class ExtendedPrologStrings {
      * Comment indicator.
      */
     public static final String COMMENT = "%";
+
+    /**
+     * The character used to indicate headers.
+     */
+    public static final String FORMATTER = "=";
 }

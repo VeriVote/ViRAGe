@@ -42,6 +42,16 @@ public final class JplFacade {
     private static final long DEFAULT_TIMEOUT = 10000;
 
     /**
+     * The name of the environment variable LD_PRELOAD.
+     */
+    private static final String ENV_LD_PRELOAD = "LD_PRELOAD";
+
+    /**
+     * The SWI-Prolog predicate call_with_depth_limit.
+     */
+    private static final String PRED_CALL_W_DEPTH_LIMIT = "call_with_depth_limit";
+
+    /**
      * Counter to find new filenames.
      */
     private static int fileCounter;
@@ -85,8 +95,8 @@ public final class JplFacade {
             throw new ExternalSoftwareUnavailableException();
         }
 
-        if (!System.getenv().containsKey("LD_PRELOAD")
-                || !System.getenv("LD_PRELOAD").contains("libswipl.so")) {
+        if (!System.getenv().containsKey(ENV_LD_PRELOAD)
+                || !System.getenv(ENV_LD_PRELOAD).contains("libswipl.so")) {
 
             throw new ExternalSoftwareUnavailableException();
         }
@@ -309,9 +319,8 @@ public final class JplFacade {
 
         int maxDepth = 0;
         while (System.currentTimeMillis() < endTime) {
-            LOGGER.debug("Current maxDepth: " + maxDepth);
             final long remainingTime = endTime - System.currentTimeMillis();
-            final String actualQuery = "call_with_depth_limit"
+            final String actualQuery = PRED_CALL_W_DEPTH_LIMIT
                     + StringUtils.parenthesize(StringUtils.parenthesize(queryString)
                     + PrologPredicate.SEPARATOR + maxDepth + PrologPredicate.SEPARATOR
                     + unusedVariable);
@@ -380,9 +389,8 @@ public final class JplFacade {
 
         int maxDepth = 0;
         while (System.currentTimeMillis() < endTime) {
-            LOGGER.debug("Current maxDepth: " + maxDepth);
             final long remainingTime = endTime - System.currentTimeMillis();
-            final String actualQuery = "call_with_depth_limit"
+            final String actualQuery = PRED_CALL_W_DEPTH_LIMIT
                     + StringUtils.parenthesize(StringUtils.parenthesize(queryString)
                             + PrologPredicate.SEPARATOR
                     + maxDepth + PrologPredicate.SEPARATOR + unusedVariable);

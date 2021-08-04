@@ -55,7 +55,7 @@ public final class VirageGenerateJob
                     .add(this.getExecutingCore().getFrameworkRepresentation().getProperty(s));
         }
 
-        this.result = this.manager.generateComposition(this.properties);
+        this.setResult(this.manager.generateComposition(this.properties));
     }
 
     @Override
@@ -76,7 +76,7 @@ public final class VirageGenerateJob
         }
 
         final List<String> results = new LinkedList<String>();
-        for (final SearchResult<DecompositionTree> treeResult : this.result) {
+        for (final SearchResult<DecompositionTree> treeResult : this.getResult()) {
             if (treeResult.hasValue()) {
                 final DecompositionTree tree = treeResult.getValue();
 

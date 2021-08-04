@@ -68,7 +68,7 @@ public final class VirageAnalyzeJob
             this.properties.add(this.framework.getProperty(s));
         }
 
-        this.result = this.manager.analyzeComposition(this.tree, this.properties);
+        this.setResult(this.manager.analyzeComposition(this.tree, this.properties));
     }
 
     @Override
@@ -89,7 +89,7 @@ public final class VirageAnalyzeJob
         }
 
         boolean hasProperties = false;
-        for (final List<SearchResult<BooleanWithUncertainty>> resultList : this.result) {
+        for (final List<SearchResult<BooleanWithUncertainty>> resultList : this.getResult()) {
             for (final SearchResult<BooleanWithUncertainty> result : resultList) {
                 if (result.hasValue() && result.getValue() == BooleanWithUncertainty.TRUE) {
                     hasProperties = true;

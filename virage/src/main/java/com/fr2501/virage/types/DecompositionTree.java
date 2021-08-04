@@ -176,12 +176,9 @@ public final class DecompositionTree {
      * @throws IllegalArgumentException if a level is already too large
      */
     public void fillMissingVariables(final FrameworkRepresentation framework) {
-        if(PrologPredicate.isVariable(this.label)) {
-            return;
-        }
-
         final Component thisComponent = framework.getComponent(this.label);
-        if(thisComponent == null && this.children.isEmpty()) {
+        if(PrologPredicate.isVariable(this.label)
+                || thisComponent == null && this.children.isEmpty()) {
             return;
         }
 

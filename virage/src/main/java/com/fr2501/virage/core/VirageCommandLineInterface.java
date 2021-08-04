@@ -192,7 +192,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                         "Please input the path to the SWI-Prolog " + "library directory. "
                                 + "For your setup of SWI-Prolog, the typical value is "
                                 + this.addQuotationsToPath(ConfigReader.getInstance().getSwiplLib())
-                                + ", but this might differ on your system.");
+                                + ", but this might differ "
+                                + "on your system.");
 
                 if (!newValue.isEmpty()) {
                     final File file = new File(newValue);
@@ -231,7 +232,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                         + this.addQuotationsToPath("/usr/lib/" + LIBSWIPL_SO) + "or "
                         + this.addQuotationsToPath(
                                 ConfigReader.getInstance().getSwiplLib() + LIBSWIPL_SO)
-                        + ", but this might differ on your system.");
+                        + ", but"
+                        + " this might differ on your system.");
 
                 if (!newValue.isEmpty()) {
                     final File file = new File(newValue);

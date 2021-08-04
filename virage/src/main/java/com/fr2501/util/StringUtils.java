@@ -18,6 +18,11 @@ public class StringUtils {
     public static final String SPACE = " ";
 
     /**
+     * Checkstyle pleaser.
+     */
+    public static final String ESCAPED_QUOTATION_MARK = "\"";
+
+    /**
      * Checks whether a String is a number.
      *
      * @param strNum the String to be checked

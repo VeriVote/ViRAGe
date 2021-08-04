@@ -61,14 +61,14 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
 
     @Override
     public String presentConcreteResult() {
-        return "Generated theory file at \'" + this.result.getAbsolutePath() + "\'.";
+        return "Generated theory file at \'" + this.getResult().getAbsolutePath() + "\'.";
     }
 
     @Override
     protected void concreteExecute() throws Exception {
         this.generator = this.getExecutingCore().getIsabelleTheoryGenerator();
 
-        this.result = this.generator.generateTheoryFile(this.composition, this.proofs,
-                this.outputPath);
+        this.setResult(this.generator.generateTheoryFile(this.composition, this.proofs,
+                this.outputPath));
     }
 }

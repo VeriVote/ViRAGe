@@ -434,7 +434,7 @@ public final class FrameworkRepresentation {
         res += "% ==== " + this.theoryPath + "ROOT" + " - "
                 + this.sessionName + System.lineSeparator();
 
-        res += "%\n";
+        res += ExtendedPrologStrings.COMMENT + System.lineSeparator();
 
         res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
                 + ExtendedPrologStrings.COMPOSITION_TYPE_HEADER + System.lineSeparator();
@@ -448,7 +448,7 @@ public final class FrameworkRepresentation {
             }
         }
 
-        res += "%\n";
+        res += ExtendedPrologStrings.COMMENT + System.lineSeparator();
 
         /*
          * res += "% === composable_module\n"; res +=

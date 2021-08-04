@@ -61,8 +61,8 @@ public final class VirageProveJob
             this.properties.add(this.framework.getProperty(s));
         }
 
-        this.result = this.getExecutingCore().getSearchManager().proveClaims(this.tree,
-                this.properties);
+        this.setResult(this.getExecutingCore().getSearchManager().proveClaims(this.tree,
+                this.properties));
     }
 
     @Override

@@ -67,7 +67,7 @@ public final class VirageExtractJob extends VirageJobWithExplicitResult<Framewor
         framework.setTheoryPath(this.path);
         framework.setSessionName(this.sessionName);
 
-        this.result = framework;
+        this.setResult(framework);
     }
 
     @Override
@@ -82,7 +82,8 @@ public final class VirageExtractJob extends VirageJobWithExplicitResult<Framewor
 
     @Override
     public String presentConcreteResult() {
-        return "Extracted (E)PL file \'" + this.result.getAbsolutePath() + "\' from \'" + this.path
+        return "Extracted (E)PL file \'" + this.getResult().getAbsolutePath()
+                + "\' from \'" + this.path
                 + "\'.";
     }
 }

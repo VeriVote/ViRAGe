@@ -281,7 +281,7 @@ public final class IsabelleFrameworkExtractor {
      * @return the compositional framework
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable.
      * @throws IsabelleBuildFailedException if the session cannot be built
-     * @throws MalformedSettingsValueException
+     * @throws MalformedSettingsValueException if a settings value is malformed
      */
     public FrameworkRepresentation extract(final String sessionDir, final String sessionName)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException,
@@ -300,7 +300,7 @@ public final class IsabelleFrameworkExtractor {
      * @return a framework representation of the session
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
      * @throws IsabelleBuildFailedException if the session build fails
-     * @throws MalformedSettingsValueException
+     * @throws MalformedSettingsValueException if a settings value is malformed
      */
     public FrameworkRepresentation extract(final String sessionDir, final String sessionName,
             final String fileName) throws ExternalSoftwareUnavailableException,
@@ -547,14 +547,14 @@ public final class IsabelleFrameworkExtractor {
         final List<String> firstList;
         final List<String> secondList;
 
-        if (first.contains("fun")) {
+        if (first.contains(IsabelleUtils.FUN)) {
             firstList = this.parseFun(first);
         } else {
             firstList = new LinkedList<String>();
             firstList.add(first);
         }
 
-        if (second.contains("fun")) {
+        if (second.contains(IsabelleUtils.FUN)) {
             secondList = this.parseFun(second);
         } else {
             secondList = new LinkedList<String>();

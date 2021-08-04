@@ -31,6 +31,12 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getLogger(SimpleExtendedPrologParser.class);
+
+    /**
+     * Regex that matches any parenthesized term.
+     */
+    private static final String PARENTH_REGEX = "\\(.*\\)";
+
     /**
      * The file reader.
      */
@@ -169,11 +175,12 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
         // Opening, but no closing bracket.
         if (!component.contains(")")) {
-            LOGGER.error("Opening, but no closing bracket on: \"" + component + "\"");
+            LOGGER.error("Opening, but no closing bracket on: \"" + component
+                    + StringUtils.ESCAPED_QUOTATION_MARK);
             throw new MalformedEplFileException();
         }
 
-        final String regex = "\\(.*\\)";
+        final String regex = PARENTH_REGEX;
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(component);
 
@@ -228,8 +235,9 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
             if (origin.isEmpty()) {
                 // No origin.
-                if (!currentLine.startsWith("=")) {
-                    LOGGER.error("No origin specified for: \"" + currentLine + "\"");
+                if (!currentLine.startsWith(ExtendedPrologStrings.FORMATTER)) {
+                    LOGGER.error("No origin specified for: \"" + currentLine
+                            + StringUtils.ESCAPED_QUOTATION_MARK);
                     throw new MalformedEplFileException();
                 } else {
                     origin = this.sanitizeLine(currentLine);
@@ -363,7 +371,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
     }
 
     private String removeBracketExpression(final String string) {
-        final String regex = "\\(.*\\)";
+        final String regex = PARENTH_REGEX;
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(string);
 

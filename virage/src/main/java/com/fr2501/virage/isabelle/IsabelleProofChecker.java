@@ -219,10 +219,11 @@ public final class IsabelleProofChecker {
             IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
         final String generatedPath = theory.getParent();
 
+        final String document = "document";
         final File docFolder = new File(
-                generatedPath + File.separator + "document" + File.separator);
+                generatedPath + File.separator + document + File.separator);
         docFolder.mkdir();
-        final String texDoc = generatedPath + File.separator + "document" + File.separator
+        final String texDoc = generatedPath + File.separator + document + File.separator
                 + "root.tex";
         final SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(texDoc, this.texTemplate);

@@ -13,7 +13,7 @@ public abstract class VirageJobWithExplicitResult<T> extends VirageJob<T> {
     /**
      * The result of this job.
      */
-    protected T result;
+    private T result;
 
     /**
      * Simple constructor.
@@ -44,5 +44,13 @@ public abstract class VirageJobWithExplicitResult<T> extends VirageJob<T> {
         res += "Result: " + resultString + System.lineSeparator();
 
         return res;
+    }
+
+    /**
+     * Simple setter.
+     * @param newResult the result to set
+     */
+    protected void setResult(final T newResult) {
+        this.result = newResult;
     }
 }

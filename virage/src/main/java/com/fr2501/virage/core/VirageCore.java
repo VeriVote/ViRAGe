@@ -160,8 +160,9 @@ public final class VirageCore implements Runnable {
 
         // Initialise UserInterface
         final VirageUserInterfaceFactory factory = new VirageUserInterfaceFactory();
-        if (this.cl.hasOption("ui")) {
-            final String value = this.cl.getOptionValue("ui");
+        final String uiString = "ui";
+        if (this.cl.hasOption(uiString)) {
+            final String value = this.cl.getOptionValue(uiString);
 
             this.ui = factory.getUi(value, this);
         } else {

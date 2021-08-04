@@ -316,21 +316,23 @@ public final class IsabelleCodeGenerator {
         final String jarPath = codeFile.getParent() + File.separator + moduleName + ".jar";
 
         int status;
+        final String outputParameter = " -d ";
+        final String scalacCommand = " scalac ";
         status = ProcessUtils.runTerminatingProcessAndLogOutput(
-                ConfigReader.getInstance().getIsabelleExecutable() + " scalac "
+                ConfigReader.getInstance().getIsabelleExecutable() + scalacCommand
                         + codeFile.getCanonicalPath() + StringUtils.SPACE
                         + votingContext.getCanonicalPath()
-                        + " -d " + jarPath);
+                        + outputParameter + jarPath);
 
         if (status != 0) {
             // Implicit values did not work, try setting them explicitly.
             votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile, true);
 
             status = ProcessUtils.runTerminatingProcessAndLogOutput(
-                    ConfigReader.getInstance().getIsabelleExecutable() + " scalac "
+                    ConfigReader.getInstance().getIsabelleExecutable() + scalacCommand
                             + codeFile.getCanonicalPath() + StringUtils.SPACE
                             + votingContext.getCanonicalPath()
-                            + " -d " + jarPath);
+                            + outputParameter + jarPath);
 
             if (status != 0) {
                 LOGGER.error("Generated Scala code could not be compiled. "

@@ -112,6 +112,16 @@ public final class ConfigReader {
     private static final String EDITOR = "EDITOR";
 
     /**
+     * Name of the option containing session specific assumptions.
+     */
+    private static final String SESSION_SPECIFIC_ASSUMPTIONS = "SESSION_SPECIFIC_ASSUMPTIONS";
+
+    /**
+     * SWI-Prolog option to dump runtime variables.
+     */
+    private static final String DUMP_RUNTIME_VARIABLES = " --dump-runtime-variables";
+
+    /**
      * Singleton instance.
      */
     private static ConfigReader instance;
@@ -344,7 +354,7 @@ public final class ConfigReader {
      * @return the additional properties.
      */
     public List<String> getAdditionalProperties() {
-        String prop = this.properties.getProperty("SESSION_SPECIFIC_ASSUMPTIONS");
+        String prop = this.properties.getProperty(SESSION_SPECIFIC_ASSUMPTIONS);
         prop = this.replaceTypeAliases(prop);
 
         return this.readAndSplitList(prop);
@@ -500,7 +510,7 @@ public final class ConfigReader {
         if (this.swiplHome == null) {
             try {
                 final String output = ProcessUtils.runTerminatingProcess(
-                        this.properties.getProperty(SWIPL_BIN) + " --dump-runtime-variables")
+                        this.properties.getProperty(SWIPL_BIN) + DUMP_RUNTIME_VARIABLES)
                         .getFirstValue();
                 final String[] lines = output.split(System.lineSeparator());
                 String value = "";
@@ -542,7 +552,7 @@ public final class ConfigReader {
         if (this.swiplLib == null) {
             try {
                 final String output = ProcessUtils.runTerminatingProcess(
-                        this.properties.getProperty(SWIPL_BIN) + " --dump-runtime-variables")
+                        this.properties.getProperty(SWIPL_BIN) + DUMP_RUNTIME_VARIABLES)
                         .getFirstValue();
                 final String[] lines = output.split(System.lineSeparator());
                 String value = "";

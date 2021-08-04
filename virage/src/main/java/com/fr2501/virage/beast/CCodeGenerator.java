@@ -30,17 +30,37 @@ import com.fr2501.virage.types.FrameworkRepresentation;
  * @author VeriVote
  */
 public final class CCodeGenerator {
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+    /**
+     * Template for the voting_rule.c file.
+     */
     private final String codeFileTemplate;
+    /**
+     * Templates for the components of the framework.
+     */
     private final String compositionsTemplate;
+    /**
+     * Templates for each component.
+     */
     private final Map<String, String> templates;
+    /**
+     * Signatures of each component.
+     */
     private final Map<String, List<String>> signatures;
 
+    /**
+     * The framework.
+     */
     private final FrameworkRepresentation frameworkField;
 
-    private static final String[] additionalFiles = {"types.c", "types.h", "voting_rule.h", "wrapper.c"};
-
+    /**
+     * Simple constructor.
+     * @param framework the framework.
+     */
     public CCodeGenerator(final FrameworkRepresentation framework) {
         this.frameworkField = framework;
 
@@ -78,12 +98,13 @@ public final class CCodeGenerator {
         final Matcher matcher = pattern.matcher(this.compositionsTemplate);
 
         while(matcher.find()) {
-            this.templates.put(matcher.group(componentNameGroup), matcher.group(implementationGroup));
+            this.templates.put(matcher.group(componentNameGroup),
+                    matcher.group(implementationGroup));
 
             String rawSignature = matcher.group(signatureGroup);
 
             // Remove brackets.
-            rawSignature = rawSignature.substring(0,rawSignature.length()-1);
+            rawSignature = rawSignature.substring(0, rawSignature.length() - 1);
 
             final List<String> parameterNames = new LinkedList<String>();
             final String[] parameters = rawSignature.split(",");
@@ -99,12 +120,33 @@ public final class CCodeGenerator {
         }
     }
 
-    private String buildParameterString(final String name) {
-        if(!this.signatures.containsKey(name)) {
-            return "";
+    /**
+     * Creates C code from a composition.
+     * @param compositionString the composition
+     * @return a .c file containing an implementation of the composition
+     */
+    public File getCCodeFromComposition(final String compositionString) {
+        final DecompositionTree composition = DecompositionTree.parseString(compositionString);
+
+        final List<String> missingTemplates = this.findMissingTemplates(composition);
+
+        for(final String missingTemplate : missingTemplates) {
+            LOGGER.warn("Template missing for component: " + missingTemplate);
         }
 
-        return StringUtils.parenthesize(StringUtils.printCollection(this.signatures.get(name)));
+        final Pair<Pair<String, String>, Integer> res = this.getCCodeFromComposition(composition,
+                0);
+
+        String fileContents = this.codeFileTemplate.replace("$CONTENT",
+                res.getFirstValue().getSecondValue());
+        fileContents = fileContents.replace("$ENTRY", res.getFirstValue().getFirstValue()
+                + this.buildParameterString(composition.getLabel()));
+
+        final File result = new File("target/generated-sources/voting_rule"
+                + System.currentTimeMillis() + ".c");
+        (new SimpleFileWriter()).writeToFile(result.getAbsolutePath(), fileContents);
+
+        return result;
     }
 
     private Pair<Pair<String, String>, Integer> getCCodeFromComposition(
@@ -123,18 +165,20 @@ public final class CCodeGenerator {
                 componentTemplate = componentTemplate.replace("$IDX", String.valueOf(ctr));
 
                 int moduleCounter = 1;
-                for (int i=0; i<composition.getArity(); i++) {
+                for (int i = 0; i < composition.getArity(); i++) {
                     final DecompositionTree child = composition.getChildren().get(i);
 
-                    String replacement;
+                    final String replacement;
                     if(PrologPredicate.isVariable(child.getLabel())) {
-                        replacement = "DEFAULT_" + currentComponent.getParameters().get(i).toString().toUpperCase();
+                        replacement = "DEFAULT_" + currentComponent.getParameters()
+                            .get(i).toString().toUpperCase();
                     } else {
                         final Pair<Pair<String, String>, Integer> childCode = this
-                                .getCCodeFromComposition(child, ctr+1);
+                                .getCCodeFromComposition(child, ctr + 1);
 
                         body += childCode.getFirstValue().getSecondValue() + System.lineSeparator();
-                        replacement = childCode.getFirstValue().getFirstValue() + this.buildParameterString(child.getLabel());
+                        replacement = childCode.getFirstValue().getFirstValue()
+                                + this.buildParameterString(child.getLabel());
                     }
 
                     componentTemplate = componentTemplate.replace(
@@ -155,11 +199,20 @@ public final class CCodeGenerator {
         return new Pair<Pair<String, String>, Integer>(new Pair<String, String>(head, body), ctr);
     }
 
+    private String buildParameterString(final String name) {
+        if(!this.signatures.containsKey(name)) {
+            return "";
+        }
+
+        return StringUtils.parenthesize(StringUtils.printCollection(this.signatures.get(name)));
+    }
+
     private List<String> findMissingTemplates(final DecompositionTree composition) {
         return this.findMissingTemplates(composition, new LinkedList<String>());
     }
 
-    private List<String> findMissingTemplates(final DecompositionTree composition, final List<String> found) {
+    private List<String> findMissingTemplates(final DecompositionTree composition,
+            final List<String> found) {
         if(!this.templates.keySet().contains(composition.getLabel())) {
             found.add(composition.getLabel());
         }
@@ -171,30 +224,9 @@ public final class CCodeGenerator {
         return found;
     }
 
-    public File getCCodeFromComposition(final String compositionString) {
-        final DecompositionTree composition = DecompositionTree.parseString(compositionString);
-
-        final List<String> missingTemplates = this.findMissingTemplates(composition);
-
-        for(final String missingTemplate : missingTemplates) {
-            LOGGER.warn("Template missing for component: " + missingTemplate);
-        }
-
-        final Pair<Pair<String, String>, Integer> res = this.getCCodeFromComposition(composition,
-                0);
-
-        String fileContents = this.codeFileTemplate.replace("$CONTENT",
-                res.getFirstValue().getSecondValue());
-        fileContents = fileContents.replace("$ENTRY", res.getFirstValue().getFirstValue() + this.buildParameterString(composition.getLabel()));
-
-        final File result = new File("target/generated-sources/voting_rule" + System.currentTimeMillis() + ".c");
-        (new SimpleFileWriter()).writeToFile(result.getAbsolutePath(), fileContents);
-
-        return result;
-    }
-
     /*public File generateAndCompileCCodeFromComposition(final String compositionString,
-            final int numVoters, final int numCandidates) throws IOException, InterruptedException, CompilationFailedException {
+            final int numVoters, final int numCandidates) throws IOException,
+                InterruptedException, CompilationFailedException {
         final File votingRuleFile = this.getCCodeFromComposition(compositionString);
 
         String cFiles = "";
@@ -202,22 +234,27 @@ public final class CCodeGenerator {
         for(final String s : additionalFiles) {
             final String location = "c_implementations" + File.separator + s;
 
-            cFiles += StringUtils.SPACE + this.getClass().getClassLoader().getResource(location).getFile();
+            cFiles += StringUtils.SPACE + this.getClass().getClassLoader()
+                .getResource(location).getFile();
 
             if(resourceLocation.isEmpty()) {
-                resourceLocation = new File(this.getClass().getClassLoader().getResource(location).getFile()).getParent();
+                resourceLocation = new File(this.getClass().getClassLoader()
+                    .getResource(location).getFile()).getParent();
             }
         }
 
-        final File tmpVotingRuleFile = new File(resourceLocation + File.separator + "tmp_voting_rule.c");
+        final File tmpVotingRuleFile = new File(resourceLocation
+            + File.separator + "tmp_voting_rule.c");
         if(tmpVotingRuleFile.exists()) {
             tmpVotingRuleFile.delete();
         }
         Files.copy(votingRuleFile.toPath(), tmpVotingRuleFile.toPath());
 
         final File exeFile = new File("target/generated_sources/voting_rule.x").getAbsoluteFile();
-        final String gccCommand = ConfigReader.getInstance().getGccExecutable() + StringUtils.SPACE + tmpVotingRuleFile.getAbsolutePath()
-                + cFiles + " -o " + exeFile.getAbsolutePath() + " -D V=" + numVoters + " -D C=" + numCandidates;
+        final String gccCommand = ConfigReader.getInstance().getGccExecutable()
+                + StringUtils.SPACE + tmpVotingRuleFile.getAbsolutePath()
+                + cFiles + " -o " + exeFile.getAbsolutePath() + " -D V=" + numVoters
+                + " -D C=" + numCandidates;
 
         final Pair<String, String> output = ProcessUtils.runTerminatingProcess(gccCommand);
         if(!output.getFirstValue().isEmpty()) {
@@ -227,7 +264,8 @@ public final class CCodeGenerator {
         if(!output.getSecondValue().isEmpty()) {
             LOGGER.error(output.getSecondValue());
 
-            throw new CompilationFailedException("Compilation failed, invoked as follows: " + gccCommand);
+            throw new CompilationFailedException("Compilation failed,
+                invoked as follows: " + gccCommand);
         }
 
         return exeFile;

@@ -31,14 +31,14 @@ import com.fr2501.virage.types.ValueNotPresentException;
  */
 public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
     /**
-     * True if resources/meta_interpreter.pl is loaded, false otherwise.
-     */
-    protected static boolean loadedMetaInterpreter;
-
-    /**
      * The default timeout.
      */
     protected static final long DEFAULT_TIMEOUT = 10000;
+
+    /**
+     * True if resources/meta_interpreter.pl is loaded, false otherwise.
+     */
+    private static boolean loadedMetaInterpreter;
 
     /**
      * The logger.
@@ -48,11 +48,12 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
     /**
      * The JPL facade.
      */
-    protected JplFacade facade;
+    private final JplFacade facade;
+
     /**
      * The current Compositional Framework.
      */
-    protected FrameworkRepresentation framework;
+    private final FrameworkRepresentation framework;
 
     /**
      * Initializes a SimplePrologCompositionAnalyzer and consults the specified framework.
@@ -68,6 +69,22 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
 
         this.facade = new JplFacade(DEFAULT_TIMEOUT);
         this.consultKnowledgeBase();
+    }
+
+    /**
+     * Simple getter.
+     * @return the loadedMetaInterpreter
+     */
+    protected static boolean metaInterpreterLoaded() {
+        return loadedMetaInterpreter;
+    }
+
+    /**
+     * Simple setter.
+     * @param newLoadedMetaInterpreter the loadedMetaInterpreter to set
+     */
+    protected static void setMetaInterpreterLoaded(final boolean newLoadedMetaInterpreter) {
+        SimplePrologCompositionAnalyzer.loadedMetaInterpreter = newLoadedMetaInterpreter;
     }
 
     /**
@@ -155,15 +172,6 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
     }
 
     /**
-     * Called when arities mismatch, only throws an exception.
-     * @throws IllegalArgumentException as that is its purpose
-     */
-    private void throwArityException() {
-        throw new IllegalArgumentException(
-                "For now, only unary properties can be used in queries.");
-    }
-
-    /**
      * Safe to override.
      */
     @Override
@@ -242,6 +250,22 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
         }
     }
 
+    /**
+     * Simple getter.
+     * @return the facade
+     */
+    protected JplFacade getFacade() {
+        return this.facade;
+    }
+
+    /**
+     * Simple getter.
+     * @return the framework
+     */
+    protected FrameworkRepresentation getFramework() {
+        return this.framework;
+    }
+
     private CompositionProof findCompositionRules(final PrologProof prologProof) {
         final List<CompositionProof> subgoals = new LinkedList<CompositionProof>();
 
@@ -316,5 +340,14 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
         }
 
         throw new IllegalArgumentException();
+    }
+
+    /**
+     * Called when arities mismatch, only throws an exception.
+     * @throws IllegalArgumentException as that is its purpose
+     */
+    private void throwArityException() {
+        throw new IllegalArgumentException(
+                "For now, only unary properties can be used in queries.");
     }
 }

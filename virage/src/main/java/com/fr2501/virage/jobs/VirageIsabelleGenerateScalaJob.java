@@ -47,13 +47,13 @@ public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitR
 
     @Override
     public String presentConcreteResult() {
-        return "Created executable JAR file at \'" + this.result + "\'.";
+        return "Created executable JAR file at \'" + this.getResult() + "\'.";
     }
 
     @Override
     protected void concreteExecute() throws Exception {
         this.generator = this.getExecutingCore().getIsabelleCodeGenerator();
 
-        this.result = this.generator.generateScalaCodeAndCompile(this.composition);
+        this.setResult(this.generator.generateScalaCodeAndCompile(this.composition));
     }
 }

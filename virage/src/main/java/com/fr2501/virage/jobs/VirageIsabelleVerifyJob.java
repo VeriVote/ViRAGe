@@ -48,8 +48,8 @@ public final class VirageIsabelleVerifyJob
 
     @Override
     public String presentConcreteResult() {
-        if (this.result.getFirstValue()) {
-            return "Isabelle theory \'" + this.result.getSecondValue().getAbsolutePath()
+        if (this.getResult().getFirstValue()) {
+            return "Isabelle theory \'" + this.getResult().getSecondValue().getAbsolutePath()
                     + "\' was verified successfully.";
         } else {
             return "Verification of Isabelle theory failed.";
@@ -60,8 +60,8 @@ public final class VirageIsabelleVerifyJob
     protected void concreteExecute() throws Exception {
         this.checker = this.getExecutingCore().getIsabelleProofChecker();
 
-        this.result = this.checker.verifyTheoryFile(this.file,
-                this.getExecutingCore().getFrameworkRepresentation());
+        this.setResult(this.checker.verifyTheoryFile(this.file,
+                this.getExecutingCore().getFrameworkRepresentation()));
     }
 
 }

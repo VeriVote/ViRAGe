@@ -128,10 +128,14 @@ public final class ScalaIsabelleFacade {
             // cannot be thrown.
         } catch (/* IsabelleBuild */final Exception e) {
             e.printStackTrace();
-            LOGGER.error("Building session " + sessionNameValue
-                    + " failed. Restarting ViRAGe or building"
-                    + " the session manually within Isabelle might help. If the session is supposed"
-                    + " to generate documentation, texlive is required!");
+            LOGGER.error("Building "
+                    + "session " + sessionNameValue
+                    + " failed. Restarting ViRAGe "
+                    + "or building"
+                    + " the session manually within Isabelle "
+                    + "might help. If the session is supposed"
+                    + " to generate documentation, "
+                    + "texlive is required!");
             throw new IsabelleBuildFailedException();
         }
         this.init();

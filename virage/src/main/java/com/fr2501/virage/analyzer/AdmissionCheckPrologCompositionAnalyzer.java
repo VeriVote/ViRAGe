@@ -49,18 +49,18 @@ public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologC
     protected void consultKnowledgeBase() {
         super.consultKnowledgeBase();
 
-        final AdmissionGuardGenerator generator = new AdmissionGuardGenerator(this.framework);
+        final AdmissionGuardGenerator generator = new AdmissionGuardGenerator(this.getFramework());
 
         final File admissionGuards;
         try {
             admissionGuards = generator.createAdmissionGuardFile();
 
-            this.facade.consultFile(admissionGuards.getAbsolutePath());
+            this.getFacade().consultFile(admissionGuards.getAbsolutePath());
 
-            if (!loadedMetaInterpreter) {
-                this.facade.consultFile(
+            if (!metaInterpreterLoaded()) {
+                this.getFacade().consultFile(
                         this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
-                loadedMetaInterpreter = true;
+                setMetaInterpreterLoaded(true);
             }
         } catch (final IOException e) {
             LOGGER.error("An error occured.", e);
@@ -89,7 +89,8 @@ public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologC
 
         final String query = StringUtils.printCollection(admitStrings);
 
-        final SearchResult<Map<String, String>> result = this.facade.iterativeDeepeningQuery(query);
+        final SearchResult<Map<String, String>> result = this.getFacade()
+                .iterativeDeepeningQuery(query);
 
         Map<String, String> resultMap = null;
         if (result.hasValue()) {

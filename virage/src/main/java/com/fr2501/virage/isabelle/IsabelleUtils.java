@@ -62,6 +62,11 @@ public class IsabelleUtils {
     public static final String ROOT = "ROOT";
 
     /**
+     * The name of Isabelle type "fun".
+     */
+    public static final String FUN = "fun";
+
+    /**
      * String used to separate session and theory names.
      */
     public static final String THEORY_NAME_SEPARATOR = ".";

@@ -137,7 +137,8 @@ public class IsabelleProofGenerator {
                     final Property p = this.parent.getFramework()
                             .getProperty(rule.getSuccedent().getName());
 
-                    String newAssumptions = "\"" + rule.getSuccedent().getName()
+                    String newAssumptions = StringUtils.ESCAPED_QUOTATION_MARK
+                            + rule.getSuccedent().getName()
                             + StringUtils.SPACE;
                     for (final ComponentType child : p.getParameters()) {
                         // Only parameters defined within the module definition can be referenced,
