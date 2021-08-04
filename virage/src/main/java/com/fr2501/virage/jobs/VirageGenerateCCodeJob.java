@@ -41,6 +41,11 @@ public final class VirageGenerateCCodeJob extends VirageJobWithExplicitResult<Fi
     }
 
     @Override
+    public boolean externalSoftwareAvailable() {
+        return true;
+    }
+
+    @Override
     public String getDescription() {
         return "Generating C code ...";
     }
