@@ -1,6 +1,5 @@
 == HIGH PRIORITY
 refactoring + checkstyle
-re-enable C generation
 
 === maven stuff
 jar?
@@ -78,3 +77,4 @@ consistency check via keySet instead of version check
 resolve synonyms (kind of)
 omit anonymous variables and fill automatically
 do not display atomic properties
+re-enable C generation
