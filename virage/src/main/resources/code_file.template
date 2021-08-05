@@ -10,8 +10,9 @@
 // "V" and "C": These defines specify the number of Voters and Candidates. For SBMC
 // performance, these have to be known at compile time. Default values are 3 and 3,
 // but they have to fit your test instances. If the numbers don't match, segmentation
-// faults might occur. Recompile and explicitly set the correct values as gcc options
-// "-D V=x" and "-D C=x", then retry running the resulting program on your instance.
+// faults and undefined behaviour will occur. Recompile and explicitly set the correct
+// values as gcc options "-D V=x" and "-D C=x", then retry running the resulting program
+// on your instance.
 //
 // Test instances of different sizes can be found in 'test/resources/instances'.
 
