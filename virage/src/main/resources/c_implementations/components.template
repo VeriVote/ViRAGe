@@ -1,3 +1,16 @@
+Instructions:
+For each component that shall be used in C generation, a template has to be supplied.
+
+The following example shall illustrate how to proceed.
+Consider a component named "comp_a".
+- The snippet MUST start AND end with the C comment "// comp_a".
+- The ONE function in the template MUST be named "comp_a_$IDX".
+- If the function has any C parameters, for example one of "type_a" and one of "type_b",
+  these parameters MUST be named "type_a_1" and "type_b_1"; if both are of
+  "type_a", they MUST be named "type_a_1" and "type_a_2".
+- Parameters of non-atomic types (i.e. potentially higher-order), MUST NOT
+  be passed as C parameters, but template placeholders "$PARAM_N" have to be used.
+
 // sequential_composition
 result sequential_composition_$IDX(profile profile_1, result result_1) {
 	result_1 = $PARAM_1;
