@@ -35,7 +35,7 @@ Here, the user can supply a set of properties (e.g. "monotone,electing"), ViRAGe
 
 ### Composition Analysis
 
-The user can again supply a set of properties, together with a composition (e.g. "seq_comp(pass_module(1,_),elect_module)") and ViRAGe will check whether or not the composition satisfies these properties. (Caution: Prolog has a "closed world assumption", e.g. ViRAGe might yield false negatives.)
+The user can again supply a set of properties, together with a composition (e.g. "seq_comp(pass_module(1,_),elect_module)") and ViRAGe will check whether or not the composition satisfies these properties. (Caution: Prolog has a "closed world assumption", e.g. ViRAGe might yield false negatives.). Another analysis mode checks all available properties at once.
 
 ### Proving Claims
 

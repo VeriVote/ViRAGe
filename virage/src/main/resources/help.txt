@@ -42,13 +42,15 @@ able to automatically extract a framework from the given
 session and then generates an (E)PL file for further use and 
 modification.
 
-The main user prompt in ViRAGe offers to choose between five 
+The main user prompt in ViRAGe offers to choose between seven 
 operations, which can be selected by typing the 
 corresponding letter as follows.
 	- g	Generate a voting rule satisfying some given
 		properties.
 	- a	Check whether a given voting rule satisfies 
 		some given properties.
+	- A	Similar to -a, but checks all available
+		properties at once.
 	- p 	Generate a proof tree showing that a voting 
 		rule satisfies some properties (if it does).
     	- I	Generate an Isabelle/HOL theory file with a 
@@ -58,4 +60,6 @@ corresponding letter as follows.
 	- S	Create an executable Scala implementation of 
 		a voting rule using the native code 
 		generation within Isabelle/HOL.
+	- C	Create an executable C implementation of a
+		voting rule using user-supplied C snippets.
 

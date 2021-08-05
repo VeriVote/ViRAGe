@@ -5,9 +5,6 @@ refactoring + checkstyle
 jar?
 module?
 
-=== Improve UI
-add possibility to check all available properties at once
-
 === Miscellaneous
 interactively launch scala and generate test instances
 optionally run jobs in parallel on CLI
@@ -16,7 +13,6 @@ run on different sessions to see behavior
 cross-verification of Scala and C programs
 add more C snippets
 include jEdit (or find some other solution? xdg-open?)
-termination of text editor (exit codes? descendants?)
 timestamp in config
 
 === FINISHED
@@ -78,3 +74,4 @@ resolve synonyms (kind of)
 omit anonymous variables and fill automatically
 do not display atomic properties
 re-enable C generation
+add possibility to check all available properties at once
