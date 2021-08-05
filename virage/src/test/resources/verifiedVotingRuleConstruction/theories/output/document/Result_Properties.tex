@@ -1,0 +1,350 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Result{\isacharunderscore}{\kern0pt}Properties}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Result{\isacharunderscore}{\kern0pt}Properties\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Components{\isacharslash}{\kern0pt}Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ electing\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}electing\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}A\ {\isasymnoteq}\ {\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}\ {\isasymand}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ elect\ m\ A\ p\ {\isasymnoteq}\ {\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ electing{\isacharunderscore}{\kern0pt}for{\isacharunderscore}{\kern0pt}only{\isacharunderscore}{\kern0pt}alt{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ one{\isacharunderscore}{\kern0pt}alt{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}card\ A\ {\isacharequal}{\kern0pt}\ {\isadigit{1}}{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \ electing{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}electing\ m{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \ f{\isacharunderscore}{\kern0pt}prof{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}finite{\isacharunderscore}{\kern0pt}profile\ A\ p{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}elect\ m\ A\ p\ {\isacharequal}{\kern0pt}\ A{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ Int{\isacharunderscore}{\kern0pt}empty{\isacharunderscore}{\kern0pt}right\ Int{\isacharunderscore}{\kern0pt}insert{\isacharunderscore}{\kern0pt}right\ card{\isacharunderscore}{\kern0pt}{\isadigit{1}}{\isacharunderscore}{\kern0pt}singletonE\isanewline
+\ \ \ \ \ \ \ \ elect{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}alts\ electing\ electing{\isacharunderscore}{\kern0pt}def\ inf{\isachardot}{\kern0pt}orderE\isanewline
+\ \ \ \ \ \ \ \ one{\isacharunderscore}{\kern0pt}alt\ f{\isacharunderscore}{\kern0pt}prof\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}smt\ {\isacharparenleft}{\kern0pt}verit{\isacharcomma}{\kern0pt}\ del{\isacharunderscore}{\kern0pt}insts{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ non{\isacharunderscore}{\kern0pt}electing\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}non{\isacharunderscore}{\kern0pt}electing\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\ elect\ m\ A\ p\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ decrementing\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}decrementing\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\ {\isacharparenleft}{\kern0pt}\isanewline
+\ \ \ \ \ \ {\isasymforall}\ A\ p\ {\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}card\ A\ {\isachargreater}{\kern0pt}\ {\isadigit{1}}\ {\isasymlongrightarrow}\ card\ {\isacharparenleft}{\kern0pt}reject\ m\ A\ p{\isacharparenright}{\kern0pt}\ {\isasymge}\ {\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ non{\isacharunderscore}{\kern0pt}blocking\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}non{\isacharunderscore}{\kern0pt}blocking\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ p{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}A\ {\isasymnoteq}\ {\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}\ {\isasymand}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ reject\ m\ A\ p\ {\isasymnoteq}\ A{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ elects\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}nat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}elects\ n\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}card\ A\ {\isasymge}\ n\ {\isasymand}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ card\ {\isacharparenleft}{\kern0pt}elect\ m\ A\ p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ n{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ defers\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}nat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}defers\ n\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}card\ A\ {\isasymge}\ n\ {\isasymand}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ card\ {\isacharparenleft}{\kern0pt}defer\ m\ A\ p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ n{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ rejects\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}nat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}rejects\ n\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}card\ A\ {\isasymge}\ n\ {\isasymand}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ card\ {\isacharparenleft}{\kern0pt}reject\ m\ A\ p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ n{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ eliminates\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}nat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}eliminates\ n\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ p{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}card\ A\ {\isachargreater}{\kern0pt}\ n\ {\isasymand}\ finite{\isacharunderscore}{\kern0pt}profile\ A\ p{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ card\ {\isacharparenleft}{\kern0pt}reject\ m\ A\ p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ n{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ single{\isacharunderscore}{\kern0pt}elim{\isacharunderscore}{\kern0pt}imp{\isacharunderscore}{\kern0pt}red{\isacharunderscore}{\kern0pt}def{\isacharunderscore}{\kern0pt}set{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ eliminating{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}eliminates\ {\isadigit{1}}\ m{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \ leftover{\isacharunderscore}{\kern0pt}alternatives{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}card\ A\ {\isachargreater}{\kern0pt}\ {\isadigit{1}}{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \ f{\isacharunderscore}{\kern0pt}prof{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}finite{\isacharunderscore}{\kern0pt}profile\ A\ p{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}defer\ m\ A\ p\ {\isasymsubset}\ A{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ Diff{\isacharunderscore}{\kern0pt}eq{\isacharunderscore}{\kern0pt}empty{\isacharunderscore}{\kern0pt}iff\ Diff{\isacharunderscore}{\kern0pt}subset\ card{\isacharunderscore}{\kern0pt}eq{\isacharunderscore}{\kern0pt}{\isadigit{0}}{\isacharunderscore}{\kern0pt}iff\ defer{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}alts\isanewline
+\ \ \ \ \ \ \ \ eliminates{\isacharunderscore}{\kern0pt}def\ eliminating\ eq{\isacharunderscore}{\kern0pt}iff\ leftover{\isacharunderscore}{\kern0pt}alternatives\isanewline
+\ \ \ \ \ \ \ \ not{\isacharunderscore}{\kern0pt}one{\isacharunderscore}{\kern0pt}le{\isacharunderscore}{\kern0pt}zero\ f{\isacharunderscore}{\kern0pt}prof\ psubsetI\ reject{\isacharunderscore}{\kern0pt}not{\isacharunderscore}{\kern0pt}elec{\isacharunderscore}{\kern0pt}or{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ metis%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ single{\isacharunderscore}{\kern0pt}elim{\isacharunderscore}{\kern0pt}decr{\isacharunderscore}{\kern0pt}def{\isacharunderscore}{\kern0pt}card{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ rejecting{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}rejects\ {\isadigit{1}}\ m{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \ not{\isacharunderscore}{\kern0pt}empty{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}A\ {\isasymnoteq}\ {\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \ non{\isacharunderscore}{\kern0pt}electing{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}non{\isacharunderscore}{\kern0pt}electing\ m{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \ f{\isacharunderscore}{\kern0pt}prof{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}finite{\isacharunderscore}{\kern0pt}profile\ A\ p{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}card\ {\isacharparenleft}{\kern0pt}defer\ m\ A\ p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ card\ A\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ Diff{\isacharunderscore}{\kern0pt}empty\ One{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}def\ Suc{\isacharunderscore}{\kern0pt}leI\ card{\isacharunderscore}{\kern0pt}Diff{\isacharunderscore}{\kern0pt}subset\ card{\isacharunderscore}{\kern0pt}gt{\isacharunderscore}{\kern0pt}{\isadigit{0}}{\isacharunderscore}{\kern0pt}iff\isanewline
+\ \ \ \ \ \ \ \ defer{\isacharunderscore}{\kern0pt}not{\isacharunderscore}{\kern0pt}elec{\isacharunderscore}{\kern0pt}or{\isacharunderscore}{\kern0pt}rej\ finite{\isacharunderscore}{\kern0pt}subset\ non{\isacharunderscore}{\kern0pt}electing\isanewline
+\ \ \ \ \ \ \ \ non{\isacharunderscore}{\kern0pt}electing{\isacharunderscore}{\kern0pt}def\ not{\isacharunderscore}{\kern0pt}empty\ f{\isacharunderscore}{\kern0pt}prof\ reject{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}alts\ rejecting\isanewline
+\ \ \ \ \ \ \ \ rejects{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}smt\ {\isacharparenleft}{\kern0pt}verit{\isacharcomma}{\kern0pt}\ ccfv{\isacharunderscore}{\kern0pt}threshold{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ single{\isacharunderscore}{\kern0pt}elim{\isacharunderscore}{\kern0pt}decr{\isacharunderscore}{\kern0pt}def{\isacharunderscore}{\kern0pt}card{\isadigit{2}}{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ eliminating{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}eliminates\ {\isadigit{1}}\ m{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \ not{\isacharunderscore}{\kern0pt}empty{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}card\ A\ {\isachargreater}{\kern0pt}\ {\isadigit{1}}{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \ non{\isacharunderscore}{\kern0pt}electing{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}non{\isacharunderscore}{\kern0pt}electing\ m{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \ f{\isacharunderscore}{\kern0pt}prof{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}finite{\isacharunderscore}{\kern0pt}profile\ A\ p{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}card\ {\isacharparenleft}{\kern0pt}defer\ m\ A\ p{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ card\ A\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ Diff{\isacharunderscore}{\kern0pt}empty\ One{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}def\ Suc{\isacharunderscore}{\kern0pt}leI\ card{\isacharunderscore}{\kern0pt}Diff{\isacharunderscore}{\kern0pt}subset\ card{\isacharunderscore}{\kern0pt}gt{\isacharunderscore}{\kern0pt}{\isadigit{0}}{\isacharunderscore}{\kern0pt}iff\isanewline
+\ \ \ \ \ \ \ \ defer{\isacharunderscore}{\kern0pt}not{\isacharunderscore}{\kern0pt}elec{\isacharunderscore}{\kern0pt}or{\isacharunderscore}{\kern0pt}rej\ finite{\isacharunderscore}{\kern0pt}subset\ non{\isacharunderscore}{\kern0pt}electing\isanewline
+\ \ \ \ \ \ \ \ non{\isacharunderscore}{\kern0pt}electing{\isacharunderscore}{\kern0pt}def\ not{\isacharunderscore}{\kern0pt}empty\ f{\isacharunderscore}{\kern0pt}prof\ reject{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}alts\isanewline
+\ \ \ \ \ \ \ \ eliminating\ eliminates{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}smt\ {\isacharparenleft}{\kern0pt}verit{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ defer{\isacharunderscore}{\kern0pt}deciding\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}defer{\isacharunderscore}{\kern0pt}deciding\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\ non{\isacharunderscore}{\kern0pt}electing\ m\ {\isasymand}\ defers\ {\isadigit{1}}\ m{\isachardoublequoteclose}\isanewline
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/verifiedVotingRuleConstruction/theories/Compositional_Framework/Properties/Result_Properties.thy%:%
+%:%10=1%:%
+%:%11=1%:%
+%:%12=2%:%
+%:%13=3%:%
+%:%14=4%:%
+%:%19=4%:%
+%:%22=5%:%
+%:%23=9%:%
+%:%24=10%:%
+%:%25=10%:%
+%:%26=11%:%
+%:%28=13%:%
+%:%29=14%:%
+%:%30=15%:%
+%:%31=15%:%
+%:%32=16%:%
+%:%33=17%:%
+%:%34=18%:%
+%:%35=19%:%
+%:%36=20%:%
+%:%39=21%:%
+%:%43=21%:%
+%:%44=21%:%
+%:%45=22%:%
+%:%46=23%:%
+%:%47=24%:%
+%:%48=24%:%
+%:%53=24%:%
+%:%56=25%:%
+%:%57=26%:%
+%:%58=30%:%
+%:%59=31%:%
+%:%60=31%:%
+%:%61=32%:%
+%:%62=33%:%
+%:%63=34%:%
+%:%64=38%:%
+%:%65=39%:%
+%:%66=39%:%
+%:%67=40%:%
+%:%70=43%:%
+%:%71=44%:%
+%:%72=48%:%
+%:%73=49%:%
+%:%74=49%:%
+%:%75=50%:%
+%:%78=53%:%
+%:%79=54%:%
+%:%80=55%:%
+%:%81=59%:%
+%:%82=60%:%
+%:%83=60%:%
+%:%84=61%:%
+%:%86=63%:%
+%:%87=64%:%
+%:%88=68%:%
+%:%89=69%:%
+%:%90=69%:%
+%:%91=70%:%
+%:%94=73%:%
+%:%95=74%:%
+%:%96=78%:%
+%:%97=79%:%
+%:%98=79%:%
+%:%99=80%:%
+%:%101=82%:%
+%:%102=83%:%
+%:%103=87%:%
+%:%104=88%:%
+%:%105=88%:%
+%:%106=89%:%
+%:%108=91%:%
+%:%109=92%:%
+%:%110=93%:%
+%:%111=93%:%
+%:%112=94%:%
+%:%113=95%:%
+%:%114=96%:%
+%:%115=97%:%
+%:%116=98%:%
+%:%119=99%:%
+%:%123=99%:%
+%:%124=99%:%
+%:%125=100%:%
+%:%126=101%:%
+%:%127=102%:%
+%:%128=102%:%
+%:%133=102%:%
+%:%136=103%:%
+%:%137=104%:%
+%:%138=104%:%
+%:%139=105%:%
+%:%140=106%:%
+%:%141=107%:%
+%:%142=108%:%
+%:%143=109%:%
+%:%144=110%:%
+%:%147=111%:%
+%:%151=111%:%
+%:%152=111%:%
+%:%153=112%:%
+%:%154=113%:%
+%:%155=114%:%
+%:%156=115%:%
+%:%157=115%:%
+%:%162=115%:%
+%:%165=116%:%
+%:%166=117%:%
+%:%167=117%:%
+%:%168=118%:%
+%:%169=119%:%
+%:%170=120%:%
+%:%171=121%:%
+%:%172=122%:%
+%:%173=123%:%
+%:%176=124%:%
+%:%180=124%:%
+%:%181=124%:%
+%:%182=125%:%
+%:%183=126%:%
+%:%184=127%:%
+%:%185=128%:%
+%:%186=128%:%
+%:%191=128%:%
+%:%194=129%:%
+%:%195=136%:%
+%:%196=137%:%
+%:%197=137%:%
+%:%198=138%:%
+%:%199=139%:%
+%:%202=140%:%
+%:%207=141%:%

@@ -1,0 +1,113 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Nanson{\isacharunderscore}{\kern0pt}Baldwin{\isacharunderscore}{\kern0pt}Rule}%
+%
+\isadelimdocument
+\isanewline
+%
+\endisadelimdocument
+%
+\isatagdocument
+\isanewline
+%
+\isamarkupsection{Nanson-Baldwin Rule%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Nanson{\isacharunderscore}{\kern0pt}Baldwin{\isacharunderscore}{\kern0pt}Rule\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}Compositional{\isacharunderscore}{\kern0pt}Structures{\isacharslash}{\kern0pt}Basic{\isacharunderscore}{\kern0pt}Modules{\isacharslash}{\kern0pt}Borda{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}Compositional{\isacharunderscore}{\kern0pt}Structures{\isacharslash}{\kern0pt}Defer{\isacharunderscore}{\kern0pt}One{\isacharunderscore}{\kern0pt}Loop{\isacharunderscore}{\kern0pt}Composition{\isachardoublequoteclose}\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+This is the Nanson-Baldwin voting rule. It excludes alternatives with the
+lowest Borda score from the set of possible winners and then adjusts the
+Borda score to the new (remaining) set of still eligible alternatives.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Definition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{fun}\isamarkupfalse%
+\ nanson{\isacharunderscore}{\kern0pt}baldwin{\isacharunderscore}{\kern0pt}rule\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}nanson{\isacharunderscore}{\kern0pt}baldwin{\isacharunderscore}{\kern0pt}rule\ A\ p\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}min{\isacharunderscore}{\kern0pt}eliminator\ borda{\isacharunderscore}{\kern0pt}score{\isacharparenright}{\kern0pt}\ {\isasymcirclearrowleft}\isactrlsub {\isasymexists}\isactrlsub {\isacharbang}{\kern0pt}\isactrlsub d{\isacharparenright}{\kern0pt}\ A\ p{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{fun}\isamarkupfalse%
+\ nanson{\isacharunderscore}{\kern0pt}baldwin{\isacharunderscore}{\kern0pt}rule{\isacharunderscore}{\kern0pt}code\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}nanson{\isacharunderscore}{\kern0pt}baldwin{\isacharunderscore}{\kern0pt}rule{\isacharunderscore}{\kern0pt}code\ A\ p\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}min{\isacharunderscore}{\kern0pt}eliminator\ borda{\isacharunderscore}{\kern0pt}score{\isacharunderscore}{\kern0pt}code{\isacharparenright}{\kern0pt}\ {\isasymcirclearrowleft}\isactrlsub {\isasymexists}\isactrlsub {\isacharbang}{\kern0pt}\isactrlsub d{\isacharparenright}{\kern0pt}\ A\ p{\isachardoublequoteclose}\isanewline
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/old_theories/Nanson_Baldwin_Rule.thy%:%
+%:%6=3%:%
+%:%11=4%:%
+%:%13=7%:%
+%:%29=9%:%
+%:%30=9%:%
+%:%31=10%:%
+%:%32=11%:%
+%:%33=12%:%
+%:%42=15%:%
+%:%43=16%:%
+%:%44=17%:%
+%:%53=19%:%
+%:%63=21%:%
+%:%64=21%:%
+%:%65=22%:%
+%:%66=23%:%
+%:%67=24%:%
+%:%68=25%:%
+%:%69=25%:%
+%:%70=26%:%
+%:%71=27%:%
+%:%74=28%:%
+%:%79=29%:%

@@ -1,13 +1,21 @@
 package com.fr2501.virage.test.unit;
 
-import com.fr2501.virage.analyzer.CompositionAnalyzer;
-
 import java.io.IOException;
 
 import com.fr2501.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
+import com.fr2501.virage.analyzer.CompositionAnalyzer;
+import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 
-public class AdmissionCheckPrologCompositionAnalyzerTest extends CompositionAnalyzerTest {
-	protected CompositionAnalyzer createInstance() throws IOException {
-		return new AdmissionCheckPrologCompositionAnalyzer(this.framework);
-	}
+/**
+ * Tests for AdmissionCheckPrologCompositionAnalyzerTest.
+ *
+ * @author VeriVote
+ */
+public final class AdmissionCheckPrologCompositionAnalyzerTest extends CompositionAnalyzerTest {
+
+    @Override
+    protected CompositionAnalyzer createInstance()
+            throws IOException, ExternalSoftwareUnavailableException {
+        return new AdmissionCheckPrologCompositionAnalyzer(this.getFramework());
+    }
 }

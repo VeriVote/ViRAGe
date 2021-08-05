@@ -8,63 +8,84 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
- * Observes an Isabelle client process and creates {@link IsabelleEvent}s if necessary. 
+ * Observes an Isabelle client process and creates {@link IsabelleEvent}s if necessary.
  *
+ * @author VeriVote
  */
-public class IsabelleClientObserver implements Runnable {
-	private static final Logger logger = LogManager.getLogger(IsabelleClientObserver.class);
-	private IsabelleProofChecker listener;
-	
-	private Process isabelleClient;
-	private IsabelleEventFactory factory;
-	
-	private BufferedReader stdoutReader;
-	private BufferedReader stderrReader;
-	
-	private IsabelleClientObserver(IsabelleProofChecker listener, Process isabelleClient) {
-		this.listener = listener;
-		this.isabelleClient = isabelleClient;
-		this.factory = new IsabelleEventFactory();
-		
-		this.stdoutReader = new BufferedReader(new InputStreamReader(this.isabelleClient.getInputStream()));
-		this.stderrReader = new BufferedReader(new InputStreamReader(this.isabelleClient.getErrorStream()));
-		
-		Thread thread = new Thread(this, "isa_obs");
-		thread.start();
-	}
-	
-	/**
-	 * Starts a new IsabelleClientObserver. This is done because the object reference is not really
-	 * required within the calling application code.
-	 * 
-	 * @param listener the {@link IsabelleProofChecker} to be notified on events
-	 * @param isabelleClient the Isabelle client process to be watched
-	 */
-	public static void start(IsabelleProofChecker listener, Process isabelleClient) {
-		new IsabelleClientObserver(listener, isabelleClient);
-	}
+public final class IsabelleClientObserver implements Runnable {
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(IsabelleClientObserver.class);
+    /**
+     * Proof checker acting as listener.
+     */
+    private final IsabelleProofChecker listener;
 
-	@Override
-	public synchronized void run() {
-		while(true) {
-			try {
-				if(this.stdoutReader.ready()) {
-					String line = this.stdoutReader.readLine();
-					logger.debug(line);
-					
-					this.handleEvent(line);
-				} else if(this.stderrReader.ready()) {
-					logger.error(this.stderrReader.readLine());
-				}
-			} catch (IOException e) {
-				logger.error("Something went wrong.", e);
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	private synchronized void handleEvent(String s) {
-		this.listener.notify(this.factory.createEvent(s));
-	}
+    /**
+     * The Isabelle client process.
+     */
+    private final Process isabelleClient;
+    /**
+     * The Isabelle event factory.
+     */
+    private final IsabelleEventFactory factory;
+
+    /**
+     * Reader for stdout.
+     */
+    private final BufferedReader stdoutReader;
+    /**
+     * Reader for stderr.
+     */
+    private final BufferedReader stderrReader;
+
+    private IsabelleClientObserver(final IsabelleProofChecker listenerValue,
+            final Process isabelleClientValue) {
+        this.listener = listenerValue;
+        this.isabelleClient = isabelleClientValue;
+        this.factory = new IsabelleEventFactory();
+
+        this.stdoutReader = new BufferedReader(
+                new InputStreamReader(this.isabelleClient.getInputStream()));
+        this.stderrReader = new BufferedReader(
+                new InputStreamReader(this.isabelleClient.getErrorStream()));
+
+        final Thread thread = new Thread(this, "Isabelle Console Output");
+        thread.start();
+    }
+
+    /**
+     * Starts a new IsabelleClientObserver. This is done because the object reference is not really
+     * required within the calling application code.
+     *
+     * @param listener the {@link IsabelleProofChecker} to be notified on events
+     * @param isabelleClient the Isabelle client process to be watched
+     */
+    public static void start(final IsabelleProofChecker listener, final Process isabelleClient) {
+        new IsabelleClientObserver(listener, isabelleClient);
+    }
+
+    private synchronized void handleEvent(final String s) {
+        this.listener.notify(this.factory.createEvent(s));
+    }
+
+    @Override
+    public synchronized void run() {
+        while (true) {
+            try {
+                if (this.stdoutReader.ready()) {
+                    final String line = this.stdoutReader.readLine();
+                    LOGGER.debug(line);
+
+                    this.handleEvent(line);
+                } else if (this.stderrReader.ready()) {
+                    LOGGER.error(this.stderrReader.readLine());
+                }
+            } catch (final IOException e) {
+                LOGGER.error("Something went wrong.", e);
+                e.printStackTrace();
+            }
+        }
+    }
 }

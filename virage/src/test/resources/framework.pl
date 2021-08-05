@@ -1,4 +1,4 @@
-% ==== ../virage/src/test/resources/theories/ - Verified_Voting_Rule_Construction
+% ==== ../virage/src/test/resources/old_theories/ - Verified_Voting_Rule_Construction
 %
 % === component_type
 % == nat

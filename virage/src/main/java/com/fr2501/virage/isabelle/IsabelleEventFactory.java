@@ -9,65 +9,87 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * 
  * A factory for Isabelle events, parses the Strings given by the Isabelle CLI.
  *
+ * @author VeriVote
  */
 public class IsabelleEventFactory {
-	private static final String OK_STRING = "OK";
-	private static final String ERROR_STRING = "ERROR";
-	private static final String NOTE_STRING = "NOTE";
-	private static final String FINISHED_STRING = "FINISHED";
-	
-	private ObjectMapper mapper;
-	
-	public IsabelleEventFactory() {
-		this.mapper = new ObjectMapper();
-	}
-	
-	/**
-	 * Creates an {@link IsabelleEvent} representing the event described within the given String.
-	 * @param s the String given by the Isabelle client CLI
-	 * @return the corresponding event
-	 */
-	public IsabelleEvent createEvent(String s) {
-		Map<String, String> parameters = this.extractParameters(s);
-		
-		if(s.startsWith(OK_STRING)) {
-			return new IsabelleOkEvent(parameters);
-		} else if(s.startsWith(ERROR_STRING)) {
-			return new IsabelleErrorEvent(parameters);
-		} else if(s.startsWith(NOTE_STRING)) {
-			return new IsabelleNoteEvent(parameters);
-		} else if(s.startsWith(FINISHED_STRING)) {
-			return new IsabelleFinishedEvent(parameters);
-		}
-		
-		return new IsabelleMiscEvent();
-	}
-	
-	private Map<String, String> extractParameters(String s) {
-		Map<String,String> res = new HashMap<String,String>();
-		Pattern pattern = Pattern.compile("\\{.*\\}");
-		Matcher matcher = pattern.matcher(s);
-		
-		if(matcher.find()) {
-			String paramString = s.substring(matcher.start(), matcher.end());
-			
-			try {
-				Map<?,?> map = this.mapper.readValue(paramString, Map.class);
-				
-				for(Object o: map.keySet()) {
-					res.put(o.toString(), map.get(o).toString());
-				}
-				
-				return res;
-			} catch (IOException e) {
-				// This should never happen.
-				return null;
-			}
-		} else {
-			return new HashMap<String, String>();
-		}
-	}
+    /**
+     * String for "OK" events.
+     */
+    private static final String OK_STRING = "OK";
+    /**
+     * String for "ERROR" events.
+     */
+    private static final String ERROR_STRING = "ERROR";
+    /**
+     * String for "NOTE" events.
+     */
+    private static final String NOTE_STRING = "NOTE";
+    /**
+     * String for "FINISHED" events.
+     */
+    private static final String FINISHED_STRING = "FINISHED";
+
+    /**
+     * The object mapper.
+     */
+    private final ObjectMapper mapper;
+
+    /**
+     * Simple constructor.
+     */
+    public IsabelleEventFactory() {
+        this.mapper = new ObjectMapper();
+    }
+
+    /**
+     * Creates an {@link IsabelleEvent} representing the event described within the given String.
+     *
+     * @param s the String given by the Isabelle client CLI
+     * @return the corresponding event
+     */
+    public IsabelleEvent createEvent(final String s) {
+        final Map<String, String> parameters = this.extractParameters(s);
+
+        final IsabelleEvent res;
+        if (s.startsWith(OK_STRING)) {
+            res = new IsabelleOkEvent(parameters);
+        } else if (s.startsWith(ERROR_STRING)) {
+            res = new IsabelleErrorEvent(parameters);
+        } else if (s.startsWith(NOTE_STRING)) {
+            res = new IsabelleNoteEvent(parameters);
+        } else if (s.startsWith(FINISHED_STRING)) {
+            res = new IsabelleFinishedEvent(parameters);
+        } else {
+            res = new IsabelleMiscEvent();
+        }
+
+        return res;
+    }
+
+    private Map<String, String> extractParameters(final String s) {
+        final Map<String, String> res = new HashMap<String, String>();
+        final Pattern pattern = Pattern.compile("\\{.*\\}");
+        final Matcher matcher = pattern.matcher(s);
+
+        if (matcher.find()) {
+            final String paramString = s.substring(matcher.start(), matcher.end());
+
+            try {
+                final Map<?, ?> map = this.mapper.readValue(paramString, Map.class);
+
+                for (final Object o : map.keySet()) {
+                    res.put(o.toString(), map.get(o).toString());
+                }
+
+                return res;
+            } catch (final IOException e) {
+                // This should never happen.
+                return null;
+            }
+        } else {
+            return new HashMap<String, String>();
+        }
+    }
 }

@@ -1,12 +1,18 @@
 package com.fr2501.virage.analyzer;
 
 /**
- * 
- * Strings required for the classes implementing the admission guard mechanism
+ * Strings required for the classes implementing the admission guard mechanism.
  *
+ * @author VeriVote
  */
 public class AdmissionGuardStrings {
-	public static final String ADMITS = "admits_";
-	public static final String SUFFIX = "_wa";
-	public static final String ORIGIN = "generated";
+    /**
+     * Prefix for admission guard predicates.
+     */
+    public static final String ADMITS = "admits_";
+
+    /**
+     * Suffix for admission guard predicates.
+     */
+    public static final String SUFFIX = "_wa";
 }

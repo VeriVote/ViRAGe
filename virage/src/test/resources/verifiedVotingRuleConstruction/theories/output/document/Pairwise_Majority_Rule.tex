@@ -1,0 +1,195 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Pairwise{\isacharunderscore}{\kern0pt}Majority{\isacharunderscore}{\kern0pt}Rule}%
+%
+\isadelimdocument
+\isanewline
+%
+\endisadelimdocument
+%
+\isatagdocument
+\isanewline
+%
+\isamarkupsection{Pairwise Majority Rule%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Pairwise{\isacharunderscore}{\kern0pt}Majority{\isacharunderscore}{\kern0pt}Rule\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Compositional{\isacharunderscore}{\kern0pt}Framework{\isacharslash}{\kern0pt}Components{\isacharslash}{\kern0pt}Composites{\isacharslash}{\kern0pt}Composite{\isacharunderscore}{\kern0pt}Elimination{\isacharunderscore}{\kern0pt}Modules{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Compositional{\isacharunderscore}{\kern0pt}Framework{\isacharslash}{\kern0pt}Components{\isacharslash}{\kern0pt}Composites{\isacharslash}{\kern0pt}Composite{\isacharunderscore}{\kern0pt}Structures{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Compositional{\isacharunderscore}{\kern0pt}Framework{\isacharslash}{\kern0pt}Composition{\isacharunderscore}{\kern0pt}Rules{\isacharslash}{\kern0pt}Condorcet{\isacharunderscore}{\kern0pt}Rules{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Compositional{\isacharunderscore}{\kern0pt}Framework{\isacharslash}{\kern0pt}Composition{\isacharunderscore}{\kern0pt}Rules{\isacharslash}{\kern0pt}Condorcet{\isacharunderscore}{\kern0pt}Facts{\isachardoublequoteclose}\isanewline
+\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+This is the pairwise majority rule, a voting rule that implements the
+Condorcet criterion, i.e., it elects the Condorcet winner if it exists,
+otherwise a tie remains between all alternatives.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Definition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{fun}\isamarkupfalse%
+\ pairwise{\isacharunderscore}{\kern0pt}majority{\isacharunderscore}{\kern0pt}rule\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}pairwise{\isacharunderscore}{\kern0pt}majority{\isacharunderscore}{\kern0pt}rule\ A\ p\ {\isacharequal}{\kern0pt}\ elector\ condorcet\ A\ p{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{fun}\isamarkupfalse%
+\ condorcet{\isacharprime}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+{\isachardoublequoteopen}condorcet{\isacharprime}{\kern0pt}\ A\ p\ {\isacharequal}{\kern0pt}\isanewline
+\ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}min{\isacharunderscore}{\kern0pt}eliminator\ condorcet{\isacharunderscore}{\kern0pt}score{\isacharparenright}{\kern0pt}\ {\isasymcirclearrowleft}\isactrlsub {\isasymexists}\isactrlsub {\isacharbang}{\kern0pt}\isactrlsub d{\isacharparenright}{\kern0pt}\ A\ p{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{fun}\isamarkupfalse%
+\ pairwise{\isacharunderscore}{\kern0pt}majority{\isacharunderscore}{\kern0pt}rule{\isacharprime}{\kern0pt}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+{\isachardoublequoteopen}pairwise{\isacharunderscore}{\kern0pt}majority{\isacharunderscore}{\kern0pt}rule{\isacharprime}{\kern0pt}\ A\ p\ {\isacharequal}{\kern0pt}\ iterelect\ condorcet{\isacharprime}{\kern0pt}\ A\ p{\isachardoublequoteclose}%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Condorcet Consistency Property%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{theorem}\isamarkupfalse%
+\ condorcet{\isacharunderscore}{\kern0pt}condorcet{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}condorcet{\isacharunderscore}{\kern0pt}consistency\ pairwise{\isacharunderscore}{\kern0pt}majority{\isacharunderscore}{\kern0pt}rule{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\isanewline
+\ \ \ \ {\isachardoublequoteopen}condorcet{\isacharunderscore}{\kern0pt}consistency\ {\isacharparenleft}{\kern0pt}elector\ condorcet{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ condorcet{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}dcc\ dcc{\isacharunderscore}{\kern0pt}imp{\isacharunderscore}{\kern0pt}cc{\isacharunderscore}{\kern0pt}elector\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ metis\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ condorcet{\isacharunderscore}{\kern0pt}consistency{\isadigit{2}}\ electoral{\isacharunderscore}{\kern0pt}module{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \ \ \ \ \ \ \ \ pairwise{\isacharunderscore}{\kern0pt}majority{\isacharunderscore}{\kern0pt}rule{\isachardot}{\kern0pt}simps\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ metis\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/verifiedVotingRuleConstruction/theories/Voting_Rules/Pairwise_Majority_Rule.thy%:%
+%:%6=3%:%
+%:%11=4%:%
+%:%13=7%:%
+%:%29=9%:%
+%:%30=9%:%
+%:%31=10%:%
+%:%32=11%:%
+%:%33=12%:%
+%:%34=13%:%
+%:%35=14%:%
+%:%36=15%:%
+%:%45=18%:%
+%:%46=19%:%
+%:%47=20%:%
+%:%56=22%:%
+%:%66=24%:%
+%:%67=24%:%
+%:%68=25%:%
+%:%69=26%:%
+%:%70=27%:%
+%:%71=27%:%
+%:%72=28%:%
+%:%73=29%:%
+%:%74=30%:%
+%:%75=31%:%
+%:%76=31%:%
+%:%77=32%:%
+%:%84=34%:%
+%:%94=36%:%
+%:%95=36%:%
+%:%102=37%:%
+%:%103=37%:%
+%:%104=38%:%
+%:%105=38%:%
+%:%106=39%:%
+%:%107=40%:%
+%:%108=40%:%
+%:%109=41%:%
+%:%110=41%:%
+%:%111=42%:%
+%:%112=42%:%
+%:%113=43%:%
+%:%114=43%:%
+%:%115=44%:%
+%:%116=45%:%
+%:%117=45%:%
+%:%118=46%:%
+%:%124=46%:%
+%:%129=47%:%
+%:%134=48%:%

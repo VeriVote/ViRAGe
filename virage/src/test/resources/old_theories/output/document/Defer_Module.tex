@@ -1,0 +1,222 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Defer{\isacharunderscore}{\kern0pt}Module}%
+%
+\isadelimdocument
+\isanewline
+%
+\endisadelimdocument
+%
+\isatagdocument
+\isanewline
+\isanewline
+%
+\isamarkupchapter{Basic Modules%
+}
+\isamarkuptrue%
+%
+\isamarkupsection{Defer Module%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Defer{\isacharunderscore}{\kern0pt}Module\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}Component{\isacharunderscore}{\kern0pt}Types{\isacharslash}{\kern0pt}Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+The defer module is not concerned about the voter's ballots, and
+simply defers all alternatives.
+It is primarily used for defining an empty loop.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Definition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{fun}\isamarkupfalse%
+\ defer{\isacharunderscore}{\kern0pt}module\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}defer{\isacharunderscore}{\kern0pt}module\ A\ p\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isacharcomma}{\kern0pt}\ A{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Soundness%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{theorem}\isamarkupfalse%
+\ def{\isacharunderscore}{\kern0pt}mod{\isacharunderscore}{\kern0pt}sound{\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}electoral{\isacharunderscore}{\kern0pt}module\ defer{\isacharunderscore}{\kern0pt}module{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{unfolding}\isamarkupfalse%
+\ electoral{\isacharunderscore}{\kern0pt}module{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ simp%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Properties%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{theorem}\isamarkupfalse%
+\ def{\isacharunderscore}{\kern0pt}mod{\isacharunderscore}{\kern0pt}non{\isacharunderscore}{\kern0pt}electing{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}non{\isacharunderscore}{\kern0pt}electing\ defer{\isacharunderscore}{\kern0pt}module{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{unfolding}\isamarkupfalse%
+\ non{\isacharunderscore}{\kern0pt}electing{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ simp%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isacommand{theorem}\isamarkupfalse%
+\ def{\isacharunderscore}{\kern0pt}mod{\isacharunderscore}{\kern0pt}def{\isacharunderscore}{\kern0pt}lift{\isacharunderscore}{\kern0pt}inv{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}defer{\isacharunderscore}{\kern0pt}lift{\isacharunderscore}{\kern0pt}invariance\ defer{\isacharunderscore}{\kern0pt}module{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{unfolding}\isamarkupfalse%
+\ defer{\isacharunderscore}{\kern0pt}lift{\isacharunderscore}{\kern0pt}invariance{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ simp%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/old_theories/Compositional_Structures/Basic_Modules/Defer_Module.thy%:%
+%:%6=3%:%
+%:%11=4%:%
+%:%12=5%:%
+%:%14=8%:%
+%:%18=10%:%
+%:%34=12%:%
+%:%35=12%:%
+%:%36=13%:%
+%:%37=14%:%
+%:%46=17%:%
+%:%47=18%:%
+%:%48=19%:%
+%:%57=21%:%
+%:%67=23%:%
+%:%68=23%:%
+%:%69=24%:%
+%:%76=26%:%
+%:%86=28%:%
+%:%87=28%:%
+%:%90=29%:%
+%:%94=29%:%
+%:%95=29%:%
+%:%96=30%:%
+%:%97=30%:%
+%:%111=32%:%
+%:%121=34%:%
+%:%122=34%:%
+%:%125=35%:%
+%:%129=35%:%
+%:%130=35%:%
+%:%131=36%:%
+%:%132=36%:%
+%:%137=36%:%
+%:%140=37%:%
+%:%141=38%:%
+%:%142=38%:%
+%:%145=39%:%
+%:%149=39%:%
+%:%150=39%:%
+%:%151=40%:%
+%:%152=40%:%
+%:%157=40%:%
+%:%162=41%:%
+%:%167=42%:%
