@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import com.fr2501.util.StringUtils;
 import com.fr2501.util.SystemUtils;
 import com.fr2501.virage.isabelle.IsabelleUtils;
+import com.fr2501.virage.jobs.VirageAnalyzeAllPropertiesJob;
 import com.fr2501.virage.jobs.VirageAnalyzeJob;
 import com.fr2501.virage.jobs.VirageDummyJob;
 import com.fr2501.virage.jobs.VirageExitJob;
@@ -858,6 +859,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         while (true) {
             final String arg = this
                     .requestString("Do you want to (g)enerate a composition, (a)nalyze one, "
+                            + "run an (A)nalysis of all properties for a composition, "
                             + "(p)rove a claim,\n"
                             + "generate (I)sabelle proofs, generate (S)cala code "
                             + "or generate (C) code?");
@@ -877,6 +879,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 job = this.createCodeGenerationQuery();
             } else if ("C".equals(arg)) {
                 job = this.createCCodeGenerationQuery();
+            } else if ("A".equals(arg)) {
+                job = new VirageAnalyzeAllPropertiesJob(this, this.requestCompositionString());
             } else {
                 this.displayMessage(TRY_AGAIN);
                 continue;
