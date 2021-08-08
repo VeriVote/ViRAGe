@@ -17,6 +17,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fr2501.util.Pair;
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.core.ConfigReader;
@@ -268,7 +269,7 @@ public final class IsabelleTheoryGenerator {
         }
         // -----
 
-        final String imports = this.findImportsFromCompositionRules(proofs);
+        String imports = this.findImportsFromCompositionRules(proofs);
 
         final Map<String, Set<String>> moduleDefMap = IsabelleUtils
                 .translatePrologToIsabelle(this.functionsAndDefinitions, proofPredicate);
@@ -276,7 +277,9 @@ public final class IsabelleTheoryGenerator {
             throw new IllegalArgumentException();
         }
 
-        final String moduleDef = this.buildModuleDef(moduleDefMap, imports);
+        final Pair<String, String> moduleDefResult = this.buildModuleDef(moduleDefMap, imports);
+        final String moduleDef = moduleDefResult.getFirstValue();
+        imports = moduleDefResult.getSecondValue();
 
         String proofsString = "";
         for (final CompositionProof proof : proofs) {
@@ -311,7 +314,7 @@ public final class IsabelleTheoryGenerator {
         return outputPath;
     }
 
-    private String buildModuleDef(final Map<String, Set<String>> moduleDefMap,
+    private Pair<String, String> buildModuleDef(final Map<String, Set<String>> moduleDefMap,
             final String importsParam) {
         String moduleDef = "";
         String imports = importsParam;
@@ -335,7 +338,7 @@ public final class IsabelleTheoryGenerator {
             }
         }
 
-        return moduleDef;
+        return new Pair<String, String>(moduleDef, imports);
     }
 
     protected FrameworkRepresentation getFramework() {
