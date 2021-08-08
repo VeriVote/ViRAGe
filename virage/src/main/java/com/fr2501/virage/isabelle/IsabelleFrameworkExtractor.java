@@ -113,11 +113,7 @@ public final class IsabelleFrameworkExtractor {
     }
 
     private void convertCompositionRules(final FrameworkRepresentation framework,
-            final Map<String, Map<String, String>> compRulesRaw)
-                    throws ExternalSoftwareUnavailableException {
-        Map<PrologPredicate, List<PrologPredicate>> componentAliases =
-                new HashMap<PrologPredicate, List<PrologPredicate>>();
-        componentAliases = this.computeTransitiveClosureOfComponentAliases();
+            final Map<String, Map<String, String>> compRulesRaw) {
 
         for (final String thyName : compRulesRaw.keySet()) {
             thmLoop: for (final String thmName : compRulesRaw.get(thyName).keySet()) {
@@ -167,48 +163,6 @@ public final class IsabelleFrameworkExtractor {
                 final List<String> prologStringList = new LinkedList<String>();
                 prologStringList.add(this.buildPrologClauseString(succedent, antecedents));
 
-                final JplFacade facade = new JplFacade();
-                for(final PrologPredicate alias: componentAliases.keySet()) {
-                    try {
-                        //  TODO This is only possible for unary properties!
-                        // Build a more flexible solution?
-                        final PrologPredicate succPred = this.parser.parsePredicate(succedent);
-                        if(succPred.getArity() != 1) {
-                            continue;
-                        }
-
-                        final PrologPredicate succChild =
-                                succPred.getParameters().get(0);
-                        if(succChild.isVariable()) {
-                            continue;
-                        }
-
-                        final Map<String, String> replacements
-                            = facade.unifiable(succChild.toString(), alias.toString());
-                        for(final PrologPredicate expansion : componentAliases.get(alias)) {
-                            succPred.getParameters().set(0, PrologPredicate.copy(expansion));
-                            succPred.replaceVariables(replacements);
-                            final String succedentString = succPred.toString();
-
-                            final List<String> antecedentStrings = new LinkedList<String>();
-                            for(final String antecedentString : antecedents) {
-                                final PrologPredicate antecedent
-                                    = this.parser.parsePredicate(antecedentString);
-                                antecedent.replaceVariables(replacements);
-                                antecedentStrings.add(antecedent.toString());
-                            }
-
-                            final String toBeAdded = this.buildPrologClauseString(
-                                    succedentString, antecedents);
-                            if(!prologStringList.contains(toBeAdded)) {
-                                prologStringList.add(toBeAdded);
-                            }
-                        }
-                    } catch (final IllegalArgumentException e) {
-                        // NO-OP
-                    }
-                }
-
                 try {
                     for(final String prologString: prologStringList) {
                         final CompositionRule rule = new CompositionRule(thmName,
@@ -249,6 +203,7 @@ public final class IsabelleFrameworkExtractor {
                     if (endIdx < copyOfs.length() - 1 && copyOfs.charAt(endIdx + 1) != ')') {
                         res += PrologPredicate.SEPARATOR;
                     }
+                    // Checkstyle does not like this, I think it is reasonable here.
                     i = endIdx + 1;
                 } else {
                     insideBrackets = true;
@@ -329,11 +284,7 @@ public final class IsabelleFrameworkExtractor {
         final Map<String, Map<String, String>> compsRaw = facade.getFunctionsAndDefinitions();
 
         this.convertComponents(framework, compsRaw);
-        try {
-            this.convertCompositionRules(framework, compRulesRaw);
-        } catch (final ExternalSoftwareUnavailableException e) {
-            throw new FrameworkExtractionFailedException(e);
-        }
+        this.convertCompositionRules(framework, compRulesRaw);
 
         framework.addDummyRulesIfNecessary();
 

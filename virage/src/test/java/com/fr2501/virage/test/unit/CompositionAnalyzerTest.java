@@ -94,22 +94,12 @@ public abstract class CompositionAnalyzerTest {
 
         int conflicts = 0;
         int errors = 0;
-        int improvements = 0;
-
-        int selfTimeout = 0;
-        int trustedTimeout = 0;
-        int selfSuccess = 0;
-        int trustedSuccess = 0;
-        int selfFailure = 0;
-        int trustedFailure = 0;
 
         for (int i = 0; i < runs; i++) {
             final int amount = (int) (3 * Math.random()) + 1;
 
             final List<Property> properties = this.generator
                     .getRandomComposableModuleProperties(amount);
-
-            LOGGER.debug("Query: " + StringUtils.printCollection(properties));
 
             final SearchResult<DecompositionTree> trustedResult = spca
                     .generateComposition(properties);
@@ -120,56 +110,20 @@ public abstract class CompositionAnalyzerTest {
             }
 
             if (trustedResult.getState() == QueryState.FAILED) {
-                trustedFailure++;
                 if (result.getState() == QueryState.SUCCESS) {
                     conflicts++;
-                    selfSuccess++;
-                } else {
-                    selfFailure++;
                 }
             }
 
             if (trustedResult.getState() == QueryState.SUCCESS) {
-                trustedSuccess++;
                 if (result.getState() == QueryState.FAILED) {
                     conflicts++;
-                    selfFailure++;
-                } else {
-                    selfSuccess++;
                 }
             }
-
-            if (trustedResult.getState() == QueryState.TIMEOUT) {
-                trustedTimeout++;
-                if (result.getState() == QueryState.SUCCESS) {
-                    improvements++;
-                    selfSuccess++;
-                } else if (result.getState() == QueryState.FAILED) {
-                    improvements++;
-                    selfFailure++;
-                } else {
-                    selfTimeout++;
-                }
-            }
-
         }
-
-        LOGGER.debug("Errors: " + errors);
-        LOGGER.debug("Conflicts: " + conflicts);
-        LOGGER.debug("Improvements: " + improvements);
 
         if (errors > 0 || conflicts > 0) {
             fail();
-        } else {
-            LOGGER.debug("Trusted:");
-            LOGGER.debug("\tTimeouts: " + trustedTimeout);
-            LOGGER.debug("\tFailures: " + trustedFailure);
-            LOGGER.debug("\tSuccesses: " + trustedSuccess);
-            LOGGER.debug("-----");
-            LOGGER.debug("Self:");
-            LOGGER.debug("\tTimeouts: " + selfTimeout);
-            LOGGER.debug("\tFailures: " + selfFailure);
-            LOGGER.debug("\tSuccesses: " + selfSuccess);
         }
     }
 

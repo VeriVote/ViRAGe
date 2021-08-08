@@ -403,26 +403,28 @@ public final class JplFacade {
                 return new SearchResult<Map<String, String>>(QueryState.ERROR, null);
             }
 
+            SearchResult<Map<String, String>> toReturn = null;
             if (result == null) {
                 // No solution, query failed.
-                return new SearchResult<Map<String, String>>(QueryState.FAILED, null);
-            }
-
-            if (!result.containsKey(unusedVariable)) {
+                toReturn = new SearchResult<Map<String, String>>(QueryState.FAILED, null);
+            } else if (!result.containsKey(unusedVariable)) {
                 // Empty Map was received, timeout.
-                return new SearchResult<Map<String, String>>(QueryState.TIMEOUT, null);
-            }
+                toReturn = new SearchResult<Map<String, String>>(QueryState.TIMEOUT, null);
+            } else {
+                if (result.get(unusedVariable).equals("depth_limit_exceeded")) {
+                    // Depth limit exceeded, increase and try again.
+                    maxDepth++;
+                    continue;
+                }
 
-            if (result.get(unusedVariable).equals("depth_limit_exceeded")) {
-                // Depth limit exceeded, increase and try again.
-                maxDepth++;
-                continue;
+                if (StringUtils.isNumeric(result.get(unusedVariable))) {
+                    // Query succeeded.
+                    result.remove(unusedVariable);
+                    toReturn = new SearchResult<Map<String, String>>(QueryState.SUCCESS, result);
+                }
             }
-
-            if (StringUtils.isNumeric(result.get(unusedVariable))) {
-                // Query succeeded.
-                result.remove(unusedVariable);
-                return new SearchResult<Map<String, String>>(QueryState.SUCCESS, result);
+            if(toReturn != null) {
+                return toReturn;
             }
 
             maxDepth++;
