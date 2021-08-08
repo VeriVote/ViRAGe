@@ -23,9 +23,9 @@ import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
+import com.fr2501.virage.types.FrameworkExtractionFailedException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
-import com.fr2501.virage.types.MalformedSettingsValueException;
 import com.fr2501.virage.types.Property;
 
 /**
@@ -279,13 +279,10 @@ public final class IsabelleFrameworkExtractor {
      * @param sessionDir the session directory
      * @param sessionName the session name
      * @return the compositional framework
-     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable.
-     * @throws IsabelleBuildFailedException if the session cannot be built
-     * @throws MalformedSettingsValueException if a settings value is malformed
+     * @throws FrameworkExtractionFailedException wrapping the actual cause
      */
     public FrameworkRepresentation extract(final String sessionDir, final String sessionName)
-            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException,
-            MalformedSettingsValueException {
+            throws FrameworkExtractionFailedException {
 
         return this.extract(sessionDir, sessionName,
                 "framework" + System.currentTimeMillis() + ".pl");
@@ -298,18 +295,20 @@ public final class IsabelleFrameworkExtractor {
      * @param sessionName the name of the session
      * @param fileName the name of the new (E)PL file
      * @return a framework representation of the session
-     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
-     * @throws IsabelleBuildFailedException if the session build fails
-     * @throws MalformedSettingsValueException if a settings value is malformed
+     * @throws FrameworkExtractionFailedException wrapping the actual cause
      */
     public FrameworkRepresentation extract(final String sessionDir, final String sessionName,
-            final String fileName) throws ExternalSoftwareUnavailableException,
-            IsabelleBuildFailedException, MalformedSettingsValueException {
+            final String fileName) throws FrameworkExtractionFailedException {
         if (fileName == null) {
             return this.extract(sessionDir, sessionName);
         }
 
-        final ScalaIsabelleFacade facade = new ScalaIsabelleFacade(sessionDir, sessionName);
+        final ScalaIsabelleFacade facade;
+        try {
+            facade = new ScalaIsabelleFacade(sessionDir, sessionName);
+        } catch (ExternalSoftwareUnavailableException | IsabelleBuildFailedException e1) {
+            throw new FrameworkExtractionFailedException(e1);
+        }
 
         final File plFile = new File(sessionDir + File.separator + fileName);
         try {
@@ -330,7 +329,11 @@ public final class IsabelleFrameworkExtractor {
         final Map<String, Map<String, String>> compsRaw = facade.getFunctionsAndDefinitions();
 
         this.convertComponents(framework, compsRaw);
-        this.convertCompositionRules(framework, compRulesRaw);
+        try {
+            this.convertCompositionRules(framework, compRulesRaw);
+        } catch (final ExternalSoftwareUnavailableException e) {
+            throw new FrameworkExtractionFailedException(e);
+        }
 
         framework.addDummyRulesIfNecessary();
 

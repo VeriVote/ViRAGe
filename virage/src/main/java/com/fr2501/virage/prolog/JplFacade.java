@@ -519,43 +519,48 @@ public final class JplFacade {
     // This is required to ensure compatibility when using older versions of SWI-Prolog.
     // The up-to-date version of JPL and SWI-Prolog would allow using Query(String).
     private Term stringToTerm(final PrologPredicate pred) {
+        final Term toReturn;
+
         if (pred.getArity() == 0) {
             if (pred.isVariable()) {
                 return new Variable(pred.getName());
             } else if (StringUtils.isNumeric(pred.getName())) {
                 if (pred.getName().contains(".")) {
-                    return new org.jpl7.Float(Double.parseDouble(pred.getName()));
+                    toReturn = new org.jpl7.Float(Double.parseDouble(pred.getName()));
                 } else {
-                    return new org.jpl7.Integer(Integer.parseInt(pred.getName()));
+                    toReturn = new org.jpl7.Integer(Integer.parseInt(pred.getName()));
                 }
             } else {
-                return new Atom(pred.getName());
+                toReturn = new Atom(pred.getName());
             }
         } else {
             if (pred.getName().isEmpty()) {
-                return this.buildConjunction(StringUtils.printCollection(pred.getParameters()));
+                toReturn = this.buildConjunction(StringUtils.printCollection(pred.getParameters()));
 
                 /*
                  * try { return Term.textToTerm(pred.toString()); } catch (JPLException e) { logger.
                  * error("The JPL/SWI-Prolog compatibility workaround cannot handle this query.");
                  * throw new IllegalArgumentException(); }
                  */
+            } else {
+
+                // Compound
+                String name = pred.getName();
+
+                if (name.isEmpty()) {
+                    name = PrologPredicate.SEPARATOR;
+                }
+
+                final Term[] children = new Term[pred.getArity()];
+                for (int i = 0; i < pred.getArity(); i++) {
+                    children[i] = this.stringToTerm(pred.getParameters().get(i));
+                }
+
+                toReturn = new Compound(name, children);
             }
-
-            // Compound
-            String name = pred.getName();
-
-            if (name.isEmpty()) {
-                name = PrologPredicate.SEPARATOR;
-            }
-
-            final Term[] children = new Term[pred.getArity()];
-            for (int i = 0; i < pred.getArity(); i++) {
-                children[i] = this.stringToTerm(pred.getParameters().get(i));
-            }
-
-            return new Compound(name, children);
         }
+
+        return toReturn;
     }
 
     private Term stringToTerm(final String predicate) {
