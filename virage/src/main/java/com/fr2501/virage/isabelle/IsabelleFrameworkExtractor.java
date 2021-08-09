@@ -286,7 +286,7 @@ public final class IsabelleFrameworkExtractor {
         this.convertComponents(framework, compsRaw);
         this.convertCompositionRules(framework, compRulesRaw);
 
-        framework.addDummyRulesIfNecessary();
+        framework.addDummyAndAliasRulesIfNecessary();
 
         return framework;
     }

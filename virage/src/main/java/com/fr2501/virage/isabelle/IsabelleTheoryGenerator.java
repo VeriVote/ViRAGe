@@ -231,9 +231,8 @@ public final class IsabelleTheoryGenerator {
         this.replacePrologVariables(proofPredicate);
         String moduleParameters = "";
 
-        // This looks tedious, but is required to ensure correct
-        // ordering of variables in definition.
-        // This assumes that variable names are given in the correct order,
+        // This looks tedious, but is required to ensure correct ordering of variables in
+        // definition. This assumes that variable names are given in the correct order,
         // ascending alphabetically. This might seem arbitrary, but is ensured
         // by the way IsabelleUtils.findUnusedVariables works.
         final List<String> moduleParametersList = new LinkedList<String>();
@@ -267,7 +266,6 @@ public final class IsabelleTheoryGenerator {
         for (final String type : moduleParamTypesList) {
             moduleParamTypes += type;
         }
-        // -----
 
         String imports = this.findImportsFromCompositionRules(proofs);
 
@@ -293,10 +291,9 @@ public final class IsabelleTheoryGenerator {
         final String outputPath = this.buildOutputPath(passedOutputPath, theoryName);
         try {
             writer.writeToFile(outputPath, fileContents);
-
             return new File(outputPath).getCanonicalFile();
         } catch (final IOException e) {
-            LOGGER.error("Something went wrong.", e);
+            // NO-OP
         }
 
         return null;

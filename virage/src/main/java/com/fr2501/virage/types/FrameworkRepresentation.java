@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +20,9 @@ import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.core.VirageCore;
 import com.fr2501.virage.prolog.ExtendedPrologStrings;
 import com.fr2501.virage.prolog.PrologClause;
+import com.fr2501.virage.prolog.PrologParser;
 import com.fr2501.virage.prolog.PrologPredicate;
+import com.fr2501.virage.prolog.SimplePrologParser;
 
 /**
  * The data model required to represent the compositional framework as a whole It is designed for
@@ -188,9 +191,63 @@ public final class FrameworkRepresentation {
     }
 
     /**
-     * Adds dummy rules (e.g. ($property)_intro) if these are required.
+     * Adds dummy rules (e.g. ($property)_intro) and alias rules if these are required.
      */
-    public void addDummyRulesIfNecessary() {
+    public void addDummyAndAliasRulesIfNecessary() {
+        this.addDummyRules();
+        this.addAliasRules();
+    }
+
+    private void addAliasRules() {
+        final Map<String, String> aliases = ConfigReader.getInstance().getComponentAliases();
+        final PrologParser parser = new SimplePrologParser();
+
+        for(final Property p : this.properties) {
+            if(p.getArity() != 1) {
+                continue;
+            }
+
+            final ComponentType propertyType = p.getParameters().get(0);
+
+            int aliasIdx = 0;
+            for(final String alias : aliases.keySet()) {
+                final PrologPredicate aliasPredicate = parser.parsePredicate(alias);
+                final String aliasName = aliasPredicate.getName();
+                final Component aliasComponent = this.getComponent(aliasName);
+
+                if(aliasComponent != null && !aliasComponent.getType().equals(propertyType)) {
+                    continue;
+                }
+
+                final PrologPredicate newSucc = parser.parsePredicate(p.getName()
+                        + StringUtils.parenthesize(alias));
+                final PrologPredicate newAnte = parser.parsePredicate(p.getName()
+                        + StringUtils.parenthesize(aliases.get(alias)));
+
+                final PrologClause clause = new PrologClause(newSucc, newAnte);
+
+                final CompositionRule rule = new CompositionRule(p.getName() + "_alias_" + aliasIdx,
+                        ExtendedPrologStrings.ASSUMPTION, clause);
+
+                final PrologClause clause2 = new PrologClause(newAnte, newSucc);
+                final CompositionRule rule2 = new CompositionRule(p.getName()
+                        + "_alias_inv_" + aliasIdx,
+                        ExtendedPrologStrings.ASSUMPTION, clause2);
+
+                this.add(rule);
+                this.add(rule2);
+
+                this.updateFile();
+
+                aliasIdx++;
+            }
+        }
+    }
+
+    /**
+     * Adds dummy rules (e.g. ($property)_intro).
+     */
+    private void addDummyRules() {
         final List<String> atomicTypeStrings = ConfigReader.getInstance().getAtomicTypes();
         this.atomicTypes = new LinkedList<ComponentType>();
         for (final String s : atomicTypeStrings) {

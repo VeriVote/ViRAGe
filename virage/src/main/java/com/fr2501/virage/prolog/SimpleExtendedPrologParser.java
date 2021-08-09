@@ -139,7 +139,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
         this.parseSection(framework, compositionRuleSection, ParserState.COMPOSITION_RULE);
 
         if (addDummies) {
-            framework.addDummyRulesIfNecessary();
+            framework.addDummyAndAliasRulesIfNecessary();
         }
 
         return framework;
