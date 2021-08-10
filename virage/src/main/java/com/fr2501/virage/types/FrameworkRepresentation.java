@@ -224,18 +224,18 @@ public final class FrameworkRepresentation {
                 final PrologPredicate newAnte = parser.parsePredicate(p.getName()
                         + StringUtils.parenthesize(aliases.get(alias)));
 
-                final PrologClause clause = new PrologClause(newSucc, newAnte);
+                // TODO Really think about which of the two rules to add.
 
+                final PrologClause clause = new PrologClause(newSucc, newAnte);
                 final CompositionRule rule = new CompositionRule(p.getName() + "_alias_" + aliasIdx,
                         ExtendedPrologStrings.ASSUMPTION, clause);
+                this.add(rule);
 
-                final PrologClause clause2 = new PrologClause(newAnte, newSucc);
+                /*final PrologClause clause2 = new PrologClause(newAnte, newSucc);
                 final CompositionRule rule2 = new CompositionRule(p.getName()
                         + "_alias_inv_" + aliasIdx,
                         ExtendedPrologStrings.ASSUMPTION, clause2);
-
-                this.add(rule);
-                this.add(rule2);
+                this.add(rule2);*/
 
                 this.updateFile();
 

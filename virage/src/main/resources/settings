@@ -1,3 +1,5 @@
+TIMESTAMP=
+
 # This value is used for internal consistency checks, please do not alter it!
 VIRAGE_CONFIG_VERSION=0.1.0
 
