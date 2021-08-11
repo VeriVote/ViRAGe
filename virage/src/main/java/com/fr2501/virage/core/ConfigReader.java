@@ -28,6 +28,7 @@ import com.fr2501.util.ProcessUtils;
 import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
+import com.fr2501.util.SystemUtils;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
 import com.fr2501.virage.types.InvalidConfigVersionException;
 
@@ -795,6 +796,7 @@ public final class ConfigReader {
         try {
             config = builder.getConfiguration();
             config.setProperty(name, newValue);
+            config.setProperty("TIMESTAMP", SystemUtils.getTime());
             builder.save();
         } catch (final ConfigurationException e) {
             LOGGER.error("Updating \"" + name + "\" failed.");

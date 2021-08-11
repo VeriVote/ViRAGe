@@ -126,6 +126,12 @@ public final class PrologProof {
             }
         }
 
+        final int[] parents = computeParents(subgoals, levels);
+
+        return constructProof(subgoals, parents);
+    }
+
+    private static int[] computeParents(final String[] subgoals, final int[] levels) {
         final int[] parents = new int[subgoals.length];
         parents[0] = -1;
         for (int i = 1; i < subgoals.length; i++) {
@@ -139,6 +145,10 @@ public final class PrologProof {
             }
         }
 
+        return parents;
+    }
+
+    private static PrologProof constructProof(final String[] subgoals, final int[] parents) {
         final PrologProof[] proofs = new PrologProof[subgoals.length];
         for (int i = 0; i < subgoals.length; i++) {
             proofs[i] = new PrologProof(subgoals[i]);
@@ -151,8 +161,7 @@ public final class PrologProof {
             }
         }
 
-        final PrologProof res = proofs[0];
-        return res;
+        return proofs[0];
     }
 
     private void addSubgoal(final PrologProof subgoal) {

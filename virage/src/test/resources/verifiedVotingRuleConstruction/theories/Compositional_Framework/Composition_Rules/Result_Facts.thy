@@ -159,7 +159,7 @@ theorem rev_comp_non_electing[simp]:
 (*The pass module is non-blocking.*)
 theorem pass_mod_non_blocking[simp]:
   assumes order: "linear_order r" and
-          g0_n:  "n > 0"
+          g0_n:  "greater n 0"
         shows "non_blocking (pass_module n r)"
   unfolding non_blocking_def
 proof (safe, simp_all)

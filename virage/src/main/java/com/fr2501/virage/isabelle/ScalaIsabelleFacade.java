@@ -187,7 +187,6 @@ public final class ScalaIsabelleFacade {
      */
     public void extractFunctionsAndDefinitions() {
         this.functionsAndDefinitions = new HashMap<String, Map<String, String>>();
-
         final MLFunction<Theory, scala.collection.immutable.List<String>> mlFunToExtractAllNames
             = MLValue
                 .compileFunction(
@@ -206,13 +205,12 @@ public final class ScalaIsabelleFacade {
                 + "^ \")\"\n| _ => \"(?\'a)\" in typ_to_string x end)";
 
         final MLFunction<Theory, scala.collection.immutable.List<Tuple2<String, String>>>
-            mlFunToExtractSigns = MLValue
-                .compileFunction(
+            mlFunToExtractSigns = MLValue.compileFunction(
                         "fn thy => ListPair.zip ((map (fn x => (fst x)) (" + extractConstFunString
-                                + ")),map " + toStringFunction + "(map (fn x => (fst (snd x))) ("
-                                + extractConstFunString + ")))",
-                        ScalaIsabelleFacade.isabelle, global(), Implicits.theoryConverter(),
-                        PAIR_TO_LIST_CONVERTER);
+                        + ")),map " + toStringFunction + "(map (fn x => (fst (snd x))) ("
+                        + extractConstFunString + ")))",
+                ScalaIsabelleFacade.isabelle, global(), Implicits.theoryConverter(),
+                PAIR_TO_LIST_CONVERTER);
 
         for (final String thyName : this.theoryNames) {
             final String thyNameWithoutSession = thyName.split("\\.")[1];

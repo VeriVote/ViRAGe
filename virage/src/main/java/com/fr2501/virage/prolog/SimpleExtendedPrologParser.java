@@ -96,26 +96,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
             }
 
             if (currentLine.contains(ExtendedPrologStrings.THEORY_PATH_PREFIX)) {
-                String line = currentLine;
-
-                final String nameLineSeparator = " - ";
-                if (line.contains(nameLineSeparator)) {
-                    final String[] splits = line.split(nameLineSeparator);
-
-                    line = splits[0];
-                    framework.setSessionName(splits[1]);
-                }
-
-                line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
-                line = line.replace(ExtendedPrologStrings.COMMENT, "");
-                line = StringUtils.removeWhitespace(line);
-
-                if (line.endsWith(IsabelleUtils.ROOT)) {
-                    line = line.substring(0, line.length() - IsabelleUtils.ROOT.length());
-                }
-
-                framework.setTheoryPath(line);
-                continue;
+                this.findTheoryPath(currentLine, framework);
             }
 
             // Remove Prolog comment markings, they are not necessary any more.
@@ -158,10 +139,32 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
         this.parseSection(framework, compositionRuleSection, ParserState.COMPOSITION_RULE);
 
         if (addDummies) {
-            framework.addDummyRulesIfNecessary();
+            framework.addDummyAndAliasRulesIfNecessary();
         }
 
         return framework;
+    }
+
+    private void findTheoryPath(final String currentLine, final FrameworkRepresentation framework) {
+        String line = currentLine;
+
+        final String nameLineSeparator = " - ";
+        if (line.contains(nameLineSeparator)) {
+            final String[] splits = line.split(nameLineSeparator);
+
+            line = splits[0];
+            framework.setSessionName(splits[1]);
+        }
+
+        line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
+        line = line.replace(ExtendedPrologStrings.COMMENT, "");
+        line = StringUtils.removeWhitespace(line);
+
+        if (line.endsWith(IsabelleUtils.ROOT)) {
+            line = line.substring(0, line.length() - IsabelleUtils.ROOT.length());
+        }
+
+        framework.setTheoryPath(line);
     }
 
     private List<ComponentType> extractParameters(final String component)

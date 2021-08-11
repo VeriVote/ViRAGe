@@ -51,9 +51,7 @@ corresponding letter as follows.
 		some given properties.
 	- A	Similar to -a, but checks all available
 		properties at once.
-	- p 	Generate a proof tree showing that a voting 
-		rule satisfies some properties (if it does).
-    	- I	Generate an Isabelle/HOL theory file with a 
+    - p	Generate an Isabelle/HOL theory file with a 
 		formal proof, proving that a voting rule 
 		satisfies some properties. This can be 
 		checked automatically by ViRAGe.

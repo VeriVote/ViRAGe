@@ -19,6 +19,8 @@ import org.apache.logging.log4j.Logger;
 import com.fr2501.util.Pair;
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
+import com.fr2501.util.SystemUtils;
+import com.fr2501.virage.core.ConfigReader;
 import com.fr2501.virage.prolog.PrologPredicate;
 import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.DecompositionTree;
@@ -118,6 +120,8 @@ public final class CCodeGenerator {
             }
             this.signatures.put(matcher.group(componentNameGroup), parameterNames);
         }
+
+        this.copyImplementationResources();
     }
 
     /**
@@ -270,5 +274,17 @@ public final class CCodeGenerator {
 
         return exeFile;
     }*/
+
+    private void copyImplementationResources() {
+        SystemUtils.copyResourceToFile("c_implementations/types.c",
+                ConfigReader.getInstance().getDefaultOutputPath() + File.separator + "types.c");
+        SystemUtils.copyResourceToFile("c_implementations/types.h",
+                ConfigReader.getInstance().getDefaultOutputPath() + File.separator + "types.h");
+        SystemUtils.copyResourceToFile("c_implementations/voting_rule.h",
+                ConfigReader.getInstance().getDefaultOutputPath()
+                + File.separator + "voting_rule.c");
+        SystemUtils.copyResourceToFile("c_implementations/wrapper.c",
+                ConfigReader.getInstance().getDefaultOutputPath() + File.separator + "wrapper.c");
+    }
 
 }

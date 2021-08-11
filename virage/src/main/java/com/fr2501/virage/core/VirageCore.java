@@ -239,6 +239,10 @@ public final class VirageCore implements Runnable {
             System.exit(0);
         }
 
+        this.initIsabelle();
+    }
+
+    private void initIsabelle() {
         if (ConfigReader.getInstance().hasIsabelle()) {
             try {
                 this.checker = IsabelleProofChecker.getInstance(this.framework.getSessionName(),

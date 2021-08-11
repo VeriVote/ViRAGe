@@ -477,7 +477,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     private FrameworkRepresentation extractAndOrParseFramework(final String passedPath)
-            throws IOException {
+            throws IOException, ExternalSoftwareUnavailableException {
         FrameworkRepresentation framework = null;
         final VirageParseJob parseJob;
 
@@ -508,24 +508,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                     if (idx != -1) {
                         return this.extractAndOrParseFramework(plFiles.get(idx).getAbsolutePath());
                     } else {
-                        while (true) {
-                            newFileName = this
-                                    .requestString("Please enter a name for the new file.");
-
-                            if (!newFileName.endsWith(PrologParser.PROLOG_FILE_EXTENSION)) {
-                                newFileName += ".pl";
-                            }
-
-                            final File checkExistenceFile = new File(
-                                    path + File.separator + newFileName);
-
-                            if (!checkExistenceFile.exists()) {
-                                break;
-                            } else if (this.requestConfirmation(
-                                    "File exists already. " + "Do you want to overwrite it?")) {
-                                break;
-                            }
-                        }
+                        newFileName = this.getNewFileName(path);
                     }
                 }
             }
@@ -534,26 +517,10 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 this.displayMessage("Isabelle is not available. "
                         + "Please install Isabelle or supply an (E)PL-file directly.");
 
-                return null;
+                throw new ExternalSoftwareUnavailableException();
             }
 
-            final String sessionName;
-
-            final List<String> sessionNames = IsabelleUtils.getSessionNamesFromRootFile(
-                    new File(path + File.separator + IsabelleUtils.ROOT));
-            if (sessionNames.isEmpty()) {
-                this.displayError("No sessions found in the ROOT file!");
-                return null;
-            } else if (sessionNames.size() == 1) {
-                sessionName = sessionNames.get(0);
-                this.displayMessage(
-                        "Found only one session, \"" + sessionName + "\", this will be used.");
-            } else {
-                final int sessionNameIndex = this.chooseAlternative(
-                        "Which of the following sessions specified in the ROOT file shall be used?",
-                        sessionNames, false);
-                sessionName = sessionNames.get(sessionNameIndex);
-            }
+            final String sessionName = this.findSessionName(path);
 
             final VirageExtractJob extractJob = new VirageExtractJob(this, path, sessionName,
                     newFileName);
@@ -578,11 +545,63 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         // before the result.
         SystemUtils.semiBusyWaitingHelper();
 
-        if (!parseJob.getState().equals(VirageJobState.FINISHED)) {
+        FrameworkRepresentation toReturn = null;
+        if (parseJob.getState().equals(VirageJobState.FINISHED)) {
+            toReturn = parseJob.getResult();
+        }
+        return toReturn;
+    }
+
+    private String findSessionName(final String path) throws IOException {
+        final String sessionName;
+
+        final List<String> sessionNames = IsabelleUtils.getSessionNamesFromRootFile(
+                new File(path + File.separator + IsabelleUtils.ROOT));
+        if (sessionNames.isEmpty()) {
+            this.displayError("No sessions found in the ROOT file!");
             return null;
+        } else if (sessionNames.size() == 1) {
+            sessionName = sessionNames.get(0);
+            this.displayMessage(
+                    "Found only one session, \"" + sessionName + "\", this will be used.");
+        } else {
+            final int sessionNameIndex = this.chooseAlternative(
+                    "Which of the following sessions specified in the ROOT file shall be used?",
+                    sessionNames, false);
+            sessionName = sessionNames.get(sessionNameIndex);
         }
 
-        return parseJob.getResult();
+        return sessionName;
+    }
+
+    private String getNewFileName(final String path) {
+        String newFileName;
+
+        while (true) {
+            newFileName = this
+                    .requestString("Please enter a name for the new file.");
+
+            if(newFileName.isBlank()) {
+                this.displayMessage("An empty file name is not allowed.");
+                continue;
+            }
+
+            if (!newFileName.endsWith(PrologParser.PROLOG_FILE_EXTENSION)) {
+                newFileName += ".pl";
+            }
+
+            final File checkExistenceFile = new File(
+                    path + File.separator + newFileName);
+
+            if (!checkExistenceFile.exists()) {
+                break;
+            } else if (this.requestConfirmation(
+                    "File exists already. " + "Do you want to overwrite it?")) {
+                break;
+            }
+        }
+
+        return newFileName;
     }
 
     /**
@@ -828,9 +847,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             if (ConfigReader.getInstance().hasPathToRootFile() && firstTry
                     && this.requestConfirmation(
                             "Configuration option \"ISABELLE_PATH_TO_ROOT_FILE\" "
-                                    + "is specified as "
-                                    + this.addQuotationsToPath(
-                                            ConfigReader.getInstance().getPathToRootFile())
+                                    + "is specified as " + this.addQuotationsToPath(
+                                    ConfigReader.getInstance().getPathToRootFile())
                                     + ". " + "Do you want to use this Isabelle ROOT file to "
                                     + "generate an (E)PL file?")) {
                 path = ConfigReader.getInstance().getPathToRootFile();
@@ -838,9 +856,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 firstTry = false;
             } else {
                 path = this.requestString("Please input the path to an (E)PL file or "
-                        + "an Isabelle ROOT file. "
-                        + "(Press ENTER for default: " + this.addQuotationsToPath(defaultPath)
-                        + ")");
+                        + "an Isabelle ROOT file. " + "(Press ENTER for default: "
+                        + this.addQuotationsToPath(defaultPath) + ")");
             }
 
             if (path.isEmpty()) {
@@ -851,7 +868,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 if (this.extractAndOrParseFramework(path) != null) {
                     break;
                 }
-            } catch (final IOException e) {
+            } catch (final IOException | ExternalSoftwareUnavailableException e) {
                 e.printStackTrace();
             }
         }
@@ -860,8 +877,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             final String arg = this
                     .requestString("Do you want to (g)enerate a composition, (a)nalyze one, "
                             + "run an (A)nalysis of all properties for a composition, "
-                            + "(p)rove a claim,\n"
-                            + "generate (I)sabelle proofs, generate (S)cala code "
+                            + "generate Isabelle (p)roofs, generate (S)cala code "
                             + "or generate (C) code?");
 
             VirageJob<?> job = null;
@@ -872,8 +888,6 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             } else if ("a".equals(arg)) {
                 job = this.createAnalysisQuery();
             } else if ("p".equals(arg)) {
-                job = this.createProofQuery();
-            } else if ("I".equals(arg)) {
                 job = this.createIsabelleQuery();
             } else if ("S".equals(arg)) {
                 job = this.createCodeGenerationQuery();

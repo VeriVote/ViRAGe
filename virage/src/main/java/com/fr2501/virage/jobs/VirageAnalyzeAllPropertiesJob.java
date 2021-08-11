@@ -1,5 +1,6 @@
 package com.fr2501.virage.jobs;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -90,6 +91,8 @@ public class VirageAnalyzeAllPropertiesJob extends
                 this.unaryProperties.add(candidate);
             }
         }
+        Collections.sort(this.unaryProperties,
+                (final Property a, final Property b) -> a.getName().compareTo(b.getName()));
 
         final VirageSearchManager manager = this.getExecutingCore().getSearchManager();
         this.setResult(manager.analyzeComposition(DecompositionTree.parseString(

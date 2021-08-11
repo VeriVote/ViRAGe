@@ -17,6 +17,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fr2501.util.Pair;
 import com.fr2501.util.SimpleFileWriter;
 import com.fr2501.util.StringUtils;
 import com.fr2501.virage.core.ConfigReader;
@@ -230,9 +231,8 @@ public final class IsabelleTheoryGenerator {
         this.replacePrologVariables(proofPredicate);
         String moduleParameters = "";
 
-        // This looks tedious, but is required to ensure correct
-        // ordering of variables in definition.
-        // This assumes that variable names are given in the correct order,
+        // This looks tedious, but is required to ensure correct ordering of variables in
+        // definition. This assumes that variable names are given in the correct order,
         // ascending alphabetically. This might seem arbitrary, but is ensured
         // by the way IsabelleUtils.findUnusedVariables works.
         final List<String> moduleParametersList = new LinkedList<String>();
@@ -266,7 +266,6 @@ public final class IsabelleTheoryGenerator {
         for (final String type : moduleParamTypesList) {
             moduleParamTypes += type;
         }
-        // -----
 
         String imports = this.findImportsFromCompositionRules(proofs);
 
@@ -276,9 +275,49 @@ public final class IsabelleTheoryGenerator {
             throw new IllegalArgumentException();
         }
 
+        final Pair<String, String> moduleDefResult = this.buildModuleDef(moduleDefMap, imports);
+        final String moduleDef = moduleDefResult.getFirstValue();
+        imports = moduleDefResult.getSecondValue();
+
+        String proofsString = "";
+        for (final CompositionProof proof : proofs) {
+            proofsString += this.generator.generateIsabelleProof(proof) + "\n\n";
+        }
+
+        final String fileContents = this.replaceVariables(theoryName, imports, moduleParamTypes,
+                moduleName, moduleParameters, moduleDef, proofsString);
+
+        final SimpleFileWriter writer = new SimpleFileWriter();
+        final String outputPath = this.buildOutputPath(passedOutputPath, theoryName);
+        try {
+            writer.writeToFile(outputPath, fileContents);
+            return new File(outputPath).getCanonicalFile();
+        } catch (final IOException e) {
+            // NO-OP
+        }
+
+        return null;
+    }
+
+    private String buildOutputPath(final String previousPath, final String theoryName) {
+        String outputPath = previousPath;
+        if (!outputPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
+            if (!outputPath.endsWith(File.separator)) {
+                outputPath = outputPath + File.separator;
+            }
+            outputPath = outputPath + theoryName + IsabelleUtils.FILE_EXTENSION;
+        }
+
+        return outputPath;
+    }
+
+    private Pair<String, String> buildModuleDef(final Map<String, Set<String>> moduleDefMap,
+            final String importsParam) {
+        String moduleDef = "";
+        String imports = importsParam;
+
         // There will be only one iteration, but it is a bit tedious to extract
         // single elements from sets.
-        String moduleDef = "";
         for (final String string : moduleDefMap.keySet()) {
             moduleDef = string;
 
@@ -296,34 +335,7 @@ public final class IsabelleTheoryGenerator {
             }
         }
 
-        String proofsString = "";
-        for (final CompositionProof proof : proofs) {
-            proofsString += this.generator.generateIsabelleProof(proof) + "\n\n";
-        }
-
-        final String fileContents = this.replaceVariables(theoryName, imports, moduleParamTypes,
-                moduleName, moduleParameters, moduleDef, proofsString);
-
-        final SimpleFileWriter writer = new SimpleFileWriter();
-
-        String outputPath = passedOutputPath;
-
-        if (!outputPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
-            if (!outputPath.endsWith(File.separator)) {
-                outputPath = outputPath + File.separator;
-            }
-            outputPath = outputPath + theoryName + IsabelleUtils.FILE_EXTENSION;
-        }
-
-        try {
-            writer.writeToFile(outputPath, fileContents);
-
-            return new File(outputPath).getCanonicalFile();
-        } catch (final IOException e) {
-            LOGGER.error("Something went wrong.", e);
-        }
-
-        return null;
+        return new Pair<String, String>(moduleDef, imports);
     }
 
     protected FrameworkRepresentation getFramework() {

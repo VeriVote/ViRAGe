@@ -23,9 +23,9 @@ import com.fr2501.virage.types.Component;
 import com.fr2501.virage.types.ComponentType;
 import com.fr2501.virage.types.CompositionRule;
 import com.fr2501.virage.types.ExternalSoftwareUnavailableException;
+import com.fr2501.virage.types.FrameworkExtractionFailedException;
 import com.fr2501.virage.types.FrameworkRepresentation;
 import com.fr2501.virage.types.IsabelleBuildFailedException;
-import com.fr2501.virage.types.MalformedSettingsValueException;
 import com.fr2501.virage.types.Property;
 
 /**
@@ -113,11 +113,7 @@ public final class IsabelleFrameworkExtractor {
     }
 
     private void convertCompositionRules(final FrameworkRepresentation framework,
-            final Map<String, Map<String, String>> compRulesRaw)
-                    throws ExternalSoftwareUnavailableException {
-        Map<PrologPredicate, List<PrologPredicate>> componentAliases =
-                new HashMap<PrologPredicate, List<PrologPredicate>>();
-        componentAliases = this.computeTransitiveClosureOfComponentAliases();
+            final Map<String, Map<String, String>> compRulesRaw) {
 
         for (final String thyName : compRulesRaw.keySet()) {
             thmLoop: for (final String thmName : compRulesRaw.get(thyName).keySet()) {
@@ -158,6 +154,14 @@ public final class IsabelleFrameworkExtractor {
                 }
 
                 for (final String ant : antecedents) {
+                    // TODO Find better solution
+                    // Sometimes, a rule requires a variable to be greater/smaller than 0.
+                    // This is required for the proofs, but not for the Prolog search.
+                    // Remove such antecedents.
+                    if(ant.contains("<(") || ant.contains(">(")) {
+                        antecedents.remove(ant);
+                        continue;
+                    }
                     matcher = allowedChars.matcher(ant);
                     if (!matcher.matches()) {
                         continue thmLoop;
@@ -166,48 +170,6 @@ public final class IsabelleFrameworkExtractor {
 
                 final List<String> prologStringList = new LinkedList<String>();
                 prologStringList.add(this.buildPrologClauseString(succedent, antecedents));
-
-                final JplFacade facade = new JplFacade();
-                for(final PrologPredicate alias: componentAliases.keySet()) {
-                    try {
-                        //  TODO This is only possible for unary properties!
-                        // Build a more flexible solution?
-                        final PrologPredicate succPred = this.parser.parsePredicate(succedent);
-                        if(succPred.getArity() != 1) {
-                            continue;
-                        }
-
-                        final PrologPredicate succChild =
-                                succPred.getParameters().get(0);
-                        if(succChild.isVariable()) {
-                            continue;
-                        }
-
-                        final Map<String, String> replacements
-                            = facade.unifiable(succChild.toString(), alias.toString());
-                        for(final PrologPredicate expansion : componentAliases.get(alias)) {
-                            succPred.getParameters().set(0, PrologPredicate.copy(expansion));
-                            succPred.replaceVariables(replacements);
-                            final String succedentString = succPred.toString();
-
-                            final List<String> antecedentStrings = new LinkedList<String>();
-                            for(final String antecedentString : antecedents) {
-                                final PrologPredicate antecedent
-                                    = this.parser.parsePredicate(antecedentString);
-                                antecedent.replaceVariables(replacements);
-                                antecedentStrings.add(antecedent.toString());
-                            }
-
-                            final String toBeAdded = this.buildPrologClauseString(
-                                    succedentString, antecedents);
-                            if(!prologStringList.contains(toBeAdded)) {
-                                prologStringList.add(toBeAdded);
-                            }
-                        }
-                    } catch (final IllegalArgumentException e) {
-                        // NO-OP
-                    }
-                }
 
                 try {
                     for(final String prologString: prologStringList) {
@@ -249,6 +211,7 @@ public final class IsabelleFrameworkExtractor {
                     if (endIdx < copyOfs.length() - 1 && copyOfs.charAt(endIdx + 1) != ')') {
                         res += PrologPredicate.SEPARATOR;
                     }
+                    // Checkstyle does not like this, I think it is reasonable here.
                     i = endIdx + 1;
                 } else {
                     insideBrackets = true;
@@ -279,13 +242,10 @@ public final class IsabelleFrameworkExtractor {
      * @param sessionDir the session directory
      * @param sessionName the session name
      * @return the compositional framework
-     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable.
-     * @throws IsabelleBuildFailedException if the session cannot be built
-     * @throws MalformedSettingsValueException if a settings value is malformed
+     * @throws FrameworkExtractionFailedException wrapping the actual cause
      */
     public FrameworkRepresentation extract(final String sessionDir, final String sessionName)
-            throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException,
-            MalformedSettingsValueException {
+            throws FrameworkExtractionFailedException {
 
         return this.extract(sessionDir, sessionName,
                 "framework" + System.currentTimeMillis() + ".pl");
@@ -298,18 +258,20 @@ public final class IsabelleFrameworkExtractor {
      * @param sessionName the name of the session
      * @param fileName the name of the new (E)PL file
      * @return a framework representation of the session
-     * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
-     * @throws IsabelleBuildFailedException if the session build fails
-     * @throws MalformedSettingsValueException if a settings value is malformed
+     * @throws FrameworkExtractionFailedException wrapping the actual cause
      */
     public FrameworkRepresentation extract(final String sessionDir, final String sessionName,
-            final String fileName) throws ExternalSoftwareUnavailableException,
-            IsabelleBuildFailedException, MalformedSettingsValueException {
+            final String fileName) throws FrameworkExtractionFailedException {
         if (fileName == null) {
             return this.extract(sessionDir, sessionName);
         }
 
-        final ScalaIsabelleFacade facade = new ScalaIsabelleFacade(sessionDir, sessionName);
+        final ScalaIsabelleFacade facade;
+        try {
+            facade = new ScalaIsabelleFacade(sessionDir, sessionName);
+        } catch (ExternalSoftwareUnavailableException | IsabelleBuildFailedException e1) {
+            throw new FrameworkExtractionFailedException(e1);
+        }
 
         final File plFile = new File(sessionDir + File.separator + fileName);
         try {
@@ -332,7 +294,7 @@ public final class IsabelleFrameworkExtractor {
         this.convertComponents(framework, compsRaw);
         this.convertCompositionRules(framework, compRulesRaw);
 
-        framework.addDummyRulesIfNecessary();
+        framework.addDummyAndAliasRulesIfNecessary();
 
         return framework;
     }
