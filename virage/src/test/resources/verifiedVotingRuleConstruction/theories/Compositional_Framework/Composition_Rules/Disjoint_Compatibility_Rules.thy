@@ -69,7 +69,7 @@ theorem disj_compat_seq[simp]:
   assumes
     compatible: "disjoint_compatibility m n" and
     module_m2: "electoral_module m2"
-  shows "disjoint_compatibility (m \<triangleright> m2) n"
+  shows "disjoint_compatibility (sequential_composition m m2) n"
   unfolding disjoint_compatibility_def
 proof (safe)
   show "electoral_module (m \<triangleright> m2)"

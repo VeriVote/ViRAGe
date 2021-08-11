@@ -296,7 +296,7 @@ qed
 *)
 theorem rev_comp_non_blocking[simp]:
   assumes "electing m"
-  shows "non_blocking (m\<down>)"
+  shows "non_blocking (revision_composition m)"
   unfolding non_blocking_def
 proof (safe, simp_all)
   show "electoral_module (m\<down>)"
@@ -620,7 +620,7 @@ theorem iter_elim_def_n[simp]:
     non_electing_m: "non_electing m" and
     single_elimination: "eliminates 1 m" and
     terminate_if_n_left: "\<forall> r. ((t r) \<longleftrightarrow> (card (defer_r r) = n))" and
-    x_greater_zero: "n > 0"
+    x_greater_zero: "greater n 0"
   shows "defers n (m \<circlearrowleft>\<^sub>t)"
 proof -
   have

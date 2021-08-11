@@ -2,11 +2,15 @@ package com.fr2501.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -124,5 +128,30 @@ public class SystemUtils {
         } catch (final InterruptedException e) {
             // No-op
         }
+    }
+
+    /**
+     * Copies a resource to the file system.
+     * @param resource the resource
+     * @param path the path of the file to be created
+     */
+    public static void copyResourceToFile(final String resource, final String path) {
+        final File newFile = new File(path);
+        if(newFile.exists()) {
+            newFile.delete();
+        }
+
+        String content = "";
+        final InputStream theoryTemplateStream = SystemUtils.class.getClassLoader()
+                .getResourceAsStream(resource);
+        final StringWriter writer = new StringWriter();
+        try {
+            IOUtils.copy(theoryTemplateStream, writer, StandardCharsets.UTF_8);
+        } catch (final IOException e) {
+            LOGGER.error(e);
+        }
+        content = writer.toString();
+        final SimpleFileWriter fileWriter = new SimpleFileWriter();
+        fileWriter.writeToFile(path, content);
     }
 }

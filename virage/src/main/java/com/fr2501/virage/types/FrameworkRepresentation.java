@@ -202,44 +202,53 @@ public final class FrameworkRepresentation {
         final Map<String, String> aliases = ConfigReader.getInstance().getComponentAliases();
         final PrologParser parser = new SimplePrologParser();
 
-        for(final Property p : this.properties) {
-            if(p.getArity() != 1) {
-                continue;
-            }
+        for (final Property p : this.properties) {
+            for (int i = 0; i < p.getArity(); i++) {
 
-            final ComponentType propertyType = p.getParameters().get(0);
+                final ComponentType propertyType = p.getParameters().get(i);
 
-            int aliasIdx = 0;
-            for(final String alias : aliases.keySet()) {
-                final PrologPredicate aliasPredicate = parser.parsePredicate(alias);
-                final String aliasName = aliasPredicate.getName();
-                final Component aliasComponent = this.getComponent(aliasName);
+                int aliasIdx = 0;
+                for (final String alias : aliases.keySet()) {
+                    final PrologPredicate aliasPredicate = parser.parsePredicate(alias);
+                    final String aliasName = aliasPredicate.getName();
+                    final Component aliasComponent = this.getComponent(aliasName);
 
-                if(aliasComponent != null && !aliasComponent.getType().equals(propertyType)) {
-                    continue;
+                    if (aliasComponent != null && !aliasComponent.getType().equals(propertyType)) {
+                        continue;
+                    }
+
+                    final List<PrologPredicate> newSuccParams = new LinkedList<PrologPredicate>();
+                    final List<PrologPredicate> newAnteParams = new LinkedList<PrologPredicate>();
+                    final String nextFreeVariable = "ALIAS_VAR_";
+                    for (int j = 0; j < p.getArity(); j++) {
+                        if(i == j) {
+                            newSuccParams.add(parser.parsePredicate(alias));
+                            newAnteParams.add(parser.parsePredicate(aliases.get(alias)));
+                        } else {
+                            newSuccParams.add(new PrologPredicate(nextFreeVariable + j));
+                            newAnteParams.add(new PrologPredicate(nextFreeVariable + j));
+                        }
+                    }
+
+                    final PrologPredicate newSucc = new PrologPredicate(p.getName(), newSuccParams);
+                    final PrologPredicate newAnte = new PrologPredicate(p.getName(), newAnteParams);
+
+                    final PrologClause clause = new PrologClause(newSucc, newAnte);
+                    final CompositionRule rule = new CompositionRule(
+                            p.getName() + "_alias_" + aliasIdx, ExtendedPrologStrings.ASSUMPTION,
+                            clause);
+                    this.add(rule);
+
+                    /*
+                     * final PrologClause clause2 = new PrologClause(newAnte, newSucc); final
+                     * CompositionRule rule2 = new CompositionRule(p.getName() + "_alias_inv_" +
+                     * aliasIdx, ExtendedPrologStrings.ASSUMPTION, clause2); this.add(rule2);
+                     */
+
+                    this.updateFile();
+
+                    aliasIdx++;
                 }
-
-                final PrologPredicate newSucc = parser.parsePredicate(p.getName()
-                        + StringUtils.parenthesize(alias));
-                final PrologPredicate newAnte = parser.parsePredicate(p.getName()
-                        + StringUtils.parenthesize(aliases.get(alias)));
-
-                // TODO Really think about which of the two rules to add.
-
-                final PrologClause clause = new PrologClause(newSucc, newAnte);
-                final CompositionRule rule = new CompositionRule(p.getName() + "_alias_" + aliasIdx,
-                        ExtendedPrologStrings.ASSUMPTION, clause);
-                this.add(rule);
-
-                /*final PrologClause clause2 = new PrologClause(newAnte, newSucc);
-                final CompositionRule rule2 = new CompositionRule(p.getName()
-                        + "_alias_inv_" + aliasIdx,
-                        ExtendedPrologStrings.ASSUMPTION, clause2);
-                this.add(rule2);*/
-
-                this.updateFile();
-
-                aliasIdx++;
             }
         }
     }
@@ -290,7 +299,7 @@ public final class FrameworkRepresentation {
         for (final ComponentType paramType : object.getParameters()) {
             if (!this.componentTypes.contains(paramType)) {
                 LOGGER.info("Added item with unknown parameter type \"" + paramType.getName()
-                    + "\" to framework.");
+                        + "\" to framework.");
             }
         }
     }
@@ -315,7 +324,7 @@ public final class FrameworkRepresentation {
         final ZonedDateTime now = ZonedDateTime.now();
 
         res += "%% Generated by ViRAGe " + VirageCore.getVersion() + " at " + dtf.format(now)
-            + ".\n";
+                + ".\n";
 
         res += SEPARATOR;
 
@@ -462,6 +471,7 @@ public final class FrameworkRepresentation {
 
     /**
      * Simple setter.
+     *
      * @param newTheoryPath the theory path.
      */
     public void setTheoryPath(final String newTheoryPath) {
@@ -488,8 +498,8 @@ public final class FrameworkRepresentation {
 
         String res = this.createHeader();
 
-        res += "% ==== " + this.theoryPath + "ROOT" + " - "
-                + this.sessionName + System.lineSeparator();
+        res += "% ==== " + this.theoryPath + "ROOT" + " - " + this.sessionName
+                + System.lineSeparator();
 
         res += ExtendedPrologStrings.COMMENT + System.lineSeparator();
 
@@ -520,8 +530,8 @@ public final class FrameworkRepresentation {
         res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
                 + ExtendedPrologStrings.PROPERTY_HEADER + System.lineSeparator();
         for (final Property prop : this.properties) {
-            res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
-                    + prop.toString() + System.lineSeparator();
+            res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE + prop.toString()
+                    + System.lineSeparator();
         }
         final List<String> additionalProperties = ConfigReader.getInstance()
                 .getAdditionalProperties();

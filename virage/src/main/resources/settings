@@ -73,7 +73,6 @@ SESSION_SPECIFIC_ASSUMPTIONS=linear_order(Preference_Relation);\
 # Might be possible to automatize in the future.
 SESSION_SPECIFIC_COMPONENT_ALIASES=elector(X)->sequential_composition(X,elect_module);\
   iter(X)->loop_composition(X,defer_equal_condition(1));\
-  defer_one_loop(X)->iter(X);\
   iterelect(X)->elector(iter(X));\
   maximum_parallel_composition(X,Y)->parallel_composition(X,Y,max_aggregator);\
   smc(X)->iterelect(maximum_parallel_composition(sequential_composition(pass_module(2,X),sequential_composition(revision_composition(plurality),pass_module(1,X))),drop_module(2,X)))
