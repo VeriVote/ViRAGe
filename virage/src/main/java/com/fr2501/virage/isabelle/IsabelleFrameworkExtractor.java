@@ -154,14 +154,6 @@ public final class IsabelleFrameworkExtractor {
                 }
 
                 for (final String ant : antecedents) {
-                    // TODO Find better solution
-                    // Sometimes, a rule requires a variable to be greater/smaller than 0.
-                    // This is required for the proofs, but not for the Prolog search.
-                    // Remove such antecedents.
-                    if(ant.contains("<(") || ant.contains(">(")) {
-                        antecedents.remove(ant);
-                        continue;
-                    }
                     matcher = allowedChars.matcher(ant);
                     if (!matcher.matches()) {
                         continue thmLoop;

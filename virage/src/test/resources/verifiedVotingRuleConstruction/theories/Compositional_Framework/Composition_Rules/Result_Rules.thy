@@ -561,7 +561,7 @@ lemma loop_comp_helper_iter_elim_def_n:
     non_electing_m: "non_electing m" and
     single_elimination: "eliminates 1 m" and
     terminate_if_n_left: "\<forall> r. ((t r) \<longleftrightarrow> (card (defer_r r) = x))" and
-    x_greater_zero: "x > 0" and
+    x_greater_zero: "custom_greater x 0" and
     f_prof: "finite_profile A p" and
     acc_defers_enough: "card (defer acc A p) \<ge> x" and
     non_electing_acc: "non_electing acc"
@@ -571,8 +571,8 @@ lemma loop_comp_helper_iter_elim_def_n:
         loop_comp_helper_iter_elim_def_n_helper non_electing_acc
         non_electing_m f_prof single_elimination nat_neq_iff
         terminate_if_n_left x_greater_zero less_le
-  by (metis (no_types, lifting))
-
+  by (smt (verit, ccfv_SIG) custom_greater.elims(2))
+  
 lemma iter_elim_def_n_helper:
   assumes
     non_electing_m: "non_electing m" and
@@ -611,7 +611,7 @@ next
     thus ?thesis
       using card_big_enough_m non_electing_m f_prof single_elimination
             terminate_if_n_left x_greater_zero loop_comp_helper_iter_elim_def_n
-      by metis
+      by (metis custom_greater.elims(3))
   qed
 qed
 

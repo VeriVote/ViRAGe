@@ -72,7 +72,7 @@ theorem disj_compat_seq[simp]:
   shows "disjoint_compatibility (sequential_composition m m2) n"
   unfolding disjoint_compatibility_def
 proof (safe)
-  show "electoral_module (m \<triangleright> m2)"
+  show "electoral_module (sequential_composition m m2)"
     using compatible disjoint_compatibility_def module_m2 seq_comp_sound
     by metis
 next
@@ -85,7 +85,7 @@ next
   assume
     fin_S: "finite S"
   have modules:
-    "electoral_module (m \<triangleright> m2) \<and> electoral_module n"
+    "electoral_module (sequential_composition m m2) \<and> electoral_module n"
     using compatible disjoint_compatibility_def module_m2 seq_comp_sound
     by metis
   obtain A where A:
@@ -98,15 +98,15 @@ next
     by (metis (no_types, lifting))
   show
     "\<exists>A \<subseteq> S.
-      (\<forall>a \<in> A. indep_of_alt (m \<triangleright> m2) S a \<and>
-        (\<forall>p. finite_profile S p \<longrightarrow> a \<in> reject (m \<triangleright> m2) S p)) \<and>
+      (\<forall>a \<in> A. indep_of_alt (sequential_composition m m2) S a \<and>
+        (\<forall>p. finite_profile S p \<longrightarrow> a \<in> reject (sequential_composition m m2) S p)) \<and>
       (\<forall>a \<in> S-A. indep_of_alt n S a \<and>
         (\<forall>p. finite_profile S p \<longrightarrow> a \<in> reject n S p))"
   proof
     have
       "\<forall>a p q.
         a \<in> A \<and> equiv_prof_except_a S p q a \<longrightarrow>
-          (m \<triangleright> m2) S p = (m \<triangleright> m2) S q"
+          (sequential_composition m m2) S p = (sequential_composition m m2) S q"
     proof (safe)
       fix
         a :: "'a" and
@@ -141,18 +141,18 @@ next
         using A a b indep_of_alt_def
         by metis
       ultimately show
-        "(m \<triangleright> m2) S p = (m \<triangleright> m2) S q"
+        "(sequential_composition m m2) S p = (sequential_composition m m2) S q"
         using sequential_composition.simps
         by (metis (full_types))
     qed
     moreover have
-      "\<forall>a \<in> A. \<forall>p. finite_profile S p \<longrightarrow> a \<in> reject (m \<triangleright> m2) S p"
+      "\<forall>a \<in> A. \<forall>p. finite_profile S p \<longrightarrow> a \<in> reject (sequential_composition m m2) S p"
       using A UnI1 prod.sel sequential_composition.simps
       by metis
     ultimately show
       "A \<subseteq> S \<and>
-        (\<forall>a \<in> A. indep_of_alt (m \<triangleright> m2) S a \<and>
-          (\<forall>p. finite_profile S p \<longrightarrow> a \<in> reject (m \<triangleright> m2) S p)) \<and>
+        (\<forall>a \<in> A. indep_of_alt (sequential_composition m m2) S a \<and>
+          (\<forall>p. finite_profile S p \<longrightarrow> a \<in> reject (sequential_composition m m2) S p)) \<and>
         (\<forall>a \<in> S-A. indep_of_alt n S a \<and>
           (\<forall>p. finite_profile S p \<longrightarrow> a \<in> reject n S p))"
       using A indep_of_alt_def modules

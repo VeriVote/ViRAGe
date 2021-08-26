@@ -156,10 +156,13 @@ theorem rev_comp_non_electing[simp]:
   shows "non_electing (m\<down>)"
   by (simp add: assms non_electing_def)
 
+fun custom_greater :: "nat => nat => bool" where
+  "custom_greater x y = (x > y)"
+
 (*The pass module is non-blocking.*)
 theorem pass_mod_non_blocking[simp]:
   assumes order: "linear_order r" and
-          g0_n:  "greater n 0"
+          g0_n: "custom_greater n 0"
         shows "non_blocking (pass_module n r)"
   unfolding non_blocking_def
 proof (safe, simp_all)
@@ -193,7 +196,7 @@ next
     "{a \<in> A. card(above (limit A r) a) > n} \<noteq> A"
     using One_nat_def Suc_leI assms(2) is_singletonI
           is_singleton_altdef leD mem_Collect_eq
-    by (metis (no_types, lifting))
+    by (metis (no_types, lifting) custom_greater.simps) 
   hence "reject (pass_module n r) A p \<noteq> A"
     by simp
   thus "False"
