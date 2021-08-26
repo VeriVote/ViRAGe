@@ -67,7 +67,8 @@ SESSION_SPECIFIC_ATOMIC_TYPES=Profile;\
 # Hopefully, this will be a temporary fix.
 SESSION_SPECIFIC_ASSUMPTIONS=linear_order(Preference_Relation);\
   trans(Preference_Relation);\
-  finite_profile(Set.set(Alternative),Profile)
+  finite_profile(Set.set(Alternative),Profile);\
+  custom_greater(Nat.nat,Nat.nat)
 
 # Aliases, usually defined as abbreviations or definitions in Isabelle (;-separated list of abbreviation->expansion pairs).
 # Might be possible to automatize in the future.
