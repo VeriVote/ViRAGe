@@ -156,9 +156,6 @@ theorem rev_comp_non_electing[simp]:
   shows "non_electing (m\<down>)"
   by (simp add: assms non_electing_def)
 
-fun custom_greater :: "nat => nat => bool" where
-  "custom_greater x y = (x > y)"
-
 (*The pass module is non-blocking.*)
 theorem pass_mod_non_blocking[simp]:
   assumes order: "linear_order r" and
