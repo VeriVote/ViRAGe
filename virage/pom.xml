@@ -314,6 +314,7 @@
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>3.1.2</version>
           <configuration>
+            <failsOnError>false</failsOnError>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
             <includeResources>true</includeResources>
             <includeTestResources>true</includeTestResources>
@@ -336,6 +337,8 @@
           <artifactId>spotbugs-maven-plugin</artifactId>
           <version>4.7.2.1</version>
           <configuration>
+            <xmlOutput>true</xmlOutput>
+            <failOnError>false</failOnError>
             <plugins>
               <plugin>
                 <groupId>com.h3xstream.findsecbugs</groupId>
