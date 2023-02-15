@@ -131,9 +131,10 @@ public final class IsabelleProofChecker {
         ScalaIsabelleFacade.buildSession(theoryPathValue, sessionNameValue);
 
         try {
-            final Process process = Runtime.getRuntime()
-                    .exec(ConfigReader.getInstance().getIsabelleExecutable()
-                            + " build -o browser_info -b -D `pwd`");
+            final String clString =
+                ConfigReader.getInstance().getIsabelleExecutable()
+                + " build -o browser_info -b -D `pwd`";
+            final Process process = Runtime.getRuntime().exec(String.format(clString));
             process.waitFor();
 
             this.initServer();
@@ -251,8 +252,9 @@ public final class IsabelleProofChecker {
 
     private void initClient(final String localSessionName, final String localTheoryPath)
             throws IOException, ExternalSoftwareUnavailableException {
-        this.client = this.runtime.exec(
-                ConfigReader.getInstance().getIsabelleExecutable() + " client -n " + SERVER_NAME);
+        final String clString =
+            ConfigReader.getInstance().getIsabelleExecutable() + " client -n " + SERVER_NAME;
+        this.client = this.runtime.exec(String.format(clString));
         this.clientInput = this.client.getOutputStream();
 
         IsabelleClientObserver.start(this, this.client);
@@ -263,8 +265,9 @@ public final class IsabelleProofChecker {
     }
 
     private void initServer() throws IOException, ExternalSoftwareUnavailableException {
-        this.server = this.runtime.exec(
-                ConfigReader.getInstance().getIsabelleExecutable() + " server -n " + SERVER_NAME);
+        final String clString =
+            ConfigReader.getInstance().getIsabelleExecutable() + " server -n " + SERVER_NAME;
+        this.server = this.runtime.exec(String.format(clString));
 
         // The server will send a message when startup is finished.
         // Contents are irrelevant, just wait for it to appear.
