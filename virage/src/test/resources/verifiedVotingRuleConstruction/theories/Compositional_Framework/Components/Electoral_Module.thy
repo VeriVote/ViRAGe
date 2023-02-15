@@ -17,6 +17,9 @@ theory Electoral_Module
 
 begin
 
+fun custom_greater :: "nat => nat => bool" where
+  "custom_greater x y = (x > y)"
+
 text
 \<open>Electoral modules are the principal component type of the composable modules
 voting framework, as they are a generalization of voting rules in the sense of
