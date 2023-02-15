@@ -1,0 +1,77 @@
+== HIGH PRIORITY
+refactoring + checkstyle
+
+=== maven stuff
+jar?
+module?
+
+=== Miscellaneous
+interactively launch scala and generate test instances
+optionally run jobs in parallel on CLI
+document program states
+run on different sessions to see behavior
+cross-verification of Scala and C programs
+add more C snippets
+include jEdit (or find some other solution? xdg-open?)
+timestamp in config
+
+=== FINISHED
+move config to a reasonable place (URGENT!!!)
+line breaks in help
+display purpose description + exit command at startup
+more options for yes/no, only check first letter?
+"typical value on your system"
+remove 8.x
+new lines between sections
+force restart
+"these values were read from the configuration"
+improve version displays
+auto-open config in system text editor (only "windowed" editors supported for now)
+endless loop on Isabelle startup (URGENT!!!)
+"successfully verified" instead of "automatically"
+improve (E)PL generation message
+check Prolog files at version display
+more transparent "parsing (E)PL message"
+add license (MIT?)
+document and rework the (E)PL format (URGENT!!!)
+check versions
+remove tabs
+check lifecycle, add compile or find something more elegant
+improve exec:exec section (Is it actually that bad? See first example at https://www.mojohaus.org/exec-maven-plugin/examples/example-exec-for-java-programs.html)
+do not overwrite framework.pl, or at least ask first!
+"general release-readiness" -> see BEAST (Was that everything?)
+re-add "?-" or ">" if possible (I still think that this does not work while using exec:exec, using colors for now)
+---
+empty variables -> not set
+remove \n before colour
+execute VirageExitJob immediately
+rename config.properties
+(E)PL keywords caps-lock
+generated -> requirement
+explain that libswipl.so is a SWI-Prolog library
+"isabelle session within it"
+explicitly request libjpl.so
+check existence of these files
+sanitize inputs
+scala via isabelle instead of isabelle scala
+wider header in help, uniform width
+---
+branch cleanup
+timezone
+---
+display list of files instead of asking 100 times
+add ROOT to path
+fixed generation of (E)PL files to tmp
+VCLI constructor
+---
+document
+---
+check necessity of log messages
+fix line breaks, try to add '>' (still seems impossible, but colors removed)
+display types instead of Prolog variables in the end
+consistency check via keySet instead of version check
+resolve synonyms (kind of)
+omit anonymous variables and fill automatically
+do not display atomic properties
+re-enable C generation
+add possibility to check all available properties at once

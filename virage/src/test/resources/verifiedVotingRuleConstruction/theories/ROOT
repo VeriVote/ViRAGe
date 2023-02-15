@@ -1,0 +1,95 @@
+(*
+ *  cd ..../theories
+ *
+ *  isabelle build -b -P "output" -D `pwd`
+ *    # compile sessions in the ROOT file to prebuilt images
+ *
+ *  isabelle jedit -d `pwd` -l Verified_Voting_Rule_Construction
+ *    # use an image for interactive mode; probably similar for servermode.
+ *
+ * Theories can then be accessed as, e.g., "Verified_Voting_Rule_Construction.Preference_Relation"
+ *)
+
+chapter browser_info
+
+session Verified_Voting_Rule_Construction = HOL +
+  description "
+    Verified Construction of Fair Voting Rules
+  "
+options [browser_info, timeout = 300, document = pdf, document_output = "output"]
+
+directories
+  "Compositional_Framework"
+  "Compositional_Framework/Components"
+  "Compositional_Framework/Components/Basic_Modules"
+  "Compositional_Framework/Components/Composites"
+  "Compositional_Framework/Components/Compositional_Structures"
+  "Compositional_Framework/Properties"
+  "Compositional_Framework/Composition_Rules"
+  "Social_Choice_Types"
+  "Social_Choice_Properties"
+  "Voting_Rules"
+
+theories
+(* "Social-Choice Types" *)
+  "Social_Choice_Types/Preference_Relation"
+  "Social_Choice_Types/Result"
+  "Social_Choice_Types/Profile"
+(* "Component Types" *)
+  "Compositional_Framework/Components/Electoral_Module"
+  "Compositional_Framework/Components/Evaluation_Function"
+  "Compositional_Framework/Components/Aggregator"
+  "Compositional_Framework/Components/Termination_Condition"
+(* "Basic Modules" *)
+  "Compositional_Framework/Components/Basic_Modules/Defer_Equal_Condition"
+  "Compositional_Framework/Components/Basic_Modules/Defer_Module"
+  "Compositional_Framework/Components/Basic_Modules/Drop_Module"
+  "Compositional_Framework/Components/Basic_Modules/Pass_Module"
+  "Compositional_Framework/Components/Basic_Modules/Elect_Module"
+  "Compositional_Framework/Components/Basic_Modules/Elimination_Module"
+  "Compositional_Framework/Components/Basic_Modules/Maximum_Aggregator"
+  "Compositional_Framework/Components/Basic_Modules/Plurality_Module"
+(* "Composites" *)
+  "Compositional_Framework/Components/Composites/Composite_Elimination_Modules"
+  "Compositional_Framework/Components/Composites/Composite_Structures"
+(* "Compositional Structures" *)
+  "Compositional_Framework/Components/Compositional_Structures/Revision_Composition"
+  "Compositional_Framework/Components/Compositional_Structures/Sequential_Composition"
+  "Compositional_Framework/Components/Compositional_Structures/Parallel_Composition"
+  "Compositional_Framework/Components/Compositional_Structures/Loop_Composition"
+(* "Voting Rules" *)
+  "Voting_Rules/Borda_Rule"
+  "Voting_Rules/Pairwise_Majority_Rule"
+  "Voting_Rules/Copeland_Rule"
+  "Voting_Rules/Minimax_Rule"
+  "Voting_Rules/Blacks_Rule"
+  "Voting_Rules/Nanson_Baldwin_Rule"
+  "Voting_Rules/Classic_Nanson_Rule"
+  "Voting_Rules/Schwartz_Rule"
+  "Voting_Rules/Sequential_Majority_Comparison"
+(* "Properties" *)
+  "Compositional_Framework/Properties/Aggregator_Properties"
+  "Compositional_Framework/Properties/Condorcet_Properties"
+  "Compositional_Framework/Properties/Disjoint_Compatibility"
+  "Compositional_Framework/Properties/Indep_Of_Alt"
+  "Compositional_Framework/Properties/Monotonicity_Properties"
+  "Compositional_Framework/Properties/Result_Properties"
+(* "Composition Rules" *)
+  "Compositional_Framework/Composition_Rules/Aggregator_Facts"
+  "Compositional_Framework/Composition_Rules/Condorcet_Facts"
+  "Compositional_Framework/Composition_Rules/Disjoint_Compatibility_Facts"
+  "Compositional_Framework/Composition_Rules/Monotonicity_Facts"
+  "Compositional_Framework/Composition_Rules/Result_Facts"
+  "Compositional_Framework/Composition_Rules/Condorcet_Rules"
+  "Compositional_Framework/Composition_Rules/Disjoint_Compatibility_Rules"
+  "Compositional_Framework/Composition_Rules/Monotonicity_Rules"
+  "Compositional_Framework/Composition_Rules/Result_Rules"
+(* "Social-Choice Properties" *)
+  "Social_Choice_Properties/Condorcet_Consistency"
+  "Social_Choice_Properties/Homogeneity"
+  "Social_Choice_Properties/Weak_Monotonicity"
+
+document_files
+    "root.tex"
+    "settings.tex"
+    "root.bib"

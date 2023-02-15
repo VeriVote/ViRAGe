@@ -1,8 +1,15 @@
 package com.fr2501.virage.types;
 
 /**
- * Typed parts of the framework
+ * Typed parts of the framework.
+ *
+ * @author VeriVote
  */
 public interface Typed {
-	public ComponentType getType();
+    /**
+     * Return the type of this object.
+     *
+     * @return the type
+     */
+    ComponentType getType();
 }

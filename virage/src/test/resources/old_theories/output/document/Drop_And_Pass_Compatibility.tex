@@ -1,0 +1,459 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Drop{\isacharunderscore}{\kern0pt}And{\isacharunderscore}{\kern0pt}Pass{\isacharunderscore}{\kern0pt}Compatibility}%
+%
+\isadelimdocument
+\isanewline
+%
+\endisadelimdocument
+%
+\isatagdocument
+\isanewline
+\isanewline
+%
+\isamarkupchapter{Compositional Structures%
+}
+\isamarkuptrue%
+%
+\isamarkupsection{Drop And Pass Compatibility%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Drop{\isacharunderscore}{\kern0pt}And{\isacharunderscore}{\kern0pt}Pass{\isacharunderscore}{\kern0pt}Compatibility\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}Basic{\isacharunderscore}{\kern0pt}Modules{\isacharslash}{\kern0pt}Drop{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}Basic{\isacharunderscore}{\kern0pt}Modules{\isacharslash}{\kern0pt}Pass{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+This is a collection of properties about the interplay and compatibility
+of both the drop module and the pass module.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Properties%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{theorem}\isamarkupfalse%
+\ drop{\isacharunderscore}{\kern0pt}two{\isacharunderscore}{\kern0pt}mod{\isacharunderscore}{\kern0pt}rej{\isacharunderscore}{\kern0pt}two{\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ order{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}linear{\isacharunderscore}{\kern0pt}order\ r{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}rejects\ {\isadigit{2}}\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}reject\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ defer\ {\isacharparenleft}{\kern0pt}pass{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\ \isanewline
+\ \ \ \ \isacommand{obtain}\isamarkupfalse%
+\isanewline
+\ \ \ \ \ \ AA\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isacharparenright}{\kern0pt}\ {\isasymRightarrow}\ nat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ set{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \ \ \ rrs\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isacharparenright}{\kern0pt}\ {\isasymRightarrow}\ nat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Profile{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ \ \ \ \ {\isachardoublequoteopen}{\isasymforall}x{\isadigit{0}}\ x{\isadigit{1}}{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymexists}v{\isadigit{2}}\ v{\isadigit{3}}{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}x{\isadigit{1}}\ {\isasymle}\ card\ v{\isadigit{2}}\ {\isasymand}\ finite{\isacharunderscore}{\kern0pt}profile\ v{\isadigit{2}}\ v{\isadigit{3}}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ card\ {\isacharparenleft}{\kern0pt}reject\ x{\isadigit{0}}\ v{\isadigit{2}}\ v{\isadigit{3}}{\isacharparenright}{\kern0pt}\ {\isasymnoteq}\ x{\isadigit{1}}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}x{\isadigit{1}}\ {\isasymle}\ card\ {\isacharparenleft}{\kern0pt}AA\ x{\isadigit{0}}\ x{\isadigit{1}}{\isacharparenright}{\kern0pt}\ {\isasymand}\ finite{\isacharunderscore}{\kern0pt}profile\ {\isacharparenleft}{\kern0pt}AA\ x{\isadigit{0}}\ x{\isadigit{1}}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}rrs\ x{\isadigit{0}}\ x{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ card\ {\isacharparenleft}{\kern0pt}reject\ x{\isadigit{0}}\ {\isacharparenleft}{\kern0pt}AA\ x{\isadigit{0}}\ x{\isadigit{1}}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}rrs\ x{\isadigit{0}}\ x{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymnoteq}\ x{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ moura\isanewline
+\ \ \ \ \isacommand{hence}\isamarkupfalse%
+\isanewline
+\ \ \ \ \ \ {\isachardoublequoteopen}{\isasymforall}n\ f{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymnot}\ rejects\ n\ f\ {\isasymor}\ electoral{\isacharunderscore}{\kern0pt}module\ f\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ rs{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymnot}\ n\ {\isasymle}\ card\ A\ {\isasymor}\ infinite\ A\ {\isasymor}\ {\isasymnot}\ profile\ A\ rs{\isacharparenright}{\kern0pt}\ {\isasymor}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ card\ {\isacharparenleft}{\kern0pt}reject\ f\ A\ rs{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ n{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}rejects\ n\ f\ {\isasymor}\ {\isasymnot}\ electoral{\isacharunderscore}{\kern0pt}module\ f\ {\isasymor}\ {\isacharparenleft}{\kern0pt}n\ {\isasymle}\ card\ {\isacharparenleft}{\kern0pt}AA\ f\ n{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ finite{\isacharunderscore}{\kern0pt}profile\ {\isacharparenleft}{\kern0pt}AA\ f\ n{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}rrs\ f\ n{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ card\ {\isacharparenleft}{\kern0pt}reject\ f\ {\isacharparenleft}{\kern0pt}AA\ f\ n{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}rrs\ f\ n{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymnoteq}\ n{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ rejects{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ force\isanewline
+\ \ \ \ \isacommand{hence}\isamarkupfalse%
+\ f{\isadigit{1}}{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ \ \ {\isachardoublequoteopen}{\isasymforall}n\ f{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymnot}\ rejects\ n\ f\ {\isasymor}\ electoral{\isacharunderscore}{\kern0pt}module\ f\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ rs{\isachardot}{\kern0pt}\ {\isasymnot}\ n\ {\isasymle}\ card\ A\ {\isasymor}\ infinite\ A\ {\isasymor}\ {\isasymnot}\ profile\ A\ rs\ {\isasymor}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ card\ {\isacharparenleft}{\kern0pt}reject\ f\ A\ rs{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ n{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}rejects\ n\ f\ {\isasymor}\ {\isasymnot}\ electoral{\isacharunderscore}{\kern0pt}module\ f\ {\isasymor}\ n\ {\isasymle}\ card\ {\isacharparenleft}{\kern0pt}AA\ f\ n{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ finite\ {\isacharparenleft}{\kern0pt}AA\ f\ n{\isacharparenright}{\kern0pt}\ {\isasymand}\ profile\ {\isacharparenleft}{\kern0pt}AA\ f\ n{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}rrs\ f\ n{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ card\ {\isacharparenleft}{\kern0pt}reject\ f\ {\isacharparenleft}{\kern0pt}AA\ f\ n{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}rrs\ f\ n{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymnoteq}\ n{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ presburger\isanewline
+\ \ \ \ \isacommand{have}\isamarkupfalse%
+\isanewline
+\ \ \ \ \ \ {\isachardoublequoteopen}{\isasymnot}\ {\isadigit{2}}\ {\isasymle}\ card\ {\isacharparenleft}{\kern0pt}AA\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\ {\isasymor}\isanewline
+\ \ \ \ \ \ \ \ \ \ infinite\ {\isacharparenleft}{\kern0pt}AA\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\ {\isasymor}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isasymnot}\ profile\ {\isacharparenleft}{\kern0pt}AA\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}rrs\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\ {\isasymor}\isanewline
+\ \ \ \ \ \ \ \ \ \ card\ {\isacharparenleft}{\kern0pt}reject\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}AA\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}rrs\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}\ {\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ {\isacartoucheopen}reject\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ defer\ {\isacharparenleft}{\kern0pt}pass{\isacharunderscore}{\kern0pt}module\ {\isadigit{2}}\ r{\isacharparenright}{\kern0pt}{\isacartoucheclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ defers{\isacharunderscore}{\kern0pt}def\ order\ pass{\isacharunderscore}{\kern0pt}two{\isacharunderscore}{\kern0pt}mod{\isacharunderscore}{\kern0pt}def{\isacharunderscore}{\kern0pt}two\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}metis\ {\isacharparenleft}{\kern0pt}no{\isacharunderscore}{\kern0pt}types{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ f{\isadigit{1}}\ drop{\isacharunderscore}{\kern0pt}mod{\isacharunderscore}{\kern0pt}sound\ order\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isacommand{qed}\isamarkupfalse%
+\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isanewline
+\isacommand{theorem}\isamarkupfalse%
+\ drop{\isacharunderscore}{\kern0pt}pass{\isacharunderscore}{\kern0pt}disj{\isacharunderscore}{\kern0pt}compat{\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ order{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}linear{\isacharunderscore}{\kern0pt}order\ r{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}disjoint{\isacharunderscore}{\kern0pt}compatibility\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}pass{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{unfolding}\isamarkupfalse%
+\ disjoint{\isacharunderscore}{\kern0pt}compatibility{\isacharunderscore}{\kern0pt}def\isanewline
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}safe{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isacommand{show}\isamarkupfalse%
+\ {\isachardoublequoteopen}electoral{\isacharunderscore}{\kern0pt}module\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ order\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{show}\isamarkupfalse%
+\ {\isachardoublequoteopen}electoral{\isacharunderscore}{\kern0pt}module\ {\isacharparenleft}{\kern0pt}pass{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ order\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\isacommand{next}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{fix}\isamarkupfalse%
+\isanewline
+\ \ \ \ S\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ set{\isachardoublequoteclose}\isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\isanewline
+\ \ \ \ fin{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}finite\ S{\isachardoublequoteclose}\isanewline
+\ \ \isacommand{obtain}\isamarkupfalse%
+\isanewline
+\ \ \ \ p\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Profile{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeyword{where}\ {\isachardoublequoteopen}finite{\isacharunderscore}{\kern0pt}profile\ S\ p{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ empty{\isacharunderscore}{\kern0pt}iff\ empty{\isacharunderscore}{\kern0pt}set\ fin\ profile{\isacharunderscore}{\kern0pt}set\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ metis\isanewline
+\ \ \isacommand{show}\isamarkupfalse%
+\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymexists}A\ {\isasymsubseteq}\ S{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}a\ {\isasymin}\ A{\isachardot}{\kern0pt}\ indep{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}alt\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ a\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ S\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ a\ {\isasymin}\ reject\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ p{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}a\ {\isasymin}\ S{\isacharminus}{\kern0pt}A{\isachardot}{\kern0pt}\ indep{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}alt\ {\isacharparenleft}{\kern0pt}pass{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ a\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ S\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ a\ {\isasymin}\ reject\ {\isacharparenleft}{\kern0pt}pass{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ p{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{have}\isamarkupfalse%
+\ same{\isacharunderscore}{\kern0pt}A{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ \ \ {\isachardoublequoteopen}{\isasymforall}p\ q{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}finite{\isacharunderscore}{\kern0pt}profile\ S\ p\ {\isasymand}\ finite{\isacharunderscore}{\kern0pt}profile\ S\ q{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ reject\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ p\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ reject\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ q{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{let}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}A\ {\isacharequal}{\kern0pt}\ {\isachardoublequoteopen}reject\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ p{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}{\kern0pt}A\ {\isasymsubseteq}\ S{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{moreover}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\isanewline
+\ \ \ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isasymforall}a\ {\isasymin}\ {\isacharquery}{\kern0pt}A{\isachardot}{\kern0pt}\ indep{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}alt\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ a{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ order\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ indep{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}alt{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{moreover}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\isanewline
+\ \ \ \ \ \ {\isachardoublequoteopen}{\isasymforall}a\ {\isasymin}\ {\isacharquery}{\kern0pt}A{\isachardot}{\kern0pt}\ {\isasymforall}p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ S\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ a\ {\isasymin}\ reject\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ p{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{moreover}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\isanewline
+\ \ \ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isasymforall}a\ {\isasymin}\ S{\isacharminus}{\kern0pt}{\isacharquery}{\kern0pt}A{\isachardot}{\kern0pt}\ indep{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}alt\ {\isacharparenleft}{\kern0pt}pass{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ a{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ order\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ indep{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}alt{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isacommand{moreover}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\isanewline
+\ \ \ \ \ \ {\isachardoublequoteopen}{\isasymforall}a\ {\isasymin}\ S{\isacharminus}{\kern0pt}{\isacharquery}{\kern0pt}A{\isachardot}{\kern0pt}\ {\isasymforall}p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ S\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ a\ {\isasymin}\ reject\ {\isacharparenleft}{\kern0pt}pass{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ p{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{ultimately}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\isanewline
+\ \ \ \ \ \ {\isachardoublequoteopen}{\isacharquery}{\kern0pt}A\ {\isasymsubseteq}\ S\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}a\ {\isasymin}\ {\isacharquery}{\kern0pt}A{\isachardot}{\kern0pt}\ indep{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}alt\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ a\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ S\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ a\ {\isasymin}\ reject\ {\isacharparenleft}{\kern0pt}drop{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ p{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}a\ {\isasymin}\ S{\isacharminus}{\kern0pt}{\isacharquery}{\kern0pt}A{\isachardot}{\kern0pt}\ indep{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}alt\ {\isacharparenleft}{\kern0pt}pass{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ a\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}p{\isachardot}{\kern0pt}\ finite{\isacharunderscore}{\kern0pt}profile\ S\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ a\ {\isasymin}\ reject\ {\isacharparenleft}{\kern0pt}pass{\isacharunderscore}{\kern0pt}module\ n\ r{\isacharparenright}{\kern0pt}\ S\ p{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{qed}\isamarkupfalse%
+\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/old_theories/Compositional_Structures/Drop_And_Pass_Compatibility.thy%:%
+%:%6=3%:%
+%:%11=4%:%
+%:%12=5%:%
+%:%14=8%:%
+%:%18=10%:%
+%:%34=12%:%
+%:%35=12%:%
+%:%36=13%:%
+%:%37=14%:%
+%:%38=15%:%
+%:%47=18%:%
+%:%48=19%:%
+%:%57=21%:%
+%:%67=27%:%
+%:%68=27%:%
+%:%69=28%:%
+%:%70=29%:%
+%:%77=30%:%
+%:%78=30%:%
+%:%79=31%:%
+%:%80=31%:%
+%:%81=32%:%
+%:%82=32%:%
+%:%83=33%:%
+%:%84=33%:%
+%:%85=34%:%
+%:%86=34%:%
+%:%87=35%:%
+%:%88=35%:%
+%:%89=36%:%
+%:%90=37%:%
+%:%91=38%:%
+%:%94=41%:%
+%:%95=42%:%
+%:%96=42%:%
+%:%97=43%:%
+%:%98=43%:%
+%:%99=44%:%
+%:%104=49%:%
+%:%105=50%:%
+%:%106=50%:%
+%:%107=51%:%
+%:%108=51%:%
+%:%109=52%:%
+%:%110=52%:%
+%:%111=53%:%
+%:%116=58%:%
+%:%117=59%:%
+%:%118=59%:%
+%:%119=60%:%
+%:%120=60%:%
+%:%121=61%:%
+%:%125=65%:%
+%:%126=66%:%
+%:%127=66%:%
+%:%128=67%:%
+%:%129=68%:%
+%:%130=68%:%
+%:%131=69%:%
+%:%132=69%:%
+%:%133=70%:%
+%:%134=70%:%
+%:%135=71%:%
+%:%136=71%:%
+%:%137=72%:%
+%:%138=72%:%
+%:%139=73%:%
+%:%145=73%:%
+%:%148=74%:%
+%:%149=75%:%
+%:%150=76%:%
+%:%151=76%:%
+%:%152=77%:%
+%:%153=78%:%
+%:%156=79%:%
+%:%160=79%:%
+%:%161=79%:%
+%:%162=80%:%
+%:%163=80%:%
+%:%164=81%:%
+%:%165=81%:%
+%:%166=82%:%
+%:%167=82%:%
+%:%168=83%:%
+%:%169=83%:%
+%:%170=84%:%
+%:%171=84%:%
+%:%172=85%:%
+%:%173=85%:%
+%:%174=86%:%
+%:%175=86%:%
+%:%176=87%:%
+%:%177=87%:%
+%:%178=88%:%
+%:%179=88%:%
+%:%180=89%:%
+%:%181=89%:%
+%:%182=90%:%
+%:%183=91%:%
+%:%184=91%:%
+%:%185=92%:%
+%:%186=93%:%
+%:%187=93%:%
+%:%188=94%:%
+%:%189=95%:%
+%:%190=96%:%
+%:%191=96%:%
+%:%192=97%:%
+%:%193=97%:%
+%:%194=98%:%
+%:%195=98%:%
+%:%196=99%:%
+%:%202=105%:%
+%:%203=106%:%
+%:%204=106%:%
+%:%205=107%:%
+%:%206=107%:%
+%:%207=108%:%
+%:%209=110%:%
+%:%210=111%:%
+%:%211=111%:%
+%:%212=112%:%
+%:%213=112%:%
+%:%214=113%:%
+%:%215=113%:%
+%:%216=114%:%
+%:%217=114%:%
+%:%218=115%:%
+%:%219=115%:%
+%:%220=115%:%
+%:%221=116%:%
+%:%222=117%:%
+%:%223=117%:%
+%:%224=118%:%
+%:%225=118%:%
+%:%226=119%:%
+%:%227=119%:%
+%:%228=119%:%
+%:%229=120%:%
+%:%230=121%:%
+%:%231=122%:%
+%:%232=122%:%
+%:%233=123%:%
+%:%234=123%:%
+%:%235=123%:%
+%:%236=124%:%
+%:%237=125%:%
+%:%238=125%:%
+%:%239=126%:%
+%:%240=126%:%
+%:%241=127%:%
+%:%242=127%:%
+%:%243=127%:%
+%:%244=128%:%
+%:%245=129%:%
+%:%246=130%:%
+%:%247=130%:%
+%:%248=131%:%
+%:%249=131%:%
+%:%250=131%:%
+%:%251=132%:%
+%:%257=138%:%
+%:%258=139%:%
+%:%259=139%:%
+%:%260=140%:%
+%:%261=140%:%
+%:%262=141%:%
+%:%268=141%:%
+%:%273=142%:%
+%:%278=143%:%

@@ -1,0 +1,108 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Monotonicity{\isacharunderscore}{\kern0pt}Properties}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Monotonicity{\isacharunderscore}{\kern0pt}Properties\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Components{\isacharslash}{\kern0pt}Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ Result{\isacharunderscore}{\kern0pt}Properties\isanewline
+\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ defer{\isacharunderscore}{\kern0pt}lift{\isacharunderscore}{\kern0pt}invariance\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}defer{\isacharunderscore}{\kern0pt}lift{\isacharunderscore}{\kern0pt}invariance\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ p\ q\ a{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}a\ {\isasymin}\ {\isacharparenleft}{\kern0pt}defer\ m\ A\ p{\isacharparenright}{\kern0pt}\ {\isasymand}\ lifted\ A\ p\ q\ a{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ m\ A\ p\ {\isacharequal}{\kern0pt}\ m\ A\ q{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ invariant{\isacharunderscore}{\kern0pt}monotonicity\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}invariant{\isacharunderscore}{\kern0pt}monotonicity\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ p\ q\ a{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}a\ {\isasymin}\ elect\ m\ A\ p\ {\isasymand}\ lifted\ A\ p\ q\ a{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}elect\ m\ A\ q\ {\isacharequal}{\kern0pt}\ elect\ m\ A\ p\ {\isasymor}\ elect\ m\ A\ q\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}a{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ defer{\isacharunderscore}{\kern0pt}invariant{\isacharunderscore}{\kern0pt}monotonicity\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}defer{\isacharunderscore}{\kern0pt}invariant{\isacharunderscore}{\kern0pt}monotonicity\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\ non{\isacharunderscore}{\kern0pt}electing\ m\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ p\ q\ a{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}a\ {\isasymin}\ defer\ m\ A\ p\ {\isasymand}\ lifted\ A\ p\ q\ a{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}defer\ m\ A\ q\ {\isacharequal}{\kern0pt}\ defer\ m\ A\ p\ {\isasymor}\ defer\ m\ A\ q\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}a{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ defer{\isacharunderscore}{\kern0pt}monotonicity\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}defer{\isacharunderscore}{\kern0pt}monotonicity\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}A\ p\ q\ w{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}finite\ A\ {\isasymand}\ w\ {\isasymin}\ defer\ m\ A\ p\ {\isasymand}\ lifted\ A\ p\ q\ w{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ w\ {\isasymin}\ defer\ m\ A\ q{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/verifiedVotingRuleConstruction/theories/Compositional_Framework/Properties/Monotonicity_Properties.thy%:%
+%:%10=1%:%
+%:%11=1%:%
+%:%12=2%:%
+%:%13=3%:%
+%:%14=4%:%
+%:%15=5%:%
+%:%20=5%:%
+%:%23=6%:%
+%:%24=10%:%
+%:%25=11%:%
+%:%26=11%:%
+%:%27=12%:%
+%:%30=15%:%
+%:%31=16%:%
+%:%32=21%:%
+%:%33=22%:%
+%:%34=22%:%
+%:%35=23%:%
+%:%38=26%:%
+%:%39=27%:%
+%:%40=32%:%
+%:%41=33%:%
+%:%42=33%:%
+%:%43=34%:%
+%:%46=37%:%
+%:%47=38%:%
+%:%48=42%:%
+%:%49=43%:%
+%:%50=43%:%
+%:%51=44%:%
+%:%54=47%:%
+%:%55=48%:%
+%:%58=49%:%
+%:%63=50%:%

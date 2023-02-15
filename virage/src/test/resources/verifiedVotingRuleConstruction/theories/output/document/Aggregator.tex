@@ -1,0 +1,133 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Aggregator}%
+%
+\isadelimdocument
+\isanewline
+%
+\endisadelimdocument
+%
+\isatagdocument
+\isanewline
+\isanewline
+\isanewline
+%
+\isamarkupsection{Aggregator%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Aggregator\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Social{\isacharunderscore}{\kern0pt}Choice{\isacharunderscore}{\kern0pt}Types{\isacharslash}{\kern0pt}Result{\isachardoublequoteclose}\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+An aggregator gets two partitions (results of electoral modules) as input and
+output another partition. They are used to aggregate results of parallel
+composed electoral modules.
+They are commutative, i.e., the order of the aggregated modules does not affect
+the resulting aggregation. Moreover, they are conservative in the sense that
+the resulting decisions are subsets of the two given partitions' decisions.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Definition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{type{\isacharunderscore}{\kern0pt}synonym}\isamarkupfalse%
+\ {\isacharprime}{\kern0pt}a\ Aggregator\ {\isacharequal}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Result\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Result\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ Result{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ aggregator\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Aggregator\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}aggregator\ agg\ {\isasymequiv}\isanewline
+\ \ \ \ {\isasymforall}A\ e{\isadigit{1}}\ e{\isadigit{2}}\ d{\isadigit{1}}\ d{\isadigit{2}}\ r{\isadigit{1}}\ r{\isadigit{2}}{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}well{\isacharunderscore}{\kern0pt}formed\ A\ {\isacharparenleft}{\kern0pt}e{\isadigit{1}}{\isacharcomma}{\kern0pt}\ r{\isadigit{1}}{\isacharcomma}{\kern0pt}\ d{\isadigit{1}}{\isacharparenright}{\kern0pt}\ {\isasymand}\ well{\isacharunderscore}{\kern0pt}formed\ A\ {\isacharparenleft}{\kern0pt}e{\isadigit{2}}{\isacharcomma}{\kern0pt}\ r{\isadigit{2}}{\isacharcomma}{\kern0pt}\ d{\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ well{\isacharunderscore}{\kern0pt}formed\ A\ {\isacharparenleft}{\kern0pt}agg\ A\ {\isacharparenleft}{\kern0pt}e{\isadigit{1}}{\isacharcomma}{\kern0pt}\ r{\isadigit{1}}{\isacharcomma}{\kern0pt}\ d{\isadigit{1}}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}e{\isadigit{2}}{\isacharcomma}{\kern0pt}\ r{\isadigit{2}}{\isacharcomma}{\kern0pt}\ d{\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Properties%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/verifiedVotingRuleConstruction/theories/Compositional_Framework/Components/Aggregator.thy%:%
+%:%6=3%:%
+%:%11=4%:%
+%:%12=5%:%
+%:%13=6%:%
+%:%15=9%:%
+%:%31=11%:%
+%:%32=11%:%
+%:%33=12%:%
+%:%34=13%:%
+%:%43=16%:%
+%:%44=17%:%
+%:%45=18%:%
+%:%46=19%:%
+%:%47=20%:%
+%:%48=21%:%
+%:%57=23%:%
+%:%67=25%:%
+%:%68=25%:%
+%:%69=26%:%
+%:%70=27%:%
+%:%71=27%:%
+%:%72=28%:%
+%:%82=33%:%
+%:%98=36%:%

@@ -1,22 +1,37 @@
 package com.fr2501.util;
 
-// TODO: DOC
+/**
+ * A simple mutex mechanism.
+ *
+ * @author VeriVote
+ */
 public class ThreadSignal {
-	private boolean finished = false;
-	
-	private synchronized boolean getFinished() {
-		return this.finished;
-	}
-	
-	public synchronized void finish() {
-		this.finished = true;
-	}
-	
-	public void waitFor() {
-		while(true) {
-			synchronized(this) {
-				if(this.getFinished()) return;
-			}
-		}
-	}
+    /**
+     * True if finished, false otherwise.
+     */
+    private boolean finished;
+
+    private synchronized boolean getFinished() {
+        return this.finished;
+    }
+
+    /**
+     * Set signal to finished.
+     */
+    public synchronized void finish() {
+        this.finished = true;
+    }
+
+    /**
+     * A blocking function that returns when this.finished is true.
+     */
+    public void waitFor() {
+        while (true) {
+            synchronized (this) {
+                if (this.getFinished()) {
+                    return;
+                }
+            }
+        }
+    }
 }

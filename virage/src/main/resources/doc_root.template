@@ -1,0 +1,7 @@
+session $SESSION_NAME = $PARENT_NAME +
+  options [document = pdf, document_output = "output"]
+  theories
+    $THEORY_NAME
+  document_files
+    "root.tex"
+

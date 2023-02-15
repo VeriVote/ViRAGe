@@ -1,0 +1,93 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Condorcet{\isacharunderscore}{\kern0pt}Properties}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Condorcet{\isacharunderscore}{\kern0pt}Properties\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Components{\isacharslash}{\kern0pt}Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharslash}{\kern0pt}Components{\isacharslash}{\kern0pt}Evaluation{\isacharunderscore}{\kern0pt}Function{\isachardoublequoteclose}\isanewline
+\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ condorcet{\isacharunderscore}{\kern0pt}compatibility\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}condorcet{\isacharunderscore}{\kern0pt}compatibility\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ A\ p\ w{\isachardot}{\kern0pt}\ condorcet{\isacharunderscore}{\kern0pt}winner\ A\ p\ w\ {\isasymand}\ finite\ A\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}w\ {\isasymnotin}\ reject\ m\ A\ p\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}l{\isachardot}{\kern0pt}\ {\isasymnot}condorcet{\isacharunderscore}{\kern0pt}winner\ A\ p\ l\ {\isasymlongrightarrow}\ l\ {\isasymnotin}\ elect\ m\ A\ p{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}w\ {\isasymin}\ elect\ m\ A\ p\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}l{\isachardot}{\kern0pt}\ {\isasymnot}condorcet{\isacharunderscore}{\kern0pt}winner\ A\ p\ l\ {\isasymlongrightarrow}\ l\ {\isasymin}\ reject\ m\ A\ p{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ condorcet{\isacharunderscore}{\kern0pt}rating\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Evaluation{\isacharunderscore}{\kern0pt}Function\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}condorcet{\isacharunderscore}{\kern0pt}rating\ f\ {\isasymequiv}\isanewline
+\ \ \ \ {\isasymforall}A\ p\ w\ {\isachardot}{\kern0pt}\ condorcet{\isacharunderscore}{\kern0pt}winner\ A\ p\ w\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}l\ {\isasymin}\ A\ {\isachardot}{\kern0pt}\ l\ {\isasymnoteq}\ w\ {\isasymlongrightarrow}\ f\ l\ A\ p\ {\isacharless}{\kern0pt}\ f\ w\ A\ p{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ defer{\isacharunderscore}{\kern0pt}condorcet{\isacharunderscore}{\kern0pt}consistency\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module\ {\isasymRightarrow}\ bool{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}defer{\isacharunderscore}{\kern0pt}condorcet{\isacharunderscore}{\kern0pt}consistency\ m\ {\isasymequiv}\isanewline
+\ \ \ \ electoral{\isacharunderscore}{\kern0pt}module\ m\ {\isasymand}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}\ A\ p\ w{\isachardot}{\kern0pt}\ condorcet{\isacharunderscore}{\kern0pt}winner\ A\ p\ w\ {\isasymand}\ finite\ A\ {\isasymlongrightarrow}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}m\ A\ p\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharbraceleft}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ A\ {\isacharminus}{\kern0pt}\ {\isacharparenleft}{\kern0pt}defer\ m\ A\ p{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isacharbraceleft}{\kern0pt}d\ {\isasymin}\ A{\isachardot}{\kern0pt}\ condorcet{\isacharunderscore}{\kern0pt}winner\ A\ p\ d{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/verifiedVotingRuleConstruction/theories/Compositional_Framework/Properties/Condorcet_Properties.thy%:%
+%:%10=1%:%
+%:%11=1%:%
+%:%12=2%:%
+%:%13=3%:%
+%:%14=4%:%
+%:%15=5%:%
+%:%20=5%:%
+%:%23=6%:%
+%:%24=7%:%
+%:%25=7%:%
+%:%26=8%:%
+%:%32=14%:%
+%:%33=15%:%
+%:%34=19%:%
+%:%35=20%:%
+%:%36=20%:%
+%:%37=21%:%
+%:%39=23%:%
+%:%40=24%:%
+%:%41=25%:%
+%:%42=25%:%
+%:%43=26%:%
+%:%49=32%:%
+%:%52=33%:%
+%:%57=34%:%

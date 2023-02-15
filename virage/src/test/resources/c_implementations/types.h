@@ -2,11 +2,11 @@
 #define TYPES_H
 
 #ifndef V
-#define V 3
+#define V 5
 #endif
 
 #ifndef C
-#define C 3
+#define C 5
 #endif
 
 #define ELECTED 2

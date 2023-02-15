@@ -1,0 +1,177 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Minimax{\isacharunderscore}{\kern0pt}Rule}%
+%
+\isadelimdocument
+\isanewline
+%
+\endisadelimdocument
+%
+\isatagdocument
+\isanewline
+%
+\isamarkupsection{Minimax Rule%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Minimax{\isacharunderscore}{\kern0pt}Rule\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}Compositional{\isacharunderscore}{\kern0pt}Structures{\isacharslash}{\kern0pt}Basic{\isacharunderscore}{\kern0pt}Modules{\isacharslash}{\kern0pt}Minimax{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}Compositional{\isacharunderscore}{\kern0pt}Structures{\isacharslash}{\kern0pt}Elect{\isacharunderscore}{\kern0pt}Composition{\isachardoublequoteclose}\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+This is the Minimax voting rule. It elects the alternatives with the highest
+Minimax score.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Definition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{fun}\isamarkupfalse%
+\ minimax{\isacharunderscore}{\kern0pt}rule\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}minimax{\isacharunderscore}{\kern0pt}rule\ A\ p\ {\isacharequal}{\kern0pt}\ elector\ minimax\ A\ p{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{fun}\isamarkupfalse%
+\ minimax{\isacharunderscore}{\kern0pt}rule{\isacharunderscore}{\kern0pt}code\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}minimax{\isacharunderscore}{\kern0pt}rule{\isacharunderscore}{\kern0pt}code\ A\ p\ {\isacharequal}{\kern0pt}\ elector\ minimax{\isacharunderscore}{\kern0pt}code\ A\ p{\isachardoublequoteclose}%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Condorcet Consistency Property%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{theorem}\isamarkupfalse%
+\ minimax{\isacharunderscore}{\kern0pt}condorcet{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}condorcet{\isacharunderscore}{\kern0pt}consistency\ minimax{\isacharunderscore}{\kern0pt}rule{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\isanewline
+\ \ \ \ {\isachardoublequoteopen}condorcet{\isacharunderscore}{\kern0pt}consistency\ {\isacharparenleft}{\kern0pt}elector\ minimax{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ minimax{\isacharunderscore}{\kern0pt}is{\isacharunderscore}{\kern0pt}dcc\ dcc{\isacharunderscore}{\kern0pt}imp{\isacharunderscore}{\kern0pt}cc{\isacharunderscore}{\kern0pt}elector\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ metis\isanewline
+\ \ \isacommand{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ condorcet{\isacharunderscore}{\kern0pt}consistency{\isadigit{2}}\ electoral{\isacharunderscore}{\kern0pt}module{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \ \ \ \ \ \ \ \ minimax{\isacharunderscore}{\kern0pt}rule{\isachardot}{\kern0pt}simps\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ metis\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/old_theories/Minimax_Rule.thy%:%
+%:%6=3%:%
+%:%11=4%:%
+%:%13=7%:%
+%:%29=9%:%
+%:%30=9%:%
+%:%31=10%:%
+%:%32=11%:%
+%:%33=12%:%
+%:%42=15%:%
+%:%43=16%:%
+%:%52=18%:%
+%:%62=20%:%
+%:%63=20%:%
+%:%64=21%:%
+%:%65=22%:%
+%:%66=23%:%
+%:%67=23%:%
+%:%68=24%:%
+%:%75=26%:%
+%:%85=28%:%
+%:%86=28%:%
+%:%93=29%:%
+%:%94=29%:%
+%:%95=30%:%
+%:%96=30%:%
+%:%97=31%:%
+%:%98=32%:%
+%:%99=32%:%
+%:%100=33%:%
+%:%101=33%:%
+%:%102=34%:%
+%:%103=34%:%
+%:%104=35%:%
+%:%105=35%:%
+%:%106=36%:%
+%:%107=37%:%
+%:%108=37%:%
+%:%109=38%:%
+%:%115=38%:%
+%:%120=39%:%
+%:%125=40%:%

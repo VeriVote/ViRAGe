@@ -1,0 +1,117 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Classic{\isacharunderscore}{\kern0pt}Nanson{\isacharunderscore}{\kern0pt}Rule}%
+%
+\isadelimdocument
+\isanewline
+%
+\endisadelimdocument
+%
+\isatagdocument
+\isanewline
+%
+\isamarkupsection{Classic Nanson Rule%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Classic{\isacharunderscore}{\kern0pt}Nanson{\isacharunderscore}{\kern0pt}Rule\isanewline
+\ \ \isakeyword{imports}\ {\isachardoublequoteopen}Compositional{\isacharunderscore}{\kern0pt}Structures{\isacharslash}{\kern0pt}Basic{\isacharunderscore}{\kern0pt}Modules{\isacharslash}{\kern0pt}Borda{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}Compositional{\isacharunderscore}{\kern0pt}Structures{\isacharslash}{\kern0pt}Defer{\isacharunderscore}{\kern0pt}One{\isacharunderscore}{\kern0pt}Loop{\isacharunderscore}{\kern0pt}Composition{\isachardoublequoteclose}\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+This is the classic Nanson's voting rule, i.e., the rule that was originally
+invented by Nanson, but not the Nanson-Baldwin rule. The idea is similar,
+however, as alternatives with a Borda score less or equal than the average
+Borda score are excluded. The Borda scores of the remaining alternatives
+are hence adjusted to the new set of (still) eligible alternatives.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Definition%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+\isacommand{fun}\isamarkupfalse%
+\ classic{\isacharunderscore}{\kern0pt}nanson{\isacharunderscore}{\kern0pt}rule\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}classic{\isacharunderscore}{\kern0pt}nanson{\isacharunderscore}{\kern0pt}rule\ A\ p\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}leq{\isacharunderscore}{\kern0pt}average{\isacharunderscore}{\kern0pt}eliminator\ borda{\isacharunderscore}{\kern0pt}score{\isacharparenright}{\kern0pt}\ {\isasymcirclearrowleft}\isactrlsub {\isasymexists}\isactrlsub {\isacharbang}{\kern0pt}\isactrlsub d{\isacharparenright}{\kern0pt}\ A\ p{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{fun}\isamarkupfalse%
+\ classic{\isacharunderscore}{\kern0pt}nanson{\isacharunderscore}{\kern0pt}rule{\isacharunderscore}{\kern0pt}code\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ Electoral{\isacharunderscore}{\kern0pt}Module{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}classic{\isacharunderscore}{\kern0pt}nanson{\isacharunderscore}{\kern0pt}rule{\isacharunderscore}{\kern0pt}code\ A\ p\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}leq{\isacharunderscore}{\kern0pt}average{\isacharunderscore}{\kern0pt}eliminator\ borda{\isacharunderscore}{\kern0pt}score{\isacharunderscore}{\kern0pt}code{\isacharparenright}{\kern0pt}\ {\isasymcirclearrowleft}\isactrlsub {\isasymexists}\isactrlsub {\isacharbang}{\kern0pt}\isactrlsub d{\isacharparenright}{\kern0pt}\ A\ p{\isachardoublequoteclose}\isanewline
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=~/Documents/Studies/VotingRuleGenerator/virage/src/test/resources/old_theories/Classic_Nanson_Rule.thy%:%
+%:%6=3%:%
+%:%11=4%:%
+%:%13=7%:%
+%:%29=9%:%
+%:%30=9%:%
+%:%31=10%:%
+%:%32=11%:%
+%:%33=12%:%
+%:%42=15%:%
+%:%43=16%:%
+%:%44=17%:%
+%:%45=18%:%
+%:%46=19%:%
+%:%55=21%:%
+%:%65=23%:%
+%:%66=23%:%
+%:%67=24%:%
+%:%68=25%:%
+%:%69=26%:%
+%:%70=27%:%
+%:%71=27%:%
+%:%72=28%:%
+%:%73=29%:%
+%:%76=30%:%
+%:%81=31%:%

@@ -3,21 +3,45 @@ package com.fr2501.virage.jobs;
 import com.fr2501.virage.core.VirageUserInterface;
 
 /**
- * 
- * A {@link VirageJob} used to terminate the system-
+ * A {@link VirageJob} used to terminate the system.
  *
+ * @author VeriVote
  */
-public class VirageExitJob extends VirageJobWithoutExplicitResult {
-	private int statusCode;
-	
-	public VirageExitJob(VirageUserInterface issuer, int statusCode) {
-		super(issuer);
-		
-		this.statusCode = statusCode;
-	}
-	
-	@Override
-	public void concreteExecute() {
-		this.executingCore.destroy(this.statusCode);
-	}	
+public final class VirageExitJob extends VirageJobWithoutExplicitResult {
+    /**
+     * The exit code to be given to the OS.
+     */
+    private final int statusCode;
+
+    /**
+     * Simple constructor.
+     *
+     * @param issuer the issuer
+     * @param statusCodeValue the intended exit code
+     */
+    public VirageExitJob(final VirageUserInterface issuer, final int statusCodeValue) {
+        super(issuer);
+
+        this.statusCode = statusCodeValue;
+    }
+
+    @Override
+    public void concreteExecute() {
+        this.getExecutingCore().destroy(this.statusCode);
+    }
+
+    @Override
+    public boolean externalSoftwareAvailable() {
+        return true;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Terminating ...";
+    }
+
+    @Override
+    public String presentConcreteResult() {
+        return "Terminated with exit code " + this.statusCode + ".";
+    }
 }

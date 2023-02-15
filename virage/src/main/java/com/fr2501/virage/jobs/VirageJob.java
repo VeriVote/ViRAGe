@@ -2,117 +2,222 @@ package com.fr2501.virage.jobs;
 
 import java.time.Instant;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import com.fr2501.util.SystemUtils;
 import com.fr2501.virage.core.VirageCore;
 import com.fr2501.virage.core.VirageUserInterface;
 
 /**
- * 
- * Wrapper class for all tasks to be completed by {@link com.fr2501.virage.core.VirageCore}.
- * Require a {@link VirageUserInterface} as listener.
+ * Wrapper class for all tasks to be completed by {@link com.fr2501.virage.core.VirageCore}. Require
+ * a {@link VirageUserInterface} as listener.
  *
+ * @author VeriVote
  * @param <T> the result type
  */
 public abstract class VirageJob<T> {
-	protected static final Logger logger = LogManager.getLogger(VirageJob.class);
-	private VirageUserInterface issuer;
-	
-	protected VirageCore executingCore;
-	protected VirageJobState state;
-	
-	private static long next_id = 0;
-	
-	private long id;
-	
-	private long time_issued;
-	private long time_started;
-	private long time_finished;
-	
-	public VirageJob(VirageUserInterface issuer) {
-		this.issuer = issuer;
-		this.id = VirageJob.next_id;
-		VirageJob.next_id++;
-		
-		this.time_issued = System.currentTimeMillis();
-		
-		this.state = VirageJobState.PENDING;
-	}
-	
-	/**
-	 * Runs the job and notifies its issuer on termination.
-	 * Should only be ran after checking isReadyToExecute(), otherwise behaviour is undefined.
-	 * @param core the executing core
-	 */
-	public void execute(VirageCore core) {
-		this.executingCore = core;
-		this.setState(VirageJobState.RUNNING);
-		
-		try {
-			this.concreteExecute();
-			this.setState(VirageJobState.FINISHED);
-		} catch(Exception e) {
-			logger.error("An error occured." ,e);
-			this.setState(VirageJobState.FAILED);
-		}
-		
-		this.issuer.notify(this);
-	}
-	
-	/**
-	 * The actual implementation of the job's functionality
-	 * 
-	 * @throws Exception which will be caught by the {@link com.fr2501.virage.core.VirageCore} object
-	 */
-	protected abstract void concreteExecute() throws Exception;
-	
-	public abstract T getResult();
-	
-	public synchronized VirageJobState getState() {
-		return this.state;
-	}
-	
-	/**
-	 * Sets the current state, also updates the timestamps if applicable.
-	 * @param state the new state
-	 */
-	public void setState(VirageJobState state) {
-		if(state == VirageJobState.RUNNING) {
-			this.time_started = System.currentTimeMillis();
-		} else if(state == VirageJobState.FAILED || state == VirageJobState.FINISHED) {
-			this.time_finished = System.currentTimeMillis();
-		}
-		
-		this.state = state;
-	}
-	
-	/**
-	 * Halts execution until this is finished ({@link VirageJobState#FINISHED} or {@link VirageJobState#FAILED})
-	 */
-	public void waitFor() {
-		while(true) {
-			boolean finished = false;
-			synchronized(this) {
-				finished = (this.getState() != VirageJobState.PENDING && this.getState() != VirageJobState.RUNNING);
-			}
-			
-			if(finished) return;
-		}
-	}
-	
-	@Override
-	public String toString() {
-		String res = "----------- " + this.getClass().getCanonicalName() + "\n";
-		res += "ID: " + this.id + "\n";
-		
-		res += "Issued: " + Instant.ofEpochMilli(time_issued).toString() + "\n";
-		res += "Started: " + Instant.ofEpochMilli(time_started).toString() + "\n";
-		res += "Finished: " + Instant.ofEpochMilli(time_finished).toString() + "\n";
-		res += "Time elapsed: " + (time_finished - time_started) + " milliseconds \n";
-		res += "-----\n";
-		res += "State: " + this.state + "\n";
-	
-		return res;
-	}
+    /**
+     * The next available ID for a new job.
+     */
+    private static long nextID;
+
+    /**
+     * The core object executing this job.
+     */
+    private VirageCore executingCore;
+
+    /**
+     * The current state of this job.
+     */
+    private VirageJobState state;
+
+    /**
+     * The issuing ui.
+     */
+    private final VirageUserInterface issuer;
+
+    /**
+     * The ID of this job.
+     */
+    private final long id;
+
+    /**
+     * Time when this job was accepted by a core.
+     */
+    private final long timeIssued;
+
+    /**
+     * Starting time of this job.
+     */
+    private long timeStarted;
+
+    /**
+     * Finishing time of this job.
+     */
+    private long timeFinished;
+    /**
+     * Simple constructor.
+     *
+     * @param issuerValue the issuing ui
+     */
+    public VirageJob(final VirageUserInterface issuerValue) {
+        this.issuer = issuerValue;
+        this.id = VirageJob.nextID;
+        VirageJob.nextID++;
+
+        this.timeIssued = System.currentTimeMillis();
+
+        this.state = VirageJobState.PENDING;
+    }
+    /**
+     * Runs the job and notifies its issuer on termination. Should only be ran after checking
+     * isReadyToExecute(), otherwise behaviour is undefined.
+     *
+     * @param core the executing core
+     */
+    public void execute(final VirageCore core) {
+        this.executingCore = core;
+        this.setState(VirageJobState.RUNNING);
+
+        try {
+            this.concreteExecute();
+            this.setState(VirageJobState.FINISHED);
+            // this.concreteExecute() can throw virtually any runtime exception.
+        } catch (final Exception e) {
+            e.printStackTrace();
+            this.setState(VirageJobState.FAILED);
+        }
+    }
+
+    /**
+     * Checks whether all required external dependencies are satisfied.
+     * @return true if they are, false otherwise
+     */
+    public abstract boolean externalSoftwareAvailable();
+
+    /**
+     * Returns a description of the job's task.
+     * @return the description
+     */
+    public abstract String getDescription();
+
+    /**
+     * Returns the result of this job, if one is available.
+     * @return the result
+     */
+    public abstract T getResult();
+
+    public final synchronized VirageJobState getState() {
+        return this.state;
+    }
+
+    /**
+     * Pretty-printed result of this job.
+     * @return a pretty-printed String
+     */
+    public abstract String presentConcreteResult();
+
+    /**
+     * Pretty-print job, safe to override.
+     * @return a pretty-printed String representation of this job
+     */
+    public String presentResult() {
+        String res = "";
+
+        final float timeInMs = this.timeFinished - this.timeStarted;
+        final float timeInS = timeInMs / 1000;
+
+        res += "Started at " + SystemUtils.getTime() + ".\n";
+        res += "Job ran for " + String.format("%.2f", timeInS) + " seconds.\n";
+
+        if (this.state == VirageJobState.FINISHED) {
+            res += this.presentConcreteResult() + System.lineSeparator();
+        } else {
+            res += "Something went wrong while executing this job.\n";
+        }
+
+        res += "----------";
+
+        return res;
+    }
+
+    /**
+     * Sets the current state, also updates the timestamps if applicable.
+     *
+     * @param newState the new state
+     */
+    public void setState(final VirageJobState newState) {
+        this.state = newState;
+
+        if (newState == VirageJobState.RUNNING) {
+            this.timeStarted = System.currentTimeMillis();
+        } else if (newState == VirageJobState.FAILED || newState == VirageJobState.FINISHED) {
+            this.timeFinished = System.currentTimeMillis();
+
+            this.issuer.notify(this);
+        }
+    }
+
+    /**
+     * Safe to override.
+     */
+    @Override
+    public String toString() {
+        String res = "----------- " + this.getClass().getCanonicalName() + System.lineSeparator();
+        res += "ID: " + this.id + System.lineSeparator();
+
+        res += "Issued: " + Instant.ofEpochMilli(this.timeIssued).toString()
+                + System.lineSeparator();
+        res += "Started: " + Instant.ofEpochMilli(this.timeStarted).toString()
+                + System.lineSeparator();
+        res += "Finished: " + Instant.ofEpochMilli(this.timeFinished).toString()
+                + System.lineSeparator();
+        res += "Time elapsed: " + (this.timeFinished - this.timeStarted) + " milliseconds \n";
+        res += "-----\n";
+        res += "State: " + this.state + System.lineSeparator();
+
+        return res;
+    }
+
+    /**
+     * Halts execution until this is finished ({@link VirageJobState#FINISHED} or
+     * {@link VirageJobState#FAILED}).
+     */
+    public void waitFor() {
+        while (true) {
+            boolean finished = false;
+            synchronized (this) {
+                finished = this.getState() != VirageJobState.PENDING
+                        && this.getState() != VirageJobState.RUNNING;
+            }
+
+            if (finished) {
+                return;
+            }
+
+            SystemUtils.semiBusyWaitingHelper();
+        }
+    }
+
+    /**
+     * The actual implementation of the job's functionality.
+     *
+     * @throws Exception which will be caught by the {@link com.fr2501.virage.core.VirageCore}
+     *     object
+     */
+    protected abstract void concreteExecute() throws Exception;
+
+    /**
+     * Simple getter.
+     * @return the executingCore
+     */
+    protected VirageCore getExecutingCore() {
+        return this.executingCore;
+    }
+
+    /**
+     * Simple setter.
+     * @param executingCoreValue the executingCore to set
+     */
+    protected void setExecutingCore(final VirageCore executingCoreValue) {
+        this.executingCore = executingCoreValue;
+    }
 }

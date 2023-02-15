@@ -1,0 +1,36 @@
+// To compile and run this file:
+// Copy this file, as well as all files in 'main/resources/c_implementations'
+// to a common folder. Then, gcc will mostly work as expected, with the following exceptions:
+//
+// "DEFAULT_X" defines: If a composition contains variables of type "X", these will be replaced
+// by the "DEFAULT_X" string. To instantiate these, definitions have to be passed either
+// via an additional header or via gcc option "-D DEFAULT_X="concrete implementation"",
+// where "concrete implementation" has to be supplied by the user.
+//
+// "V" and "C": These defines specify the number of Voters and Candidates. For SBMC
+// performance, these have to be known at compile time. Default values are 3 and 3,
+// but they have to fit your test instances. If the numbers don't match, segmentation
+// faults and undefined behaviour will occur. Recompile and explicitly set the correct
+// values as gcc options "-D V=x" and "-D C=x", then retry running the resulting program
+// on your instance.
+//
+// Test instances of different sizes can be found in 'test/resources/instances'.
+
+#include <stdbool.h>
+#include "types.h"
+
+$CONTENT
+
+result voting_rule(profile input) {
+  profile profile_1 = input;
+
+  result result_1;
+
+  for(int i=0; i<C; i++) {
+    result_1.values[i] = DEFERRED;
+  }
+
+  result_1 = $ENTRY;
+
+  return result_1;
+}

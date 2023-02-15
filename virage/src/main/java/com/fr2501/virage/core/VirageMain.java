@@ -3,32 +3,41 @@ package com.fr2501.virage.core;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fr2501.util.SystemUtils;
+
 /**
- * 
- * The main entry point
+ * The main entry point.
  *
+ * @author VeriVote
  */
 public class VirageMain {
-	private final static Logger logger = LogManager.getLogger(VirageMain.class);
-	
-	private final static String _NAME = "ViRAGe";
-	private final static String _VERSION = "0.1.0";
-	
-	public static void main(String[] args) {
-		logger.info("--- " + _NAME + " version " + _VERSION);
-		
-		try {
-			VirageCore core = new VirageCore(args);
-			Thread coreThread = new Thread(core, "core");
-			coreThread.start();
-			
-			while(true);
-		} catch (Exception e) {
-			logger.fatal("An unrecoverable error has occurred.", e);
-			logger.fatal("The program will now terminate.");
-		}
-		
-        logger.info("--- Terminating " + _NAME + ".");
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(VirageMain.class);
+
+    /**
+     * The main entry point for ViRAGe.
+     *
+     * @param args the command-line arguments
+     */
+    public static void main(final String[] args) {
+        try {
+            final VirageCore core = new VirageCore(args);
+            final Thread coreThread = new Thread(core, "core");
+            coreThread.start();
+
+            while (true) {
+                SystemUtils.semiBusyWaitingHelper();
+            }
+            // Last point of failure, no idea what is thrown this far.
+            // If this is ever executed, something has gone so wrong
+            // that I cannot even imagine it now, so no more specialized
+            // catch clause is possible.
+        } catch (final Exception e) {
+            LOGGER.fatal("An unrecoverable error has occurred.", e);
+            LOGGER.fatal("The program will now terminate.");
+        }
         System.exit(1);
-	}
+    }
 }

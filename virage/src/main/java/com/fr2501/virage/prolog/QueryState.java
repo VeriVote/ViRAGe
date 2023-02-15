@@ -1,13 +1,13 @@
 package com.fr2501.virage.prolog;
 
 /**
- * 
- * The different states generic queries can end with
+ * The different states generic queries can end with.
  *
+ * @author VeriVote
  */
 public enum QueryState {
-	TIMEOUT,
-	FAILED,
-	ERROR,
-	SUCCESS
+    /**
+     * Different states of a generic query.
+     */
+    TIMEOUT, FAILED, ERROR, SUCCESS
 }

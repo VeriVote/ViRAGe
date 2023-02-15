@@ -1,0 +1,5 @@
+session $SESSION_NAME = $PARENT_NAME +
+  theories
+    $THEORY_NAME
+
+export_files "*:**"
