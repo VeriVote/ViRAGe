@@ -17,16 +17,50 @@
     social choice properties.
   </description>
   <url>https://github.com/VeriVote/ViRAGe</url>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
   <organization>
     <name>Karlsruhe Institute of Technology (KIT)</name>
     <url>https://www.kit.edu</url>
   </organization>
+  <developers>
+    <developer>
+      <name>Michael Kirsten</name>
+      <email>kirsten@kit.edu</email>
+      <organization>KIT</organization>
+      <organizationUrl>https://formal.kastel.kit.edu/kirsten</organizationUrl>
+    </developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.version>3.8.1</maven.version>
+    <maven.compiler.release>11</maven.compiler.release>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
+    <exec.mainClass>com.fr2501.virage.core.VirageMain</exec.mainClass>
   </properties>
+
+  <distributionManagement>
+    <downloadUrl>https://github.com/VeriVote/ViRAGe</downloadUrl>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>virage</id>
+      <name>ViRAGe</name>
+      <url>file://${basedir}/target/deployment</url>
+      <layout>default</layout>
+    </repository>
+    <site>
+      <id>virage</id>
+      <name>ViRAGe</name>
+      <url>file://${basedir}/target/deployment/site</url>
+    </site>
+  </distributionManagement>
 
   <repositories>
     <!-- JitPack used for getting Maven packages from GitHub -->
@@ -47,47 +81,48 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>2.14.1</version>
+      <version>2.19.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.14.1</version>
+      <version>2.19.0</version>
     </dependency>
     <!-- JPL bidirectional Prolog-Java: https://github.com/SWI-Prolog/packages-jpl -->
     <dependency>
       <groupId>com.github.SWI-Prolog</groupId>
       <artifactId>packages-jpl</artifactId>
-      <version>V8.3.26</version>  <!-- version 7.6.1 of JPL -->
+      <version>V9.1.2</version>  <!-- version 7.6.1 of JPL -->
     </dependency>
     <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
     <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
-      <version>1.4</version>
+      <version>1.5.0</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.10.0</version>
+      <version>2.11.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.12.3</version>
+      <version>2.14.2</version>
     </dependency>
-    <!-- <dependency> <groupId>com.github.VeriVote</groupId> <artifactId>BEAST</artifactId> 
+    <!-- <dependency> <groupId>com.github.VeriVote</groupId> <artifactId>ViRAGe</artifactId>
       <version>master-SNAPSHOT</version> </dependency> -->
     <!-- https://mvnrepository.com/artifact/de.unruh/scala-isabelle -->
     <dependency>
       <groupId>de.unruh</groupId>
       <artifactId>scala-isabelle_2.13</artifactId>
       <version>0.3.0</version>
+      <!-- We eventually want to update, but this requires updating ScalaIsabelleFacade.java as well. -->
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-configuration2</artifactId>
-      <version>2.7</version>
+      <version>2.8.0</version>
     </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
@@ -96,12 +131,49 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>m2e</id>
+      <!--This profile is activated when eclipse interacts with
+        maven (using m2e). -->
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <!--eclipse do not support duplicated package-info.java, in both src
+              and test. -->
+            <artifactId>maven-compiler-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>default-testCompile</id>
+                <phase>test-compile</phase>
+                <configuration>
+                  <testExcludes>
+                    <exclude>**/package-info.java</exclude>
+                  </testExcludes>
+                </configuration>
+                <goals>
+                  <goal>testCompile</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <build>
+    <finalName>ViRAGe</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.0.0-M3</version>
+        <version>3.0.0</version>
         <executions>
           <execution>
             <id>enforce-maven</id>
@@ -111,7 +183,7 @@
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.1.0</version>
+                  <version>3.3.9</version>
                 </requireMavenVersion>
               </rules>
             </configuration>
@@ -126,6 +198,25 @@
         <Multi-Release>true</Multi-Release> </manifestEntries> </transformer> <transformer 
         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" 
         /> </transformers> </configuration> </execution> </executions> </plugin> -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>2.8.1</version>
+        <configuration>
+          <rulesUri>file:///${basedir}/rules.xml</rulesUri>
+          <allowSnapshots>false</allowSnapshots>
+          <generateBackupPoms>false</generateBackupPoms>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>display-dependency-updates</goal>
+              <goal>display-plugin-updates</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>properties-maven-plugin</artifactId>
@@ -214,11 +305,14 @@
         <plugin>
           <artifactId>maven-site-plugin</artifactId>
           <version>3.9.1</version>
+          <configuration>
+            <locales>en</locales>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>3.1.2</version>
           <configuration>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
             <includeResources>true</includeResources>
@@ -233,11 +327,72 @@
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>8.44</version>
+              <version>10.7.0</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>4.7.2.1</version>
+          <configuration>
+            <plugins>
+              <plugin>
+                <groupId>com.h3xstream.findsecbugs</groupId>
+                <artifactId>findsecbugs-plugin</artifactId>
+                <version>1.12.0</version>
+              </plugin>
+            </plugins>
+          </configuration>
+          <dependencies>
+            <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
+            <dependency>
+              <groupId>com.github.spotbugs</groupId>
+              <artifactId>spotbugs</artifactId>
+              <version>4.7.3</version>
             </dependency>
           </dependencies>
         </plugin>
       </plugins>
     </pluginManagement>
   </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>3.4.2</version>
+        <reportSets>
+          <reportSet>
+            <reports><!-- select reports -->
+              <report>index</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>checkstyle</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.7.2.1</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>spotbugs</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
