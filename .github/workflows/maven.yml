@@ -46,12 +46,12 @@ jobs:
       run: mvn -B verify checkstyle:checkstyle
     - uses: jwgmeligmeyling/checkstyle-github-action@master
       with:
-        path: '**/checkstyle-result.xml'
+        path: '**/virage/checkstyle-result.xml'
     - name: Build and SpotBugs with Maven
       run: mvn -B verify spotbugs:spotbugs
     - uses: jwgmeligmeyling/spotbugs-github-action@master
       with:
-        path: '**/spotbugs-result.xml'
+        path: '**/virage/spotbugs-result.xml'
 
     # Optional: Uploads the full dependency graph to GitHub to improve
     # the quality of Dependabot alerts this repository can receive
