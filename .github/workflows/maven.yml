@@ -51,7 +51,7 @@ jobs:
       run: mvn -B verify spotbugs:spotbugs
     - uses: jwgmeligmeyling/spotbugs-github-action@master
       with:
-        path: '**/spotbugs-result.xml'
+        path: '**/spotbugs.xml'
 
     # Optional: Uploads the full dependency graph to GitHub to improve
     # the quality of Dependabot alerts this repository can receive
