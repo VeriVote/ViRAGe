@@ -129,6 +129,11 @@
       <artifactId>commons-beanutils</artifactId>
       <version>1.9.4</version>
     </dependency>
+    <dependency>
+      <groupId>com.github.ferstl</groupId>
+      <artifactId>depgraph-maven-plugin</artifactId>
+      <version>4.0.2</version>
+    </dependency>
   </dependencies>
 
   <profiles>
@@ -279,7 +284,7 @@
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.2.0</version>
         </plugin>
         <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
         <plugin>
