@@ -21,6 +21,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./virage
 
     steps:
     - uses: actions/checkout@v3
@@ -31,7 +34,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file virage/pom.xml
+      run: mvn -B package --file pom.xml
 
     - uses: actions/cache@v1
       with:
