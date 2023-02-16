@@ -58,4 +58,4 @@ jobs:
     - name: Update dependency graph
       uses: advanced-security/maven-dependency-submission-action@v1
       with:
-        working-directory: ./virage
+        directory: ./virage
