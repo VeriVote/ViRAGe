@@ -26,9 +26,9 @@ jobs:
         working-directory: ./virage
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@main
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@main
       with:
         java-version: '17'
         distribution: 'temurin'
@@ -36,12 +36,13 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    - uses: actions/checkout@v2
+    - uses: actions/cache
       with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/virage/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
+        path: |
+          ${{ inputs.cache-path }}
+          ${{ inputs.cache-path-add }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-jdk${{ inputs.java-version }}-${{ inputs.java-distribution }}-maven${{ inputs.maven-version }}-${{ hashFiles('**/virage/pom.xml') }}
+        restore-keys: ${{ inputs.cache-prefix }}${{ runner.os }}-jdk${{ inputs.java-version }}-${{ inputs.java-distribution }}-maven${{ inputs.maven-version }}-
     - name: Build and Checkstyle with Maven
       run: mvn -B verify checkstyle:checkstyle
     - uses: jwgmeligmeyling/checkstyle-github-action@master
