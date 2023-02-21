@@ -114,6 +114,20 @@ public final class FrameworkRepresentation {
         this.properties = new HashSet<Property>();
     }
 
+    private static PrologPredicate addPredicateAliases(final PrologParser parser,
+                                                       final Property p, final int arity,
+                                                       final String prefix, final String alias) {
+        final List<PrologPredicate> newParams = new LinkedList<PrologPredicate>();
+        for (int j = 0; j < p.getArity(); j++) {
+            if(arity == j) {
+                newParams.add(parser.parsePredicate(alias));
+            } else {
+                newParams.add(new PrologPredicate(prefix + j));
+            }
+        }
+        return new PrologPredicate(p.getName(), newParams);
+    }
+
     /**
      * Adds a @link{Component} to the FrameworkRepresentation. Performs type check without throwing
      * any exceptions.
@@ -217,21 +231,11 @@ public final class FrameworkRepresentation {
                         continue;
                     }
 
-                    final List<PrologPredicate> newSuccParams = new LinkedList<PrologPredicate>();
-                    final List<PrologPredicate> newAnteParams = new LinkedList<PrologPredicate>();
                     final String nextFreeVariable = "ALIAS_VAR_";
-                    for (int j = 0; j < p.getArity(); j++) {
-                        if(i == j) {
-                            newSuccParams.add(parser.parsePredicate(alias));
-                            newAnteParams.add(parser.parsePredicate(aliases.get(alias)));
-                        } else {
-                            newSuccParams.add(new PrologPredicate(nextFreeVariable + j));
-                            newAnteParams.add(new PrologPredicate(nextFreeVariable + j));
-                        }
-                    }
-
-                    final PrologPredicate newSucc = new PrologPredicate(p.getName(), newSuccParams);
-                    final PrologPredicate newAnte = new PrologPredicate(p.getName(), newAnteParams);
+                    final PrologPredicate newSucc =
+                        addPredicateAliases(parser, p, i, nextFreeVariable, alias);
+                    final PrologPredicate newAnte =
+                        addPredicateAliases(parser, p, i, nextFreeVariable, aliases.get(alias));
 
                     final PrologClause clause = new PrologClause(newSucc, newAnte);
                     final CompositionRule rule = new CompositionRule(
