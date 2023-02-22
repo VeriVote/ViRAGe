@@ -175,16 +175,6 @@ public final class IsabelleProofCheckerTest {
     private File file;
 
     /**
-     * Translates a predicate to a test Prolog fact.
-     *
-     * @param pred the predicate of the composed fact
-     * @return a test String representing the composed Prolog fact
-     */
-    private static String fact(final String pred) {
-        return pred + ".";
-    }
-
-    /**
      * Translates a predicate name and arguments to a test Prolog predicate.
      *
      * @param name the predicate name of the composed predicate
@@ -200,25 +190,6 @@ public final class IsabelleProofCheckerTest {
             arg += a;
         }
         return "name" + "(" + arg + ")";
-    }
-
-    /**
-     * Translates a head predicate and various body predicates to a test Prolog clause.
-     *
-     * @param head the head predicate of the composed clause
-     * @param args the body predicates in the resulting clause
-     * @return a test String representing the composed Prolog clause
-     */
-    private static String clause(final String head, final String... args) {
-        final String sign = " :- ";
-        String body = EMPTY;
-        for (final String b : args) {
-            if (!body.isEmpty()) {
-                body += COMMA;
-            }
-            body += b;
-        }
-        return fact(head + sign + body);
     }
 
     /**

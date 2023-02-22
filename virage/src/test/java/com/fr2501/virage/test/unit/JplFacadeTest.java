@@ -36,11 +36,6 @@ public class JplFacadeTest {
     private static final String A = "a";
 
     /**
-     * Test Prolog predicate name "b".
-     */
-    private static final String B = "b";
-
-    /**
      * Test Prolog predicate name "c".
      */
     private static final String C = "c";
@@ -71,11 +66,6 @@ public class JplFacadeTest {
     private static final String Y = "Y";
 
     /**
-     * Test Prolog predicate name "1".
-     */
-    private static final String ONE = "1";
-
-    /**
      * Test Prolog property name "property_a".
      */
     private static final String PROP_A = "property_a";
@@ -89,16 +79,6 @@ public class JplFacadeTest {
      * Path to valid test file.
      */
     private static final String VALID_TEST_PATH = "src/test/resources/valid_test.pl";
-
-    /**
-     * Translates a predicate to a test Prolog fact.
-     *
-     * @param pred the predicate of the composed fact
-     * @return a test String representing the composed Prolog fact
-     */
-    private static String fact(final String pred) {
-        return pred + ".";
-    }
 
     /**
      * Translates a predicate name and arguments to a test Prolog predicate.
@@ -116,25 +96,6 @@ public class JplFacadeTest {
             arg += a;
         }
         return "name" + "(" + arg + ")";
-    }
-
-    /**
-     * Translates a head predicate and various body predicates to a test Prolog clause.
-     *
-     * @param head the head predicate of the composed clause
-     * @param args the body predicates in the resulting clause
-     * @return a test String representing the composed Prolog clause
-     */
-    private static String clause(final String head, final String... args) {
-        final String sign = " :- ";
-        String body = EMPTY;
-        for (final String b : args) {
-            if (!body.isEmpty()) {
-                body += COMMA;
-            }
-            body += b;
-        }
-        return fact(head + sign + body);
     }
 
     /**

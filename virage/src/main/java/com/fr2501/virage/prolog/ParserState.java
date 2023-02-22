@@ -10,12 +10,28 @@ public enum ParserState {
      * Several states the parser can be in, corresponding to the sections in an (E)PL file.
      */
     STARTING, FRAMEWORK_COMPONENT, COMPOSITION_TYPE,
-    /**
-     * (Checkstyle comment.
-     */
-    @Deprecated COMPOSABLE_MODULE,
+
     /**
      * Checkstyle comment.
+     * <b>Warning:</b> This was set to deprecated with no explicit justification,
+     * maybe handle with care.
      */
-    @Deprecated COMPOSITIONAL_STRUCTURE, PROPERTY, COMPOSITION_RULE,
+    COMPOSABLE_MODULE,
+
+    /**
+     * Checkstyle comment.
+     * <b>Warning:</b> This was set to deprecated with no explicit justification,
+     * maybe handle with care.
+     */
+    COMPOSITIONAL_STRUCTURE,
+
+    /**
+     * TODO.
+     */
+    PROPERTY,
+
+    /**
+     * TODO.
+     */
+    COMPOSITION_RULE,
 }

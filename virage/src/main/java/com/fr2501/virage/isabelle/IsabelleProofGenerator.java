@@ -39,6 +39,11 @@ public class IsabelleProofGenerator {
     private static final String TRUE = "true";
 
     /**
+     * A default id for proofs and goals, at least for the time being.
+     */
+    private static final String DEFAULT_ID = "0";
+
+    /**
      * Theorem name variable.
      */
     private final String varTheoremName = "$THEOREM_NAME";
@@ -116,7 +121,7 @@ public class IsabelleProofGenerator {
      * @return a String representing the proof, readable by Isabelle
      */
     public String generateIsabelleProof(final CompositionProof proof) {
-        proof.setId("0");
+        proof.setId(DEFAULT_ID);
 
         // A bit hacky
         final String[] splits = proof.getGoal().split("\\(");
@@ -173,7 +178,7 @@ public class IsabelleProofGenerator {
             assumptionString += s + "\n\t";
         }
 
-        final String subgoalIds = "0";
+        final String subgoalIds = DEFAULT_ID;
 
         return this.replaceVariables(theoremName, goal, proofSteps, subgoalIds, assumptionString);
     }

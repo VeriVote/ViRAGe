@@ -81,12 +81,12 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>2.19.0</version>
+      <version>2.20.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.19.0</version>
+      <version>2.20.0</version>
     </dependency>
     <!-- JPL bidirectional Prolog-Java: https://github.com/SWI-Prolog/packages-jpl -->
     <dependency>
@@ -116,8 +116,9 @@
     <dependency>
       <groupId>de.unruh</groupId>
       <artifactId>scala-isabelle_2.13</artifactId>
-      <version>0.3.0</version>
-      <!-- We eventually want to update, but this requires updating ScalaIsabelleFacade.java as well. -->
+      <version>0.4.1</version>
+      <!-- Minor parameter changes from 0.3.0 to 0.4.1 in constructor method, see changes in method Setup
+           that is called from ScalaIsabelleFacade.java. Generally, this should be fine -->
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -149,7 +150,7 @@
       <build>
         <plugins>
           <plugin>
-            <!--eclipse do not support duplicated package-info.java, in both src
+            <!--eclipse does not support duplicated package-info.java, in both src
               and test. -->
             <artifactId>maven-compiler-plugin</artifactId>
             <executions>
@@ -181,7 +182,7 @@
         <version>3.2.1</version>
         <executions>
           <execution>
-            <id>enforce-maven</id>
+            <id>enforce-versions</id>
             <goals>
               <goal>enforce</goal>
             </goals>
@@ -206,7 +207,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
-        <version>2.14.2</version>
+        <version>2.15.0</version>
         <configuration>
           <rulesUri>file:///${basedir}/rules.xml</rulesUri>
           <allowSnapshots>false</allowSnapshots>
@@ -236,9 +237,9 @@
               <files>
                 <file>${user.home}/.virage/settings</file>
               </files>
-              <!-- settings won't be there on first startup. -->
+              <!-- settings will not be there on first startup. -->
               <!-- This is fine, as ViRAGe will copy it and enforce a restart if 
-                necessary. -->
+                necessary. -> Is this still the case? -->
               <quiet>true</quiet>
             </configuration>
           </execution>
@@ -278,15 +279,12 @@
         </configuration>
       </plugin>
     </plugins>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven 
-        defaults (may be moved to parent pom) -->
+    <pluginManagement>
       <plugins>
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.2.0</version>
         </plugin>
-        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.3.0</version>
@@ -353,7 +351,6 @@
             </plugins>
           </configuration>
           <dependencies>
-            <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
             <dependency>
               <groupId>com.github.spotbugs</groupId>
               <artifactId>spotbugs</artifactId>
@@ -372,7 +369,7 @@
         <version>3.4.2</version>
         <reportSets>
           <reportSet>
-            <reports><!-- select reports -->
+            <reports>
               <report>index</report>
             </reports>
           </reportSet>

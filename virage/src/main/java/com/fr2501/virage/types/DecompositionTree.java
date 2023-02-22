@@ -29,9 +29,10 @@ public final class DecompositionTree {
      * Simple constructor.
      * <b>This is very easy to confuse with DecompositionTree.parseString.
      * Use DecompositionTree(label, new LinkedList...) instead.</b>
+     * <b>Warning:</b> This was set to deprecated with no explicit justification,
+     * maybe handle with care.
      * @param labelValue the label
      */
-    @Deprecated
     public DecompositionTree(final String labelValue) {
         this(labelValue, new LinkedList<DecompositionTree>());
     }

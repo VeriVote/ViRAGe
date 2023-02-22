@@ -4,10 +4,11 @@ import java.util.List;
 
 /**
  * A composable module (a special type of components) for the modular framework.
+ * <b>Warning:</b> This was set to deprecated with no explicit justification,
+ * maybe handle with care.
  *
  * @author VeriVote
  */
-@Deprecated
 public class ComposableModule extends Component {
     /**
      * Simple constructor.

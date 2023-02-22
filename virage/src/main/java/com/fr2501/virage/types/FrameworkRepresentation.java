@@ -42,6 +42,11 @@ public final class FrameworkRepresentation {
     private static final String SEPARATOR = "%%%%%%%%%%%%%%%%%%%%\n";
 
     /**
+     * This symbol marks the end of a sentence.
+     */
+    private static final String FULL_STOP = ".";
+
+    /**
      * Path to the (E)PL file.
      */
     private String absolutePath;
@@ -90,8 +95,9 @@ public final class FrameworkRepresentation {
 
     /**
      * Composable module alias.
+     * <b>Warning:</b> This was set to deprecated with no explicit justification,
+     * maybe handle with care.
      */
-    @Deprecated
     private String composableModuleAlias;
 
     /*
@@ -162,10 +168,11 @@ public final class FrameworkRepresentation {
     /**
      * Adds a @link{CompositionalStructure} to the FrameworkRepresentation Performs type check
      * without throwing any exceptions.
+     * <b>Warning:</b> This was set to deprecated with no explicit justification,
+     * maybe handle with care.
      *
      * @param cs the @link{CompositionalStructure} to be added
      */
-    @Deprecated
     public void add(final CompositionalStructure cs) {
         // this.checkTypes(cs);
         this.compositionalStructures.add(cs);
@@ -303,7 +310,7 @@ public final class FrameworkRepresentation {
         for (final ComponentType paramType : object.getParameters()) {
             if (!this.componentTypes.contains(paramType)) {
                 LOGGER.info("Added item with unknown parameter type \"" + paramType.getName()
-                        + "\" to framework.");
+                        + FULL_STOP);
             }
         }
     }
@@ -312,7 +319,7 @@ public final class FrameworkRepresentation {
         final ComponentType type = object.getType();
 
         if (!this.componentTypes.contains(type)) {
-            LOGGER.info("Added item with unknown type \"" + type.getName() + "\" to framework.");
+            LOGGER.info("Added item with unknown type \"" + type.getName() + FULL_STOP);
         }
     }
 

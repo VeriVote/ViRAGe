@@ -145,23 +145,6 @@ public abstract class CompositionAnalyzerTest {
     private static final String MONO = "monotonicity";
 
     /**
-     * String representation of SMC.
-     */
-    private static final String SMC =
-        predicate(SEQ_COMP,
-                  predicate(LOOP_COMP,
-                            predicate(PAR_COMP,
-                                      predicate(SEQ_COMP,
-                                                predicate(PASS, TWO, ANY),
-                                                predicate(SEQ_COMP,
-                                                          predicate(REV_COMP, PLURALITY),
-                                                          predicate(PASS, ONE, ANY))),
-                                      predicate(DROP, TWO, ANY),
-                                      MAX_AGG),
-                            predicate(DEF_EQ_COND, ONE)),
-                  ELECT);
-
-    /**
      * The default timeout for the tests.
      */
     private static final long DEFAULT_TIMEOUT = 10000;
@@ -187,16 +170,6 @@ public abstract class CompositionAnalyzerTest {
     private FrameworkRepresentation framework;
 
     /**
-     * Translates a predicate to a test Prolog fact.
-     *
-     * @param pred the predicate of the composed fact
-     * @return a test String representing the composed Prolog fact
-     */
-    private static String fact(final String pred) {
-        return pred + ".";
-    }
-
-    /**
      * Translates a predicate name and arguments to a test Prolog predicate.
      *
      * @param name the predicate name of the composed predicate
@@ -212,25 +185,6 @@ public abstract class CompositionAnalyzerTest {
             arg += a;
         }
         return "name" + "(" + arg + ")";
-    }
-
-    /**
-     * Translates a head predicate and various body predicates to a test Prolog clause.
-     *
-     * @param head the head predicate of the composed clause
-     * @param args the body predicates in the resulting clause
-     * @return a test String representing the composed Prolog clause
-     */
-    private static String clause(final String head, final String... args) {
-        final String sign = " :- ";
-        String body = EMPTY;
-        for (final String b : args) {
-            if (!body.isEmpty()) {
-                body += COMMA;
-            }
-            body += b;
-        }
-        return fact(head + sign + body);
     }
 
     /**

@@ -36,6 +36,7 @@ public final class JplFacade {
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getLogger(JplFacade.class);
+
     /**
      * Default timeout in milliseconds.
      */
@@ -50,6 +51,12 @@ public final class JplFacade {
      * The SWI-Prolog predicate call_with_depth_limit.
      */
     private static final String PRED_CALL_W_DEPTH_LIMIT = "call_with_depth_limit";
+
+    /**
+     * Possible Prolog query result value when depth limit is exceeded.
+     * Apparently, in this case, our approach is to increase the limit and try again.
+     */
+    private static final String DEPTH_LIMIT_EXCEEDED = "depth_limit_exceeded";
 
     /**
      * Counter to find new filenames.
@@ -160,7 +167,7 @@ public final class JplFacade {
             final Map<String, String> map) {
         final Map<String, String> result = new HashMap<String, String>();
 
-        // Look like this: ['='(_108, 1)]
+        // Looks like this: ['='(_108, 1)]
         // _NUMBER is an alias for a variable.
         String replacementString = map.get(variable);
         replacementString = StringUtils.removeWhitespace(replacementString);
@@ -340,7 +347,7 @@ public final class JplFacade {
             } else if (!result.containsKey(unusedVariable)) {
                 // Empty Map was received, timeout.
                 toReturn = new SearchResult<Boolean>(QueryState.TIMEOUT, null);
-            } else if (result.get(unusedVariable).equals("depth_limit_exceeded")) {
+            } else if (result.get(unusedVariable).equals(DEPTH_LIMIT_EXCEEDED)) {
                 // Depth limit exceeded, increase and try again.
                 maxDepth++;
                 continue;
@@ -411,7 +418,7 @@ public final class JplFacade {
                 // Empty Map was received, timeout.
                 toReturn = new SearchResult<Map<String, String>>(QueryState.TIMEOUT, null);
             } else {
-                if (result.get(unusedVariable).equals("depth_limit_exceeded")) {
+                if (result.get(unusedVariable).equals(DEPTH_LIMIT_EXCEEDED)) {
                     // Depth limit exceeded, increase and try again.
                     maxDepth++;
                     continue;

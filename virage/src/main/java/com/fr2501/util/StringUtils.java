@@ -48,15 +48,14 @@ public class StringUtils {
             return "";
         }
 
-        String res = "";
+        StringBuffer res = new StringBuffer("");
 
         for (final Object obj : c) {
-            res += obj.toString() + ",";
+            res.append(obj).append(",");
+            //+= obj.toString() + ",";
         }
 
-        res = res.substring(0, res.length() - 1);
-
-        return res;
+        return res.substring(0, res.length() - 1);
     }
 
     /**

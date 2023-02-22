@@ -35,6 +35,21 @@ import com.fr2501.virage.types.Property;
  */
 public final class IsabelleFrameworkExtractor {
     /**
+     * Regular expression for dots.
+     */
+    private static final String DOT_REGEX = "\\.";
+
+    /**
+     * Regular expression for question marks.
+     */
+    private static final String QST_REGEX = "\\?";
+
+    /**
+     * File ending for Isabelle theory files.
+     */
+    private static final String DOT_THEORY = ".thy";
+
+    /**
      * The logger.
      */
     private final Logger logger = LogManager.getRootLogger();
@@ -83,7 +98,7 @@ public final class IsabelleFrameworkExtractor {
             for (final String compNameIterated : currentThyContent.keySet()) {
                 String compName = compNameIterated;
                 final String typeString = currentThyContent.get(compName);
-                compName = compName.replace(thyName.split("\\.")[1] + ".", "");
+                compName = compName.replace(thyName.split(DOT_REGEX)[1] + ".", "");
 
                 final List<String> compType = this.parseType(typeString);
 
@@ -122,11 +137,12 @@ public final class IsabelleFrameworkExtractor {
                 sign = sign.replaceAll("[\\s]+", StringUtils.SPACE);
 
                 // Remove theory prefixes of constants
-                sign = sign.replaceAll("\\?\\?\\.\\w+\\.", "");
-                sign = sign.replaceAll("[A-Z]\\w+\\.", "");
+                sign = sign.replaceAll(QST_REGEX + QST_REGEX + DOT_REGEX + "\\w+" + DOT_REGEX, "");
+                sign = sign.replaceAll("[A-Z]\\w+" +  DOT_REGEX, "");
 
                 // Composition Rules are very limited on the operators they can contain.
-                final Pattern allowedChars = Pattern.compile("[A-Za-z0-9,_\\(\\)\\.]+");
+                final Pattern allowedChars =
+                        Pattern.compile("[A-Za-z0-9,_\\(\\)" + DOT_REGEX + "]+");
 
                 final List<String> antecedents = new LinkedList<String>();
                 String succedent = "";
@@ -166,7 +182,7 @@ public final class IsabelleFrameworkExtractor {
                 try {
                     for(final String prologString: prologStringList) {
                         final CompositionRule rule = new CompositionRule(thmName,
-                                thyName.split("\\.")[1] + ".thy",
+                                thyName.split(DOT_REGEX)[1] + DOT_THEORY,
                                 this.parser.parseSingleClause(prologString));
 
                         framework.add(rule);
@@ -543,7 +559,7 @@ public final class IsabelleFrameworkExtractor {
     private String replaceVariables(final String isaString) {
         String prologString = isaString;
 
-        final Pattern pattern = Pattern.compile("\\?[a-z0-9]+");
+        final Pattern pattern = Pattern.compile(QST_REGEX + "[a-z0-9]+");
         Matcher matcher = pattern.matcher(prologString);
         while (matcher.find()) {
             final String varName = prologString.substring(matcher.start(), matcher.end());

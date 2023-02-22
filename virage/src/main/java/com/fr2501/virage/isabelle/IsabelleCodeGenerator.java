@@ -45,43 +45,57 @@ public final class IsabelleCodeGenerator {
      * Code suffix.
      */
     private static final String CODE = "_code";
+
     /**
      * End string.
      */
     private static final String END = "end";
 
     /**
+     * File ending for template files.
+     */
+    private static final String DOT_TEMPLATE = ".template";
+
+    /**
      * Template for code export.
      */
     private static String exportTemplate = "";
+
     /**
      * Isabelle ROOT file template.
      */
     private static String rootTemplate = "";
+
     /**
      * Voting context template.
      */
     private static String votingContextTemplate = "";
+
     /**
      * Module name variable.
      */
     private static final String MODULE_NAME_VAR = "$MODULE_NAME";
+
     /**
      * Language variable.
      */
     private static final String LANGUAGE_VAR = "$LANGUAGE";
+
     /**
      * Session name variable.
      */
     private static final String SESSION_NAME_VAR = "$SESSION_NAME";
+
     /**
      * Theory name variable.
      */
     private static final String THEORY_NAME_VAR = "$THEORY_NAME";
+
     /**
      * Parameter variable.
      */
     private static final String PARAM_VAR = "$PARAMS";
+
     /**
      * Parent name variable.
      */
@@ -91,26 +105,32 @@ public final class IsabelleCodeGenerator {
      * Enum string.
      */
     private static final String ENUM = "Enum";
+
     /**
      * Enum comment.
      */
     private static final String ENUM_COMMENT = "ENUM";
+
     /**
      * HOL.equal.
      */
     private static final String EQUALITY = "HOL.equal";
+
     /**
      * Equality comment.
      */
     private static final String EQUALITY_COMMENT = "EQUALITY";
+
     /**
      * Relation string.
      */
     private static final String RELATION = "(x: Set.set[(A, A)]):";
+
     /**
      * Option1 comment.
      */
     private static final String OPTION1_COMMENT = "OPTION1";
+
     /**
      * Option2 comment.
      */
@@ -135,10 +155,12 @@ public final class IsabelleCodeGenerator {
      * The theory generator.
      */
     private final IsabelleTheoryGenerator generator;
+
     /**
      * The Isabelle theory parser.
      */
     private final IsabelleTheoryParser parser;
+
     /**
      * The file reader.
      */
@@ -166,7 +188,7 @@ public final class IsabelleCodeGenerator {
             StringWriter writer = new StringWriter();
 
             final InputStream exportTemplateStream = this.getClass().getClassLoader()
-                    .getResourceAsStream("export_code.template");
+                    .getResourceAsStream("export_code" + DOT_TEMPLATE);
             try {
                 IOUtils.copy(exportTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
@@ -176,7 +198,7 @@ public final class IsabelleCodeGenerator {
 
             writer = new StringWriter();
             final InputStream rootTemplateStream = this.getClass().getClassLoader()
-                    .getResourceAsStream("code_root.template");
+                    .getResourceAsStream("code_root" + DOT_TEMPLATE);
             try {
                 IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
@@ -186,7 +208,7 @@ public final class IsabelleCodeGenerator {
 
             writer = new StringWriter();
             final InputStream votingContextTemplateStream = this.getClass().getClassLoader()
-                    .getResourceAsStream("voting_context.template");
+                    .getResourceAsStream("voting_context" + DOT_TEMPLATE);
             try {
                 IOUtils.copy(votingContextTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
@@ -401,10 +423,12 @@ public final class IsabelleCodeGenerator {
         IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
         final String generatedPath = theory.getParent();
         final String theoryPath = new File(this.framework.getTheoryPath()).getCanonicalPath();
+        final String quickAndDirty = " -o quick_and_dirty";
+        final String outputParameter = " -D ";
 
         final String isabelleCommand = ConfigReader.getInstance().getIsabelleExecutable()
-                + " build -e -D " + generatedPath + " -D " + theoryPath + " -o quick_and_dirty -b "
-                + sessionName;
+                + " build -e" + outputParameter + generatedPath + outputParameter
+                + theoryPath + quickAndDirty + " -b " + sessionName;
 
         final int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
 

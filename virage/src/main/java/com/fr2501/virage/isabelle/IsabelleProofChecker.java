@@ -51,13 +51,25 @@ public final class IsabelleProofChecker {
     private static final Logger LOGGER = LogManager.getLogger(IsabelleProofChecker.class);
 
     /**
+     * Browser info option for command line call of Isabelle.
+     */
+    private static final String BROWSER_INFO = " -o browser_info";
+
+    /**
+     * Template file ending.
+     */
+    private static final String DOT_TEMPLATE = ".template";
+
+    /**
      * The sesion name variable.
      */
     private static final String SESSION_NAME_VAR = "$SESSION_NAME";
+
     /**
      * The theory name variable.
      */
     private static final String THEORY_NAME_VAR = "$THEORY_NAME";
+
     /**
      * The parent name variable.
      */
@@ -67,14 +79,17 @@ public final class IsabelleProofChecker {
      * The runtime.
      */
     private final Runtime runtime;
+
     /**
      * The server process.
      */
     private Process server;
+
     /**
      * The client process.
      */
     private Process client;
+
     /**
      * The client input stream.
      */
@@ -84,14 +99,17 @@ public final class IsabelleProofChecker {
      * The unique session ID.
      */
     private String sessionId;
+
     /**
      * The session name.
      */
     private String sessionName;
+
     /**
      * The theory path.
      */
     private String theoryPath;
+
     /**
      * The parent name. Defaults to "Pure" if nothing else is given.
      */
@@ -101,6 +119,7 @@ public final class IsabelleProofChecker {
      * The proof template.
      */
     private String rootTemplate = "";
+
     /**
      * The LaTeX template.
      */
@@ -115,6 +134,7 @@ public final class IsabelleProofChecker {
      * True iff verification is finished.
      */
     private boolean finished;
+
     /**
      * The last caught Isabelle event.
      */
@@ -133,7 +153,7 @@ public final class IsabelleProofChecker {
         try {
             final String clString =
                 ConfigReader.getInstance().getIsabelleExecutable()
-                + " build -o browser_info -b -D `pwd`";
+                + " build" + BROWSER_INFO + " -b -D `pwd`";
             final Process process = Runtime.getRuntime().exec(String.format(clString));
             process.waitFor();
 
@@ -143,7 +163,7 @@ public final class IsabelleProofChecker {
             if (this.rootTemplate.isEmpty()) {
                 StringWriter writer = new StringWriter();
                 final InputStream rootTemplateStream = this.getClass().getClassLoader()
-                        .getResourceAsStream("doc_root.template");
+                        .getResourceAsStream("doc_root" + DOT_TEMPLATE);
                 try {
                     IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
                 } catch (final IOException e) {
@@ -153,7 +173,7 @@ public final class IsabelleProofChecker {
 
                 writer = new StringWriter();
                 final InputStream texTemplateStream = this.getClass().getClassLoader()
-                        .getResourceAsStream("tex_root.template");
+                        .getResourceAsStream("tex_root" + DOT_TEMPLATE);
                 try {
                     IOUtils.copy(texTemplateStream, writer, StandardCharsets.UTF_8);
                 } catch (final IOException e) {
@@ -165,6 +185,18 @@ public final class IsabelleProofChecker {
             LOGGER.error(e);
             e.printStackTrace();
         }
+    }
+
+    private static String sessionAndTheoriesCommand(final String session, final boolean hasId,
+                                                    final String theoryDirectoriesOrNames,
+                                                    final boolean isDirectory) {
+        return "{\"session"
+                + (hasId ? "_id" : "")
+                + "\": \""
+                + session + "\", "
+                + "\""
+                + (isDirectory ? "dirs" : "theories")
+                + "\": [\"" + theoryDirectoriesOrNames + "\"]}";
     }
 
     /**
@@ -228,10 +260,11 @@ public final class IsabelleProofChecker {
                 + "root.tex";
         final SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(texDoc, this.texTemplate);
+        final String quickAndDirty =  " -o quick_and_dirty";
 
         final String isabelleCommand = ConfigReader.getInstance().getIsabelleExecutable()
                 + " build -e -D " + generatedPath + " -D " + localTheoryPath
-                + " -o quick_and_dirty -o browser_info -b " + adHocSessionName;
+                + quickAndDirty + BROWSER_INFO + " -b " + adHocSessionName;
 
         final int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
 
@@ -259,8 +292,9 @@ public final class IsabelleProofChecker {
 
         IsabelleClientObserver.start(this, this.client);
 
-        this.sendCommandAndWaitForTermination("session_start {\"session\":\"" + localSessionName
-                + "\"," + "\"dirs\": [\"" + localTheoryPath + "\"]}");
+        final String sessionAndTheoriesCommand =
+                sessionAndTheoriesCommand(localSessionName, false, localTheoryPath, true);
+        this.sendCommandAndWaitForTermination("session_start " + sessionAndTheoriesCommand);
         this.sessionId = this.lastEvent.getValue("session_id");
     }
 
@@ -408,8 +442,11 @@ public final class IsabelleProofChecker {
         }
 
         LOGGER.info("Starting to verify " + theory + ". This might take some time.");
-        String command = "use_theories {\"session_id\": \"" + this.sessionId + "\", "
-                + "\"theories\": [\"" + theoryPathLocal + "\"]}";
+
+        final String sessionAndTheoriesCommand =
+                sessionAndTheoriesCommand(this.sessionId, true, theoryPathLocal, false);
+
+        String command = "use_theories " + sessionAndTheoriesCommand;
         this.sendCommandAndWaitForTermination(command);
 
         final String result = this.lastEvent.getValue("ok");
@@ -431,8 +468,7 @@ public final class IsabelleProofChecker {
                     + "by employing different solvers.");
             final String errors = this.lastEvent.getValue("errors");
 
-            command = "purge_theories {\"session_id\": \"" + this.sessionId + "\", "
-                    + "\"theories\": [\"" + theoryPathLocal + "\"]}";
+            command = "purge_theories "  + sessionAndTheoriesCommand;
             this.sendCommandAndWaitForOk(command);
 
             final Pattern pattern = Pattern.compile("line=[0-9]+");

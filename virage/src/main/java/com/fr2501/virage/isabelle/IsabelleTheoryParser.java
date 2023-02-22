@@ -11,11 +11,12 @@ import com.fr2501.util.SimpleFileReader;
 import com.fr2501.util.StringUtils;
 
 /**
- * Very simple parser for Isabelle theories, nowhere near complete.
+ * Very simple parser for Isabelle theories, nowhere near to complete.
+ * <b>Warning:</b> This was set to deprecated with no explicit justification,
+ * maybe handle with care.
  *
  * @author VeriVote
  */
-@Deprecated
 public class IsabelleTheoryParser {
     /**
      * The Isabelle keyword for definitions.
@@ -29,12 +30,13 @@ public class IsabelleTheoryParser {
     /**
      * Extracts all functions and definitions from a folder or a single file of Isabelle theories
      * and maps them to the file they originate from.
+     * <b>Warning:</b> This was set to deprecated with no explicit justification,
+     * maybe handle with care.
      *
      * @param path the path
      * @return a map containing all functions and definitions and their corresponding files
      * @throws IOException if file system interaction fails
      */
-    @Deprecated
     public Map<String, String> getAllFunctionsAndDefinitions(final String path) throws IOException {
         final Map<String, String> res = new HashMap<String, String>();
 
@@ -68,7 +70,14 @@ public class IsabelleTheoryParser {
         return res;
     }
 
-    @Deprecated
+    /**
+     * This method simply collects the files from the given directory and returns them as a list.
+     * <b>Warning:</b> This was set to deprecated with no explicit justification,
+     * maybe handle with care.
+     * @param dir the given directory
+     * @return the list of contained files
+     * @throws IllegalArgumentException if given file is not a directory
+     */
     private List<File> collectContainedFiles(final File dir) {
         if (!dir.isDirectory()) {
             throw new IllegalArgumentException();
@@ -88,12 +97,13 @@ public class IsabelleTheoryParser {
 
     /**
      * This method returns a list of all imports in the given theory file.
+     * <b>Warning:</b> This was set to deprecated with no explicit justification,
+     * maybe handle with care.
      *
      * @param theory the thy-file
      * @return a list of the imports
      * @throws IOException if reading the file is not possible
      */
-    @Deprecated
     public List<String> getImportsFromTheoryFile(final File theory) throws IOException {
         final List<String> res = new LinkedList<String>();
         final SimpleFileReader reader = new SimpleFileReader();
@@ -123,6 +133,8 @@ public class IsabelleTheoryParser {
 
     /**
      * Extracts a definition from an Isabelle file.
+     * <b>Warning:</b> This was set to deprecated with no explicit justification,
+     * maybe handle with care.
      *
      * @param name the name of the definition
      * @param theory the theory file
@@ -130,7 +142,6 @@ public class IsabelleTheoryParser {
      * @throws IOException if file system interaction fails
      * @throws IllegalArgumentException if the definition is not found
      */
-    @Deprecated
     public String getDefinitionByName(final String name, final File theory) throws IOException {
         final SimpleFileReader reader = new SimpleFileReader();
 

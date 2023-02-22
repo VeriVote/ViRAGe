@@ -6,10 +6,11 @@ import com.fr2501.util.StringUtils;
 
 /**
  * A compositional structure for the modular framework.
+ * <b>Warning:</b> This was set to deprecated with no explicit justification,
+ * maybe handle with care.
  *
  * @author VeriVote
  */
-@Deprecated
 public final class CompositionalStructure implements TypedAndParameterized {
     /**
      * The name.
