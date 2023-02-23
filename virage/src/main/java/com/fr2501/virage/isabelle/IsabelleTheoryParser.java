@@ -82,16 +82,17 @@ public class IsabelleTheoryParser {
         if (!dir.isDirectory()) {
             throw new IllegalArgumentException();
         }
-
         final List<File> files = new LinkedList<File>();
-        for (final File file : dir.listFiles()) {
-            if (file.isDirectory()) {
-                files.addAll(this.collectContainedFiles(file));
-            } else {
-                files.add(file);
+        final File[] dirContent = dir.listFiles();
+        if (dirContent != null) {
+            for (final File file : dirContent) {
+                if (file.isDirectory()) {
+                    files.addAll(this.collectContainedFiles(file));
+                } else {
+                    files.add(file);
+                }
             }
         }
-
         return files;
     }
 

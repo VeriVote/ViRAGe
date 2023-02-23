@@ -15,7 +15,7 @@ public final class SimplePrologParser implements PrologParser {
             throw new IllegalArgumentException();
         }
 
-        String name = "";
+        final StringBuilder name = new StringBuilder("");
         final List<PrologPredicate> parameters = new LinkedList<PrologPredicate>();
         String currentPredicate = "";
         int level = 0;
@@ -38,7 +38,7 @@ public final class SimplePrologParser implements PrologParser {
                 }
             } else {
                 if (level == 0) {
-                    name += current;
+                    name.append(current);
                 } else if (level == 1) {
                     if (current == ',') {
                         parameters.add(this.parsePredicate(currentPredicate));
@@ -62,11 +62,11 @@ public final class SimplePrologParser implements PrologParser {
         }
 
         // Set of superfluous brackets
-        if (name.isEmpty() && parameters.size() == 1) {
+        if (name.length() == 0 && parameters.size() == 1) {
             return parameters.get(0);
         }
 
-        return new PrologPredicate(name, parameters);
+        return new PrologPredicate(name.toString(), parameters);
     }
 
     @Override

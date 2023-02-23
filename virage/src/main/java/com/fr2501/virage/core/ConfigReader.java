@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -121,6 +122,11 @@ public final class ConfigReader {
      * SWI-Prolog option to dump runtime variables.
      */
     private static final String DUMP_RUNTIME_VARIABLES = " --dump-runtime-variables";
+
+    /**
+     * THe xdg-open command. Maybe only makes real sense for unix systems, but well.
+     */
+    private static final String XDG_OPEN = "xdg-open";
 
     /**
      * Singleton instance.
@@ -270,13 +276,10 @@ public final class ConfigReader {
 
     private Pair<Boolean, List<String>> checkConfigCompatibility() throws IOException {
         final Properties oldProperties = new Properties();
-        final InputStream input = new FileInputStream(this.configFile);
-        oldProperties.load(input);
+        oldProperties.load(new FileInputStream(this.configFile));
 
         final Properties newProperties = new Properties();
-        final InputStream newPropertiesStream = this.getClass().getClassLoader()
-                .getResourceAsStream(SETTINGS);
-        newProperties.load(newPropertiesStream);
+        newProperties.load(this.getClass().getClassLoader().getResourceAsStream(SETTINGS));
 
         final List<String> missingKeys = new LinkedList<String>();
 
@@ -321,7 +324,7 @@ public final class ConfigReader {
 
         final File oldPropertiesFile = new File(virageFolderPath + "old_settings");
         if (!oldPropertiesFile.exists()) {
-            oldPropertiesFile.createNewFile();
+            Files.createFile(oldPropertiesFile.toPath());
         }
 
         writer.writeToFile(oldPropertiesFile.getAbsolutePath(), reader.readFile(this.configFile));
@@ -673,7 +676,7 @@ public final class ConfigReader {
         String editorExecutable = "";
 
         try {
-            final Process process = new ProcessBuilder("xdg-open",
+            final Process process = new ProcessBuilder(StringUtils.stripAndEscape(XDG_OPEN),
                     this.configFile.getAbsolutePath()).directory(null).start();
             process.waitFor();
             return;
@@ -692,10 +695,11 @@ public final class ConfigReader {
         } else {
             throw new ExternalSoftwareUnavailableException();
         }
-
         try {
-            final Process process = new ProcessBuilder(editorExecutable,
-                    this.configFile.getAbsolutePath()).directory(null).start();
+            final Process process =
+                    new ProcessBuilder(StringUtils.stripAndEscape(editorExecutable),
+                                       this.configFile.getAbsolutePath())
+                    .directory(null).start();
             process.waitFor();
         } catch (final InterruptedException e) {
             e.printStackTrace();
@@ -729,16 +733,14 @@ public final class ConfigReader {
         final File virageDir = new File(virageFolderPath);
         this.configFile = new File(configPath);
         if (!this.configFile.exists()) {
-            virageDir.mkdir();
-            this.configFile.createNewFile();
+            Files.createDirectory(virageDir.toPath());
+            Files.createFile(this.configFile.toPath());
             this.copyConfigToExpectedPath();
         }
 
         final Properties proposedProperties = new Properties();
 
-        final InputStream input = new FileInputStream(this.configFile);
-
-        proposedProperties.load(input);
+        proposedProperties.load(new FileInputStream(this.configFile));
 
         final var configCompatibility = this.checkConfigCompatibility();
 
@@ -779,8 +781,8 @@ public final class ConfigReader {
             replMap.put(parts[0], parts[1]);
         }
 
-        for (final String alias : replMap.keySet()) {
-            copyOfs = copyOfs.replaceAll(alias, replMap.get(alias));
+        for (final Map.Entry<String, String> aliasEntry : replMap.entrySet()) {
+            copyOfs = copyOfs.replaceAll(aliasEntry.getKey(), aliasEntry.getValue());
         }
 
         return copyOfs;

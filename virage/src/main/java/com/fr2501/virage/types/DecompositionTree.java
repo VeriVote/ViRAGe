@@ -73,7 +73,7 @@ public final class DecompositionTree {
     public static DecompositionTree parseString(final String passedString) {
         final String s = StringUtils.removeWhitespace(passedString);
 
-        String label = "";
+        final StringBuilder label = new StringBuilder("");
         final List<DecompositionTree> children = new LinkedList<DecompositionTree>();
         String currentChild = "";
         int level = 0;
@@ -96,7 +96,7 @@ public final class DecompositionTree {
                 }
             } else {
                 if (level == 0) {
-                    label += current;
+                    label.append(current);
                 } else if (level == 1) {
                     if (current == ',') {
                         children.add(DecompositionTree.parseString(currentChild));
@@ -119,7 +119,7 @@ public final class DecompositionTree {
             throw new IllegalArgumentException();
         }
 
-        return new DecompositionTree(label, children);
+        return new DecompositionTree(label.toString(), children);
     }
 
     @Override

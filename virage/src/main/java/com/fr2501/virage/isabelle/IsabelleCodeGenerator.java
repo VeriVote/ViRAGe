@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -440,15 +441,14 @@ public final class IsabelleCodeGenerator {
 
         final String codePath = generatedPath + File.separator + "export" + File.separator
                 + sessionName + "." + theoryName + File.separator + "code" + File.separator;
-        final File codeDir = new File(codePath);
-        final File[] generatedFiles = codeDir.listFiles();
+        final File[] generatedFiles = new File(codePath).listFiles();
 
         // Delete ROOT file, it has served its purpose
         final File root = new File(generatedPath + File.separator + IsabelleUtils.ROOT);
-        root.delete();
+        Files.delete(root.toPath());
 
-        // Isabelle puts everything into one file when generating Scala and OCaml code
-        return generatedFiles[0];
+        // Isabelle puts everything into one file when generating Scala or OCaml code
+        return generatedFiles != null ? generatedFiles[0] : new File(codePath);
     }
 
     // TODO Should this become public?
@@ -477,11 +477,11 @@ public final class IsabelleCodeGenerator {
 
         String newDefinition = originalDefinition.replaceAll(originalName, newName);
 
-        for (final String old : this.codeReplacements.keySet()) {
+        for (final Map.Entry<String, String> oldEntry : this.codeReplacements.entrySet()) {
             // TODO: This is wrong if names are not prefix free.
             // This should be fixed if this solution stays permanently,
             // but it is only meant as a temporary fix anyway.
-            newDefinition = newDefinition.replaceAll(old, this.codeReplacements.get(old));
+            newDefinition = newDefinition.replaceAll(oldEntry.getKey(), oldEntry.getValue());
         }
 
         String exportCommand = exportTemplate.replace(MODULE_NAME_VAR, newName);

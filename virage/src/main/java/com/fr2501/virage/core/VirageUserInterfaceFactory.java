@@ -15,15 +15,7 @@ public class VirageUserInterfaceFactory {
      * @return a user interface
      */
     public VirageUserInterface getUi(final String string, final VirageCore core) {
-        final VirageUserInterface res;
-
-        if (string.equals(VirageStrings.CLI_ARG)) {
-            res = new VirageCommandLineInterface(core);
-
-        } else {
-            res = new VirageCommandLineInterface(core);
-        }
-
-        return res;
+        // TODO: Eventually also handle distinguish string.equals(VirageStrings.CLI_ARG)
+        return new VirageCommandLineInterface(core);
     }
 }

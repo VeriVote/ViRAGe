@@ -38,9 +38,15 @@ import com.fr2501.virage.types.Parameterized;
  */
 public final class IsabelleTheoryGenerator {
     /**
+     * Name separator between theories or modules.
+     */
+    public static final String NAME_SEPARATOR = "_";
+
+    /**
      * Module name variable.
      */
     protected static final String VAR_MODULE_NAME = "$MODULE_NAME";
+
     /**
      * Module parameters variable.
      */
@@ -55,18 +61,22 @@ public final class IsabelleTheoryGenerator {
      * The theory name variable.
      */
     private static final String VAR_THEORY_NAME = "$THEORY_NAME";
+
     /**
      * The imports variable.
      */
     private static final String VAR_IMPORTS = "$IMPORTS";
+
     /**
      * The module parameter types variable.
      */
     private static final String VAR_MODULE_PARAM_TYPES = "$MODULE_PARAM_TYPES";
+
     /**
      * The module definition variable.
      */
     private static final String VAR_MODULE_DEF = "$MODULE_DEF";
+
     /**
      * The proofs variable.
      */
@@ -76,6 +86,7 @@ public final class IsabelleTheoryGenerator {
      * The name of generated theories.
      */
     private static final String THEORY_NAME = "generated_theory";
+
     /**
      * The name of generated modules.
      */
@@ -85,14 +96,17 @@ public final class IsabelleTheoryGenerator {
      * The template for generated theories.
      */
     private static String theoryTemplate = "";
+
     /**
      * Theory counter to generate unique names.
      */
     private static int theoryCounter;
+
     /**
      * Functions and definitions within the session.
      */
     private Map<String, String> functionsAndDefinitions;
+
     /**
      * The compositional framework.
      */
@@ -102,6 +116,7 @@ public final class IsabelleTheoryGenerator {
      * The associated proof generator.
      */
     private final IsabelleProofGenerator generator;
+
     /**
      * The Prolog parser.
      */
@@ -192,6 +207,17 @@ public final class IsabelleTheoryGenerator {
         return res;
     }
 
+    private String buildOutputPath(final String previousPath, final String theoryName) {
+        String outputPath = previousPath;
+        if (!outputPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
+            if (!outputPath.endsWith(File.separator)) {
+                outputPath = outputPath + File.separator;
+            }
+            outputPath = outputPath + theoryName + IsabelleUtils.FILE_EXTENSION;
+        }
+        return outputPath;
+    }
+
     /**
      * Generate an Isabelle theory file.
      *
@@ -212,81 +238,70 @@ public final class IsabelleTheoryGenerator {
      * @param proofs proofs for all the claimed properties
      * @param passedOutputPath a path to the folder to which the result shall be written. If path
      *     points to a file, this file will be overwritten and the name will most probably not
-     *     correspond to the theory inside, so Isabelle won't be able to verify it.
+     *     correspond to the theory inside, so Isabelle will not be able to verify it.
      * @return the {@link File} containing the results
      * @throws IllegalArgumentException if any of the arguments is malformed
      */
     public File generateTheoryFile(final String passedComposition,
             final List<CompositionProof> proofs, final String passedOutputPath) {
-        final String composition = StringUtils.removeWhitespace(passedComposition);
-
         this.typedVariables = new HashMap<String, String>();
-
-        final String nameSeparator = "_";
-        final String theoryName = THEORY_NAME + nameSeparator + theoryCounter;
-        final String moduleName = MODULE_NAME + nameSeparator + theoryCounter;
+        final String theoryName = THEORY_NAME + NAME_SEPARATOR + theoryCounter;
+        final String moduleName = MODULE_NAME + NAME_SEPARATOR + theoryCounter;
         theoryCounter++;
 
-        final PrologPredicate proofPredicate = this.parser.parsePredicate(composition);
+        final PrologPredicate proofPredicate =
+                this.parser.parsePredicate(StringUtils.removeWhitespace(passedComposition));
         this.replacePrologVariables(proofPredicate);
-        String moduleParameters = "";
 
         // This looks tedious, but is required to ensure correct ordering of variables in
         // definition. This assumes that variable names are given in the correct order,
         // ascending alphabetically. This might seem arbitrary, but is ensured
         // by the way IsabelleUtils.findUnusedVariables works.
         final List<String> moduleParametersList = new LinkedList<String>();
-        for (final String type : this.typedVariables.keySet()) {
-            moduleParametersList.add(this.typedVariables.get(type));
+        for (final Map.Entry<String, String> module : this.typedVariables.entrySet()) {
+            moduleParametersList.add(module.getValue());
         }
-
         Collections.sort(moduleParametersList);
-        for (final String param : moduleParametersList) {
-            moduleParameters += StringUtils.SPACE + param;
-        }
 
+        final StringBuilder moduleParameters = new StringBuilder("");
+        for (final String param : moduleParametersList) {
+            moduleParameters.append(StringUtils.SPACE + param);
+        }
         final List<String> moduleParamTypesList = new LinkedList<String>();
         for (int i = 0; i < moduleParametersList.size(); i++) {
-            for (final String type : this.typedVariables.keySet()) {
-                if (this.typedVariables.get(type).equals(moduleParametersList.get(i))) {
-                    String moduleParamType = "";
-                    // Simple types like nat don't require an "'a".
-                    if (!IsabelleUtils.isSimpleType(type)) {
-                        moduleParamType = IsabelleUtils.TYPE_ALIAS + StringUtils.SPACE;
-                    }
-
-                    moduleParamType += type + StringUtils.SPACE + IsabelleUtils.RIGHTARROW
-                            + StringUtils.SPACE;
-                    moduleParamTypesList.add(i, moduleParamType);
+            for (final Map.Entry<String, String> module : this.typedVariables.entrySet()) {
+                if (module.getValue().equals(moduleParametersList.get(i))) {
+                    final StringBuilder moduleParamType =
+                            IsabelleUtils.isSimpleType(module.getKey())
+                            ? new StringBuilder("") // Simple types like nat do not require a "'a".
+                            : new StringBuilder(IsabelleUtils.TYPE_ALIAS + StringUtils.SPACE);
+                    moduleParamType.append(module.getKey() + StringUtils.SPACE
+                                            + IsabelleUtils.RIGHTARROW + StringUtils.SPACE);
+                    moduleParamTypesList.add(i, moduleParamType.toString());
                 }
             }
         }
-
-        String moduleParamTypes = "";
+        final StringBuilder moduleParamTypes = new StringBuilder("");
         for (final String type : moduleParamTypesList) {
-            moduleParamTypes += type;
+            moduleParamTypes.append(type);
         }
-
-        String imports = this.findImportsFromCompositionRules(proofs);
-
+        final String imports = this.findImportsFromCompositionRules(proofs);
         final Map<String, Set<String>> moduleDefMap = IsabelleUtils
                 .translatePrologToIsabelle(this.functionsAndDefinitions, proofPredicate);
         if (moduleDefMap.keySet().size() != 1) {
             throw new IllegalArgumentException();
         }
-
         final Pair<String, String> moduleDefResult = this.buildModuleDef(moduleDefMap, imports);
-        final String moduleDef = moduleDefResult.getFirstValue();
-        imports = moduleDefResult.getSecondValue();
-
-        String proofsString = "";
+        final StringBuilder proofsString = new StringBuilder("");
         for (final CompositionProof proof : proofs) {
-            proofsString += this.generator.generateIsabelleProof(proof) + "\n\n";
+            proofsString.append(this.generator.generateIsabelleProof(proof) + "\n\n");
         }
 
-        final String fileContents = this.replaceVariables(theoryName, imports, moduleParamTypes,
-                moduleName, moduleParameters, moduleDef, proofsString);
-
+        final String fileContents =
+                this.replaceVariables(theoryName, moduleDefResult.getSecondValue(),
+                                      moduleParamTypes.toString(), moduleName,
+                                      moduleParameters.toString(), moduleDefResult.getFirstValue(),
+                                      proofsString.toString());
         final SimpleFileWriter writer = new SimpleFileWriter();
         final String outputPath = this.buildOutputPath(passedOutputPath, theoryName);
         try {
@@ -295,20 +310,7 @@ public final class IsabelleTheoryGenerator {
         } catch (final IOException e) {
             // NO-OP
         }
-
         return null;
-    }
-
-    private String buildOutputPath(final String previousPath, final String theoryName) {
-        String outputPath = previousPath;
-        if (!outputPath.endsWith(IsabelleUtils.FILE_EXTENSION)) {
-            if (!outputPath.endsWith(File.separator)) {
-                outputPath = outputPath + File.separator;
-            }
-            outputPath = outputPath + theoryName + IsabelleUtils.FILE_EXTENSION;
-        }
-
-        return outputPath;
     }
 
     private Pair<String, String> buildModuleDef(final Map<String, Set<String>> moduleDefMap,
@@ -318,13 +320,13 @@ public final class IsabelleTheoryGenerator {
 
         // There will be only one iteration, but it is a bit tedious to extract
         // single elements from sets.
-        for (final String string : moduleDefMap.keySet()) {
-            moduleDef = string;
+        for (final Map.Entry<String, Set<String>> entry : moduleDefMap.entrySet()) {
+            moduleDef = entry.getKey();
 
             // Additional imports might have occured, which are only relevant
             // for the definition of the module, but not used within the proofs.
             // Add those.
-            for (final String importString : moduleDefMap.get(string)) {
+            for (final String importString : entry.getValue()) {
                 final String importStringWithoutSuffix = importString
                         .replace(IsabelleUtils.FILE_EXTENSION, "");
 

@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -255,7 +256,7 @@ public final class IsabelleProofChecker {
         final String document = "document";
         final File docFolder = new File(
                 generatedPath + File.separator + document + File.separator);
-        docFolder.mkdir();
+        Files.createDirectory(docFolder.toPath());
         final String texDoc = generatedPath + File.separator + document + File.separator
                 + "root.tex";
         final SimpleFileWriter writer = new SimpleFileWriter();
@@ -305,9 +306,8 @@ public final class IsabelleProofChecker {
 
         // The server will send a message when startup is finished.
         // Contents are irrelevant, just wait for it to appear.
-        final BufferedReader reader = new BufferedReader(
-                new InputStreamReader(this.server.getInputStream()));
-        while (!reader.ready()) {
+        while (!new BufferedReader(new InputStreamReader(this.server.getInputStream(),
+                                                         StandardCharsets.UTF_8)).ready()) {
             SystemUtils.semiBusyWaitingHelper();
         }
     }
@@ -357,7 +357,8 @@ public final class IsabelleProofChecker {
             final String newTheoryPath = theoryPathWithoutSuffix + "_v" + fileVersion
                     + IsabelleUtils.FILE_EXTENSION;
 
-            final String[] splits = newTheoryPath.split(File.separator);
+            final String[] splits =
+                    newTheoryPath.split(File.separatorChar == '\\' ? "\\\\" : File.separator);
             final String newTheoryName = splits[splits.length - 1].substring(0,
                     splits[splits.length - 1].length() - 4);
 
@@ -378,10 +379,8 @@ public final class IsabelleProofChecker {
 
                         result += actualS + System.lineSeparator();
                     }
-
-                    theory.delete();
+                    Files.delete(theory.toPath());
                     writer.writeToFile(newTheoryPath, result);
-
                     return new File(newTheoryPath);
                 }
             }
@@ -393,7 +392,7 @@ public final class IsabelleProofChecker {
     }
 
     private void sendCommandAndWaitForOk(final String command) throws IOException {
-        this.clientInput.write((command + System.lineSeparator()).getBytes());
+        this.clientInput.write((command + System.lineSeparator()).getBytes(StandardCharsets.UTF_8));
         this.clientInput.flush();
 
         // TODO: There is probably a better solution for this.
@@ -405,7 +404,7 @@ public final class IsabelleProofChecker {
     }
 
     private void sendCommandAndWaitForTermination(final String command) throws IOException {
-        this.clientInput.write((command + System.lineSeparator()).getBytes());
+        this.clientInput.write((command + System.lineSeparator()).getBytes(StandardCharsets.UTF_8));
         this.clientInput.flush();
 
         this.waitForFinish();
@@ -499,6 +498,6 @@ public final class IsabelleProofChecker {
         while (!this.getFinished()) {
             SystemUtils.semiBusyWaitingHelper();
         }
-        this.finished = false;
+        this.setFinished(false);
     }
 }

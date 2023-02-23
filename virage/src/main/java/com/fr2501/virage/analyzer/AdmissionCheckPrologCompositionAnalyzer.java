@@ -92,7 +92,7 @@ public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologC
         final SearchResult<Map<String, String>> result = this.getFacade()
                 .iterativeDeepeningQuery(query);
 
-        Map<String, String> resultMap = null;
+        Map<String, String> resultMap = Map.of();
         if (result.hasValue()) {
             try {
                 resultMap = result.getValue();

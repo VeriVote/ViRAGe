@@ -1,6 +1,7 @@
 package com.fr2501.util;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,11 +31,11 @@ public class ProcessUtils {
             throws IOException, InterruptedException {
         final Runtime rt = Runtime.getRuntime();
 
-        final Process p = rt.exec(command);
+        final Process p = rt.exec(StringUtils.stripAndEscape(command));
         final int status = p.waitFor();
 
-        final String stdErr = new String(p.getErrorStream().readAllBytes());
-        final String stdOut = new String(p.getInputStream().readAllBytes());
+        final String stdErr = new String(p.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
+        final String stdOut = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
         if (!stdErr.isEmpty()) {
             LOGGER.warn(stdErr);
@@ -60,11 +61,11 @@ public class ProcessUtils {
             throws IOException, InterruptedException {
         final Runtime rt = Runtime.getRuntime();
 
-        final Process p = rt.exec(command);
+        final Process p = rt.exec(StringUtils.stripAndEscape(command));
         final int status = p.waitFor();
 
-        final String stdErr = new String(p.getErrorStream().readAllBytes());
-        final String stdOut = new String(p.getInputStream().readAllBytes());
+        final String stdErr = new String(p.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
+        final String stdOut = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
         if (!stdErr.isEmpty()) {
             System.err.print(stdErr);
@@ -90,11 +91,11 @@ public class ProcessUtils {
             throws IOException, InterruptedException {
         final Runtime rt = Runtime.getRuntime();
 
-        final Process p = rt.exec(command);
+        final Process p = rt.exec(StringUtils.stripAndEscape(command));
         p.waitFor();
 
-        final String stdErr = new String(p.getErrorStream().readAllBytes());
-        final String stdOut = new String(p.getInputStream().readAllBytes());
+        final String stdErr = new String(p.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
+        final String stdOut = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
         return new Pair<String, String>(stdOut, stdErr);
     }

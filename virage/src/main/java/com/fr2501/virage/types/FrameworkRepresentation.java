@@ -229,8 +229,9 @@ public final class FrameworkRepresentation {
                 final ComponentType propertyType = p.getParameters().get(i);
 
                 int aliasIdx = 0;
-                for (final String alias : aliases.keySet()) {
-                    final PrologPredicate aliasPredicate = parser.parsePredicate(alias);
+                for (final Map.Entry<String, String> aliasEntry : aliases.entrySet()) {
+                    final PrologPredicate aliasPredicate =
+                            parser.parsePredicate(aliasEntry.getKey());
                     final String aliasName = aliasPredicate.getName();
                     final Component aliasComponent = this.getComponent(aliasName);
 
@@ -240,9 +241,9 @@ public final class FrameworkRepresentation {
 
                     final String nextFreeVariable = "ALIAS_VAR_";
                     final PrologPredicate newSucc =
-                        addPredicateAliases(parser, p, i, nextFreeVariable, alias);
+                        addPredicateAliases(parser, p, i, nextFreeVariable, aliasEntry.getKey());
                     final PrologPredicate newAnte =
-                        addPredicateAliases(parser, p, i, nextFreeVariable, aliases.get(alias));
+                        addPredicateAliases(parser, p, i, nextFreeVariable, aliasEntry.getValue());
 
                     final PrologClause clause = new PrologClause(newSucc, newAnte);
                     final CompositionRule rule = new CompositionRule(
@@ -573,45 +574,45 @@ public final class FrameworkRepresentation {
      * @return the string representation
      */
     public String toVerboseString() {
-        String res = "";
+        final StringBuilder res = new StringBuilder("");
 
-        res += "ComponentTypes:\n";
+        res.append("ComponentTypes:\n");
         for (final ComponentType ct : this.componentTypes) {
-            res += StringUtils.indentWithTab(ct.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(ct.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        res += "Components:\n";
+        res.append("Components:\n");
         for (final Component c : this.components) {
-            res += StringUtils.indentWithTab(c.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(c.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        res += "ComposableModules:\n";
+        res.append("ComposableModules:\n");
         for (final ComposableModule cm : this.composableModules) {
-            res += StringUtils.indentWithTab(cm.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(cm.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        res += "CompositionalStructures:\n";
+        res.append("CompositionalStructures:\n");
         for (final CompositionalStructure cs : this.compositionalStructures) {
-            res += StringUtils.indentWithTab(cs.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(cs.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        res += "Property:\n";
+        res.append("Property:\n");
         for (final Property p : this.properties) {
-            res += StringUtils.indentWithTab(p.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(p.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        res += "CompositionRules:\n";
+        res.append("CompositionRules:\n");
         for (final CompositionRule cr : this.compositionRules) {
-            res += StringUtils.indentWithTab(cr.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(cr.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        return res;
+        return res.toString();
     }
 
     private synchronized void updateFile() {

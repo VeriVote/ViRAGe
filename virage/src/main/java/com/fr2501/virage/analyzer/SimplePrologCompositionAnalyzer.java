@@ -46,6 +46,11 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
     private static final Logger LOGGER = LogManager.getLogger();
 
     /**
+     * Default variable name.
+     */
+    private static final String DEFAULT_VARIABLE = "X";
+
+    /**
      * The JPL facade.
      */
     private final JplFacade facade;
@@ -140,19 +145,17 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
             }
         }
 
-        final String variable = "X";
-
         // Safety measure to ensure all properties talking about the same element.
         final List<String> propertyStrings = new LinkedList<String>();
         for (final Property property : properties) {
-            propertyStrings.add(property.getInstantiatedString(variable));
+            propertyStrings.add(property.getInstantiatedString(DEFAULT_VARIABLE));
         }
 
         final String query = StringUtils.printCollection(propertyStrings);
 
         final SearchResult<Map<String, String>> result = this.facade.iterativeDeepeningQuery(query);
 
-        Map<String, String> resultMap = null;
+        Map<String, String> resultMap = Map.of();
         if (result.hasValue()) {
             try {
                 resultMap = result.getValue();
@@ -162,7 +165,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
                 LOGGER.warn(e);
             }
 
-            final String solution = resultMap.get(variable);
+            final String solution = resultMap.get(DEFAULT_VARIABLE);
             final DecompositionTree solutionTree = DecompositionTree.parseString(solution);
 
             return new SearchResult<DecompositionTree>(result.getState(), solutionTree);
@@ -302,7 +305,7 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
                 specific = proof.getSubgoals().get(i).getGoal();
 
                 // Manual "unification"
-                for (final String key : replacements.keySet()) {
+                for (final Map.Entry<String, String> entry : replacements.entrySet()) {
                     // Some regex magic has to be done here. A variable consists of [A-Za-z0-9_] =
                     // [\\w]
                     // characters. Boundaries should not be replaced and finding out whether they
@@ -313,12 +316,12 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
                     // "a(X,X1)"
                     // would yield "a(c,c1").
                     final String nonWord = "[^\\w_]";
-                    final Pattern pattern = Pattern.compile(nonWord + key + nonWord);
+                    final Pattern pattern = Pattern.compile(nonWord + entry.getKey() + nonWord);
                     Matcher matcher = pattern.matcher(generic);
 
                     while (matcher.find()) {
                         final String start = generic.substring(0, matcher.start() + 1);
-                        final String middle = replacements.get(key);
+                        final String middle = entry.getValue();
                         final String end = generic.substring(matcher.end() - 1, generic.length());
 
                         generic = start + middle + end;

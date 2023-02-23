@@ -133,7 +133,7 @@ public class IsabelleProofGenerator {
                 + IsabelleTheoryGenerator.VAR_MODULE_PARAMETERS + ")";
 
         final Set<String> assumptions = new HashSet<String>();
-        String proofSteps = "";
+        final StringBuilder proofSteps = new StringBuilder("");
         for (final CompositionProof subgoal : proof.getAllStepsDepthFirst()) {
             if (subgoal.getAllCompositionRules().size() == 1) {
                 final CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
@@ -166,21 +166,22 @@ public class IsabelleProofGenerator {
                 }
             }
 
-            proofSteps += this.generator.generateIsabelleProofStep(subgoal);
+            proofSteps.append(this.generator.generateIsabelleProofStep(subgoal));
         }
 
         if (assumptions.isEmpty()) {
             assumptions.add(TRUE);
         }
 
-        String assumptionString = "";
+        final StringBuilder assumptionString = new StringBuilder("");
         for (final String s : assumptions) {
-            assumptionString += s + "\n\t";
+            assumptionString.append(s + "\n\t");
         }
 
         final String subgoalIds = DEFAULT_ID;
 
-        return this.replaceVariables(theoremName, goal, proofSteps, subgoalIds, assumptionString);
+        return this.replaceVariables(theoremName, goal, proofSteps.toString(),
+                                     subgoalIds, assumptionString.toString());
     }
 
     private String replaceVariables(final String theoremName, final String goal,
