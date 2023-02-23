@@ -35,6 +35,21 @@ import com.fr2501.virage.types.Property;
  */
 public final class IsabelleFrameworkExtractor {
     /**
+     * Regular expression for dots.
+     */
+    private static final String DOT_REGEX = "\\.";
+
+    /**
+     * Regular expression for question marks.
+     */
+    private static final String QST_REGEX = "\\?";
+
+    /**
+     * File ending for Isabelle theory files.
+     */
+    private static final String DOT_THEORY = ".thy";
+
+    /**
      * The logger.
      */
     private final Logger logger = LogManager.getRootLogger();
@@ -58,32 +73,31 @@ public final class IsabelleFrameworkExtractor {
     }
 
     private String buildPrologClauseString(final String succedent, final List<String> antecedents) {
-        String res = succedent;
+        final StringBuilder res = new StringBuilder(succedent);
 
         if (!antecedents.isEmpty()) {
-            res += " :- ";
+            res.append(" :- ");
 
             for (final String antecedent : antecedents) {
-                res += antecedent + ", ";
+                res.append(antecedent + ", ");
             }
 
-            res = res.substring(0, res.length() - 2);
+            res.delete(res.length() - 2, res.length() - 1);
         }
+        res.append(StringUtils.PERIOD);
 
-        res = StringUtils.appendPeriod(res);
-
-        return res;
+        return res.toString();
     }
 
     private void convertComponents(final FrameworkRepresentation framework,
             final Map<String, Map<String, String>> compsRaw) {
-        for (final String thyName : compsRaw.keySet()) {
-            final Map<String, String> currentThyContent = compsRaw.get(thyName);
+        for (final Map.Entry<String, Map<String, String>> thy : compsRaw.entrySet()) {
+            final Map<String, String> currentThyContent = thy.getValue();
 
-            for (final String compNameIterated : currentThyContent.keySet()) {
-                String compName = compNameIterated;
-                final String typeString = currentThyContent.get(compName);
-                compName = compName.replace(thyName.split("\\.")[1] + ".", "");
+            for (final Map.Entry<String, String> componentIterated : currentThyContent.entrySet()) {
+                String compName = componentIterated.getKey();
+                final String typeString = componentIterated.getValue();
+                compName = compName.replace(thy.getKey().split(DOT_REGEX)[1] + ".", "");
 
                 final List<String> compType = this.parseType(typeString);
 
@@ -115,18 +129,19 @@ public final class IsabelleFrameworkExtractor {
     private void convertCompositionRules(final FrameworkRepresentation framework,
             final Map<String, Map<String, String>> compRulesRaw) {
 
-        for (final String thyName : compRulesRaw.keySet()) {
-            thmLoop: for (final String thmName : compRulesRaw.get(thyName).keySet()) {
-                String sign = compRulesRaw.get(thyName).get(thmName);
+        for (final Map.Entry<String, Map<String, String>> thy : compRulesRaw.entrySet()) {
+            thmLoop: for (final Map.Entry<String, String> thm : thy.getValue().entrySet()) {
+                String sign = thm.getValue();
                 sign = sign.replaceAll("[\n]+", StringUtils.SPACE);
                 sign = sign.replaceAll("[\\s]+", StringUtils.SPACE);
 
                 // Remove theory prefixes of constants
-                sign = sign.replaceAll("\\?\\?\\.\\w+\\.", "");
-                sign = sign.replaceAll("[A-Z]\\w+\\.", "");
+                sign = sign.replaceAll(QST_REGEX + QST_REGEX + DOT_REGEX + "\\w+" + DOT_REGEX, "");
+                sign = sign.replaceAll("[A-Z]\\w+" +  DOT_REGEX, "");
 
                 // Composition Rules are very limited on the operators they can contain.
-                final Pattern allowedChars = Pattern.compile("[A-Za-z0-9,_\\(\\)\\.]+");
+                final Pattern allowedChars =
+                        Pattern.compile("[A-Za-z0-9,_\\(\\)" + DOT_REGEX + "]+");
 
                 final List<String> antecedents = new LinkedList<String>();
                 String succedent = "";
@@ -165,8 +180,8 @@ public final class IsabelleFrameworkExtractor {
 
                 try {
                     for(final String prologString: prologStringList) {
-                        final CompositionRule rule = new CompositionRule(thmName,
-                                thyName.split("\\.")[1] + ".thy",
+                        final CompositionRule rule = new CompositionRule(thm.getKey(),
+                                thy.getKey().split(DOT_REGEX)[1] + DOT_THEORY,
                                 this.parser.parseSingleClause(prologString));
 
                         framework.add(rule);
@@ -298,9 +313,9 @@ public final class IsabelleFrameworkExtractor {
         final Map<PrologPredicate, List<PrologPredicate>> res =
                     new HashMap<PrologPredicate, List<PrologPredicate>>();
 
-        for(final String inString : input.keySet()) {
-            res.put(this.parser.parsePredicate(inString),
-                    List.of(this.parser.parsePredicate(input.get(inString))));
+        for(final Map.Entry<String, String> in : input.entrySet()) {
+            res.put(this.parser.parsePredicate(in.getKey()),
+                    List.of(this.parser.parsePredicate(in.getValue())));
         }
 
         return res;
@@ -467,8 +482,8 @@ public final class IsabelleFrameworkExtractor {
     }
 
     private List<String> parseFun(final String funString) {
-        String first = "";
-        String second = "";
+        final StringBuilder first = new StringBuilder("");
+        final StringBuilder second = new StringBuilder("");
 
         int depth = 0;
         boolean readingFirst = false;
@@ -492,27 +507,27 @@ public final class IsabelleFrameworkExtractor {
             }
 
             if (readingFirst) {
-                first += current;
+                first.append(current);
             } else {
-                second += current;
+                second.append(current);
             }
         }
 
         final List<String> firstList;
         final List<String> secondList;
 
-        if (first.contains(IsabelleUtils.FUN)) {
-            firstList = this.parseFun(first);
+        if (first.toString().contains(IsabelleUtils.FUN)) {
+            firstList = this.parseFun(first.toString());
         } else {
             firstList = new LinkedList<String>();
-            firstList.add(first);
+            firstList.add(first.toString());
         }
 
-        if (second.contains(IsabelleUtils.FUN)) {
-            secondList = this.parseFun(second);
+        if (second.toString().contains(IsabelleUtils.FUN)) {
+            secondList = this.parseFun(second.toString());
         } else {
             secondList = new LinkedList<String>();
-            secondList.add(second);
+            secondList.add(second.toString());
         }
 
         firstList.addAll(secondList);
@@ -543,7 +558,7 @@ public final class IsabelleFrameworkExtractor {
     private String replaceVariables(final String isaString) {
         String prologString = isaString;
 
-        final Pattern pattern = Pattern.compile("\\?[a-z0-9]+");
+        final Pattern pattern = Pattern.compile(QST_REGEX + "[a-z0-9]+");
         Matcher matcher = pattern.matcher(prologString);
         while (matcher.find()) {
             final String varName = prologString.substring(matcher.start(), matcher.end());

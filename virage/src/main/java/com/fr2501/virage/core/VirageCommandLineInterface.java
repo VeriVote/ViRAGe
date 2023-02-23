@@ -122,11 +122,13 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
      */
     protected VirageCommandLineInterface(final VirageCore coreValue) {
         final int bufferSize = 4096;
-        this.outputWriter = new BufferedWriter(new OutputStreamWriter(System.out), bufferSize);
+        this.outputWriter =
+                new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8),
+                                   bufferSize);
 
         LOGGER.info("Initialising VirageCommandLineInterface.");
 
-        this.scanner = new Scanner(System.in);
+        this.scanner = new Scanner(System.in, StandardCharsets.UTF_8);
         this.core = coreValue;
 
         this.printSeparator(); /* ----- */
@@ -164,8 +166,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
         boolean unsafeState = false;
         try {
-            @SuppressWarnings("unused")
-            final JplFacade facade = new JplFacade();
+            // Afair, this just collects potential exceptions from attempting to construct JPL.
+            new JplFacade();
         } catch (final ExternalSoftwareUnavailableException e) {
             this.setupLibswipl();
             unsafeState = true;
@@ -476,26 +478,53 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         }
     }
 
+    /**
+     * Parse and submit the ViRAGe job, and then wait for and return the result.
+     * @param path the result path of the ViRAGe job
+     * @return the job result
+     */
+    private FrameworkRepresentation parseAndSubmitJob(final String path) {
+        final VirageParseJob parseJob = new VirageParseJob(this, new File(path));
+
+        this.displayMessage("The following operation might take some time, "
+                + "especially when ViRAGe is run with previously " + "un-built Isabelle sessions.");
+        this.core.submit(parseJob);
+        parseJob.waitFor();
+
+        // Inelegant, but prevents race condition where user prompt is printed before the result.
+        SystemUtils.semiBusyWaitingHelper();
+
+        final FrameworkRepresentation toReturn;
+        switch (parseJob.getState()) {
+        case FAILED:
+            toReturn = parseJob.getResult();
+            break;
+        default:
+            toReturn = null;
+            break;
+        }
+        return toReturn;
+    }
+
     private FrameworkRepresentation extractAndOrParseFramework(final String passedPath)
             throws IOException, ExternalSoftwareUnavailableException {
-        FrameworkRepresentation framework = null;
-        final VirageParseJob parseJob;
-
         String path = passedPath;
         if (!path.endsWith(PrologParser.PROLOG_FILE_EXTENSION)) {
             if (path.endsWith(IsabelleUtils.ROOT)) {
                 path = path.substring(0, path.length() - IsabelleUtils.ROOT.length());
             }
-
             final File file = new File(path);
             String newFileName = null;
             if (file.isDirectory()) {
-                final File[] files = file.listFiles();
-
                 final List<File> plFiles = new LinkedList<File>();
-                for (final File child : files) {
-                    if (child.getAbsolutePath().endsWith(PrologParser.PROLOG_FILE_EXTENSION)) {
-                        plFiles.add(child);
+                final File[] files = file.listFiles();
+                if (files != null) {
+                    for (final File child : files) {
+                        if (child != null
+                                && child.getAbsolutePath()
+                                .endsWith(PrologParser.PROLOG_FILE_EXTENSION)) {
+                            plFiles.add(child);
+                        }
                     }
                 }
 
@@ -519,37 +548,18 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
                 throw new ExternalSoftwareUnavailableException();
             }
-
-            final String sessionName = this.findSessionName(path);
-
-            final VirageExtractJob extractJob = new VirageExtractJob(this, path, sessionName,
-                    newFileName);
+            final VirageExtractJob extractJob =
+                    new VirageExtractJob(this, path, this.findSessionName(path), newFileName);
             this.core.submit(extractJob);
             extractJob.waitFor();
-            if (extractJob.getState().equals(VirageJobState.FAILED)) {
+            switch (extractJob.getState()) {
+            case FAILED:
                 return null;
+            default: // go on
             }
-            framework = extractJob.getResult();
-
-            parseJob = new VirageParseJob(this, new File(framework.getAbsolutePath()));
-        } else {
-            parseJob = new VirageParseJob(this, new File(path));
+            path = extractJob.getResult().getAbsolutePath();
         }
-
-        this.displayMessage("The following operation might take some time, "
-                + "especially when ViRAGe is run with previously " + "un-built Isabelle sessions.");
-        this.core.submit(parseJob);
-        parseJob.waitFor();
-
-        // Unelegant, but prevents race condition where user prompt is printed
-        // before the result.
-        SystemUtils.semiBusyWaitingHelper();
-
-        FrameworkRepresentation toReturn = null;
-        if (parseJob.getState().equals(VirageJobState.FINISHED)) {
-            toReturn = parseJob.getResult();
-        }
-        return toReturn;
+        return parseAndSubmitJob(path);
     }
 
     private String findSessionName(final String path) throws IOException {
@@ -590,8 +600,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 newFileName += ".pl";
             }
 
-            final File checkExistenceFile = new File(
-                    path + File.separator + newFileName);
+            final File checkExistenceFile = new File(path + File.separator + newFileName);
 
             if (!checkExistenceFile.exists()) {
                 break;

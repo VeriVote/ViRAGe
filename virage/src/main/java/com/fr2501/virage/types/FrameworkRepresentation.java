@@ -42,6 +42,11 @@ public final class FrameworkRepresentation {
     private static final String SEPARATOR = "%%%%%%%%%%%%%%%%%%%%\n";
 
     /**
+     * This symbol marks the end of a sentence.
+     */
+    private static final String FULL_STOP = ".";
+
+    /**
      * Path to the (E)PL file.
      */
     private String absolutePath;
@@ -90,8 +95,9 @@ public final class FrameworkRepresentation {
 
     /**
      * Composable module alias.
+     * <b>Warning:</b> This was set to deprecated with no explicit justification,
+     * maybe handle with care.
      */
-    @Deprecated
     private String composableModuleAlias;
 
     /*
@@ -112,6 +118,20 @@ public final class FrameworkRepresentation {
         this.compositionalStructures = new HashSet<CompositionalStructure>();
         this.compositionRules = new LinkedList<CompositionRule>();
         this.properties = new HashSet<Property>();
+    }
+
+    private static PrologPredicate addPredicateAliases(final PrologParser parser,
+                                                       final Property p, final int arity,
+                                                       final String prefix, final String alias) {
+        final List<PrologPredicate> newParams = new LinkedList<PrologPredicate>();
+        for (int j = 0; j < p.getArity(); j++) {
+            if(arity == j) {
+                newParams.add(parser.parsePredicate(alias));
+            } else {
+                newParams.add(new PrologPredicate(prefix + j));
+            }
+        }
+        return new PrologPredicate(p.getName(), newParams);
     }
 
     /**
@@ -148,10 +168,11 @@ public final class FrameworkRepresentation {
     /**
      * Adds a @link{CompositionalStructure} to the FrameworkRepresentation Performs type check
      * without throwing any exceptions.
+     * <b>Warning:</b> This was set to deprecated with no explicit justification,
+     * maybe handle with care.
      *
      * @param cs the @link{CompositionalStructure} to be added
      */
-    @Deprecated
     public void add(final CompositionalStructure cs) {
         // this.checkTypes(cs);
         this.compositionalStructures.add(cs);
@@ -208,8 +229,9 @@ public final class FrameworkRepresentation {
                 final ComponentType propertyType = p.getParameters().get(i);
 
                 int aliasIdx = 0;
-                for (final String alias : aliases.keySet()) {
-                    final PrologPredicate aliasPredicate = parser.parsePredicate(alias);
+                for (final Map.Entry<String, String> aliasEntry : aliases.entrySet()) {
+                    final PrologPredicate aliasPredicate =
+                            parser.parsePredicate(aliasEntry.getKey());
                     final String aliasName = aliasPredicate.getName();
                     final Component aliasComponent = this.getComponent(aliasName);
 
@@ -217,21 +239,11 @@ public final class FrameworkRepresentation {
                         continue;
                     }
 
-                    final List<PrologPredicate> newSuccParams = new LinkedList<PrologPredicate>();
-                    final List<PrologPredicate> newAnteParams = new LinkedList<PrologPredicate>();
                     final String nextFreeVariable = "ALIAS_VAR_";
-                    for (int j = 0; j < p.getArity(); j++) {
-                        if(i == j) {
-                            newSuccParams.add(parser.parsePredicate(alias));
-                            newAnteParams.add(parser.parsePredicate(aliases.get(alias)));
-                        } else {
-                            newSuccParams.add(new PrologPredicate(nextFreeVariable + j));
-                            newAnteParams.add(new PrologPredicate(nextFreeVariable + j));
-                        }
-                    }
-
-                    final PrologPredicate newSucc = new PrologPredicate(p.getName(), newSuccParams);
-                    final PrologPredicate newAnte = new PrologPredicate(p.getName(), newAnteParams);
+                    final PrologPredicate newSucc =
+                        addPredicateAliases(parser, p, i, nextFreeVariable, aliasEntry.getKey());
+                    final PrologPredicate newAnte =
+                        addPredicateAliases(parser, p, i, nextFreeVariable, aliasEntry.getValue());
 
                     final PrologClause clause = new PrologClause(newSucc, newAnte);
                     final CompositionRule rule = new CompositionRule(
@@ -299,7 +311,7 @@ public final class FrameworkRepresentation {
         for (final ComponentType paramType : object.getParameters()) {
             if (!this.componentTypes.contains(paramType)) {
                 LOGGER.info("Added item with unknown parameter type \"" + paramType.getName()
-                        + "\" to framework.");
+                        + FULL_STOP);
             }
         }
     }
@@ -308,7 +320,7 @@ public final class FrameworkRepresentation {
         final ComponentType type = object.getType();
 
         if (!this.componentTypes.contains(type)) {
-            LOGGER.info("Added item with unknown type \"" + type.getName() + "\" to framework.");
+            LOGGER.info("Added item with unknown type \"" + type.getName() + FULL_STOP);
         }
     }
 
@@ -562,45 +574,45 @@ public final class FrameworkRepresentation {
      * @return the string representation
      */
     public String toVerboseString() {
-        String res = "";
+        final StringBuilder res = new StringBuilder("");
 
-        res += "ComponentTypes:\n";
+        res.append("ComponentTypes:\n");
         for (final ComponentType ct : this.componentTypes) {
-            res += StringUtils.indentWithTab(ct.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(ct.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        res += "Components:\n";
+        res.append("Components:\n");
         for (final Component c : this.components) {
-            res += StringUtils.indentWithTab(c.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(c.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        res += "ComposableModules:\n";
+        res.append("ComposableModules:\n");
         for (final ComposableModule cm : this.composableModules) {
-            res += StringUtils.indentWithTab(cm.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(cm.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        res += "CompositionalStructures:\n";
+        res.append("CompositionalStructures:\n");
         for (final CompositionalStructure cs : this.compositionalStructures) {
-            res += StringUtils.indentWithTab(cs.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(cs.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        res += "Property:\n";
+        res.append("Property:\n");
         for (final Property p : this.properties) {
-            res += StringUtils.indentWithTab(p.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(p.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        res += "CompositionRules:\n";
+        res.append("CompositionRules:\n");
         for (final CompositionRule cr : this.compositionRules) {
-            res += StringUtils.indentWithTab(cr.toString() + System.lineSeparator());
+            res.append(StringUtils.indentWithTab(cr.toString() + System.lineSeparator()));
         }
-        res += System.lineSeparator();
+        res.append(System.lineSeparator());
 
-        return res;
+        return res.toString();
     }
 
     private synchronized void updateFile() {

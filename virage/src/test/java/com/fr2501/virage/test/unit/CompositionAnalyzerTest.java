@@ -35,6 +35,116 @@ import com.fr2501.virage.types.SearchResult;
  */
 public abstract class CompositionAnalyzerTest {
     /**
+     * Test Prolog predicate name "".
+     */
+    private static final String EMPTY = "";
+
+    /**
+     * Test Prolog predicate name ",".
+     */
+    private static final String COMMA = ",";
+
+    /**
+     * Test Prolog predicate name "\t: ".
+     */
+    private static final String TAB_COLON = "\t: ";
+
+    /**
+     * Test Prolog predicate name "_".
+     */
+    private static final String ANY = "_";
+
+    /**
+     * Test Prolog predicate name "R".
+     */
+    private static final String R = "R";
+
+    /**
+     * Test Prolog predicate name "1".
+     */
+    private static final String ONE = "1";
+
+    /**
+     * Test Prolog predicate name "2".
+     */
+    private static final String TWO = "2";
+
+    /**
+     * Test Prolog predicate name "plurality".
+     */
+    private static final String PLURALITY = "plurality";
+
+    /**
+     * Test Prolog predicate name "elect_module".
+     */
+    private static final String ELECT = "elect_module";
+
+    /**
+     * Test Prolog predicate name "max_aggregator".
+     */
+    private static final String MAX_AGG = "max_aggregator";
+
+    /**
+     * Test Prolog predicate name "defer_equal_condition".
+     */
+    private static final String DEF_EQ_COND = "defer_equal_condition";
+
+    /**
+     * Test Prolog predicate name "pass_module".
+     */
+    private static final String PASS = "pass_module";
+
+    /**
+     * Test Prolog predicate name "drop_module".
+     */
+    private static final String DROP = "drop_module";
+
+    /**
+     * Test Prolog predicate name "sequential_composition".
+     */
+    private static final String SEQ_COMP = "sequential_composition";
+
+    /**
+     * Test Prolog predicate name "revision_composition".
+     */
+    private static final String REV_COMP = "revision_composition";
+
+    /**
+     * Test Prolog predicate name "parallel_composition".
+     */
+    private static final String PAR_COMP = "parallel_composition";
+
+    /**
+     * Test Prolog predicate name "loop_composition".
+     */
+    private static final String LOOP_COMP = "loop_composition";
+
+    /**
+     * Test Prolog predicate name "defer_lift_invariance".
+     */
+    private static final String DEFER_LIFT_INV = "defer_lift_invariance";
+
+    /**
+     * Test Prolog predicate name "defers".
+     */
+    private static final String DEFERS = "defers";
+
+    /**
+     * Test Prolog predicate name "electing".
+     */
+    private static final String ELECTING = "electing";
+
+    /**
+     * Test Prolog predicate name "non_electing".
+     */
+    private static final String NON_ELECTING = "non_electing";
+
+    /**
+     * Test Prolog predicate name "monotonicity".
+     */
+    private static final String MONO = "monotonicity";
+
+    /**
      * The default timeout for the tests.
      */
     private static final long DEFAULT_TIMEOUT = 10000;
@@ -48,6 +158,7 @@ public abstract class CompositionAnalyzerTest {
      * Path to an (E)PL file.
      */
     private static final String FRAMEWORK_PATH = "src/test/resources/framework.pl";
+
     /**
      * The test data generator.
      */
@@ -57,6 +168,24 @@ public abstract class CompositionAnalyzerTest {
      * The framework representation.
      */
     private FrameworkRepresentation framework;
+
+    /**
+     * Translates a predicate name and arguments to a test Prolog predicate.
+     *
+     * @param name the predicate name of the composed predicate
+     * @param args the predicate's arguments
+     * @return a test String representing the composed Prolog predicate
+     */
+    private static String predicate(final String name, final String... args) {
+        String arg = EMPTY;
+        for (final String a : args) {
+            if (!arg.isEmpty()) {
+                arg += COMMA;
+            }
+            arg += a;
+        }
+        return "name" + "(" + arg + ")";
+    }
 
     /**
      * Performs setup for the following tests.
@@ -192,11 +321,19 @@ public abstract class CompositionAnalyzerTest {
     @Test
     public void testSequentialMajorityComparison() throws Exception {
         LOGGER.info("testSequentialMajorityComparison()");
-        final String smc = "sequential_composition(loop_composition(" + "parallel_composition("
-                + "sequential_composition(" + "pass_module(2,_),sequential_composition("
-                + "revision_composition(" + "plurality)," + "pass_module(1,_))),"
-                + "drop_module(2,_)," + "max_aggregator)," + "defer_equal_condition(1)),"
-                + "elect_module)";
+        final String smc =
+            predicate(SEQ_COMP,
+                      predicate(LOOP_COMP,
+                                predicate(PAR_COMP,
+                                          predicate(SEQ_COMP,
+                                                    predicate(PASS, TWO, ANY),
+                                                    predicate(SEQ_COMP,
+                                                              predicate(REV_COMP, PLURALITY),
+                                                              predicate(PASS, ONE, ANY))),
+                                          predicate(DROP, TWO, ANY),
+                                          MAX_AGG),
+                                predicate(DEF_EQ_COND, ONE)),
+                      ELECT);
 
         final DecompositionTree smcTree = DecompositionTree.parseString(smc);
 
@@ -204,7 +341,7 @@ public abstract class CompositionAnalyzerTest {
         analyzer.setTimeout(DEFAULT_TIMEOUT);
 
         final List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("monotonicity"));
+        properties.add(this.framework.getProperty(MONO));
 
         final List<SearchResult<BooleanWithUncertainty>> resultList = analyzer
                 .analyzeComposition(smcTree, properties);
@@ -227,9 +364,9 @@ public abstract class CompositionAnalyzerTest {
     @Test
     public void testSimpleProofs() throws IOException, ExternalSoftwareUnavailableException {
         final List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("monotonicity"));
+        properties.add(this.framework.getProperty(MONO));
 
-        final String votingRule = "sequential_composition(pass_module(1,R),elect_module)";
+        final String votingRule = predicate(SEQ_COMP, predicate(PASS, ONE, R), ELECT);
 
         final CompositionAnalyzer analyzer = this.createInstance();
 
@@ -237,15 +374,25 @@ public abstract class CompositionAnalyzerTest {
                 .proveClaims(DecompositionTree.parseString(votingRule), properties);
 
         // Prolog variable names are not always the same.
-        final String proofString = proof.get(0).toString().replaceAll("_[0-9]+", "R");
+        final String proofString = proof.get(0).toString().replaceAll("_[0-9]+", R);
 
         final String reference =
-                ": monotonicity(sequential_composition(pass_module(1,R),elect_module)) "
+                ": "
+                + predicate(MONO, predicate(SEQ_COMP, predicate(PASS, ONE, R), ELECT))
+                + " "
                 + "by seq_comp_mono\n"
-                + "\t: defer_lift_invariance(pass_module(1,R)) by pass_mod_dl_inv\n"
-                + "\t: non_electing(pass_module(1,R)) by pass_mod_non_electing\n"
-                + "\t: defers(1,pass_module(1,R)) by pass_one_mod_def_one\n"
-                + "\t: electing(elect_module) by elect_mod_electing";
+                + TAB_COLON
+                + predicate(DEFER_LIFT_INV, predicate(PASS, ONE, R))
+                + " by pass_mod_dl_inv\n"
+                + TAB_COLON
+                + predicate(NON_ELECTING, predicate(PASS, ONE, R))
+                + " by pass_mod_non_electing\n"
+                + TAB_COLON
+                + predicate(DEFERS, ONE, predicate(PASS, ONE, R))
+                + " by pass_one_mod_def_one\n"
+                + TAB_COLON
+                + predicate(ELECTING, ELECT)
+                + " by elect_mod_electing";
         LOGGER.debug(proofString);
         assertTrue(proofString.equals(reference));
     }

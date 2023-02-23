@@ -9,7 +9,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
@@ -36,9 +35,6 @@ import com.fr2501.virage.types.IsabelleBuildFailedException;
  *
  * @author VeriVote
  */
-
-// This is required due to Commons CLI still recommending the deprecated way of building Options.
-@SuppressWarnings("deprecation")
 public final class VirageCore implements Runnable {
     /**
      * The logger.
@@ -49,6 +45,11 @@ public final class VirageCore implements Runnable {
      * ViRAGe versiom.
      */
     private static final String VERSION = "0.1.0";
+
+    /**
+     * The key for the ui option.
+     */
+    private static final String UI_OPTION_KEY = "ui";
 
     /**
      * Command line argument container.
@@ -158,11 +159,10 @@ public final class VirageCore implements Runnable {
     private void init(final String[] argsValue) throws ParseException {
         this.parseCommandLine(argsValue);
 
-        // Initialise UserInterface
+        // Initialize UserInterface
         final VirageUserInterfaceFactory factory = new VirageUserInterfaceFactory();
-        final String uiString = "ui";
-        if (this.cl.hasOption(uiString)) {
-            final String value = this.cl.getOptionValue(uiString);
+        if (this.cl.hasOption(UI_OPTION_KEY)) {
+            final String value = this.cl.getOptionValue(UI_OPTION_KEY);
 
             this.ui = factory.getUi(value, this);
         } else {
@@ -262,16 +262,12 @@ public final class VirageCore implements Runnable {
 
     private void parseCommandLine(final String[] argsValue) throws ParseException {
         final Options options = new Options();
-
-        OptionBuilder.withArgName("interface");
-        OptionBuilder.hasArg();
-        OptionBuilder.withDescription("the interface to be used (supported: cli)");
-        // This looks terrible, but it is still the recommended way:
-        // https://commons.apache.org/proper/commons-cli/usage.html
-        @SuppressWarnings("all")
-        final Option ui = OptionBuilder.create("ui");
-
-        options.addOption(ui);
+        final Option uiOption =
+                Option.builder(UI_OPTION_KEY)
+                        .argName("interface").hasArg()
+                        .desc("the interface to be used (supported: cli)")
+                        .build();
+        options.addOption(uiOption);
 
         final CommandLineParser parser = new DefaultParser();
         try {
@@ -311,7 +307,7 @@ public final class VirageCore implements Runnable {
 
                     job.execute(this);
                     // Checkstyle does not like this catch-all block.
-                    // I think it's justified here, as this is the last
+                    // I think it is justified here, as this is the last
                     // reasonable point to catch exceptions without
                     // escalating to the main function and crashing the
                     // program. The type of exceptions is unknown, as

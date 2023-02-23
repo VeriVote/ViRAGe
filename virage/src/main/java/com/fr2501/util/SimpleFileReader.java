@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class SimpleFileReader {
         final List<String> res = new LinkedList<String>();
 
         try {
-            this.reader = new BufferedReader(new FileReader(file));
+            this.reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8));
 
             String line = this.reader.readLine();
             while (line != null) {

@@ -24,25 +24,144 @@ import com.fr2501.virage.types.Property;
  */
 public final class IsabelleTheoryGeneratorTest {
     /**
-     * Path to the (E)PL file.
+     * Test Prolog predicate name "".
      */
-    private static final String PATH = "src/test/resources/framework.pl";
+    private static final String EMPTY = "";
+
+    /**
+     * Test Prolog predicate name ",".
+     */
+    private static final String COMMA = ",";
+
+    /**
+     * Test Prolog predicate name "_".
+     */
+    private static final String ANY = "_";
+
+    /**
+     * Test Prolog predicate name "1".
+     */
+    private static final String ONE = "1";
+
+    /**
+     * Test Prolog predicate name "2".
+     */
+    private static final String TWO = "2";
+
+    /**
+     * Test Prolog predicate name "plurality".
+     */
+    private static final String PLURALITY = "plurality";
+
+    /**
+     * Test Prolog predicate name "elect_module".
+     */
+    private static final String ELECT = "elect_module";
+
+    /**
+     * Test Prolog predicate name "max_aggregator".
+     */
+    private static final String MAX_AGG = "max_aggregator";
+
+    /**
+     * Test Prolog predicate name "defer_equal_condition".
+     */
+    private static final String DEF_EQ_COND = "defer_equal_condition";
+
+    /**
+     * Test Prolog predicate name "pass_module".
+     */
+    private static final String PASS = "pass_module";
+
+    /**
+     * Test Prolog predicate name "drop_module".
+     */
+    private static final String DROP = "drop_module";
+
+    /**
+     * Test Prolog predicate name "sequential_composition".
+     */
+    private static final String SEQ_COMP = "sequential_composition";
+
+    /**
+     * Test Prolog predicate name "revision_composition".
+     */
+    private static final String REV_COMP = "revision_composition";
+
+    /**
+     * Test Prolog predicate name "parallel_composition".
+     */
+    private static final String PAR_COMP = "parallel_composition";
+
+    /**
+     * Test Prolog predicate name "loop_composition".
+     */
+    private static final String LOOP_COMP = "loop_composition";
+
+    /**
+     * Test Prolog predicate name "electing".
+     */
+    private static final String ELECTING = "electing";
+
+    /**
+     * Test Prolog predicate name "monotonicity".
+     */
+    private static final String MONO = "monotonicity";
+
     /**
      * String representation of SMC.
      */
-    private static final String SMC = "sequential_composition(loop_composition("
-            + "parallel_composition(" + "sequential_composition(pass_module(2,_),"
-            + "sequential_composition(revision_composition(plurality),"
-            + "pass_module(1,_)))," + "drop_module(2,_)," + "max_aggregator),"
-            + "defer_equal_condition(1))," + "elect_module)";
+    private static final String SMC =
+        predicate(SEQ_COMP,
+                  predicate(LOOP_COMP,
+                            predicate(PAR_COMP,
+                                      predicate(SEQ_COMP,
+                                                predicate(PASS, TWO, ANY),
+                                                predicate(SEQ_COMP,
+                                                          predicate(REV_COMP, PLURALITY),
+                                                          predicate(PASS, ONE, ANY))),
+                                      predicate(DROP, TWO, ANY),
+                                      MAX_AGG),
+                            predicate(DEF_EQ_COND, ONE)),
+                  ELECT);
+
+    /**
+     * Path to the resources directory.
+     */
+    private static final String RSC = "src/test/resources/";
+
+    /**
+     * Path to the (E)PL file.
+     */
+    private static final String PATH = RSC + "framework.pl";
+
     /**
      * The compositional framework.
      */
     private FrameworkRepresentation framework;
+
     /**
      * The analyzer.
      */
     private CompositionAnalyzer analyzer;
+
+    /**
+     * Translates a predicate name and arguments to a test Prolog predicate.
+     *
+     * @param name the predicate name of the composed predicate
+     * @param args the predicate's arguments
+     * @return a test String representing the composed Prolog predicate
+     */
+    private static String predicate(final String name, final String... args) {
+        String arg = EMPTY;
+        for (final String a : args) {
+            if (!arg.isEmpty()) {
+                arg += COMMA;
+            }
+            arg += a;
+        }
+        return "name" + "(" + arg + ")";
+    }
 
     /**
      * Initialization for the following tests.
@@ -67,7 +186,7 @@ public final class IsabelleTheoryGeneratorTest {
                 .proveClaims(DecompositionTree.parseString(composition), properties);
 
         final IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator(
-                "src/test/resources/theories/", this.framework);
+                RSC + "theories/", this.framework);
 
         generator.generateTheoryFile(composition, proofs);
     }
@@ -85,8 +204,11 @@ public final class IsabelleTheoryGeneratorTest {
         properties.add(this.framework.getProperty("condorcet_consistency"));
 
         this.proveClaims(properties,
-                "sequential_composition("
-                + "elimination_module(copeland_score,max,less), elect_module)");
+                         predicate(SEQ_COMP,
+                                   predicate("elimination_module",
+                                             "copeland_score",
+                                             "less"),
+                                   ELECT));
     }
 
     /**
@@ -95,10 +217,10 @@ public final class IsabelleTheoryGeneratorTest {
     @Test
     public void testSimpleProof() {
         final List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("electing"));
-        properties.add(this.framework.getProperty("monotonicity"));
+        properties.add(this.framework.getProperty(ELECTING));
+        properties.add(this.framework.getProperty(MONO));
 
-        this.proveClaims(properties, "sequential_composition(pass_module(1,_),elect_module)");
+        this.proveClaims(properties, predicate(SEQ_COMP, predicate(PASS, ONE, ANY), ELECT));
     }
 
     /**
@@ -107,8 +229,8 @@ public final class IsabelleTheoryGeneratorTest {
     @Test
     public void testSmcProof() {
         final List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("monotonicity"));
-        properties.add(this.framework.getProperty("electing"));
+        properties.add(this.framework.getProperty(MONO));
+        properties.add(this.framework.getProperty(ELECTING));
 
         this.proveClaims(properties, SMC);
     }
@@ -119,8 +241,8 @@ public final class IsabelleTheoryGeneratorTest {
     @Test
     public void testVerySimpleProof() {
         final List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("electing"));
+        properties.add(this.framework.getProperty(ELECTING));
 
-        this.proveClaims(properties, "elect_module");
+        this.proveClaims(properties, ELECT);
     }
 }

@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -137,8 +138,10 @@ public class SystemUtils {
      */
     public static void copyResourceToFile(final String resource, final String path) {
         final File newFile = new File(path);
-        if(newFile.exists()) {
-            newFile.delete();
+        try {
+            Files.deleteIfExists(newFile.toPath());
+        } catch (final IOException e1) {
+            e1.printStackTrace();
         }
 
         String content = "";

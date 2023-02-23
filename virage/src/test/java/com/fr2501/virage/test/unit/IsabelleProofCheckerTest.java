@@ -35,26 +35,127 @@ import com.fr2501.virage.types.SearchResult;
  */
 public final class IsabelleProofCheckerTest {
     /**
+     * Test Prolog predicate name "".
+     */
+    private static final String EMPTY = "";
+
+    /**
+     * Test Prolog predicate name ",".
+     */
+    private static final String COMMA = ",";
+
+    /**
+     * Test Prolog predicate name "_".
+     */
+    private static final String ANY = "_";
+
+    /**
+     * Test Prolog predicate name "1".
+     */
+    private static final String ONE = "1";
+
+    /**
+     * Test Prolog predicate name "2".
+     */
+    private static final String TWO = "2";
+
+    /**
+     * Test Prolog predicate name "plurality".
+     */
+    private static final String PLURALITY = "plurality";
+
+    /**
+     * Test Prolog predicate name "elect_module".
+     */
+    private static final String ELECT = "elect_module";
+
+    /**
+     * Test Prolog predicate name "max_aggregator".
+     */
+    private static final String MAX_AGG = "max_aggregator";
+
+    /**
+     * Test Prolog predicate name "defer_equal_condition".
+     */
+    private static final String DEF_EQ_COND = "defer_equal_condition";
+
+    /**
+     * Test Prolog predicate name "pass_module".
+     */
+    private static final String PASS = "pass_module";
+
+    /**
+     * Test Prolog predicate name "drop_module".
+     */
+    private static final String DROP = "drop_module";
+
+    /**
+     * Test Prolog predicate name "sequential_composition".
+     */
+    private static final String SEQ_COMP = "sequential_composition";
+
+    /**
+     * Test Prolog predicate name "revision_composition".
+     */
+    private static final String REV_COMP = "revision_composition";
+
+    /**
+     * Test Prolog predicate name "parallel_composition".
+     */
+    private static final String PAR_COMP = "parallel_composition";
+
+    /**
+     * Test Prolog predicate name "loop_composition".
+     */
+    private static final String LOOP_COMP = "loop_composition";
+
+    /**
+     * Test Prolog predicate name "electing".
+     */
+    private static final String ELECTING = "electing";
+
+    /**
+     * Test Prolog predicate name "monotonicity".
+     */
+    private static final String MONO = "monotonicity";
+
+    /**
+     * String representation of SMC.
+     */
+    private static final String SMC =
+        predicate(SEQ_COMP,
+                  predicate(LOOP_COMP,
+                            predicate(PAR_COMP,
+                                      predicate(SEQ_COMP,
+                                                predicate(PASS, TWO, ANY),
+                                                predicate(SEQ_COMP,
+                                                          predicate(REV_COMP, PLURALITY),
+                                                          predicate(PASS, ONE, ANY))),
+                                      predicate(DROP, TWO, ANY),
+                                      MAX_AGG),
+                            predicate(DEF_EQ_COND, ONE)),
+                  ELECT);
+
+    /**
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getLogger(IsabelleProofCheckerTest.class);
 
     /**
+     * Path to the resources directory.
+     */
+    private static final String RSC = "src/test/resources/";
+
+    /**
      * Path to an EPL file.
      */
-    private static final String EPL_PATH = "src/test/resources/framework.pl";
+    private static final String EPL_PATH = RSC + "framework.pl";
+
     /**
      * Path to Isabelle theories.
      */
-    private static final String THEORY_PATH = "src/test/resources/old_theories";
-    /**
-     * String representation of SMC.
-     */
-    private static final String SMC = "sequential_composition(" + "loop_composition("
-            + "parallel_composition(" + "sequential_composition(" + "pass_module(2,_),"
-            + "sequential_composition(" + "revision_composition(" + "plurality),"
-            + "pass_module(1,_)))," + "drop_module(2,_)," + "max_aggregator),"
-            + "defer_equal_condition(1))," + "elect_module)";
+    private static final String THEORY_PATH = RSC + "old_theories";
+
     /**
      * A compositional framework.
      */
@@ -72,6 +173,24 @@ public final class IsabelleProofCheckerTest {
      * The generated theory file.
      */
     private File file;
+
+    /**
+     * Translates a predicate name and arguments to a test Prolog predicate.
+     *
+     * @param name the predicate name of the composed predicate
+     * @param args the predicate's arguments
+     * @return a test String representing the composed Prolog predicate
+     */
+    private static String predicate(final String name, final String... args) {
+        String arg = EMPTY;
+        for (final String a : args) {
+            if (!arg.isEmpty()) {
+                arg += COMMA;
+            }
+            arg += a;
+        }
+        return "name" + "(" + arg + ")";
+    }
 
     /**
      * Initialization for the following tests.
@@ -107,9 +226,9 @@ public final class IsabelleProofCheckerTest {
     @Test
     public void simpleFrameworkTest() throws Exception {
         final List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("electing"));
+        properties.add(this.framework.getProperty(ELECTING));
 
-        this.proveClaims(properties, "elect_module");
+        this.proveClaims(properties, ELECT);
 
         final IsabelleProofChecker checker = IsabelleProofChecker
                 .getInstance(this.framework.getSessionName(), this.framework.getTheoryPath());
@@ -149,8 +268,8 @@ public final class IsabelleProofCheckerTest {
     // @Test
     public void smcTest() throws Exception {
         final List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("electing"));
-        properties.add(this.framework.getProperty("monotonicity"));
+        properties.add(this.framework.getProperty(ELECTING));
+        properties.add(this.framework.getProperty(MONO));
 
         this.proveClaims(properties, SMC);
 

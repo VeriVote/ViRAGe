@@ -115,7 +115,7 @@ public class IsabelleProofStepGenerator {
             goal = string;
         }
 
-        String subgoalIds = "";
+        final StringBuilder subgoalIds = new StringBuilder("");
         for (final CompositionProof subgoal : step.getSubgoals()) {
             if (subgoal.getAllCompositionRules().size() == 1) {
                 final CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
@@ -125,7 +125,7 @@ public class IsabelleProofStepGenerator {
                 }
             }
 
-            subgoalIds += subgoal.getId() + " ";
+            subgoalIds.append(subgoal.getId() + " ");
         }
 
         final String rule = step.getRuleName();
@@ -139,7 +139,7 @@ public class IsabelleProofStepGenerator {
         // PaMpeR?
         final String solver = "simp";
 
-        return this.replaceVariables(goalId, goal, subgoalIds, rule, solver);
+        return this.replaceVariables(goalId, goal, subgoalIds.toString(), rule, solver);
     }
 
     private String replaceVariables(final String goalId, final String goal, final String subgoalIds,

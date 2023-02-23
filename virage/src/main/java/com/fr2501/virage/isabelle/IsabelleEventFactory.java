@@ -79,8 +79,8 @@ public class IsabelleEventFactory {
             try {
                 final Map<?, ?> map = this.mapper.readValue(paramString, Map.class);
 
-                for (final Object o : map.keySet()) {
-                    res.put(o.toString(), map.get(o).toString());
+                for (final Map.Entry<?, ?> e : map.entrySet()) {
+                    res.put(e.getKey().toString(), e.getValue().toString());
                 }
 
                 return res;

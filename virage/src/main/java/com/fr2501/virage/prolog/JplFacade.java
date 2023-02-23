@@ -36,6 +36,7 @@ public final class JplFacade {
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getLogger(JplFacade.class);
+
     /**
      * Default timeout in milliseconds.
      */
@@ -50,6 +51,17 @@ public final class JplFacade {
      * The SWI-Prolog predicate call_with_depth_limit.
      */
     private static final String PRED_CALL_W_DEPTH_LIMIT = "call_with_depth_limit";
+
+    /**
+     * Possible Prolog query result value when depth limit is exceeded.
+     * Apparently, in this case, our approach is to increase the limit and try again.
+     */
+    private static final String DEPTH_LIMIT_EXCEEDED = "depth_limit_exceeded";
+
+    /**
+     * The file ending for Prolog files ('.pl').
+     */
+    private static final String DOT_PL = ".pl";
 
     /**
      * Counter to find new filenames.
@@ -160,7 +172,7 @@ public final class JplFacade {
             final Map<String, String> map) {
         final Map<String, String> result = new HashMap<String, String>();
 
-        // Look like this: ['='(_108, 1)]
+        // Looks like this: ['='(_108, 1)]
         // _NUMBER is an alias for a variable.
         String replacementString = map.get(variable);
         replacementString = StringUtils.removeWhitespace(replacementString);
@@ -192,12 +204,12 @@ public final class JplFacade {
 
             // The value might contain more commas and might thus have been split into
             // several parts.
-            String value = splits[1];
+            final StringBuilder value = new StringBuilder(splits[1]);
             for (int j = 2; j < splits.length; j++) {
-                value += PrologPredicate.SEPARATOR + splits[j];
+                value.append(PrologPredicate.SEPARATOR + splits[j]);
             }
 
-            result.put(key, value);
+            result.put(key, value.toString());
         }
 
         return result;
@@ -284,7 +296,7 @@ public final class JplFacade {
      */
     public void consultFile(final URL url) {
         try {
-            final File dest = File.createTempFile("tmp_file_" + fileCounter, ".pl");
+            final File dest = File.createTempFile("tmp_file_" + fileCounter, DOT_PL);
             fileCounter++;
             dest.deleteOnExit();
             FileUtils.copyURLToFile(url, dest);
@@ -325,8 +337,7 @@ public final class JplFacade {
                     + PrologPredicate.SEPARATOR + maxDepth + PrologPredicate.SEPARATOR
                     + unusedVariable);
 
-            Map<String, String> result = new HashMap<String, String>();
-
+            final Map<String, String> result;
             try {
                 result = this.simpleQueryWithTimeout(actualQuery, remainingTime);
             } catch (final PrologException e) {
@@ -340,7 +351,7 @@ public final class JplFacade {
             } else if (!result.containsKey(unusedVariable)) {
                 // Empty Map was received, timeout.
                 toReturn = new SearchResult<Boolean>(QueryState.TIMEOUT, null);
-            } else if (result.get(unusedVariable).equals("depth_limit_exceeded")) {
+            } else if (result.get(unusedVariable).equals(DEPTH_LIMIT_EXCEEDED)) {
                 // Depth limit exceeded, increase and try again.
                 maxDepth++;
                 continue;
@@ -395,8 +406,7 @@ public final class JplFacade {
                             + PrologPredicate.SEPARATOR
                     + maxDepth + PrologPredicate.SEPARATOR + unusedVariable);
 
-            Map<String, String> result = new HashMap<String, String>();
-
+            final Map<String, String> result;
             try {
                 result = this.simpleQueryWithTimeout(actualQuery, remainingTime);
             } catch (final PrologException e) {
@@ -411,7 +421,7 @@ public final class JplFacade {
                 // Empty Map was received, timeout.
                 toReturn = new SearchResult<Map<String, String>>(QueryState.TIMEOUT, null);
             } else {
-                if (result.get(unusedVariable).equals("depth_limit_exceeded")) {
+                if (result.get(unusedVariable).equals(DEPTH_LIMIT_EXCEEDED)) {
                     // Depth limit exceeded, increase and try again.
                     maxDepth++;
                     continue;
@@ -479,16 +489,12 @@ public final class JplFacade {
             if (query.hasMoreSolutions()) {
                 try {
                     final Map<String, Term> solution = query.nextSolution();
-
                     final Map<String, String> result = new HashMap<String, String>();
 
-                    for (final String key : solution.keySet()) {
-                        final String termString = solution.get(key).toString();
-
-                        result.put(key, termString);
-
+                    for (final Map.Entry<String, Term> entry : solution.entrySet()) {
+                        final String termString = entry.getValue().toString();
+                        result.put(entry.getKey(), termString);
                     }
-
                     return result;
                 } catch (final JPLException e) {
                     if (this.compatibilityMode) {
@@ -624,18 +630,18 @@ public final class JplFacade {
                     resultMap);
 
             final Map<String, String> res = new HashMap<String, String>();
-            for (final String replacement : replacementMap.keySet()) {
-                for (final String originalVariable : resultMap.keySet()) {
-                    if (resultMap.get(originalVariable).equals(replacement)) {
-                        res.put(originalVariable, replacementMap.get(replacement));
+            for (final Map.Entry<String, String> replacementEntry : replacementMap.entrySet()) {
+                for (final Map.Entry<String, String> originalVariableEntry : resultMap.entrySet()) {
+                    if (originalVariableEntry.getValue().equals(replacementEntry.getKey())) {
+                        res.put(originalVariableEntry.getKey(), replacementEntry.getValue());
                     }
                 }
             }
 
-            for(final String var : res.keySet()) {
-                for(final String otherVar : resultMap.keySet()) {
-                    if(res.get(var).equals(resultMap.get(otherVar))) {
-                        res.put(var, otherVar);
+            for(final Map.Entry<String, String> entry : res.entrySet()) {
+                for(final Map.Entry<String, String> otherVarEntry : resultMap.entrySet()) {
+                    if(entry.getValue().equals(otherVarEntry.getValue())) {
+                        res.put(entry.getKey(), otherVarEntry.getKey());
                     }
                 }
             }

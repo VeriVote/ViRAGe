@@ -35,12 +35,6 @@ public class IsabelleUtils {
      */
     public static final String SUCCESS_STRING = "OK ";
 
-    // TODO: Add all types
-    /**
-     * Simple types offered by Isabelle/HOL.
-     */
-    public static final String[] SIMPLE_TYPES = {"Nat.nat", "HOL.bool"};
-
     /**
      * String used by Isabelle to denote the line stating imported theories.
      */
@@ -71,6 +65,12 @@ public class IsabelleUtils {
      */
     public static final String THEORY_NAME_SEPARATOR = ".";
 
+    // TODO: Add all types
+    /**
+     * Simple types offered by Isabelle/HOL.
+     */
+    private static final String[] SIMPLE_TYPES = {"Nat.nat", "HOL.bool"};
+
     /**
      * This method tries, along with other things, to match Prolog predicates to Isabelle entities.
      * It is case-insensitive, so no two Isabelle entities may share the same name with different
@@ -96,10 +96,10 @@ public class IsabelleUtils {
             final String match = res.substring(matcher.start(), matcher.end());
             String replacement = match;
 
-            for (final String string : functionsAndDefinitions.keySet()) {
-                if (string.equalsIgnoreCase(match)) {
-                    replacement = string;
-                    requiredFiles.add(functionsAndDefinitions.get(string));
+            for (final Map.Entry<String, String> entry : functionsAndDefinitions.entrySet()) {
+                if (entry.getKey().equalsIgnoreCase(match)) {
+                    replacement = entry.getKey();
+                    requiredFiles.add(entry.getValue());
                     break;
                 }
             }

@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -51,13 +52,25 @@ public final class IsabelleProofChecker {
     private static final Logger LOGGER = LogManager.getLogger(IsabelleProofChecker.class);
 
     /**
+     * Browser info option for command line call of Isabelle.
+     */
+    private static final String BROWSER_INFO = " -o browser_info";
+
+    /**
+     * Template file ending.
+     */
+    private static final String DOT_TEMPLATE = ".template";
+
+    /**
      * The sesion name variable.
      */
     private static final String SESSION_NAME_VAR = "$SESSION_NAME";
+
     /**
      * The theory name variable.
      */
     private static final String THEORY_NAME_VAR = "$THEORY_NAME";
+
     /**
      * The parent name variable.
      */
@@ -67,14 +80,17 @@ public final class IsabelleProofChecker {
      * The runtime.
      */
     private final Runtime runtime;
+
     /**
      * The server process.
      */
     private Process server;
+
     /**
      * The client process.
      */
     private Process client;
+
     /**
      * The client input stream.
      */
@@ -84,14 +100,17 @@ public final class IsabelleProofChecker {
      * The unique session ID.
      */
     private String sessionId;
+
     /**
      * The session name.
      */
     private String sessionName;
+
     /**
      * The theory path.
      */
     private String theoryPath;
+
     /**
      * The parent name. Defaults to "Pure" if nothing else is given.
      */
@@ -101,6 +120,7 @@ public final class IsabelleProofChecker {
      * The proof template.
      */
     private String rootTemplate = "";
+
     /**
      * The LaTeX template.
      */
@@ -115,6 +135,7 @@ public final class IsabelleProofChecker {
      * True iff verification is finished.
      */
     private boolean finished;
+
     /**
      * The last caught Isabelle event.
      */
@@ -133,7 +154,7 @@ public final class IsabelleProofChecker {
         try {
             final String clString =
                 ConfigReader.getInstance().getIsabelleExecutable()
-                + " build -o browser_info -b -D `pwd`";
+                + " build" + BROWSER_INFO + " -b -D `pwd`";
             final Process process = Runtime.getRuntime().exec(String.format(clString));
             process.waitFor();
 
@@ -143,7 +164,7 @@ public final class IsabelleProofChecker {
             if (this.rootTemplate.isEmpty()) {
                 StringWriter writer = new StringWriter();
                 final InputStream rootTemplateStream = this.getClass().getClassLoader()
-                        .getResourceAsStream("doc_root.template");
+                        .getResourceAsStream("doc_root" + DOT_TEMPLATE);
                 try {
                     IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
                 } catch (final IOException e) {
@@ -153,7 +174,7 @@ public final class IsabelleProofChecker {
 
                 writer = new StringWriter();
                 final InputStream texTemplateStream = this.getClass().getClassLoader()
-                        .getResourceAsStream("tex_root.template");
+                        .getResourceAsStream("tex_root" + DOT_TEMPLATE);
                 try {
                     IOUtils.copy(texTemplateStream, writer, StandardCharsets.UTF_8);
                 } catch (final IOException e) {
@@ -165,6 +186,18 @@ public final class IsabelleProofChecker {
             LOGGER.error(e);
             e.printStackTrace();
         }
+    }
+
+    private static String sessionAndTheoriesCommand(final String session, final boolean hasId,
+                                                    final String theoryDirectoriesOrNames,
+                                                    final boolean isDirectory) {
+        return "{\"session"
+                + (hasId ? "_id" : "")
+                + "\": \""
+                + session + "\", "
+                + "\""
+                + (isDirectory ? "dirs" : "theories")
+                + "\": [\"" + theoryDirectoriesOrNames + "\"]}";
     }
 
     /**
@@ -223,15 +256,16 @@ public final class IsabelleProofChecker {
         final String document = "document";
         final File docFolder = new File(
                 generatedPath + File.separator + document + File.separator);
-        docFolder.mkdir();
+        Files.createDirectory(docFolder.toPath());
         final String texDoc = generatedPath + File.separator + document + File.separator
                 + "root.tex";
         final SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(texDoc, this.texTemplate);
+        final String quickAndDirty =  " -o quick_and_dirty";
 
         final String isabelleCommand = ConfigReader.getInstance().getIsabelleExecutable()
                 + " build -e -D " + generatedPath + " -D " + localTheoryPath
-                + " -o quick_and_dirty -o browser_info -b " + adHocSessionName;
+                + quickAndDirty + BROWSER_INFO + " -b " + adHocSessionName;
 
         final int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
 
@@ -259,8 +293,9 @@ public final class IsabelleProofChecker {
 
         IsabelleClientObserver.start(this, this.client);
 
-        this.sendCommandAndWaitForTermination("session_start {\"session\":\"" + localSessionName
-                + "\"," + "\"dirs\": [\"" + localTheoryPath + "\"]}");
+        final String sessionAndTheoriesCommand =
+                sessionAndTheoriesCommand(localSessionName, false, localTheoryPath, true);
+        this.sendCommandAndWaitForTermination("session_start " + sessionAndTheoriesCommand);
         this.sessionId = this.lastEvent.getValue("session_id");
     }
 
@@ -271,9 +306,8 @@ public final class IsabelleProofChecker {
 
         // The server will send a message when startup is finished.
         // Contents are irrelevant, just wait for it to appear.
-        final BufferedReader reader = new BufferedReader(
-                new InputStreamReader(this.server.getInputStream()));
-        while (!reader.ready()) {
+        while (!new BufferedReader(new InputStreamReader(this.server.getInputStream(),
+                                                         StandardCharsets.UTF_8)).ready()) {
             SystemUtils.semiBusyWaitingHelper();
         }
     }
@@ -323,7 +357,8 @@ public final class IsabelleProofChecker {
             final String newTheoryPath = theoryPathWithoutSuffix + "_v" + fileVersion
                     + IsabelleUtils.FILE_EXTENSION;
 
-            final String[] splits = newTheoryPath.split(File.separator);
+            final String[] splits =
+                    newTheoryPath.split(File.separatorChar == '\\' ? "\\\\" : File.separator);
             final String newTheoryName = splits[splits.length - 1].substring(0,
                     splits[splits.length - 1].length() - 4);
 
@@ -344,10 +379,8 @@ public final class IsabelleProofChecker {
 
                         result += actualS + System.lineSeparator();
                     }
-
-                    theory.delete();
+                    Files.delete(theory.toPath());
                     writer.writeToFile(newTheoryPath, result);
-
                     return new File(newTheoryPath);
                 }
             }
@@ -359,7 +392,7 @@ public final class IsabelleProofChecker {
     }
 
     private void sendCommandAndWaitForOk(final String command) throws IOException {
-        this.clientInput.write((command + System.lineSeparator()).getBytes());
+        this.clientInput.write((command + System.lineSeparator()).getBytes(StandardCharsets.UTF_8));
         this.clientInput.flush();
 
         // TODO: There is probably a better solution for this.
@@ -371,7 +404,7 @@ public final class IsabelleProofChecker {
     }
 
     private void sendCommandAndWaitForTermination(final String command) throws IOException {
-        this.clientInput.write((command + System.lineSeparator()).getBytes());
+        this.clientInput.write((command + System.lineSeparator()).getBytes(StandardCharsets.UTF_8));
         this.clientInput.flush();
 
         this.waitForFinish();
@@ -408,8 +441,11 @@ public final class IsabelleProofChecker {
         }
 
         LOGGER.info("Starting to verify " + theory + ". This might take some time.");
-        String command = "use_theories {\"session_id\": \"" + this.sessionId + "\", "
-                + "\"theories\": [\"" + theoryPathLocal + "\"]}";
+
+        final String sessionAndTheoriesCommand =
+                sessionAndTheoriesCommand(this.sessionId, true, theoryPathLocal, false);
+
+        String command = "use_theories " + sessionAndTheoriesCommand;
         this.sendCommandAndWaitForTermination(command);
 
         final String result = this.lastEvent.getValue("ok");
@@ -431,8 +467,7 @@ public final class IsabelleProofChecker {
                     + "by employing different solvers.");
             final String errors = this.lastEvent.getValue("errors");
 
-            command = "purge_theories {\"session_id\": \"" + this.sessionId + "\", "
-                    + "\"theories\": [\"" + theoryPathLocal + "\"]}";
+            command = "purge_theories "  + sessionAndTheoriesCommand;
             this.sendCommandAndWaitForOk(command);
 
             final Pattern pattern = Pattern.compile("line=[0-9]+");
@@ -463,6 +498,6 @@ public final class IsabelleProofChecker {
         while (!this.getFinished()) {
             SystemUtils.semiBusyWaitingHelper();
         }
-        this.finished = false;
+        this.setFinished(false);
     }
 }

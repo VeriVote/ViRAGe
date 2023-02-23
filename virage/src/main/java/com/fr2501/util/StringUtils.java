@@ -11,16 +11,59 @@ import java.util.regex.Pattern;
  * @author VeriVote
  */
 public class StringUtils {
-
     /**
      * Checkstyle pleaser.
      */
     public static final String SPACE = " ";
 
     /**
+     * A period sign.
+     */
+    public static final String PERIOD = ".";
+
+    /**
+     * A tab sign.
+     */
+    public static final String TAB = "\t";
+
+    /**
      * Checkstyle pleaser.
      */
     public static final String ESCAPED_QUOTATION_MARK = "\"";
+
+    /**
+     * Base 64 hexadecimal code.
+     */
+    private static final int BASE_64 = 0x10000;
+
+    /**
+     * Strip the given command String.
+     * @param command the potentially dangerous command String
+     * @return the stripped command String
+     */
+    public static String strip(final String command) {
+        return command.replaceAll("[;&amp;|`]*", "");
+    }
+
+    /**
+     * Escape the given command String.
+     * @param command the potentially dangerous command String
+     * @return the escaped command String
+     */
+    public static String escape(final String command) {
+        return  command.replaceAll("[;&|`]+",
+                                   "\\u" + Integer.toHexString('/' | BASE_64)
+                                           .substring(1));
+    }
+
+    /**
+     * Sanitize a given command String to avoid code injections or similar.
+     * @param command the potentially dangerous command String
+     * @return the sanitized command String
+     */
+    public static String stripAndEscape(final String command) {
+        return escape(strip(command)).replaceAll("[\r\n]", "");
+    }
 
     /**
      * Checks whether a String is a number.
@@ -48,15 +91,11 @@ public class StringUtils {
             return "";
         }
 
-        String res = "";
-
+        final StringBuilder res = new StringBuilder("");
         for (final Object obj : c) {
-            res += obj.toString() + ",";
+            res.append(obj).append(",");
         }
-
-        res = res.substring(0, res.length() - 1);
-
-        return res;
+        return res.deleteCharAt(res.length() - 1).toString();
     }
 
     /**
@@ -103,7 +142,7 @@ public class StringUtils {
      * @return \ts
      */
     public static String indentWithTab(final String s) {
-        return "\t" + s;
+        return TAB + s;
     }
 
     /**
@@ -112,6 +151,6 @@ public class StringUtils {
      * @return s.
      */
     public static String appendPeriod(final String s) {
-        return s + ".";
+        return s + PERIOD;
     }
 }

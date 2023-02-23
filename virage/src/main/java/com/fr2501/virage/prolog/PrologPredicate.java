@@ -209,18 +209,15 @@ public final class PrologPredicate {
             if (other.parameters != null) {
                 return false;
             }
-        }
-
-        if (this.parameters.size() != other.parameters.size()) {
+        } else if (this.parameters.size() != other.parameters.size()) {
             return false;
-        }
-
-        for (int i = 0; i < this.parameters.size(); i++) {
-            if (!this.parameters.get(i).equals(other.parameters.get(i))) {
-                return false;
+        } else {
+            for (int i = 0; i < this.parameters.size(); i++) {
+                if (!this.parameters.get(i).equals(other.parameters.get(i))) {
+                    return false;
+                }
             }
         }
-
         return true;
     }
 }

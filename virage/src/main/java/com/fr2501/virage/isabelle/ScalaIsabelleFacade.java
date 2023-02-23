@@ -119,7 +119,7 @@ public final class ScalaIsabelleFacade {
                 new Some<Path>(Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
                 Path.of(sessionDirValue),
                 JavaConverters.asScalaIteratorConverter(sessionDirs.iterator()).asScala().toSeq(),
-                true, null);
+                true, true /*try verbose first*/, null, null /* try to get away with null first */);
 
         try {
             isabelle = new Isabelle(this.setup);
@@ -164,7 +164,7 @@ public final class ScalaIsabelleFacade {
                 new Some<Path>(Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
                 Path.of(sessionDir),
                 JavaConverters.asScalaIteratorConverter(sessionDirs.iterator()).asScala().toSeq(),
-                true, null);
+                true, true /*try verbose first*/, null, null /* try to get away with null first */);
 
         try {
             isabelle = new Isabelle(setup);
