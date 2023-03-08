@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.fr2501.virage</groupId>
+  <groupId>edu.kit.kastel.formal.virage</groupId>
   <artifactId>ViRAGe</artifactId>
   <version>0.1.0</version>
 
@@ -43,7 +43,7 @@
     <maven.compiler.release>11</maven.compiler.release>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <exec.mainClass>com.fr2501.virage.core.VirageMain</exec.mainClass>
+    <exec.mainClass>edu.kit.kastel.formal.virage.core.VirageMain</exec.mainClass>
   </properties>
 
   <distributionManagement>
@@ -92,7 +92,7 @@
     <dependency>
       <groupId>com.github.SWI-Prolog</groupId>
       <artifactId>packages-jpl</artifactId>
-      <version>V9.1.6</version>  <!-- version 7.6.1 of JPL -->
+      <version>V9.1.7</version>  <!-- version 7.6.1 of JPL -->
     </dependency>
     <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
     <dependency>
@@ -200,7 +200,7 @@
         <version>3.2.4</version> <executions> <execution> <phase>package</phase> 
         <goals> <goal>shade</goal> </goals> <configuration> <transformers> <transformer 
         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> 
-        <mainClass>com.fr2501.virage.core.VirageMain</mainClass> <manifestEntries> 
+        <mainClass>edu.kit.kastel.formal.virage.core.VirageMain</mainClass> <manifestEntries> 
         <Multi-Release>true</Multi-Release> </manifestEntries> </transformer> <transformer 
         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" 
         /> </transformers> </configuration> </execution> </executions> </plugin> -->
@@ -265,7 +265,7 @@
           </execution>
         </executions>
         <configuration>
-          <mainClass>com.fr2501.virage.core.VirageMain</mainClass>
+          <mainClass>edu.kit.kastel.formal.virage.core.VirageMain</mainClass>
           <environmentVariables>
             <LD_PRELOAD>${SWI_PROLOG_LIBSWIPL_PATH}</LD_PRELOAD>
             <LD_LIBRARY_PATH>${SWI_PROLOG_LIBRARIES_PATH}</LD_LIBRARY_PATH>
@@ -274,7 +274,7 @@
           <arguments>
             <argument>-classpath</argument>
             <classpath />
-            <argument>com.fr2501.virage.core.VirageMain</argument>
+            <argument>edu.kit.kastel.formal.virage.core.VirageMain</argument>
           </arguments>
         </configuration>
       </plugin>
@@ -331,7 +331,7 @@
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>10.7.0</version>
+              <version>10.8.0</version>
             </dependency>
           </dependencies>
         </plugin>
