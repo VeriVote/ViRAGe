@@ -7,8 +7,9 @@ import edu.kit.kastel.formal.virage.core.VirageCore;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
 
 /**
- * Wrapper class for all tasks to be completed by {@link edu.kit.kastel.formal.virage.core.VirageCore}. Require
- * a {@link VirageUserInterface} as listener.
+ * Wrapper class for all tasks to be completed by
+ * {@link edu.kit.kastel.formal.virage.core.VirageCore}.
+ * Requires a {@link VirageUserInterface} as listener.
  *
  * @author VeriVote
  * @param <T> the result type
