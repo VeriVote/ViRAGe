@@ -202,7 +202,7 @@ public abstract class VirageJob<T> {
      * The actual implementation of the job's functionality.
      *
      * @throws Exception which will be caught by the
-     * {@link edu.kit.kastel.formal.virage.core.VirageCore} object
+     *     {@link edu.kit.kastel.formal.virage.core.VirageCore} object
      */
     protected abstract void concreteExecute() throws Exception;
 
