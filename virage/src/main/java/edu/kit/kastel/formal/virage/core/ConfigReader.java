@@ -276,10 +276,18 @@ public final class ConfigReader {
 
     private Pair<Boolean, List<String>> checkConfigCompatibility() throws IOException {
         final Properties oldProperties = new Properties();
-        oldProperties.load(new FileInputStream(this.configFile));
+        try (FileInputStream fis = new FileInputStream(this.configFile)) {
+            oldProperties.load(fis);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         final Properties newProperties = new Properties();
-        newProperties.load(this.getClass().getClassLoader().getResourceAsStream(SETTINGS));
+        try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(SETTINGS)) {
+            newProperties.load(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         final List<String> missingKeys = new LinkedList<String>();
 
@@ -330,7 +338,11 @@ public final class ConfigReader {
         writer.writeToFile(oldPropertiesFile.getAbsolutePath(), reader.readFile(this.configFile));
 
         final Properties oldProperties = new Properties();
-        oldProperties.load(new FileInputStream(oldPropertiesFile));
+        try (FileInputStream fis = new FileInputStream(oldPropertiesFile)) {
+            oldProperties.load(fis);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         final InputStream configFromResourcesStream = this.getClass().getClassLoader()
                 .getResourceAsStream(SETTINGS);
@@ -340,7 +352,9 @@ public final class ConfigReader {
         writer.writeToFile(this.configFile.getAbsolutePath(), stringWriter.toString());
 
         final Properties newProperties = new Properties();
-        newProperties.load(new FileInputStream(this.configFile));
+        try (FileInputStream fis = new FileInputStream(this.configFile)) {
+            newProperties.load(fis);
+        }
 
         for (final Object o : oldProperties.keySet()) {
             if (o.toString().equals("VIRAGE_CONFIG_VERSION")) {
@@ -740,7 +754,11 @@ public final class ConfigReader {
 
         final Properties proposedProperties = new Properties();
 
-        proposedProperties.load(new FileInputStream(this.configFile));
+        try (FileInputStream fis = new FileInputStream(this.configFile)) {
+            proposedProperties.load(fis);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         final var configCompatibility = this.checkConfigCompatibility();
 
@@ -757,7 +775,11 @@ public final class ConfigReader {
             }
         }
 
-        this.properties.load(new FileInputStream(this.configFile));
+        try (FileInputStream fis = new FileInputStream(this.configFile)) {
+            this.properties.load(fis);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private String replaceTypeAliases(final String s) {

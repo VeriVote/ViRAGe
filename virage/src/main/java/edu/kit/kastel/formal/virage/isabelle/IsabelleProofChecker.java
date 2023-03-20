@@ -306,9 +306,13 @@ public final class IsabelleProofChecker {
 
         // The server will send a message when startup is finished.
         // Contents are irrelevant, just wait for it to appear.
-        while (!new BufferedReader(new InputStreamReader(this.server.getInputStream(),
-                                                         StandardCharsets.UTF_8)).ready()) {
-            SystemUtils.semiBusyWaitingHelper();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                this.server.getInputStream(), StandardCharsets.UTF_8));) {
+            while (!br.ready()) {
+                SystemUtils.semiBusyWaitingHelper();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
