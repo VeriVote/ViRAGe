@@ -253,7 +253,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M5</version>
+        <version>3.0.0</version>
         <configuration>
           <!-- Unit tests take ages, deployment tests are obsolete as ViRAGe performs 
             these checks at runtime. -->
@@ -343,7 +343,7 @@
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>10.8.1</version>
+              <version>10.9.2</version>
             </dependency>
           </dependencies>
         </plugin>
