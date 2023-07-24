@@ -42,7 +42,7 @@ public class StringUtils {
      * @return the stripped command String
      */
     public static String strip(final String command) {
-        return command.replaceAll("[;&;|`]*", "");
+        return command.replaceAll("[;&|`]*", "");
     }
 
     /**
