@@ -41,10 +41,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.version>3.8.1</maven.version>
-    <maven.compiler.release>11</maven.compiler.release>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-    <jdk.version>11</jdk.version>
+    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <jdk.version>17</jdk.version>
     <exec.mainClass>edu.kit.kastel.formal.virage.core.VirageMain</exec.mainClass>
   </properties>
 
@@ -94,7 +94,7 @@
     <dependency>
       <groupId>com.github.SWI-Prolog</groupId>
       <artifactId>packages-jpl</artifactId>
-      <version>V9.1.7</version>  <!-- version 7.6.1 of JPL -->
+      <version>V9.1.14</version>  <!-- version 7.6.1 of JPL -->
     </dependency>
     <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
     <dependency>
@@ -105,12 +105,12 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.11.0</version>
+      <version>2.13.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.14.2</version>
+      <version>2.15.2</version>
     </dependency>
     <!-- <dependency> <groupId>com.github.VeriVote</groupId> <artifactId>ViRAGe</artifactId>
       <version>master-SNAPSHOT</version> </dependency> -->
@@ -125,7 +125,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-configuration2</artifactId>
-      <version>2.8.0</version>
+      <version>2.9.0</version>
     </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
@@ -181,7 +181,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>3.4.0</version>
         <executions>
           <execution>
             <id>enforce-versions</id>
@@ -205,14 +205,14 @@
         <version>3.2.4</version> <executions> <execution> <phase>package</phase> 
         <goals> <goal>shade</goal> </goals> <configuration> <transformers> <transformer 
         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> 
-        <mainClass>edu.kit.kastel.formal.virage.core.VirageMain</mainClass> <manifestEntries> 
+        <mainClass>${exec.mainClass}</mainClass> <manifestEntries>
         <Multi-Release>true</Multi-Release> </manifestEntries> </transformer> <transformer 
         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" 
         /> </transformers> </configuration> </execution> </executions> </plugin> -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
-        <version>2.15.0</version>
+        <version>2.16.0</version>
         <configuration>
           <rulesUri>file:///${basedir}/rules.xml</rulesUri>
           <allowSnapshots>false</allowSnapshots>
@@ -231,9 +231,10 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>properties-maven-plugin</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
         <executions>
           <execution>
+            <id>read-settings</id>
             <phase>process-resources</phase>
             <goals>
               <goal>read-project-properties</goal>
@@ -253,7 +254,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.2</version>
         <configuration>
           <!-- Unit tests take ages, deployment tests are obsolete as ViRAGe performs 
             these checks at runtime. -->
@@ -270,7 +271,7 @@
           </execution>
         </executions>
         <configuration>
-          <mainClass>edu.kit.kastel.formal.virage.core.VirageMain</mainClass>
+          <mainClass>${exec.mainClass}</mainClass>
           <environmentVariables>
             <LD_PRELOAD>${SWI_PROLOG_LIBSWIPL_PATH}</LD_PRELOAD>
             <LD_LIBRARY_PATH>${SWI_PROLOG_LIBRARIES_PATH}</LD_LIBRARY_PATH>
@@ -289,12 +290,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -305,16 +306,23 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.3.0</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <mainClass>${exec.mainClass}</mainClass>
+              </manifest>
+            </archive>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -327,14 +335,13 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.2.1</version>
+          <version>3.3.0</version>
           <configuration>
             <failsOnError>false</failsOnError>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
             <includeResources>true</includeResources>
             <includeTestResources>true</includeTestResources>
             <configLocation>checks.xml</configLocation>
-            <encoding>UTF-8</encoding>
             <consoleOutput>true</consoleOutput>
             <failsOnError>true</failsOnError>
             <linkXRef>false</linkXRef>
@@ -343,14 +350,14 @@
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>10.9.2</version>
+              <version>10.12.3</version>
             </dependency>
           </dependencies>
         </plugin>
         <plugin>
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>4.7.3.2</version>
+          <version>4.7.3.5</version>
           <configuration>
             <xmlOutput>true</xmlOutput>
             <failOnError>false</failOnError>
@@ -378,7 +385,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.4.2</version>
+        <version>3.4.5</version>
         <reportSets>
           <reportSet>
             <reports>
