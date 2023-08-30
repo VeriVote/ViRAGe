@@ -134,7 +134,7 @@ public final class ScalaIsabelleFacade {
                     + " the session manually within Isabelle "
                     + "might help. If the session is supposed"
                     + " to generate documentation, "
-                    + "texlive is required!");
+                    + "TeX Live is required!");
             throw new IsabelleBuildFailedException();
         }
         this.init();
@@ -175,7 +175,7 @@ public final class ScalaIsabelleFacade {
             LOGGER.error("Building session " + sessionName
                     + " failed. Restarting ViRAGe or building"
                     + " the session manually within Isabelle might help. If the session is supposed"
-                    + " to generate documentation, texlive is required!");
+                    + " to generate documentation, TeX Live is required!");
             throw new IsabelleBuildFailedException();
         }
 
@@ -346,7 +346,7 @@ public final class ScalaIsabelleFacade {
     /**
      * Required, as StringConverter cannot be instantiated.
      */
-    private static class JavaStringConverter extends Converter<String> {
+    private static final class JavaStringConverter extends Converter<String> {
 
         @Override
         public String exnToValue(final Isabelle localIsabelle, final ExecutionContext ec) {

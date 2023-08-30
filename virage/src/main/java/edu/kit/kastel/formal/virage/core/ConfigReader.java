@@ -121,7 +121,7 @@ public final class ConfigReader {
     /**
      * SWI-Prolog option to dump runtime variables.
      */
-    private static final String DUMP_RUNTIME_VARIABLES = " --dump-runtime-variables";
+    private static final String DUMP_RUNTIME_VARIABLES = "--dump-runtime-variables";
 
     /**
      * THe xdg-open command. Maybe only makes real sense for unix systems, but well.
@@ -221,6 +221,23 @@ public final class ConfigReader {
     }
 
     /**
+     * Short-hand method for the command output within the command line interface.
+     *
+     * @param command the given command
+     * @param option the option given as parameter for the command
+     * @return the printed command output
+     * @throws IOException exception in case the process yields I/O problems
+     * @throws InterruptedException exception in case the process is interrupted
+     */
+    private static String getCommandOutput(final String command, final String option)
+            throws IOException, InterruptedException {
+        final String none = "<NONE>" + '\n';
+        final String proc = command + " " + option;
+        final String output = ProcessUtils.runTerminatingProcess(proc).getFirstValue();
+        return output.isEmpty() ? none : output;
+    }
+
+    /**
      * Checks whether all external software is available and prints the version numbers of said
      * software.
      * @return string representation of all software and versions
@@ -233,12 +250,9 @@ public final class ConfigReader {
 
         // ISABELLE
         try {
-            res += "Isabelle: \t\t"
-                    + ProcessUtils.runTerminatingProcess(this.getIsabelleExecutable() + " version")
-                    .getFirstValue();
-            res += "Scala (via Isabelle): " + ProcessUtils
-                    .runTerminatingProcess(this.getIsabelleExecutable() + " scalac -version")
-            .getFirstValue();
+            final String isaExec = this.getIsabelleExecutable();
+            res += "Isabelle: \t\t" + getCommandOutput(isaExec, "version");
+            res += "Scala (via Isabelle): " + getCommandOutput(isaExec + " scalac", "-version");
         } catch (final IOException e) {
             res += "Isabelle: \t\tNOT FOUND\n";
             this.isabelleAvailable = false;
@@ -250,9 +264,8 @@ public final class ConfigReader {
 
         // SWIPL
         try {
-            res += "SWI-Prolog: \t\t" + ProcessUtils
-                    .runTerminatingProcess(this.properties.get(SWIPL_BIN) + " --version")
-            .getFirstValue();
+            res += "SWI-Prolog: \t\t"
+                    + getCommandOutput((String)this.properties.get(SWIPL_BIN), "--version");
         } catch (final IOException e) {
             System.out.println("SWI-Prolog: NOT FOUND\n");
             this.swiplAvailable = false;
@@ -306,18 +319,16 @@ public final class ConfigReader {
 
     private String computeIsabelleHome()
             throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
-        final String output = ProcessUtils
-                .runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME")
-                .getFirstValue();
+        final String output =
+                getCommandOutput(this.getIsabelleExecutable(), "getenv ISABELLE_HOME");
 
         return output.split(KEY_VALUE_SEPARATOR)[1].trim();
     }
 
     private String computeIsabelleSessionDir()
             throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
-        final String output = ProcessUtils
-                .runTerminatingProcess(this.getIsabelleExecutable() + " getenv ISABELLE_HOME_USER")
-                .getFirstValue();
+        final String output =
+                getCommandOutput(this.getIsabelleExecutable(), "getenv ISABELLE_HOME_USER");
 
         return output.split(KEY_VALUE_SEPARATOR)[1].trim();
     }
@@ -375,7 +386,7 @@ public final class ConfigReader {
         String prop = this.properties.getProperty(SESSION_SPECIFIC_ASSUMPTIONS);
         prop = this.replaceTypeAliases(prop);
 
-        return this.readAndSplitList(prop);
+        return readAndSplitList(prop);
     }
 
     /**
@@ -400,7 +411,7 @@ public final class ConfigReader {
         String prop = this.properties.getProperty("SESSION_SPECIFIC_ATOMIC_TYPES");
         prop = this.replaceTypeAliases(prop);
 
-        return this.readAndSplitList(prop);
+        return readAndSplitList(prop);
     }
 
     /**
@@ -490,7 +501,7 @@ public final class ConfigReader {
     }
 
     public List<String> getIsabelleTactics() {
-        return this.readAndSplitList(this.properties.getProperty("ISABELLE_TACTICS"));
+        return readAndSplitList(this.properties.getProperty("ISABELLE_TACTICS"));
     }
 
     public String getPathToRootFile() {
@@ -503,8 +514,8 @@ public final class ConfigReader {
      */
     public Map<String, String> getComponentAliases() {
         final Map<String, String> toReturn = new HashMap<String, String>();
-        final List<String> pairStrings = this.readAndSplitList(
-                this.properties.getProperty(COMPONENT_ALIASES));
+        final List<String> pairStrings =
+                readAndSplitList(this.properties.getProperty(COMPONENT_ALIASES));
 
         for(final String pairString: pairStrings) {
             final String[] elements = pairString.split(PAIR_SEPARATOR);
@@ -527,9 +538,9 @@ public final class ConfigReader {
 
         if (this.swiplHome == null) {
             try {
-                final String output = ProcessUtils.runTerminatingProcess(
-                        this.properties.getProperty(SWIPL_BIN) + DUMP_RUNTIME_VARIABLES)
-                        .getFirstValue();
+                final String output =
+                        getCommandOutput(this.properties.getProperty(SWIPL_BIN),
+                                         DUMP_RUNTIME_VARIABLES);
                 final String[] lines = output.split(System.lineSeparator());
                 String value = "";
                 for (final String line : lines) {
@@ -569,9 +580,9 @@ public final class ConfigReader {
 
         if (this.swiplLib == null) {
             try {
-                final String output = ProcessUtils.runTerminatingProcess(
-                        this.properties.getProperty(SWIPL_BIN) + DUMP_RUNTIME_VARIABLES)
-                        .getFirstValue();
+                final String output =
+                        getCommandOutput(this.properties.getProperty(SWIPL_BIN),
+                                         DUMP_RUNTIME_VARIABLES);
                 final String[] lines = output.split(System.lineSeparator());
                 String value = "";
                 String path = "";
@@ -633,7 +644,7 @@ public final class ConfigReader {
 
         String prop = this.properties.getProperty("SESSION_SPECIFIC_TYPE_SYNONYMS");
         prop = this.replaceTypeAliases(prop);
-        final List<String> typeSynonyms = this.readAndSplitList(prop);
+        final List<String> typeSynonyms = readAndSplitList(prop);
 
         for (final String synonym : typeSynonyms) {
             final String synonymCopy = this.replaceTypeAliases(synonym);
@@ -722,7 +733,7 @@ public final class ConfigReader {
         }
     }
 
-    private List<String> readAndSplitList(final String list) {
+    private static List<String> readAndSplitList(final String list) {
         final String[] splits = list.split(LIST_SEPARATOR);
 
         final List<String> result = new LinkedList<String>();
@@ -789,8 +800,8 @@ public final class ConfigReader {
             return copyOfs;
         }
 
-        final List<String> replacements = this
-                .readAndSplitList(this.properties.getProperty(SESSION_SPECIFIC_TYPE_ALIASES));
+        final List<String> replacements =
+                readAndSplitList(this.properties.getProperty(SESSION_SPECIFIC_TYPE_ALIASES));
 
         final Map<String, String> replMap = new HashMap<String, String>();
 

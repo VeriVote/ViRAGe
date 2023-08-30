@@ -232,7 +232,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 newValue = this.requestString(StringUtils.appendPeriod("Please input the path to "
                         + LIBSWIPL_SO) + " "
                         + "For your setup of SWI-Prolog, typical values are "
-                        + this.addQuotationsToPath("/usr/lib/" + LIBSWIPL_SO) + "or "
+                        + this.addQuotationsToPath("/usr/lib/" + LIBSWIPL_SO) + " or "
                         + this.addQuotationsToPath(
                                 ConfigReader.getInstance().getSwiplLib() + LIBSWIPL_SO)
                         + ", but"
