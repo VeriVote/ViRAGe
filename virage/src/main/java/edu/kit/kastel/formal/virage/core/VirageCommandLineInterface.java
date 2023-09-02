@@ -8,8 +8,6 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -232,7 +230,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 newValue = this.requestString(StringUtils.appendPeriod("Please input the path to "
                         + LIBSWIPL_SO) + " "
                         + "For your setup of SWI-Prolog, typical values are "
-                        + this.addQuotationsToPath("/usr/lib/" + LIBSWIPL_SO) + "or "
+                        + this.addQuotationsToPath("/usr/lib/" + LIBSWIPL_SO) + " or "
                         + this.addQuotationsToPath(
                                 ConfigReader.getInstance().getSwiplLib() + LIBSWIPL_SO)
                         + ", but"
@@ -699,10 +697,9 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     private void printTimestamp() {
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        final LocalDateTime now = LocalDateTime.now();
+        final String now = SystemUtils.getTime();
         this.displayMessage(HEADER_LINE_START + "Version " + VirageCore.getVersion()
-                + ", Timestamp: " + dtf.format(now));
+                + ", Timestamp: " + now);
         this.displayMessage(HEADER_LINE_START + "If you need help, type \"help\", \"h\" or \"?\".");
         this.displayMessage(HEADER_LINE_START + "To exit ViRAGe, type \"exit\".");
     }

@@ -201,7 +201,7 @@ public final class IsabelleFrameworkExtractor {
 
         final String copyOfs = s.strip();
 
-        for (int i = 0; i < copyOfs.length(); i++) {
+        for (int i = 0; i < copyOfs.length();) {
             final char cur = copyOfs.charAt(i);
 
             switch (cur) {
@@ -218,11 +218,11 @@ public final class IsabelleFrameworkExtractor {
                     if (endIdx < copyOfs.length() - 1 && copyOfs.charAt(endIdx + 1) != ')') {
                         res += PrologPredicate.SEPARATOR;
                     }
-                    // Checkstyle does not like this, I think it is reasonable here.
                     i = endIdx + 1;
                 } else {
                     insideBrackets = true;
                     res += cur;
+                    i++;
                 }
                 break;
             case ' ':
@@ -232,9 +232,11 @@ public final class IsabelleFrameworkExtractor {
                     res += '(';
                     insideBrackets = true;
                 }
+                i++;
                 break;
             default:
                 res += cur;
+                i++;
                 break;
             }
         }

@@ -112,14 +112,18 @@ public final class ScalaIsabelleFacade {
 
         final List<Path> sessionDirs = new LinkedList<Path>();
         sessionDirs.add(Path.of(this.sessionDir));
-
-        this.setup = new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()),
-                sessionNameValue,
-                new Some<Path>(Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
-                Path.of(sessionDirValue),
-                JavaConverters.asScalaIteratorConverter(sessionDirs.iterator()).asScala().toSeq(),
-                true, true /*try verbose first*/, null, null /* try to get away with null first */);
-
+        final String isabelleHome = ConfigReader.getInstance().getIsabelleHome();
+        this.setup = // JIsabelle.setupSetBuild(true, JIsabelle.setup(Path.of(isabelleHome)));
+                new Setup(Path.of(isabelleHome),
+                          sessionNameValue,
+                          new Some<Path>(
+                                  Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
+                          Path.of(sessionDirValue),
+                          JavaConverters.asScalaIteratorConverter(
+                                  sessionDirs.iterator()).asScala().toSeq(),
+                          true, true /*try verbose first*/,
+                          (Isabelle i) -> i.exceptionManager(),
+                          null /* try to get away with null first */);
         try {
             isabelle = new Isabelle(this.setup);
             // Scala has no checked Exceptions and the constructor is not annotated.
@@ -134,7 +138,7 @@ public final class ScalaIsabelleFacade {
                     + " the session manually within Isabelle "
                     + "might help. If the session is supposed"
                     + " to generate documentation, "
-                    + "texlive is required!");
+                    + "TeX Live is required!");
             throw new IsabelleBuildFailedException();
         }
         this.init();
@@ -158,13 +162,15 @@ public final class ScalaIsabelleFacade {
         final List<Path> sessionDirs = new LinkedList<Path>();
         sessionDirs.add(Path.of(new File(sessionDir).getAbsolutePath()));
 
-        final Setup setup = new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()),
-                sessionName,
-                new Some<Path>(Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
-                Path.of(sessionDir),
-                JavaConverters.asScalaIteratorConverter(sessionDirs.iterator()).asScala().toSeq(),
-                true, true /*try verbose first*/, null, null /* try to get away with null first */);
-
+        final Setup setup =
+                new Setup(Path.of(ConfigReader.getInstance().getIsabelleHome()),
+                        sessionName,
+                        new Some<Path>(Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
+                        Path.of(sessionDir),
+                        JavaConverters.asScalaIteratorConverter(sessionDirs.iterator())
+                            .asScala().toSeq(),
+                        true, true /*try verbose first*/, (Isabelle i) -> i.exceptionManager(),
+                        null /* try to get away with null first */);
         try {
             isabelle = new Isabelle(setup);
             isabelle.destroy();
@@ -175,7 +181,7 @@ public final class ScalaIsabelleFacade {
             LOGGER.error("Building session " + sessionName
                     + " failed. Restarting ViRAGe or building"
                     + " the session manually within Isabelle might help. If the session is supposed"
-                    + " to generate documentation, texlive is required!");
+                    + " to generate documentation, TeX Live is required!");
             throw new IsabelleBuildFailedException();
         }
 
@@ -346,7 +352,7 @@ public final class ScalaIsabelleFacade {
     /**
      * Required, as StringConverter cannot be instantiated.
      */
-    private static class JavaStringConverter extends Converter<String> {
+    private static final class JavaStringConverter extends Converter<String> {
 
         @Override
         public String exnToValue(final Isabelle localIsabelle, final ExecutionContext ec) {
