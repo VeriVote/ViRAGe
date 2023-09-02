@@ -233,8 +233,9 @@ public final class ConfigReader {
             throws IOException, InterruptedException {
         final String none = "<NONE>" + '\n';
         final String proc = command + " " + option;
-        final String output = ProcessUtils.runTerminatingProcess(proc).getFirstValue();
-        return output.isEmpty() ? none : output;
+        final ProcessUtils.Output output = ProcessUtils.runTerminatingProcess(proc);
+        final String result = output.stdOut.isEmpty() ? output.stdErr : output.stdOut;
+        return result.isEmpty() ? none : result;
     }
 
     /**
@@ -758,7 +759,9 @@ public final class ConfigReader {
         final File virageDir = new File(virageFolderPath);
         this.configFile = new File(configPath);
         if (!this.configFile.exists()) {
-            Files.createDirectory(virageDir.toPath());
+            if (!virageDir.exists()) {
+                Files.createDirectory(virageDir.toPath());
+            }
             Files.createFile(this.configFile.toPath());
             this.copyConfigToExpectedPath();
         }

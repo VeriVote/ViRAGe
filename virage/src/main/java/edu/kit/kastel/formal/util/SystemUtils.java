@@ -7,7 +7,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -67,13 +67,12 @@ public class SystemUtils {
     }
 
     /**
-     * Returns current time (yyyy-MM-dd HH:mm:ss).
+     * Returns current time (yyyy-MM-dd HH:mm:ss OOOO).
      * @return the time
      */
     public static String getTime() {
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        final LocalDateTime now = LocalDateTime.now();
-
+        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss OOOO");
+        final ZonedDateTime now = ZonedDateTime.now();
         return dtf.format(now);
     }
 

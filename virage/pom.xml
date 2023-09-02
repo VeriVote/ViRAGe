@@ -41,11 +41,17 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.version>3.8.1</maven.version>
+    <maven.clean.version>3.3.1</maven.clean.version>
+    <maven.install.version>3.1.1</maven.install.version>
+    <maven.jar.version>3.3.0</maven.jar.version>
     <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <jdk.version>17</jdk.version>
-    <exec.mainClass>edu.kit.kastel.formal.virage.core.VirageMain</exec.mainClass>
+    <log4j.version>2.20.0</log4j.version>
+    <spotbugs.version>4.7.3</spotbugs.version>
+    <swi.home.dir>/usr/lib/swi-prolog</swi.home.dir>
+    <main.class>edu.kit.kastel.formal.virage.core.VirageMain</main.class>
   </properties>
 
   <distributionManagement>
@@ -83,12 +89,17 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>2.20.0</version>
+      <version>${log4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.20.0</version>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${log4j.version}</version>
     </dependency>
     <!-- JPL bidirectional Prolog-Java: https://github.com/SWI-Prolog/packages-jpl -->
     <dependency>
@@ -205,7 +216,7 @@
         <version>3.2.4</version> <executions> <execution> <phase>package</phase> 
         <goals> <goal>shade</goal> </goals> <configuration> <transformers> <transformer 
         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> 
-        <mainClass>${exec.mainClass}</mainClass> <manifestEntries>
+        <mainClass>${main.class}</mainClass> <manifestEntries>
         <Multi-Release>true</Multi-Release> </manifestEntries> </transformer> <transformer 
         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" 
         /> </transformers> </configuration> </execution> </executions> </plugin> -->
@@ -220,6 +231,7 @@
         </configuration>
         <executions>
           <execution>
+            <id>versions-display</id>
             <phase>compile</phase>
             <goals>
               <goal>display-dependency-updates</goal>
@@ -235,7 +247,7 @@
         <executions>
           <execution>
             <id>read-settings</id>
-            <phase>process-resources</phase>
+            <phase>initialize</phase>
             <goals>
               <goal>read-project-properties</goal>
             </goals>
@@ -267,21 +279,24 @@
         <version>3.1.0</version>
         <executions>
           <execution>
-            <phase>test</phase>
+            <id>execute</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
           </execution>
         </executions>
         <configuration>
-          <mainClass>${exec.mainClass}</mainClass>
-          <environmentVariables>
-            <LD_PRELOAD>${SWI_PROLOG_LIBSWIPL_PATH}</LD_PRELOAD>
-            <LD_LIBRARY_PATH>${SWI_PROLOG_LIBRARIES_PATH}</LD_LIBRARY_PATH>
-          </environmentVariables>
           <executable>java</executable>
+          <mainClass>${main.class}</mainClass>
           <arguments>
             <argument>-classpath</argument>
             <classpath />
-            <argument>edu.kit.kastel.formal.virage.core.VirageMain</argument>
+            <argument>${main.class}</argument>
           </arguments>
+          <environmentVariables>
+            <SWI_HOME_DIR>${swi.home.dir}</SWI_HOME_DIR>
+            <LD_PRELOAD>${swi.home.dir}/lib/x86_64-linux/libswipl.so</LD_PRELOAD>
+          </environmentVariables>
         </configuration>
       </plugin>
     </plugins>
@@ -290,12 +305,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.3.1</version>
+          <version>${maven.clean.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.3.1</version>
+          <version>${maven.clean.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -305,11 +320,11 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>${maven.jar.version}</version>
           <configuration>
             <archive>
               <manifest>
-                <mainClass>${exec.mainClass}</mainClass>
+                <mainClass>${main.class}</mainClass>
               </manifest>
             </archive>
           </configuration>
@@ -317,12 +332,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>${maven.install.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>${maven.install.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -335,7 +350,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>${maven.jar.version}</version>
           <configuration>
             <failsOnError>false</failsOnError>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
@@ -357,7 +372,7 @@
         <plugin>
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>4.7.3.5</version>
+          <version>${spotbugs.version}.5</version>
           <configuration>
             <xmlOutput>true</xmlOutput>
             <failOnError>false</failOnError>
@@ -373,7 +388,7 @@
             <dependency>
               <groupId>com.github.spotbugs</groupId>
               <artifactId>spotbugs</artifactId>
-              <version>4.7.3</version>
+              <version>${spotbugs.version}</version>
             </dependency>
           </dependencies>
         </plugin>
