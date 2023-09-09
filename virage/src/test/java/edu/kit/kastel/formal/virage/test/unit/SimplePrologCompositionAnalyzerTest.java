@@ -19,8 +19,8 @@ public final class SimplePrologCompositionAnalyzerTest extends CompositionAnalyz
     /**
      * The logger.
      */
-    private static final Logger LOGGER = LogManager
-            .getLogger(SimplePrologCompositionAnalyzer.class);
+    private static final Logger LOGGER =
+            LogManager.getLogger(SimplePrologCompositionAnalyzer.class);
 
     @Override
     protected CompositionAnalyzer createInstance()

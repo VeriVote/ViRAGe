@@ -23,7 +23,9 @@ import edu.kit.kastel.formal.virage.types.ValueNotPresentException;
  * @author VeriVote
  */
 public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologCompositionAnalyzer {
-    /** The logger. */
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger();
 
     /**
@@ -41,25 +43,20 @@ public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologC
     public AdmissionCheckPrologCompositionAnalyzer(final FrameworkRepresentation framework)
             throws IOException, ExternalSoftwareUnavailableException {
         super(framework);
-
         LOGGER.info("Initialising AdmissionCheckPrologCompositionAnalyzer");
     }
 
     @Override
     protected void consultKnowledgeBase() {
         super.consultKnowledgeBase();
-
         final AdmissionGuardGenerator generator = new AdmissionGuardGenerator(this.getFramework());
-
         final File admissionGuards;
         try {
             admissionGuards = generator.createAdmissionGuardFile();
-
             this.getFacade().consultFile(admissionGuards.getAbsolutePath());
-
             if (!metaInterpreterLoaded()) {
                 this.getFacade().consultFile(
-                        this.getClass().getClassLoader().getResource("meta_interpreter.pl"));
+                        this.getClass().getClassLoader().getResource(META_INTERPRETER));
                 setMetaInterpreterLoaded(true);
             }
         } catch (final IOException e) {
@@ -69,30 +66,27 @@ public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologC
 
     @Override
     public SearchResult<DecompositionTree> generateComposition(final List<Property> properties) {
-        for (final Property property : properties) {
+        for (final Property property: properties) {
             if (property.getArity() != 1) {
                 throw new IllegalArgumentException(
                         "For now, only unary " + "properties can be used in queries.");
             }
         }
-
         // Safety measure to ensure all properties talking about the same element.
         final List<String> admitStrings = new LinkedList<String>();
         final List<String> propertyStrings = new LinkedList<String>();
-        for (final Property property : properties) {
+        for (final Property property: properties) {
             admitStrings.add(AdmissionGuardStrings.ADMITS
                     + property.getInstantiatedString(DEFAULT_VARIABLE));
             propertyStrings.add(property.getName() + AdmissionGuardStrings.SUFFIX
                     + property.getInstantiatedStringWithoutName(DEFAULT_VARIABLE));
         }
         admitStrings.addAll(propertyStrings);
-
         final String query = StringUtils.printCollection(admitStrings);
-
-        final SearchResult<Map<String, String>> result = this.getFacade()
-                .iterativeDeepeningQuery(query);
-
+        final SearchResult<Map<String, String>> result =
+                this.getFacade().iterativeDeepeningQuery(query);
         Map<String, String> resultMap = Map.of();
+        final DecompositionTree solutionTree;
         if (result.hasValue()) {
             try {
                 resultMap = result.getValue();
@@ -101,14 +95,10 @@ public final class AdmissionCheckPrologCompositionAnalyzer extends SimplePrologC
                 LOGGER.warn("This should not have happened.");
                 LOGGER.warn(e);
             }
-
-            final String solution = resultMap.get(DEFAULT_VARIABLE);
-            final DecompositionTree solutionTree = DecompositionTree.parseString(solution);
-
-            return new SearchResult<DecompositionTree>(result.getState(), solutionTree);
+            solutionTree = DecompositionTree.parseString(resultMap.get(DEFAULT_VARIABLE));
         } else {
-            return new SearchResult<DecompositionTree>(result.getState(), null);
+            solutionTree = null;
         }
+        return new SearchResult<DecompositionTree>(result.getState(), solutionTree);
     }
-
 }

@@ -15,6 +15,7 @@ public final class SearchResult<T> {
      * The state of this query.
      */
     private QueryState state;
+
     /**
      * The result value.
      */
@@ -22,6 +23,7 @@ public final class SearchResult<T> {
 
     /**
      * Simple constructor.
+     *
      * @param stateValue the state
      * @param valueValue the value
      */
@@ -30,6 +32,11 @@ public final class SearchResult<T> {
         this.value = valueValue;
     }
 
+    /**
+     * Returns the query state.
+     *
+     * @return the query state
+     */
     public synchronized QueryState getState() {
         return this.state;
     }
@@ -56,10 +63,20 @@ public final class SearchResult<T> {
         return this.value != null;
     }
 
+    /**
+     * Sets a new query state.
+     *
+     * @param stateValue the new query state value
+     */
     public synchronized void setState(final QueryState stateValue) {
         this.state = stateValue;
     }
 
+    /**
+     * Sets a new result value.
+     *
+     * @param valueValue the result value
+     */
     public void setValue(final T valueValue) {
         this.value = valueValue;
     }
@@ -67,11 +84,9 @@ public final class SearchResult<T> {
     @Override
     public String toString() {
         String res = this.state.toString();
-
         if (this.hasValue()) {
             res += ": " + this.value.toString();
         }
-
         return res;
     }
 }

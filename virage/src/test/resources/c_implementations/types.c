@@ -3,8 +3,8 @@
 int find_index(profile p, int alternative) {
   return alternative;
 
-  /*for(int i=0; i<C; i++) {
-    if(p.alternatives[i] == alternative) {
+  /*for (int i = 0; i < C; i++) {
+    if (p.alternatives[i] == alternative) {
       return i;
     }
   }
@@ -15,7 +15,7 @@ int find_index(profile p, int alternative) {
 rel get_default_ordering(profile p) {
   rel r;
 
-  for(int i=0; i<C; i++) {
+  for (int i = 0; i < C; i++) {
      r.elements[i] = p.votes[0][i];
   }
 

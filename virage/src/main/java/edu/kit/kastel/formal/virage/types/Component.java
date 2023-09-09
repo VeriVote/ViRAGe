@@ -6,7 +6,8 @@ import java.util.List;
 import edu.kit.kastel.formal.util.StringUtils;
 
 /**
- * A component of the modular framework (e.g. composable modules, aggregators ...)
+ * A component of the modular framework (e.g., modules that can be composed, aggregating
+ * components, etc.).
  *
  * @author VeriVote
  */
@@ -15,10 +16,12 @@ public class Component implements TypedAndParameterized {
      * The type.
      */
     private final ComponentType typeField;
+
     /**
      * The name.
      */
     private final String nameField;
+
     /**
      * The list of parameter types.
      */
@@ -42,7 +45,7 @@ public class Component implements TypedAndParameterized {
      * @param parameters the parameters
      */
     public Component(final ComponentType type, final String name,
-            final List<ComponentType> parameters) {
+                     final List<ComponentType> parameters) {
         this.typeField = type;
         this.nameField = name;
         this.parametersField = parameters;
@@ -50,6 +53,7 @@ public class Component implements TypedAndParameterized {
 
     /**
      * Safe to override.
+     *
      * @return the name
      */
     public String getName() {
@@ -77,10 +81,10 @@ public class Component implements TypedAndParameterized {
      */
     @Override
     public String toString() {
-        final String res = StringUtils.parenthesize(this.typeField.toString()) + this.nameField
-                + StringUtils.parenthesize(StringUtils.printCollection(this.parametersField));
-
-        return res;
+        return StringUtils.parenthesize(this.typeField.toString())
+                + StringUtils.SPACE
+                + StringUtils.func(this.nameField,
+                                   StringUtils.printCollection(this.parametersField));
     }
 
     /**
@@ -89,9 +93,6 @@ public class Component implements TypedAndParameterized {
      * @return a string representation of this
      */
     public String toStringWithoutTypeSignature() {
-        final String res = this.nameField + "("
-                + StringUtils.printCollection(this.parametersField) + ")";
-
-        return res;
+        return StringUtils.func(this.nameField, StringUtils.printCollection(this.parametersField));
     }
 }

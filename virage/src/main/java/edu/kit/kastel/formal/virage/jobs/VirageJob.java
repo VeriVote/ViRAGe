@@ -2,6 +2,7 @@ package edu.kit.kastel.formal.virage.jobs;
 
 import java.time.Instant;
 
+import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.util.SystemUtils;
 import edu.kit.kastel.formal.virage.core.VirageCore;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
@@ -31,7 +32,7 @@ public abstract class VirageJob<T> {
     private VirageJobState state;
 
     /**
-     * The issuing ui.
+     * The issuing user interface.
      */
     private final VirageUserInterface issuer;
 
@@ -54,30 +55,33 @@ public abstract class VirageJob<T> {
      * Finishing time of this job.
      */
     private long timeFinished;
+
     /**
      * Simple constructor.
      *
-     * @param issuerValue the issuing ui
+     * @param issuerValue the issuing user interface
      */
     public VirageJob(final VirageUserInterface issuerValue) {
         this.issuer = issuerValue;
         this.id = VirageJob.nextID;
-        VirageJob.nextID++;
-
+        incrementNextID();
         this.timeIssued = System.currentTimeMillis();
-
         this.state = VirageJobState.PENDING;
     }
+
+    private static synchronized void incrementNextID() {
+        nextID++;
+    }
+
     /**
-     * Runs the job and notifies its issuer on termination. Should only be ran after checking
-     * isReadyToExecute(), otherwise behaviour is undefined.
+     * Runs the job and notifies its issuer on termination. Should only be run after checking
+     * {@link #externalSoftwareAvailable()}, otherwise behavior is undefined.
      *
      * @param core the executing core
      */
     public void execute(final VirageCore core) {
         this.executingCore = core;
         this.setState(VirageJobState.RUNNING);
-
         try {
             this.concreteExecute();
             this.setState(VirageJobState.FINISHED);
@@ -90,69 +94,72 @@ public abstract class VirageJob<T> {
 
     /**
      * Checks whether all required external dependencies are satisfied.
+     *
      * @return true if they are, false otherwise
      */
     public abstract boolean externalSoftwareAvailable();
 
     /**
      * Returns a description of the job's task.
+     *
      * @return the description
      */
     public abstract String getDescription();
 
     /**
-     * Returns the result of this job, if one is available.
+     * Returns the result of this job if one is available.
+     *
      * @return the result
      */
     public abstract T getResult();
 
+    /**
+     * Returns the current {@link VirageJobState} state of the ViRAGe job.
+     *
+     * @return the {@link VirageJobState}
+     */
     public final synchronized VirageJobState getState() {
         return this.state;
     }
 
     /**
      * Pretty-printed result of this job.
+     *
      * @return a pretty-printed String
      */
     public abstract String presentConcreteResult();
 
     /**
      * Pretty-print job, safe to override.
+     *
      * @return a pretty-printed String representation of this job
      */
     public String presentResult() {
-        String res = "";
-
+        String res = StringUtils.EMPTY;
         final float timeInMs = this.timeFinished - this.timeStarted;
         final float timeInS = timeInMs / 1000;
-
         res += "Started at " + SystemUtils.getTime() + ".\n";
         res += "Job ran for " + String.format("%.2f", timeInS) + " seconds.\n";
-
         if (this.state == VirageJobState.FINISHED) {
             res += this.presentConcreteResult() + System.lineSeparator();
         } else {
             res += "Something went wrong while executing this job.\n";
         }
-
         res += "----------";
-
         return res;
     }
 
     /**
-     * Sets the current state, also updates the timestamps if applicable.
+     * Sets the current state, also updates the time stamps if applicable.
      *
      * @param newState the new state
      */
     public void setState(final VirageJobState newState) {
         this.state = newState;
-
         if (newState == VirageJobState.RUNNING) {
             this.timeStarted = System.currentTimeMillis();
         } else if (newState == VirageJobState.FAILED || newState == VirageJobState.FINISHED) {
             this.timeFinished = System.currentTimeMillis();
-
             this.issuer.notify(this);
         }
     }
@@ -164,7 +171,6 @@ public abstract class VirageJob<T> {
     public String toString() {
         String res = "----------- " + this.getClass().getCanonicalName() + System.lineSeparator();
         res += "ID: " + this.id + System.lineSeparator();
-
         res += "Issued: " + Instant.ofEpochMilli(this.timeIssued).toString()
                 + System.lineSeparator();
         res += "Started: " + Instant.ofEpochMilli(this.timeStarted).toString()
@@ -174,7 +180,6 @@ public abstract class VirageJob<T> {
         res += "Time elapsed: " + (this.timeFinished - this.timeStarted) + " milliseconds \n";
         res += "-----\n";
         res += "State: " + this.state + System.lineSeparator();
-
         return res;
     }
 
@@ -189,11 +194,9 @@ public abstract class VirageJob<T> {
                 finished = this.getState() != VirageJobState.PENDING
                         && this.getState() != VirageJobState.RUNNING;
             }
-
             if (finished) {
                 return;
             }
-
             SystemUtils.semiBusyWaitingHelper();
         }
     }
@@ -208,6 +211,7 @@ public abstract class VirageJob<T> {
 
     /**
      * Simple getter.
+     *
      * @return the executingCore
      */
     protected VirageCore getExecutingCore() {
@@ -216,6 +220,7 @@ public abstract class VirageJob<T> {
 
     /**
      * Simple setter.
+     *
      * @param executingCoreValue the executingCore to set
      */
     protected void setExecutingCore(final VirageCore executingCoreValue) {

@@ -26,11 +26,11 @@ object VotingContext {
     
     var candidates: List[String] = Nil
 
-    for(line <- Source.fromFile(file).getLines()) {
+    for (line <- Source.fromFile(file).getLines()) {
       val strings: Array[String] = line split ';'
       
       val stringList = List(strings.toList)
-      if(candidates == Nil) candidates = strings.toList
+      if (candidates == Nil) candidates = strings.toList
       
       ballots = ballots ::: stringList
     }

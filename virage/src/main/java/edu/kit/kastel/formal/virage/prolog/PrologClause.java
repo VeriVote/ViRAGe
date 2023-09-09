@@ -3,6 +3,8 @@ package edu.kit.kastel.formal.virage.prolog;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.kit.kastel.formal.util.StringUtils;
+
 /**
  * Represents a single Prolog clause.
  *
@@ -13,6 +15,7 @@ public final class PrologClause {
      * The succedent.
      */
     private final PrologPredicate succedent;
+
     /**
      * The antecedent.
      */
@@ -34,7 +37,7 @@ public final class PrologClause {
      * @param antecedentsValue the antecedents
      */
     public PrologClause(final PrologPredicate succedentValue,
-            final List<PrologPredicate> antecedentsValue) {
+                        final List<PrologPredicate> antecedentsValue) {
         this.succedent = succedentValue;
         this.antecedents = antecedentsValue;
     }
@@ -46,7 +49,7 @@ public final class PrologClause {
      * @param antecedentValue the antecedent
      */
     public PrologClause(final PrologPredicate succedentValue,
-            final PrologPredicate antecedentValue) {
+                        final PrologPredicate antecedentValue) {
         this.succedent = succedentValue;
         this.antecedents = new LinkedList<PrologPredicate>();
         this.antecedents.add(antecedentValue);
@@ -57,32 +60,27 @@ public final class PrologClause {
      */
     public void anonymizeSingletons() {
         final List<PrologPredicate> allPreds = this.succedent.getAllChildren();
-        for (final PrologPredicate antecedent : this.antecedents) {
+        for (final PrologPredicate antecedent: this.antecedents) {
             allPreds.addAll(antecedent.getAllChildren());
         }
-
         final List<PrologPredicate> allVars = new LinkedList<PrologPredicate>();
-        for (final PrologPredicate pred : allPreds) {
+        for (final PrologPredicate pred: allPreds) {
             if (pred.isVariable()) {
                 allVars.add(pred);
             }
         }
-
         for (int i = 0; i < allVars.size(); i++) {
             boolean singleton = true;
-
             for (int j = 0; j < allVars.size() && singleton; j++) {
                 if (i == j) {
                     continue;
                 }
-
                 if (allVars.get(i).equals(allVars.get(j))) {
                     singleton = false;
                 }
             }
-
             if (singleton) {
-                allVars.get(i).setName("_");
+                allVars.get(i).setName(PrologPredicate.ANONYMOUS);
             }
         }
     }
@@ -111,7 +109,6 @@ public final class PrologClause {
         } else if (!this.succedent.equals(other.succedent)) {
             return false;
         }
-
         if (this.antecedents.size() != other.antecedents.size()) {
             return false;
         }
@@ -123,10 +120,20 @@ public final class PrologClause {
         return true;
     }
 
+    /**
+     * Returns the antecedent predicate.
+     *
+     * @return the antecedent
+     */
     public List<PrologPredicate> getAntecedents() {
         return this.antecedents;
     }
 
+    /**
+     * Returns the succedent predicate.
+     *
+     * @return the succedent
+     */
     public PrologPredicate getSuccedent() {
         return this.succedent;
     }
@@ -151,24 +158,20 @@ public final class PrologClause {
 
     @Override
     public String toString() {
-        String res = "";
-
+        String res = StringUtils.EMPTY;
         res += this.succedent.toString();
         if (!this.antecedents.isEmpty()) {
-            res += " :- ";
+            res += StringUtils.SPACE + PrologParser.NECK + StringUtils.SPACE;
             int ctr = 0;
-            for (final PrologPredicate antecedent : this.antecedents) {
+            for (final PrologPredicate antecedent: this.antecedents) {
                 ctr++;
                 res += antecedent.toString();
-
                 if (ctr < this.antecedents.size()) {
-                    res += ",";
+                    res += StringUtils.COMMA;
                 }
             }
         }
-        res += ".";
-
+        res += StringUtils.PERIOD;
         return res;
     }
-
 }

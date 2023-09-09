@@ -4,35 +4,34 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import edu.kit.kastel.formal.util.StringUtils;
+
 /**
  * A simple data object to contain a single Prolog predicate and its parameters.
  *
  * @author VeriVote
  */
 public final class PrologPredicate {
-
     /**
      * Name of anonymous variables in Prolog.
      */
     public static final String ANONYMOUS = "_";
 
     /**
-     * Character used to separate children in Strings.
-     */
-    public static final String SEPARATOR = ",";
-
-    /**
      * The name.
      */
     private String name;
+
     /**
      * The parameters.
      */
     private final List<PrologPredicate> parameters;
+
     /**
      * The arity.
      */
     private final int arity;
+
     /**
      * The depth of this predicate.
      */
@@ -59,9 +58,8 @@ public final class PrologPredicate {
         this.name = nameValue;
         this.parameters = parametersValue;
         this.arity = parametersValue.size();
-
         this.depth = 0;
-        for (final PrologPredicate parameter : this.parameters) {
+        for (final PrologPredicate parameter: this.parameters) {
             if (parameter.depth >= this.depth) {
                 this.depth = parameter.depth + 1;
             }
@@ -76,26 +74,44 @@ public final class PrologPredicate {
     public List<PrologPredicate> getAllChildren() {
         final List<PrologPredicate> res = new LinkedList<PrologPredicate>();
         res.add(this);
-
-        for (final PrologPredicate child : this.parameters) {
+        for (final PrologPredicate child: this.parameters) {
             res.addAll(child.getAllChildren());
         }
-
         return res;
     }
 
+    /**
+     * Returns the predicate's arity value.
+     *
+     * @return the arity
+     */
     public int getArity() {
         return this.arity;
     }
 
+    /**
+     * Returns the predicate's depth value.
+     *
+     * @return the depth
+     */
     public int getDepth() {
         return this.depth;
     }
 
+    /**
+     * Returns the predicate's name as a string.
+     *
+     * @return the name
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Returns the predicate's parameters as a list.
+     *
+     * @return the parameters
+     */
     public List<PrologPredicate> getParameters() {
         return this.parameters;
     }
@@ -111,6 +127,7 @@ public final class PrologPredicate {
 
     /**
      * Checks whether a string represents a Prolog variable.
+     *
      * @param s the string
      * @return true if s is a Prolog variable name, false otherwise
      */
@@ -118,23 +135,27 @@ public final class PrologPredicate {
         return s.matches("[A-Z_][a-zA-Z_0-9]*");
     }
 
+    /**
+     * Sets a new name for the Prolog predicate.
+     *
+     * @param newName the new name string
+     */
     public void setName(final String newName) {
         this.name = newName;
     }
 
     /**
      * Create a deep copy of the given predicate.
+     *
      * @param pred the predicate to be copied
      * @return the copy
      */
     public static PrologPredicate copy(final PrologPredicate pred) {
         final String newName = pred.getName();
-
         final List<PrologPredicate> newChildren = new LinkedList<PrologPredicate>();
-        for(final PrologPredicate child: pred.getParameters()) {
+        for (final PrologPredicate child: pred.getParameters()) {
             newChildren.add(PrologPredicate.copy(child));
         }
-
         return new PrologPredicate(newName, newChildren);
     }
 
@@ -143,10 +164,10 @@ public final class PrologPredicate {
      * @param replacements the replacements
      */
     public void replaceVariables(final Map<String, String> replacements) {
-        if(replacements.keySet().contains(this.name)) {
+        if (replacements.keySet().contains(this.name)) {
             this.name = replacements.get(this.name);
         } else {
-            for(final PrologPredicate parameter: this.parameters) {
+            for (final PrologPredicate parameter: this.parameters) {
                 parameter.replaceVariables(replacements);
             }
         }
@@ -164,22 +185,15 @@ public final class PrologPredicate {
 
     @Override
     public String toString() {
-        String res = "";
-
+        String res = StringUtils.EMPTY;
         res += this.name;
         if (this.arity > 0) {
-            res += "(";
-
+            final List<String> pars = new LinkedList<String>();
             for (int i = 0; i < this.arity; i++) {
-                res += this.parameters.get(i).toString();
-                if (i < this.arity - 1) {
-                    res += SEPARATOR;
-                }
+                pars.add(this.parameters.get(i).toString());
             }
-
-            res += ")";
+            res += StringUtils.parenthesize(pars);
         }
-
         return res;
     }
 

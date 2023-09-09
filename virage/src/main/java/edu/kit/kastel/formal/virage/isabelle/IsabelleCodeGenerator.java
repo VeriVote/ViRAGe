@@ -1,5 +1,7 @@
 package edu.kit.kastel.formal.virage.isabelle;
 
+import static edu.kit.kastel.formal.virage.isabelle.IsabelleCodeGenerationLanguage.Scala;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +24,7 @@ import edu.kit.kastel.formal.util.ProcessUtils;
 import edu.kit.kastel.formal.util.SimpleFileReader;
 import edu.kit.kastel.formal.util.SimpleFileWriter;
 import edu.kit.kastel.formal.util.StringUtils;
+import edu.kit.kastel.formal.util.SystemUtils;
 import edu.kit.kastel.formal.virage.core.ConfigReader;
 import edu.kit.kastel.formal.virage.types.CodeGenerationFailedException;
 import edu.kit.kastel.formal.virage.types.CompilationFailedException;
@@ -38,6 +41,11 @@ import edu.kit.kastel.formal.virage.types.IsabelleBuildFailedException;
  */
 public final class IsabelleCodeGenerator {
     /**
+     * File ending for template files.
+     */
+    public static final String DOT_TMPL = StringUtils.PERIOD + "template";
+
+    /**
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getLogger(IsabelleCodeGenerator.class);
@@ -53,24 +61,40 @@ public final class IsabelleCodeGenerator {
     private static final String END = "end";
 
     /**
-     * File ending for template files.
+     * File ending for Scala files.
      */
-    private static final String DOT_TEMPLATE = ".template";
+    private static final String DOT_SCALA =
+            StringUtils.PERIOD + IsabelleCodeGenerationLanguage.Scala.name().toLowerCase();
+
+    /**
+     * File ending for jar files.
+     */
+    private static final String DOT_JAR = StringUtils.PERIOD + "jar";
+
+    /**
+     * String for code folder.
+     */
+    private static final String CODE_FOLDER = "code";
+
+    /**
+     * String for export file.
+     */
+    private static final String EXPORT_FILE = "export";
 
     /**
      * Template for code export.
      */
-    private static String exportTemplate = "";
+    private static String exportTemplate = StringUtils.EMPTY;
 
     /**
      * Isabelle ROOT file template.
      */
-    private static String rootTemplate = "";
+    private static String rootTemplate = StringUtils.EMPTY;
 
     /**
      * Voting context template.
      */
-    private static String votingContextTemplate = "";
+    private static String votingContextTemplate = StringUtils.EMPTY;
 
     /**
      * Module name variable.
@@ -103,19 +127,20 @@ public final class IsabelleCodeGenerator {
     private static final String PARENT_NAME_VAR = "$PARENT_NAME";
 
     /**
-     * Enum string.
+     * String for enumerable.
      */
     private static final String ENUM = "Enum";
 
     /**
-     * Enum comment.
+     * Comment for enumerable.
      */
     private static final String ENUM_COMMENT = "ENUM";
 
     /**
      * HOL.equal.
      */
-    private static final String EQUALITY = "HOL.equal";
+    private static final String EQUALITY =
+            IsabelleUtils.HOL + IsabelleUtils.THEORY_NAME_SEPARATOR + "equal";
 
     /**
      * Equality comment.
@@ -125,7 +150,12 @@ public final class IsabelleCodeGenerator {
     /**
      * Relation string.
      */
-    private static final String RELATION = "(x: Set.set[(A, A)]):";
+    private static final String RELATION =
+            StringUtils.parenthesize2(
+                    ScalaIsabelleFacade.DEFAULT_VARIABLE + StringUtils.COLON,
+                    IsabelleUtils.SET + IsabelleUtils.THEORY_NAME_SEPARATOR + "set["
+                    + StringUtils.parenthesize(IsabelleUtils.DEFAULT_SET, IsabelleUtils.DEFAULT_SET)
+                    + "]") + StringUtils.COLON;
 
     /**
      * Option1 comment.
@@ -140,12 +170,12 @@ public final class IsabelleCodeGenerator {
     /**
      * String opening a Scala comment.
      */
-    private static final String SCALA_COMMENT_OPEN = "/* ";
+    private static final String COMMENT_OPEN = "/* ";
 
     /**
      * String closing a Scala comment.
      */
-    private static final String SCALA_COMMENT_CLOSE = " */";
+    private static final String COMMENT_CLOSE = " */";
 
     /**
      * The compositional framework.
@@ -158,17 +188,12 @@ public final class IsabelleCodeGenerator {
     private final IsabelleTheoryGenerator generator;
 
     /**
-     * The Isabelle theory parser.
-     */
-    private final IsabelleTheoryParser parser;
-
-    /**
      * The file reader.
      */
     private final SimpleFileReader reader;
 
     /**
-     * Map of the code replacemenents.
+     * Map of the code replacements.
      */
     private Map<String, String> codeReplacements;
 
@@ -180,57 +205,162 @@ public final class IsabelleCodeGenerator {
      */
     public IsabelleCodeGenerator(final FrameworkRepresentation frameworkValue) throws IOException {
         this.framework = frameworkValue;
-
         this.reader = new SimpleFileReader();
-        this.parser = new IsabelleTheoryParser();
         this.generator = new IsabelleTheoryGenerator(frameworkValue);
-
-        if (exportTemplate.isEmpty()) {
+        if (IsabelleCodeGenerator.exportTemplate == null
+                || IsabelleCodeGenerator.exportTemplate.isEmpty()) {
             StringWriter writer = new StringWriter();
-
-            final InputStream exportTemplateStream = this.getClass().getClassLoader()
-                    .getResourceAsStream("export_code" + DOT_TEMPLATE);
+            final InputStream exportTemplateStream =
+                    this.getClass().getClassLoader()
+                    .getResourceAsStream(EXPORT_FILE + CODE + DOT_TMPL);
             try {
                 IOUtils.copy(exportTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
                 LOGGER.error(e);
             }
-            exportTemplate = writer.toString();
-
+            setExportTemplate(writer.toString());
             writer = new StringWriter();
-            final InputStream rootTemplateStream = this.getClass().getClassLoader()
-                    .getResourceAsStream("code_root" + DOT_TEMPLATE);
+            final InputStream rootTemplateStream =
+                    this.getClass().getClassLoader().getResourceAsStream("code_root" + DOT_TMPL);
             try {
                 IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
                 LOGGER.error(e);
             }
-            rootTemplate = writer.toString();
+            setRootTemplate(writer.toString());
 
             writer = new StringWriter();
-            final InputStream votingContextTemplateStream = this.getClass().getClassLoader()
-                    .getResourceAsStream("voting_context" + DOT_TEMPLATE);
+            final InputStream votingContextTemplateStream =
+                    this.getClass().getClassLoader()
+                    .getResourceAsStream("voting_context" + DOT_TMPL);
             try {
                 IOUtils.copy(votingContextTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
                 LOGGER.error(e);
             }
-            votingContextTemplate = writer.toString();
+            setVotingContextTemplate(writer.toString());
         }
-
         this.initCodeReplacements();
+    }
+
+    private static synchronized void setExportTemplate(final String newTemplate) {
+        exportTemplate = newTemplate;
+    }
+
+    private static synchronized void setRootTemplate(final String newTemplate) {
+        rootTemplate = newTemplate;
+    }
+
+    private static synchronized void setVotingContextTemplate(final String newTemplate) {
+        votingContextTemplate = newTemplate;
+    }
+
+    private static String scalaCompileExec(final String isabelleExecutable,
+                                           final String codeFilePath,
+                                           final String votingContextPath,
+                                           final String jarPath) {
+        return isabelleExecutable
+                + IsabelleProofChecker.SCALAC_TOOL
+                + StringUtils.SPACE + codeFilePath + StringUtils.SPACE + votingContextPath
+                + IsabelleProofChecker.INCL_SESS_DIR + StringUtils.SPACE + jarPath;
+    }
+
+    private static String getCanonicalPath(final File file) throws CodeGenerationFailedException {
+        final String filePath;
+        try {
+            filePath = file.getCanonicalPath();
+        } catch (IOException e) {
+            throw new CodeGenerationFailedException(e);
+        }
+        return filePath;
+    }
+
+    /**
+     * Run terminating Scala compile process and log the output.
+     *
+     * @param codeFile the Scala code file
+     * @param votingContext the voting context file
+     * @param isaExec the executable Isabelle binary
+     * @param jarPath the JAR path
+     * @return the status value of the process result
+     * @throws CodeGenerationFailedException in case of input, output or interruption failures
+     */
+    private static int runScalaCompileProcess(final File codeFile, final File votingContext,
+                                              final String isaExec, final String jarPath)
+                                                      throws CodeGenerationFailedException {
+        final int status;
+        try {
+            status = ProcessUtils.runTerminatingProcessAndLogOutput(
+                    scalaCompileExec(isaExec, getCanonicalPath(codeFile),
+                                     getCanonicalPath(votingContext), jarPath));
+        } catch (IOException | InterruptedException e) {
+            throw new CodeGenerationFailedException(e);
+        }
+        return status;
+    }
+
+    private String prepareTheoryFile(final File theory, final String language) throws IOException {
+        String originalName = StringUtils.EMPTY;
+        String newName = StringUtils.EMPTY;
+        final Map<String, String> map =
+                IsabelleTheoryParser.getAllFunctionsAndDefinitions(theory.getCanonicalPath());
+        if (map.keySet().size() != 1) {
+            throw new IllegalArgumentException();
+        }
+        for (final String definition: map.keySet()) {
+            originalName = definition;
+            newName = definition + CODE;
+        }
+        final String originalDefinition =
+                IsabelleTheoryParser.getDefinitionByName(originalName, theory);
+        String newDefinition = originalDefinition.replaceAll(originalName, newName);
+        for (final Map.Entry<String, String> oldEntry: this.codeReplacements.entrySet()) {
+            // TODO: This is wrong if names are not prefix free.
+            // This should be fixed if this solution stays permanently,
+            // but it is only meant as a temporary fix anyway.
+            newDefinition = newDefinition.replaceAll(oldEntry.getKey(), oldEntry.getValue());
+        }
+        final String exportCommand =
+                IsabelleCodeGenerator.exportTemplate
+                .replace(MODULE_NAME_VAR, newName).replace(LANGUAGE_VAR, language);
+        final String result = newDefinition + "\n\n" + exportCommand;
+        final List<String> lines = this.reader.readFileByLine(theory);
+        for (int i = 0; i < lines.size(); i++) {
+            final String line = lines.get(i);
+            if (StringUtils.removeWhitespace(line).equals(END)) {
+                lines.add(i, result);
+                break;
+            }
+        }
+        final SimpleFileWriter writer = new SimpleFileWriter();
+        writer.writeToFile(theory.getCanonicalPath(), lines);
+        return newName;
+    }
+
+    /**
+     * Prepare the theory file.
+     * TODO: Should this become public?
+     *
+     * @param theory the theory file
+     * @param language the programming language for the generated code
+     * @return the theory file name
+     * @throws IOException in case of any input or output exceptions from file operations
+     */
+    private String prepareTheoryFile(final File theory,
+                                     final IsabelleCodeGenerationLanguage language)
+                                             throws IOException {
+        return this.prepareTheoryFile(theory, language.toString());
     }
 
     private String buildSessionRoot(final String theoryName, final File theory) {
         // Session names MUST be universally unique, as Isabelle seems to be incapable
-        // of
-        // rebuilding single sessions without triggering full rebuilds.
+        // of rebuilding single sessions without triggering full rebuilds.
         // TODO: Is there a way to do it?
         final String sessionName = "ad_hoc_session_"
                 + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-
-        String result = rootTemplate.replace(SESSION_NAME_VAR, sessionName).replace(THEORY_NAME_VAR,
-                theoryName);
+        String result =
+                IsabelleCodeGenerator.rootTemplate
+                .replace(SESSION_NAME_VAR, sessionName).replace(THEORY_NAME_VAR, theoryName);
         result = result.replace(PARENT_NAME_VAR, this.framework.getSessionName());
         final SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(theory.getParent() + File.separator + IsabelleUtils.ROOT, result);
@@ -238,17 +368,142 @@ public final class IsabelleCodeGenerator {
         return sessionName;
     }
 
+    private File prepareVotingContext(final String theoryName, final String moduleName,
+                                      final File moduleFile, final boolean setExplicitParameters)
+                                              throws IOException {
+        final File dir = moduleFile.getParentFile();
+        final SimpleFileReader localReader = new SimpleFileReader();
+        final String code = localReader.readFile(moduleFile);
+        String result =
+                IsabelleCodeGenerator.votingContextTemplate
+                .replace(THEORY_NAME_VAR, theoryName).replace(MODULE_NAME_VAR, moduleName);
+        final boolean containsEnum = code.contains(ENUM);
+        final boolean containsEquality = code.contains(EQUALITY);
+        final boolean requiresRelation = code.contains(RELATION);
+        final List<String> parameters = new LinkedList<String>();
+        // Enable the required optional parts of the votingContextTemplate
+        if (containsEnum) {
+            result = result.replace(COMMENT_OPEN + ENUM_COMMENT, StringUtils.EMPTY)
+                    .replace(ENUM_COMMENT + COMMENT_CLOSE, StringUtils.EMPTY);
+            parameters.add("bounded");
+        }
+        if (containsEquality) {
+            result = result.replace(COMMENT_OPEN + EQUALITY_COMMENT, StringUtils.EMPTY)
+                    .replace(EQUALITY_COMMENT + COMMENT_CLOSE, StringUtils.EMPTY);
+            parameters.add("eq");
+        }
+        if (requiresRelation) {
+            result = result.replace(COMMENT_OPEN + OPTION2_COMMENT, StringUtils.EMPTY)
+                    .replace(OPTION2_COMMENT + COMMENT_CLOSE, StringUtils.EMPTY);
+        } else {
+            result = result.replace(COMMENT_OPEN + OPTION1_COMMENT, StringUtils.EMPTY)
+                    .replace(OPTION1_COMMENT + COMMENT_CLOSE, StringUtils.EMPTY);
+        }
+        String paramString = StringUtils.EMPTY;
+        // setExplicitParameters is required for now. Sometimes, Scala uses the implicit
+        // values,
+        // sometimes they have to be given explicitly, so we want to try both.
+        if (!parameters.isEmpty() && setExplicitParameters) {
+            paramString = StringUtils.parenthesize(StringUtils.printCollection(parameters));
+        }
+        result = result.replace(PARAM_VAR, paramString);
+        final String path = dir + File.separator + "votingContext" + DOT_SCALA;
+        final SimpleFileWriter writer = new SimpleFileWriter();
+        writer.writeToFile(path, result);
+        return SystemUtils.file(path);
+    }
+
     /**
-     * Invokes Isabelle's code generator to generate code from a composition.
+     * Prepare the voting context and wrap input or output failures into code generation failure.
      *
-     * @param composition the composition
-     * @param language the target language
-     * @return a file containing the generated code
-     * @throws CodeGenerationFailedException wrapping the actual cause
+     * @param moduleName the name of the module
+     * @param theoryName the name of the theory
+     * @param codeFile the Scala code file
+     * @param setExplicitParameters whether parameters should be set explicitly
+     * @return the prepared voting context file
+     * @throws CodeGenerationFailedException in case of input or output failures
      */
-    public File generateCode(final DecompositionTree composition,
-            final IsabelleCodeGenerationLanguage language) throws CodeGenerationFailedException {
-        return this.generateCode(composition.toString(), language);
+    private File generateVotingContextFile(final String theoryName,
+                                           final String moduleName,
+                                           final File codeFile,
+                                           final boolean setExplicitParameters)
+                                                   throws CodeGenerationFailedException {
+        final File votingContext;
+        try {
+            votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile,
+                                                      setExplicitParameters);
+        } catch (final IOException e) {
+            throw new CodeGenerationFailedException(e);
+        }
+        return votingContext;
+    }
+
+    private void initCodeReplacements() throws IOException {
+        final Map<String, String> replacements = new HashMap<String, String>();
+        final Map<String, String> functionsAndDefinitions =
+                IsabelleTheoryParser.getAllFunctionsAndDefinitions(this.framework.getTheoryPath());
+        final Set<String> names = functionsAndDefinitions.keySet();
+        for (final String name: names) {
+            if (names.contains(name + CODE)) {
+                replacements.put(name, name + CODE);
+            }
+        }
+        this.codeReplacements = replacements;
+    }
+
+    private File invokeIsabelleCodeGeneration(final File theory, final String sessionName,
+                                              final String theoryName)
+                                                      throws IOException, InterruptedException,
+                                                             IsabelleBuildFailedException,
+                                                             ExternalSoftwareUnavailableException {
+        final String generatedPath = theory.getParent();
+        final String theoryPath = SystemUtils.file(this.framework.getTheoryPath()).getPath();
+        final String quickAndDirty =
+                IsabelleProofChecker.SYS_OPT + IsabelleProofChecker.Q_AND_D_OPT;
+        final String outputParameter = IsabelleProofChecker.INCL_SEL_SESS_DIR + StringUtils.SPACE;
+        final String isabelleCommand =
+                ConfigReader.getInstance().getIsabelleExecutable()
+                + IsabelleProofChecker.BUILD_TOOL + IsabelleProofChecker.EXPORT_FILES
+                + outputParameter + generatedPath + outputParameter
+                + theoryPath + quickAndDirty + IsabelleProofChecker.BUILD_OPT + StringUtils.SPACE
+                + sessionName;
+        final int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
+        if (status != 0) {
+            LOGGER.error("Isabelle code generation failed.");
+            throw new IsabelleBuildFailedException();
+        }
+        final String codePath =
+                generatedPath + File.separator + EXPORT_FILE + File.separator
+                + sessionName + IsabelleUtils.THEORY_NAME_SEPARATOR + theoryName + File.separator
+                + CODE_FOLDER + File.separator;
+        final File[] generatedFiles = SystemUtils.file(codePath).listFiles();
+        // Delete ROOT file, it has served its purpose
+        final File root = SystemUtils.file(generatedPath + File.separator + IsabelleUtils.ROOT);
+        Files.delete(root.toPath());
+        // Isabelle puts everything into one file when generating Scala or OCaml code
+        return generatedFiles != null ? generatedFiles[0] : SystemUtils.file(codePath);
+    }
+
+    /**
+     * Invoke Scala code file from the given Isabelle theory.
+     *
+     * @param theory the Isabelle theory file
+     * @param sessionName the Isabelle session name
+     * @param theoryName the Isabelle theory name
+     * @return the Scala code file for the given Isabelle theory
+     * @throws CodeGenerationFailedException in case of file operation failure or similar
+     */
+    private File invokeScalaCodeFromIsabelleTheory(final File theory, final String sessionName,
+                                                   final String theoryName)
+                                                           throws CodeGenerationFailedException {
+        final File codeFile;
+        try {
+            codeFile = this.invokeIsabelleCodeGeneration(theory, sessionName, theoryName);
+        } catch (IOException | InterruptedException | IsabelleBuildFailedException
+                | ExternalSoftwareUnavailableException e) {
+            throw new CodeGenerationFailedException(e);
+        }
+        return codeFile;
     }
 
     /**
@@ -262,21 +517,17 @@ public final class IsabelleCodeGenerator {
     public File generateCode(final File theory, final IsabelleCodeGenerationLanguage language)
             throws CodeGenerationFailedException {
         // String moduleName = this.prepareTheoryFile(theory, language);
-
-        final String theoryName = theory.getName().substring(0,
-                theory.getName().length() - (IsabelleUtils.FILE_EXTENSION.length()));
-
+        final String theoryName =
+                theory.getName().substring(0,
+                        theory.getName().length() - (IsabelleUtils.DOT_THY.length()));
         final String sessionName = this.buildSessionRoot(theoryName, theory);
-
         try {
             final File codeFile;
             try {
-                codeFile = this.invokeIsabelleCodeGeneration(theory, sessionName,
-                        theoryName);
+                codeFile = this.invokeIsabelleCodeGeneration(theory, sessionName, theoryName);
             } catch (IOException | InterruptedException | ExternalSoftwareUnavailableException e) {
                 throw new CodeGenerationFailedException(e);
             }
-
             return codeFile;
         } catch (final IsabelleBuildFailedException e) {
             throw new CodeGenerationFailedException(e);
@@ -292,11 +543,25 @@ public final class IsabelleCodeGenerator {
      * @throws CodeGenerationFailedException wrapping the actual cause
      */
     public File generateCode(final String composition,
-            final IsabelleCodeGenerationLanguage language) throws CodeGenerationFailedException {
-        final File theory = this.generator.generateTheoryFile(composition,
-                new LinkedList<CompositionProof>());
-
+                             final IsabelleCodeGenerationLanguage language)
+                                     throws CodeGenerationFailedException {
+        final File theory =
+                this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
         return this.generateCode(theory, language);
+    }
+
+    /**
+     * Invokes Isabelle's code generator to generate code from a composition.
+     *
+     * @param composition the composition
+     * @param language the target language
+     * @return a file containing the generated code
+     * @throws CodeGenerationFailedException wrapping the actual cause
+     */
+    public File generateCode(final DecompositionTree composition,
+                             final IsabelleCodeGenerationLanguage language)
+                                     throws CodeGenerationFailedException {
+        return this.generateCode(composition.toString(), language);
     }
 
     /**
@@ -312,75 +577,36 @@ public final class IsabelleCodeGenerator {
             throws CodeGenerationFailedException {
         final String moduleName;
         try {
-            moduleName = this.prepareTheoryFile(theory, "Scala");
+            moduleName = this.prepareTheoryFile(theory, Scala);
         } catch (final IOException e) {
             throw new CodeGenerationFailedException(e);
         }
-
-        final String theoryName = theory.getName().substring(0,
-                theory.getName().length() - (IsabelleUtils.FILE_EXTENSION.length()));
-
+        final String theoryName =
+                theory.getName().substring(0,
+                        theory.getName().length() - (IsabelleUtils.DOT_THY.length()));
         final String sessionName = this.buildSessionRoot(theoryName, theory);
-
-        final File codeFile;
-        try {
-            codeFile = this.invokeIsabelleCodeGeneration(theory, sessionName, theoryName);
-        } catch (IOException | InterruptedException | IsabelleBuildFailedException
-                | ExternalSoftwareUnavailableException e) {
-            throw new CodeGenerationFailedException(e);
-        }
-
+        final File codeFile = invokeScalaCodeFromIsabelleTheory(theory, sessionName, theoryName);
         // First, try using implicit values only
-        File votingContext;
+        File votingContext = generateVotingContextFile(theoryName, moduleName, codeFile, false);
+        final String jarPath = codeFile.getParent() + File.separator + moduleName + DOT_JAR;
+        final String isaExec;
         try {
-            votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile, false);
-        } catch (final IOException e) {
+            isaExec = ConfigReader.getInstance().getIsabelleExecutable();
+        } catch (ExternalSoftwareUnavailableException e) {
             throw new CodeGenerationFailedException(e);
         }
-
-        final String jarPath = codeFile.getParent() + File.separator + moduleName + ".jar";
-
-        int status;
-        final String outputParameter = " -d ";
-        final String scalacCommand = " scalac ";
-        try {
-            status = ProcessUtils.runTerminatingProcessAndLogOutput(
-                    ConfigReader.getInstance().getIsabelleExecutable() + scalacCommand
-                            + codeFile.getCanonicalPath() + StringUtils.SPACE
-                            + votingContext.getCanonicalPath()
-                            + outputParameter + jarPath);
-        } catch (IOException | InterruptedException | ExternalSoftwareUnavailableException e) {
-            throw new CodeGenerationFailedException(e);
-        }
-
-        if (status != 0) {
-            // Implicit values did not work, try setting them explicitly.
-            try {
-                votingContext = this.prepareVotingContext(theoryName, moduleName, codeFile, true);
-            } catch (final IOException e) {
-                throw new CodeGenerationFailedException(e);
-            }
-
-            try {
-                status = ProcessUtils.runTerminatingProcessAndLogOutput(
-                        ConfigReader.getInstance().getIsabelleExecutable() + scalacCommand
-                                + codeFile.getCanonicalPath() + StringUtils.SPACE
-                                + votingContext.getCanonicalPath()
-                                + outputParameter + jarPath);
-            } catch (IOException | InterruptedException | ExternalSoftwareUnavailableException e) {
-                throw new CodeGenerationFailedException(e);
-            }
-
+        int status = runScalaCompileProcess(codeFile, votingContext, isaExec, jarPath);
+        if (status != 0) { // Implicit values did not work, try setting them explicitly.
+            votingContext = generateVotingContextFile(theoryName, moduleName, codeFile, true);
+            status = runScalaCompileProcess(codeFile, votingContext, isaExec, jarPath);
             if (status != 0) {
                 throw new CodeGenerationFailedException(
                         new CompilationFailedException(
                                 "Generated Scala code could not be compiled."));
             }
         }
-
         LOGGER.info("Scala compilation was successful. The jar file can be found at " + jarPath);
-
-        return new File(jarPath);
+        return SystemUtils.file(jarPath);
     }
 
     /**
@@ -393,173 +619,12 @@ public final class IsabelleCodeGenerator {
      */
     public File generateScalaCodeAndCompile(final String composition)
             throws CodeGenerationFailedException {
-        final File theory = this.generator.generateTheoryFile(composition,
-                new LinkedList<CompositionProof>());
-
+        final File theory =
+                this.generator.generateTheoryFile(composition, new LinkedList<CompositionProof>());
         try {
             return this.generateScalaCodeAndCompile(theory);
         } catch (final CodeGenerationFailedException e) {
             throw new CodeGenerationFailedException(e);
         }
-    }
-
-    private void initCodeReplacements() throws IOException {
-        final Map<String, String> replacements = new HashMap<String, String>();
-        final Map<String, String> functionsAndDefinitions = this.parser
-                .getAllFunctionsAndDefinitions(this.framework.getTheoryPath());
-
-        final Set<String> names = functionsAndDefinitions.keySet();
-
-        for (final String name : names) {
-            if (names.contains(name + CODE)) {
-                replacements.put(name, name + CODE);
-            }
-        }
-
-        this.codeReplacements = replacements;
-    }
-
-    private File invokeIsabelleCodeGeneration(final File theory, final String sessionName,
-            final String theoryName) throws IOException, InterruptedException,
-        IsabelleBuildFailedException, ExternalSoftwareUnavailableException {
-        final String generatedPath = theory.getParent();
-        final String theoryPath = new File(this.framework.getTheoryPath()).getCanonicalPath();
-        final String quickAndDirty = " -o quick_and_dirty";
-        final String outputParameter = " -D ";
-
-        final String isabelleCommand = ConfigReader.getInstance().getIsabelleExecutable()
-                + " build -e" + outputParameter + generatedPath + outputParameter
-                + theoryPath + quickAndDirty + " -b " + sessionName;
-
-        final int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
-
-        if (status != 0) {
-            LOGGER.error("Isabelle code generation failed.");
-
-            throw new IsabelleBuildFailedException();
-        }
-
-        final String codePath = generatedPath + File.separator + "export" + File.separator
-                + sessionName + "." + theoryName + File.separator + "code" + File.separator;
-        final File[] generatedFiles = new File(codePath).listFiles();
-
-        // Delete ROOT file, it has served its purpose
-        final File root = new File(generatedPath + File.separator + IsabelleUtils.ROOT);
-        Files.delete(root.toPath());
-
-        // Isabelle puts everything into one file when generating Scala or OCaml code
-        return generatedFiles != null ? generatedFiles[0] : new File(codePath);
-    }
-
-    // TODO Should this become public?
-    @SuppressWarnings("unused")
-    private String prepareTheoryFile(final File theory,
-            final IsabelleCodeGenerationLanguage language) throws IOException {
-        return this.prepareTheoryFile(theory, language.toString());
-    }
-
-    private String prepareTheoryFile(final File theory, final String language) throws IOException {
-        String originalName = "";
-        String newName = "";
-
-        final Map<String, String> map = this.parser
-                .getAllFunctionsAndDefinitions(theory.getCanonicalPath());
-        if (map.keySet().size() != 1) {
-            throw new IllegalArgumentException();
-        }
-
-        for (final String definition : map.keySet()) {
-            originalName = definition;
-            newName = definition + CODE;
-        }
-
-        final String originalDefinition = this.parser.getDefinitionByName(originalName, theory);
-
-        String newDefinition = originalDefinition.replaceAll(originalName, newName);
-
-        for (final Map.Entry<String, String> oldEntry : this.codeReplacements.entrySet()) {
-            // TODO: This is wrong if names are not prefix free.
-            // This should be fixed if this solution stays permanently,
-            // but it is only meant as a temporary fix anyway.
-            newDefinition = newDefinition.replaceAll(oldEntry.getKey(), oldEntry.getValue());
-        }
-
-        String exportCommand = exportTemplate.replace(MODULE_NAME_VAR, newName);
-        exportCommand = exportCommand.replace(LANGUAGE_VAR, language);
-
-        final String result = newDefinition + "\n\n" + exportCommand;
-
-        final List<String> lines = this.reader.readFileByLine(theory);
-
-        for (int i = 0; i < lines.size(); i++) {
-            final String line = lines.get(i);
-
-            if (StringUtils.removeWhitespace(line).equals(END)) {
-                lines.add(i, result);
-                break;
-            }
-        }
-
-        final SimpleFileWriter writer = new SimpleFileWriter();
-        writer.writeToFile(theory.getCanonicalPath(), lines);
-
-        return newName;
-    }
-
-    private File prepareVotingContext(final String theoryName, final String moduleName,
-            final File moduleFile, final boolean setExplicitParameters) throws IOException {
-        final File dir = moduleFile.getParentFile();
-
-        final SimpleFileReader localReader = new SimpleFileReader();
-        final String code = localReader.readFile(moduleFile);
-
-        String result = votingContextTemplate.replace(THEORY_NAME_VAR, theoryName)
-                .replace(MODULE_NAME_VAR, moduleName);
-
-        final boolean containsEnum = code.contains(ENUM);
-        final boolean containsEquality = code.contains(EQUALITY);
-        final boolean requiresRelation = code.contains(RELATION);
-
-        final List<String> parameters = new LinkedList<String>();
-
-        // Enable the required optional parts of the votingContextTemplate
-        if (containsEnum) {
-            result = result.replace(SCALA_COMMENT_OPEN + ENUM_COMMENT, "")
-                    .replace(ENUM_COMMENT + SCALA_COMMENT_CLOSE, "");
-            parameters.add("bounded");
-        }
-
-        if (containsEquality) {
-            result = result.replace(SCALA_COMMENT_OPEN + EQUALITY_COMMENT, "")
-                    .replace(EQUALITY_COMMENT + SCALA_COMMENT_CLOSE,
-                    "");
-            parameters.add("eq");
-        }
-
-        if (requiresRelation) {
-            result = result.replace(SCALA_COMMENT_OPEN + OPTION2_COMMENT, "")
-                    .replace(OPTION2_COMMENT + SCALA_COMMENT_CLOSE,
-                    "");
-        } else {
-            result = result.replace(SCALA_COMMENT_OPEN + OPTION1_COMMENT, "")
-                    .replace(OPTION1_COMMENT + SCALA_COMMENT_CLOSE,
-                    "");
-        }
-
-        String paramString = "";
-        // setExplicitParameters is required for now. Sometimes, Scala uses the implicit
-        // values,
-        // sometimes they have to be given explicitly, so we want to try both.
-        if (!parameters.isEmpty() && setExplicitParameters) {
-            paramString = "(" + StringUtils.printCollection(parameters) + ")";
-        }
-        result = result.replace(PARAM_VAR, paramString);
-
-        final String path = dir.getCanonicalPath() + File.separator + "votingContext.scala";
-
-        final SimpleFileWriter writer = new SimpleFileWriter();
-        writer.writeToFile(path, result);
-
-        return new File(path);
     }
 }

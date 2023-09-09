@@ -16,10 +16,12 @@ public final class VirageExtractJob extends VirageJobWithExplicitResult<Framewor
      * The Isabelle session name.
      */
     private final String sessionName;
+
     /**
      * The path to a ROOT file.
      */
     private final String path;
+
     /**
      * The name of the (E)PL file to be generated.
      */
@@ -34,7 +36,7 @@ public final class VirageExtractJob extends VirageJobWithExplicitResult<Framewor
      * @param sessionNameValue the name of the session
      */
     public VirageExtractJob(final VirageUserInterface issuer, final String pathValue,
-            final String sessionNameValue) {
+                            final String sessionNameValue) {
         this(issuer, pathValue, sessionNameValue, null);
     }
 
@@ -47,23 +49,20 @@ public final class VirageExtractJob extends VirageJobWithExplicitResult<Framewor
      * @param fileNameValue the name of the (E)PL file to be generated.
      */
     public VirageExtractJob(final VirageUserInterface issuer, final String pathValue,
-            final String sessionNameValue, final String fileNameValue) {
+                            final String sessionNameValue, final String fileNameValue) {
         super(issuer);
-
         this.sessionName = sessionNameValue;
         this.path = pathValue;
         this.fileName = fileNameValue;
     }
 
     @Override
-    protected void concreteExecute()
-            throws FrameworkExtractionFailedException {
+    protected void concreteExecute() throws FrameworkExtractionFailedException {
         final IsabelleFrameworkExtractor extractor = new IsabelleFrameworkExtractor();
-        final FrameworkRepresentation framework = extractor.extract(this.path, this.sessionName,
-                this.fileName);
+        final FrameworkRepresentation framework =
+                extractor.extract(this.path, this.sessionName, this.fileName);
         framework.setTheoryPath(this.path);
         framework.setSessionName(this.sessionName);
-
         this.setResult(framework);
     }
 

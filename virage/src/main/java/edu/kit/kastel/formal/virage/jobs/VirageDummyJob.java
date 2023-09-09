@@ -1,5 +1,6 @@
 package edu.kit.kastel.formal.virage.jobs;
 
+import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
 
 /**
@@ -19,7 +20,7 @@ public final class VirageDummyJob extends VirageJobWithoutExplicitResult {
 
     @Override
     protected void concreteExecute() throws Exception {
-        // no-op
+        // skip operation
     }
 
     @Override
@@ -29,17 +30,16 @@ public final class VirageDummyJob extends VirageJobWithoutExplicitResult {
 
     @Override
     public String getDescription() {
-        return "";
+        return StringUtils.EMPTY;
     }
 
     @Override
     public String presentConcreteResult() {
-        return "";
+        return StringUtils.EMPTY;
     }
 
     @Override
     public String presentResult() {
-        return "";
+        return StringUtils.EMPTY;
     }
-
 }

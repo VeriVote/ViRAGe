@@ -5,6 +5,7 @@ import java.util.List;
 
 import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.core.ConfigReader;
+import edu.kit.kastel.formal.virage.core.VirageCore;
 import edu.kit.kastel.formal.virage.core.VirageSearchManager;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
 import edu.kit.kastel.formal.virage.types.DecompositionTree;
@@ -22,6 +23,7 @@ public final class VirageGenerateJob
      * String representations of the desired properties.
      */
     private final List<String> propertyStrings;
+
     /**
      * The desired properties.
      */
@@ -35,26 +37,22 @@ public final class VirageGenerateJob
     /**
      * Simple constructor.
      *
-     * @param issuer the issuing ui
+     * @param issuer the issuing user interface
      * @param propertiesValue the properties
      */
     public VirageGenerateJob(final VirageUserInterface issuer, final List<String> propertiesValue) {
         super(issuer);
-
         this.propertyStrings = propertiesValue;
     }
 
     @Override
     public void concreteExecute() {
-        this.manager = this.getExecutingCore().getSearchManager();
-
+        final VirageCore execCore = this.getExecutingCore();
+        this.manager = execCore.getSearchManager();
         this.properties = new LinkedList<Property>();
-
-        for (final String s : this.propertyStrings) {
-            this.properties
-                    .add(this.getExecutingCore().getFrameworkRepresentation().getProperty(s));
+        for (final String s: this.propertyStrings) {
+            this.properties.add(execCore.getFrameworkRepresentation().getProperty(s));
         }
-
         this.setResult(this.manager.generateComposition(this.properties));
     }
 
@@ -74,28 +72,23 @@ public final class VirageGenerateJob
         if (this.properties.size() == 1) {
             prop = "property";
         }
-
         final List<String> results = new LinkedList<String>();
-        for (final SearchResult<DecompositionTree> treeResult : this.getResult()) {
+        for (final SearchResult<DecompositionTree> treeResult: this.getResult()) {
             if (treeResult.hasValue()) {
                 final DecompositionTree tree = treeResult.getValue();
-
                 results.add(tree.toStringWithTypesInsteadOfVariables(
                         this.getExecutingCore().getFrameworkRepresentation()));
             }
         }
-
         if (results.isEmpty()) {
             return StringUtils.appendPeriod("No composition found with " + prop + StringUtils.SPACE
                     + StringUtils.printCollection(this.properties));
         }
-
-        if (results.contains("")) {
+        if (results.contains(StringUtils.EMPTY)) {
             return StringUtils.appendPeriod("Any component of type "
                     + this.properties.get(0).getParameters().get(0).getName() + " satisfies the "
                     + prop + StringUtils.SPACE + StringUtils.printCollection(this.properties));
         }
-
         return StringUtils.appendPeriod("Generated the "
                 + this.properties.get(0).getParameters().get(0).getName() + " \""
                 + StringUtils.printCollection(results) + "\" with the " + prop + StringUtils.SPACE

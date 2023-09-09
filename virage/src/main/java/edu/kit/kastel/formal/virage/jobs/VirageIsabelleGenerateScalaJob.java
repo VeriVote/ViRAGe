@@ -25,7 +25,7 @@ public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitR
     /**
      * Simple constructor.
      *
-     * @param issuer the issuing ui
+     * @param issuer the issuing user interface
      * @param compositionValue the composition
      */
     public VirageIsabelleGenerateScalaJob(final VirageUserInterface issuer,

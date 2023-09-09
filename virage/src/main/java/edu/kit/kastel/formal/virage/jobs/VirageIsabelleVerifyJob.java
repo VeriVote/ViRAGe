@@ -27,7 +27,7 @@ public final class VirageIsabelleVerifyJob
     /**
      * Simple constructor.
      *
-     * @param issuer the issuing ui
+     * @param issuer the issuing user interface
      * @param fileValue the file
      */
     public VirageIsabelleVerifyJob(final VirageUserInterface issuer, final File fileValue) {

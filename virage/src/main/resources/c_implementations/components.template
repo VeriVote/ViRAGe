@@ -36,7 +36,7 @@ result parallel_composition_$IDX(profile profile_1, result result_1) {
 
 // loop_composition
 result loop_composition_$IDX(profile profile_1, result result_1) {
-	while(!$PARAM_2) {
+	while (!$PARAM_2) {
 	  result_1 = $PARAM_1;
 	}
 
@@ -47,8 +47,8 @@ result loop_composition_$IDX(profile profile_1, result result_1) {
 // revision_composition
 result revision_composition_$IDX(profile profile_1, result result_1) {
 	result_1 = $PARAM_1;
-	for(int i=0; i<C; i++) {
-		if(result_1.values[i] == ELECTED) {
+	for (int i = 0; i < C; i++) {
+		if (result_1.values[i] == ELECTED) {
 			result_1.values[i] = DEFERRED;
 		} else {
 			result_1.values[i] = REJECTED;
@@ -63,10 +63,10 @@ result revision_composition_$IDX(profile profile_1, result result_1) {
 result max_aggregator_$IDX(result result_1, result result_2) {
   result new_result;
 
-  for(int i=0; i<C; i++) {
-    if(result_1.values[i] == ELECTED || result_2.values[i] == ELECTED) {
+  for (int i = 0; i < C; i++) {
+    if (result_1.values[i] == ELECTED || result_2.values[i] == ELECTED) {
       new_result.values[i] = ELECTED;
-    } else if(result_1.values[i] == DEFERRED || result_2.values[i] == DEFERRED) {
+    } else if (result_1.values[i] == DEFERRED || result_2.values[i] == DEFERRED) {
       new_result.values[i] = DEFERRED;
     } else {
       new_result.values[i] = REJECTED;
@@ -79,8 +79,8 @@ result max_aggregator_$IDX(result result_1, result result_2) {
 
 // elect_module
 result elect_module_$IDX(profile profile_1, result result_1) {
-  for(int i=0; i<C; i++) {
-    if(result_1.values[i] == DEFERRED) {
+  for (int i = 0; i < C; i++) {
+    if (result_1.values[i] == DEFERRED) {
       result_1.values[i] = ELECTED;
     }
   }
@@ -94,12 +94,12 @@ result pass_module_$IDX(profile profile_1, result result_1) {
 	int n = $PARAM_1;
 	rel relation = $PARAM_2;
 
-  for(int i=0; i<C; i++) {
+  for (int i = 0; i < C; i++) {
     int current_alternative = relation.elements[i];
     int idx = find_index(profile_1, current_alternative);
 
-    if(result_1.values[idx] == DEFERRED) {
-      if(n>0) {
+    if (result_1.values[idx] == DEFERRED) {
+      if (n>0) {
         result_1.values[idx] = DEFERRED;
         n--;
       } else {
@@ -117,12 +117,12 @@ result drop_module_$IDX(profile profile_1, result result_1) {
 	int n = $PARAM_1;
 	rel relation = $PARAM_2;
 
-  for(int i=0; i<C; i++) {
+  for (int i = 0; i < C; i++) {
     int current_alternative = relation.elements[i];
     int idx = find_index(profile_1, current_alternative);
 
-    if(result_1.values[idx] == DEFERRED) {
-      if(n>0) {
+    if (result_1.values[idx] == DEFERRED) {
+      if (n>0) {
         result_1.values[idx] = REJECTED;
         n--;
       } else {
@@ -138,17 +138,17 @@ result drop_module_$IDX(profile profile_1, result result_1) {
 // plurality
 result plurality_$IDX(profile profile_1, result result_1) {
   int wins[C];
-  for(int i=0; i<C; i++) {
+  for (int i = 0; i < C; i++) {
     wins[i] = 0;
   }
 
-  for(int v=0; v<V; v++) {
-    for(int c=0; c<C; c++) {
+  for (int v = 0; v < V; v++) {
+    for (int c = 0; c < C; c++) {
       int current_alternative = profile_1.votes[v][c];
 
       int idx = find_index(profile_1, current_alternative);
 
-      if(result_1.values[idx] == DEFERRED) {
+      if (result_1.values[idx] == DEFERRED) {
         wins[idx]++;
 
         // bool flag
@@ -158,13 +158,13 @@ result plurality_$IDX(profile profile_1, result result_1) {
   }
 
   int max = 0;
-  for(int i=0; i<C; i++) {
-    if(wins[i] > max) max = wins[i];
+  for (int i = 0; i < C; i++) {
+    if (wins[i] > max) max = wins[i];
   }
 
-  for(int i=0; i<C; i++) {
-    if(result_1.values[i] == DEFERRED) {
-      if(wins[i] == max) {
+  for (int i = 0; i < C; i++) {
+    if (result_1.values[i] == DEFERRED) {
+      if (wins[i] == max) {
         result_1.values[i] = ELECTED;
       } else {
         result_1.values[i] = REJECTED;
@@ -182,8 +182,8 @@ bool defer_equal_condition_$IDX(result result_1) {
 
   int ctr = 0;
 
-  for(int i=0; i<C; i++) {
-    if(result_1.values[i] == DEFERRED) ctr++;
+  for (int i = 0; i < C; i++) {
+    if (result_1.values[i] == DEFERRED) ctr++;
   }
 
   return (ctr == n);

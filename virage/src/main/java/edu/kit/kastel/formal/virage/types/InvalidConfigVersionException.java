@@ -1,12 +1,11 @@
 package edu.kit.kastel.formal.virage.types;
 
 /**
- * Signals a mismatch of program and config file version.
+ * Signals a mismatch of program and configuration file version.
  *
  * @author VeriVote
  */
 public class InvalidConfigVersionException extends RuntimeException {
-
     /**
      * Generated ID.
      */
@@ -14,6 +13,7 @@ public class InvalidConfigVersionException extends RuntimeException {
 
     /**
      * Simple constructor.
+     *
      * @param message the message
      */
     public InvalidConfigVersionException(final String message) {

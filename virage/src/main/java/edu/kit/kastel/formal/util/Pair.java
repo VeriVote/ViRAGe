@@ -14,6 +14,7 @@ public final class Pair<S, T> {
      * First value.
      */
     private final S first;
+
     /**
      * Second value.
      */
@@ -21,6 +22,7 @@ public final class Pair<S, T> {
 
     /**
      * Simple constructor.
+     *
      * @param firstValue the first value
      * @param secondValue the second value
      */
@@ -29,28 +31,34 @@ public final class Pair<S, T> {
         this.second = secondValue;
     }
 
+    /**
+     * Returns the first value of the pair.
+     *
+     * @return the first value
+     */
     public S getFirstValue() {
         return this.first;
     }
 
+    /**
+     * Returns the second value of the pair.
+     *
+     * @return the second value
+     */
     public T getSecondValue() {
         return this.second;
     }
 
     @Override
     public String toString() {
-        String firstString = "";
-        String secondString = "";
-
+        String firstString = StringUtils.EMPTY;
+        String secondString = StringUtils.EMPTY;
         if (this.first != null) {
             firstString = this.first.toString();
         }
-
         if (this.second != null) {
             secondString = this.second.toString();
         }
-
-        return "(" + firstString + ", " + secondString + ")";
-
+        return StringUtils.parenthesize(firstString, StringUtils.SPACE + secondString);
     }
 }

@@ -16,10 +16,12 @@ public final class DecompositionTree {
      * The label.
      */
     private final String label;
+
     /**
      * The arity.
      */
     private int arity;
+
     /**
      * The children.
      */
@@ -46,7 +48,6 @@ public final class DecompositionTree {
     public DecompositionTree(final String labelValue, final DecompositionTree child) {
         this.children = new LinkedList<DecompositionTree>();
         this.children.add(child);
-
         this.label = labelValue;
         this.arity = 1;
     }
@@ -72,21 +73,18 @@ public final class DecompositionTree {
      */
     public static DecompositionTree parseString(final String passedString) {
         final String s = StringUtils.removeWhitespace(passedString);
-
-        final StringBuilder label = new StringBuilder("");
+        final StringBuilder label = new StringBuilder(StringUtils.EMPTY);
         final List<DecompositionTree> children = new LinkedList<DecompositionTree>();
-        String currentChild = "";
+        String currentChild = StringUtils.EMPTY;
         int level = 0;
-
         for (int i = 0; i < s.length(); i++) {
             final char current = s.charAt(i);
-
-            if (current == '(') {
+            if (current == StringUtils.LEFT_PAREN) {
                 level++;
                 if (level == 1) {
                     continue;
                 }
-            } else if (current == ')') {
+            } else if (current == StringUtils.RIGHT_PAREN) {
                 level--;
                 if (level < 0) {
                     throw new IllegalArgumentException();
@@ -98,27 +96,23 @@ public final class DecompositionTree {
                 if (level == 0) {
                     label.append(current);
                 } else if (level == 1) {
-                    if (current == ',') {
+                    if (current == StringUtils.COMMA_CHAR) {
                         children.add(DecompositionTree.parseString(currentChild));
-                        currentChild = "";
+                        currentChild = StringUtils.EMPTY;
                         continue;
                     }
                 }
             }
-
             if (level > 0) {
                 currentChild += current;
             }
         }
-
         if (!currentChild.isEmpty()) {
             children.add(DecompositionTree.parseString(currentChild));
         }
-
         if (level != 0) {
             throw new IllegalArgumentException();
         }
-
         return new DecompositionTree(label.toString(), children);
     }
 
@@ -148,7 +142,6 @@ public final class DecompositionTree {
                 }
             }
         }
-
         if (this.label == null) {
             if (other.label != null) {
                 return false;
@@ -159,14 +152,29 @@ public final class DecompositionTree {
         return true;
     }
 
+    /**
+     * Returns the decomposition tree's arity.
+     *
+     * @return the arity as an integer value
+     */
     public int getArity() {
         return this.arity;
     }
 
+    /**
+     * Returns a list of the decomposition tree's children.
+     *
+     * @return the children as a list of trees
+     */
     public List<DecompositionTree> getChildren() {
         return this.children;
     }
 
+    /**
+     * Returns the decomposition tree's label.
+     *
+     * @return the label string
+     */
     public String getLabel() {
         return this.label;
     }
@@ -178,20 +186,17 @@ public final class DecompositionTree {
      */
     public void fillMissingVariables(final FrameworkRepresentation framework) {
         final Component thisComponent = framework.getComponent(this.label);
-        if(PrologPredicate.isVariable(this.label)
+        if (PrologPredicate.isVariable(this.label)
                 || thisComponent == null && this.children.isEmpty()) {
             return;
         }
-
-        if(thisComponent == null || this.children.size() > thisComponent.getParameters().size()) {
+        if (thisComponent == null || this.children.size() > thisComponent.getParameters().size()) {
             throw new IllegalArgumentException();
         }
-
-        for(final DecompositionTree child : this.children) {
+        for (final DecompositionTree child: this.children) {
             child.fillMissingVariables(framework);
         }
-
-        while(this.children.size() != thisComponent.getParameters().size()) {
+        while (this.children.size() != thisComponent.getParameters().size()) {
             this.children.add(new DecompositionTree(PrologPredicate.ANONYMOUS));
             this.arity++;
         }
@@ -225,37 +230,29 @@ public final class DecompositionTree {
      * @return the string representation
      */
     public String toStringWithTypesInsteadOfVariables(final FrameworkRepresentation framework) {
-        String res = "";
-
+        String res = StringUtils.EMPTY;
         if (PrologPredicate.isVariable(this.label)) {
             return res;
         } else {
             res += this.label;
         }
-
         final Component thisComponent = framework.getComponent(this.label);
-
         if (!this.children.isEmpty()) {
-            res += "(";
-
+            String child = StringUtils.EMPTY;
             for (int i = 0; i < this.children.size(); i++) {
                 final DecompositionTree currentChild = this.children.get(i);
-
                 if (PrologPredicate.isVariable(currentChild.getLabel())) {
-                    res += thisComponent.getParameters().get(i).getName()
-                            + PrologPredicate.SEPARATOR;
+                    child += thisComponent.getParameters().get(i).getName()
+                            + StringUtils.COMMA;
                 } else {
-                    res += currentChild.toStringWithTypesInsteadOfVariables(framework);
+                    child += currentChild.toStringWithTypesInsteadOfVariables(framework);
                 }
             }
-
-            if (res.endsWith(PrologPredicate.SEPARATOR)) {
-                res = res.substring(0, res.length() - 1);
+            if (child.endsWith(StringUtils.COMMA)) {
+                child = res.substring(0, res.length() - 1);
             }
-
-            res += ")";
+            res += StringUtils.parenthesize(child);
         }
-
         return res;
     }
 }

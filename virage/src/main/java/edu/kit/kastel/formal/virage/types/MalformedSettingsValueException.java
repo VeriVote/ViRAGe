@@ -8,7 +8,6 @@ import java.io.IOException;
  * @author VeriVote
  */
 public class MalformedSettingsValueException extends IOException {
-
     /**
      * The UID.
      */
@@ -21,6 +20,7 @@ public class MalformedSettingsValueException extends IOException {
 
     /**
      * Simple constructor.
+     *
      * @param newMalformedValue the malformed value causing the exception.
      */
     public MalformedSettingsValueException(final String newMalformedValue) {
@@ -31,5 +31,4 @@ public class MalformedSettingsValueException extends IOException {
     public final String getMessage() {
         return "Malformed setting value: " + this.malformedValue;
     }
-
 }

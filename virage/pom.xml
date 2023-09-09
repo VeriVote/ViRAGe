@@ -50,6 +50,8 @@
     <jdk.version>17</jdk.version>
     <log4j.version>2.20.0</log4j.version>
     <spotbugs.version>4.7.3</spotbugs.version>
+    <junit.jupiter.version>5.10.0</junit.jupiter.version>
+    <surefire.version>3.1.2</surefire.version>
     <swi.home.dir>/usr/lib/swi-prolog</swi.home.dir>
     <main.class>edu.kit.kastel.formal.virage.core.VirageMain</main.class>
   </properties>
@@ -81,11 +83,41 @@
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.2</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit.jupiter.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-suite-engine</artifactId>
+      <version>1.10.0</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-runner</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>test</scope>
+    </dependency -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!--dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-suite</artifactId>
+      <version>${junit.jupiter.version} 5.10.0</version>
+      <scope>test</scope>
+    </dependency -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
@@ -105,7 +137,7 @@
     <dependency>
       <groupId>com.github.SWI-Prolog</groupId>
       <artifactId>packages-jpl</artifactId>
-      <version>V9.1.14</version>  <!-- version 7.6.1 of JPL -->
+      <version>V9.1.15</version>  <!-- version 7.6.1 of JPL -->
     </dependency>
     <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
     <dependency>
@@ -180,6 +212,24 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>${surefire.version}</version>
+            <dependencies>
+              <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-surefire-provider</artifactId>
+                <version>1.2.0</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <!-- test> your test suite class name should be here </test -->
+              <additionalClasspathElements>
+                <additionalClasspathElement>src/test/java/</additionalClasspathElement>
+              </additionalClasspathElements>
+            </configuration>
           </plugin>
         </plugins>
       </build>
@@ -266,11 +316,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.1.2</version>
+        <version>${surefire.version}</version>
         <configuration>
           <!-- Unit tests take ages, deployment tests are obsolete as ViRAGe performs 
             these checks at runtime. -->
-          <skipTests>true</skipTests>
+          <!-- skipTests>true</skipTests -->
         </configuration>
       </plugin>
       <plugin>
@@ -397,6 +447,16 @@
   </build>
   <reporting>
     <plugins>
+      <!-- plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${surefire.version}</version>
+      </plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.5.0</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>

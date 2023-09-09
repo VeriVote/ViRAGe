@@ -18,14 +18,14 @@ public abstract class ExtendedPrologStrings {
     public static final String COMPOSITION_TYPE_HEADER = "=== COMPONENT_TYPE";
 
     /**
-     * Composable module header.
+     * Header for modules that can be composed.
      * <b>Warning:</b> This was set to deprecated with no explicit justification,
      * maybe handle with care.
      */
     public static final String COMPOSABLE_MODULE_HEADER = "=== COMPOSABLE_MODULE";
 
     /**
-     * Composable module string.
+     * String for modules that can be composed.
      * <b>Warning:</b> This was set to deprecated with no explicit justification,
      * maybe handle with care.
      */
@@ -37,14 +37,17 @@ public abstract class ExtendedPrologStrings {
      * maybe handle with care.
      */
     public static final String COMPOSITIONAL_STRUCTURE_HEADER = "=== COMPOSITIONAL_STRUCTURE";
+
     /**
      * Property header.
      */
     public static final String PROPERTY_HEADER = "=== PROPERTY";
+
     /**
      * Composition rule header.
      */
     public static final String COMPOSITION_RULE_HEADER = "=== COMPOSITION_RULE";
+
     /**
      * Component string.
      */
@@ -54,10 +57,12 @@ public abstract class ExtendedPrologStrings {
      * "Undefined" keyword.
      */
     public static final String UNDEFINED = "UNDEFINED";
+
     /**
      * "Assumption" keyword.
      */
     public static final String ASSUMPTION = "ASSUMPTION";
+
     /**
      * "Unproven" keyword.
      */

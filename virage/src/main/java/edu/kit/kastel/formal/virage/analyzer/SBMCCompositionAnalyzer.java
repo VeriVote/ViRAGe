@@ -55,11 +55,13 @@
 //    super(framework);
 //
 //    this.compositionsTemplate = (new SimpleFileReader())
-//        .readFile(new File("src/test/resources/c_implementations/compositions.template"));
+//        .readFile(new File(SystemUtils.RESOURCES + CCodeGenerator.C_DIR + File.separator
+//                              + "compositions" + IsabelleCodeGenerator.DOT_TMPL));
 //    this.codeFileTemplate = (new SimpleFileReader()).
-//      readFile(new File("src/test/resources/code_file.template"));
+//      readFile(new File(SystemUtils.RESOURCES + "code_file" + IsabelleCodeGenerator.DOT_TMPL));
 //    this.electionDescriptionForBeast = (new SimpleFileReader())
-//        .readFile(new File("src/test/resources/election_description.template"));
+//        .readFile(new File(SystemUtils.RESOURCES + "election_description"
+//                              + IsabelleCodeGenerator.DOT_TMPL));
 //
 //    // FOR NOW: This is only possible via Eclipse. When executing the JAR on its
 //    // own,
@@ -80,12 +82,11 @@
 //
 //  @Override
 //  public List<SearchResult<BooleanWithUncertainty>>
-//    analyzeComposition(DecompositionTree composition,
-//      List<Property> properties) {
+//    analyzeComposition(DecompositionTree composition, List<Property> properties) {
 //    List<SearchResult<BooleanWithUncertainty>> res =
 //      new LinkedList<SearchResult<BooleanWithUncertainty>>();
 //
-//    for (Property property : properties) {
+//    for (Property property: properties) {
 //      List<Property> singleProp = new LinkedList<Property>();
 //      singleProp.add(property);
 //
@@ -139,11 +140,11 @@
 //    Platform.runLater(new Runnable() {
 //      @Override
 //      public synchronized void run() {
-//        SearchResult<BooleanWithUncertainty> res
-//          = new SearchResult<BooleanWithUncertainty>(QueryState.FAILED, null);
+//        SearchResult<BooleanWithUncertainty> res =
+//          new SearchResult<BooleanWithUncertainty>(QueryState.FAILED, null);
 //
-//        ElectionDescription elecDesc
-//          = new ElectionDescription("tmp", new Preference(), new CandidateList());
+//        ElectionDescription elecDesc =
+//          new ElectionDescription("tmp", new Preference(), new CandidateList());
 //
 //        String[] lines = elecDescCode.split(System.lineSeparator());
 //
@@ -171,7 +172,7 @@
 //            .replaceText("NOTEMPTY(INTERSECT(ELECT2, ELECT3))"
 //              + "==> ELECT1 == INTERSECT(ELECT2, ELECT3);");
 //
-//        for (ChildTreeItem child : controller.getProperties().get(0).getSubItems()) {
+//        for (ChildTreeItem child: controller.getProperties().get(0).getSubItems()) {
 //          if (child instanceof CheckChildTreeItem) {
 //            child.setSelected(true);
 //          } else {
@@ -189,7 +190,7 @@
 //          List<Result> results = checker
 //            .checkPropertiesForDescription(elecDesc, properties, parameter);
 //
-//          // while(results == null) { /* no-op */ };
+//          // while (results == null) { /* no-op */ };
 //
 //          // There will always be exactly one result, so this is fine.
 //          Result result = results.get(0);

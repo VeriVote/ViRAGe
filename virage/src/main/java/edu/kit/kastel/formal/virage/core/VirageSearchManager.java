@@ -56,17 +56,14 @@ public class VirageSearchManager {
         if (this.analyzers.isEmpty()) {
             throw new IllegalStateException(NO_ANALYZERS);
         }
-
         // TODO Parallelize.
         final List<List<SearchResult<BooleanWithUncertainty>>> results =
                 new LinkedList<List<SearchResult<BooleanWithUncertainty>>>();
-
         for (int i = 0; i < this.analyzers.size(); i++) {
-            final List<SearchResult<BooleanWithUncertainty>> result = this.analyzers.get(i)
-                    .analyzeComposition(composition, properties);
+            final List<SearchResult<BooleanWithUncertainty>> result =
+                    this.analyzers.get(i).analyzeComposition(composition, properties);
             results.add(result);
         }
-
         return results;
     }
 
@@ -82,17 +79,14 @@ public class VirageSearchManager {
         if (this.analyzers.isEmpty()) {
             throw new IllegalStateException(NO_ANALYZERS);
         }
-
         // TODO Parallelize.
         final List<SearchResult<DecompositionTree>> results =
                 new LinkedList<SearchResult<DecompositionTree>>();
-
         for (int i = 0; i < this.analyzers.size(); i++) {
-            final SearchResult<DecompositionTree> result = this.analyzers.get(i)
-                    .generateComposition(properties);
+            final SearchResult<DecompositionTree> result =
+                    this.analyzers.get(i).generateComposition(properties);
             results.add(result);
         }
-
         return results;
     }
 
@@ -105,20 +99,18 @@ public class VirageSearchManager {
      * @throws IllegalStateException if no analyzers are available
      */
     public List<List<CompositionProof>> proveClaims(final DecompositionTree composition,
-            final List<Property> properties) throws IllegalStateException {
+                                                    final List<Property> properties)
+                                                            throws IllegalStateException {
         if (this.analyzers.isEmpty()) {
             throw new IllegalStateException(NO_ANALYZERS);
         }
-
         // TODO Parallelize.
         final List<List<CompositionProof>> results = new LinkedList<List<CompositionProof>>();
-
         for (int i = 0; i < this.analyzers.size(); i++) {
-            final List<CompositionProof> result = this.analyzers.get(i).proveClaims(composition,
-                    properties);
+            final List<CompositionProof> result =
+                    this.analyzers.get(i).proveClaims(composition, properties);
             results.add(result);
         }
-
         return results;
     }
 }

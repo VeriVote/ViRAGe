@@ -18,6 +18,7 @@ public class CompilationFailedException extends Exception {
 
     /**
      * Simple constructor.
+     *
      * @param msg the message
      */
     public CompilationFailedException(final String msg) {
@@ -39,5 +40,4 @@ public class CompilationFailedException extends Exception {
     public String getMessage() {
         return this.message;
     }
-
 }

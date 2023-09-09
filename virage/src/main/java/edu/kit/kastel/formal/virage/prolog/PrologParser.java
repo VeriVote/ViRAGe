@@ -1,5 +1,7 @@
 package edu.kit.kastel.formal.virage.prolog;
 
+import edu.kit.kastel.formal.util.StringUtils;
+
 /**
  * A simple parsing interface for handling single Prolog clauses.
  *
@@ -7,9 +9,14 @@ package edu.kit.kastel.formal.virage.prolog;
  */
 public interface PrologParser {
     /**
-     * The Prolog file extension.
+     * Prolog neck directive.
      */
-    String PROLOG_FILE_EXTENSION = ".pl";
+    String NECK = ":-";
+
+    /**
+     * The file ending for Prolog files (<code>*.pl</code>).
+     */
+    String DOT_PL = StringUtils.PERIOD + "pl";
 
     /**
      * Parses a single Prolog predicate.

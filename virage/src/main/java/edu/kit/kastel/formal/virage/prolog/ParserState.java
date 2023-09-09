@@ -9,29 +9,40 @@ public enum ParserState {
     /**
      * Several states the parser can be in, corresponding to the sections in an (E)PL file.
      */
-    STARTING, FRAMEWORK_COMPONENT, COMPOSITION_TYPE,
+    STARTING,
 
     /**
-     * Checkstyle comment.
+     * A framework component.
+     */
+    FRAMEWORK_COMPONENT,
+
+    /**
+     * A composition type.
+     */
+    COMPOSITION_TYPE,
+
+    /**
+     * A module that can be composed.
      * <b>Warning:</b> This was set to deprecated with no explicit justification,
      * maybe handle with care.
      */
     COMPOSABLE_MODULE,
 
     /**
-     * Checkstyle comment.
+     * A structure for composing modules.
      * <b>Warning:</b> This was set to deprecated with no explicit justification,
      * maybe handle with care.
      */
     COMPOSITIONAL_STRUCTURE,
 
     /**
-     * TODO.
+     * A module property, for example a social choice property such as monotonicity, majority or
+     * reinforcement.
      */
     PROPERTY,
 
     /**
-     * TODO.
+     * A rule that allows to infer properties from a composition of modules.
      */
     COMPOSITION_RULE,
 }

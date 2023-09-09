@@ -14,12 +14,14 @@ import org.junit.Test;
 
 import edu.kit.kastel.formal.util.Pair;
 import edu.kit.kastel.formal.util.StringUtils;
+import edu.kit.kastel.formal.util.SystemUtils;
 import edu.kit.kastel.formal.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import edu.kit.kastel.formal.virage.analyzer.CompositionAnalyzer;
 import edu.kit.kastel.formal.virage.analyzer.SimplePrologCompositionAnalyzer;
 import edu.kit.kastel.formal.virage.isabelle.IsabelleProofChecker;
 import edu.kit.kastel.formal.virage.isabelle.IsabelleTheoryGenerator;
 import edu.kit.kastel.formal.virage.prolog.ExtendedPrologParser;
+import edu.kit.kastel.formal.virage.prolog.PrologParser;
 import edu.kit.kastel.formal.virage.prolog.QueryState;
 import edu.kit.kastel.formal.virage.prolog.SimpleExtendedPrologParser;
 import edu.kit.kastel.formal.virage.types.CompositionProof;
@@ -34,16 +36,6 @@ import edu.kit.kastel.formal.virage.types.SearchResult;
  * @author VeriVote
  */
 public final class IsabelleProofCheckerTest {
-    /**
-     * Test Prolog predicate name "".
-     */
-    private static final String EMPTY = "";
-
-    /**
-     * Test Prolog predicate name ",".
-     */
-    private static final String COMMA = ",";
-
     /**
      * Test Prolog predicate name "_".
      */
@@ -123,18 +115,18 @@ public final class IsabelleProofCheckerTest {
      * String representation of SMC.
      */
     private static final String SMC =
-        predicate(SEQ_COMP,
-                  predicate(LOOP_COMP,
-                            predicate(PAR_COMP,
-                                      predicate(SEQ_COMP,
-                                                predicate(PASS, TWO, ANY),
-                                                predicate(SEQ_COMP,
-                                                          predicate(REV_COMP, PLURALITY),
-                                                          predicate(PASS, ONE, ANY))),
-                                      predicate(DROP, TWO, ANY),
-                                      MAX_AGG),
-                            predicate(DEF_EQ_COND, ONE)),
-                  ELECT);
+            StringUtils.func(SEQ_COMP,
+                    StringUtils.func(LOOP_COMP,
+                            StringUtils.func(PAR_COMP,
+                                    StringUtils.func(SEQ_COMP,
+                                            StringUtils.func(PASS, TWO, ANY),
+                                            StringUtils.func(SEQ_COMP,
+                                                    StringUtils.func(REV_COMP, PLURALITY),
+                                                    StringUtils.func(PASS, ONE, ANY))),
+                                    StringUtils.func(DROP, TWO, ANY),
+                                    MAX_AGG),
+                            StringUtils.func(DEF_EQ_COND, ONE)),
+                    ELECT);
 
     /**
      * The logger.
@@ -142,19 +134,15 @@ public final class IsabelleProofCheckerTest {
     private static final Logger LOGGER = LogManager.getLogger(IsabelleProofCheckerTest.class);
 
     /**
-     * Path to the resources directory.
-     */
-    private static final String RSC = "src/test/resources/";
-
-    /**
      * Path to an EPL file.
      */
-    private static final String EPL_PATH = RSC + "framework.pl";
+    private static final String EPL_PATH =
+            SystemUtils.RESOURCES + "framework" + PrologParser.DOT_PL;
 
     /**
      * Path to Isabelle theories.
      */
-    private static final String THEORY_PATH = RSC + "old_theories";
+    private static final String THEORY_PATH = SystemUtils.RESOURCES + "old_theories";
 
     /**
      * A compositional framework.
@@ -175,24 +163,6 @@ public final class IsabelleProofCheckerTest {
     private File file;
 
     /**
-     * Translates a predicate name and arguments to a test Prolog predicate.
-     *
-     * @param name the predicate name of the composed predicate
-     * @param args the predicate's arguments
-     * @return a test String representing the composed Prolog predicate
-     */
-    private static String predicate(final String name, final String... args) {
-        String arg = EMPTY;
-        for (final String a : args) {
-            if (!arg.isEmpty()) {
-                arg += COMMA;
-            }
-            arg += a;
-        }
-        return "name" + "(" + arg + ")";
-    }
-
-    /**
      * Initialization for the following tests.
      *
      * @throws Exception if something goes wrong
@@ -207,20 +177,20 @@ public final class IsabelleProofCheckerTest {
     }
 
     /**
-     * Prove claums for further use.
+     * Prove claims for further use.
+     *
      * @param properties the desired properties
      * @param composition the composition
      */
     protected void proveClaims(final List<Property> properties, final String composition) {
-        final List<CompositionProof> proofs = this.analyzer
-                .proveClaims(DecompositionTree.parseString(composition), properties);
-
+        final List<CompositionProof> proofs =
+                this.analyzer.proveClaims(DecompositionTree.parseString(composition), properties);
         this.file = this.generator.generateTheoryFile(composition, proofs);
     }
 
-    // Takes long, not performed by default.
     /**
-     * Simple test.
+     * Simple test. <b>Caution:</b> Takes long, not performed by default.
+     *
      * @throws Exception if something goes wrong
      */
     @Test
@@ -282,7 +252,6 @@ public final class IsabelleProofCheckerTest {
 
         // Should work twice in a row, second one much faster.
         assertTrue(checker.verifyTheoryFile(this.file, this.framework).getFirstValue());
-
         checker.destroy();
     }
 
@@ -324,7 +293,6 @@ public final class IsabelleProofCheckerTest {
             if (result.hasValue()) {
                 success++;
                 LOGGER.debug("Result: " + result.getValue().toString());
-
                 this.proveClaims(properties, result.getValue().toString());
                 checker.verifyTheoryFile(this.file, this.framework);
             } else {
@@ -340,10 +308,8 @@ public final class IsabelleProofCheckerTest {
                 }
             }
         }
-
         LOGGER.debug("\nSucceeded:\t" + success + "\nFailed:\t\t" + failure + "\nTimed out:\t"
                 + timeouts + "\nErrors:\t\t" + error);
-
         if (failure == runs || success == runs || timeouts == runs) {
             LOGGER.warn("A highly unlikely result occured in the test.\n"
                     + "This might happen by (a very small) chance, "

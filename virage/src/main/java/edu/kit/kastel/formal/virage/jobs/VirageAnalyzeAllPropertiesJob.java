@@ -6,6 +6,7 @@ import java.util.List;
 
 import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.core.ConfigReader;
+import edu.kit.kastel.formal.virage.core.VirageCore;
 import edu.kit.kastel.formal.virage.core.VirageSearchManager;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
 import edu.kit.kastel.formal.virage.types.BooleanWithUncertainty;
@@ -19,11 +20,11 @@ import edu.kit.kastel.formal.virage.types.SearchResult;
  */
 public class VirageAnalyzeAllPropertiesJob extends
     VirageJobWithExplicitResult<List<List<SearchResult<BooleanWithUncertainty>>>> {
-
     /**
      * The passed composition.
      */
     private final String compositionField;
+
     /**
      * All unary properties of the current framework.
      */
@@ -35,9 +36,8 @@ public class VirageAnalyzeAllPropertiesJob extends
      * @param composition the composition to be analyzed
      */
     public VirageAnalyzeAllPropertiesJob(final VirageUserInterface issuer,
-            final String composition) {
+                                         final String composition) {
         super(issuer);
-
         this.compositionField = composition;
     }
 
@@ -54,49 +54,40 @@ public class VirageAnalyzeAllPropertiesJob extends
     @Override
     public final String presentConcreteResult() {
         final List<Boolean> hasProperties = new LinkedList<Boolean>();
-        for(int i = 0; i < this.unaryProperties.size(); i++) {
+        for (int i = 0; i < this.unaryProperties.size(); i++) {
             hasProperties.add(false);
         }
-
-        for (final List<SearchResult<BooleanWithUncertainty>> resultList : this.getResult()) {
+        for (final List<SearchResult<BooleanWithUncertainty>> resultList: this.getResult()) {
             for (int i = 0; i < resultList.size(); i++) {
                 final SearchResult<BooleanWithUncertainty> result = resultList.get(i);
-
                 hasProperties.set(i, hasProperties.get(i) || result.hasValue()
                         && result.getValue() == BooleanWithUncertainty.TRUE);
             }
         }
-
-        String res = "";
-        for(int i = 0; i < this.unaryProperties.size(); i++) {
-            if (hasProperties.get(i)) {
-                res += StringUtils.appendPeriod(this.compositionField + " has the property "
-                        + this.unaryProperties.get(i).toString()) + System.lineSeparator();
-            } else {
-                res += StringUtils.appendPeriod(this.compositionField
-                        + " cannot be shown to have the property "
-                        + this.unaryProperties.get(i).toString()) + System.lineSeparator();
-            }
+        String res = StringUtils.EMPTY;
+        for (int i = 0; i < this.unaryProperties.size(); i++) {
+            final String propertySatisfaction =
+                    hasProperties.get(i) ? "has" : "cannot be shown to have";
+            res += StringUtils.appendPeriod(this.compositionField
+                    + StringUtils.SPACE + propertySatisfaction + " the property "
+                    + this.unaryProperties.get(i).toString()) + System.lineSeparator();
         }
-
         return res;
     }
 
     @Override
     protected final void concreteExecute() throws Exception {
         this.unaryProperties = new LinkedList<Property>();
-        for(final Property candidate : this.getExecutingCore()
-                .getFrameworkRepresentation().getProperties()) {
-            if(!candidate.isAtomic() && candidate.getArity() == 1) {
+        final VirageCore execCore = this.getExecutingCore();
+        for (final Property candidate: execCore.getFrameworkRepresentation().getProperties()) {
+            if (!candidate.isAtomic() && candidate.getArity() == 1) {
                 this.unaryProperties.add(candidate);
             }
         }
         Collections.sort(this.unaryProperties,
                 (final Property a, final Property b) -> a.getName().compareTo(b.getName()));
-
-        final VirageSearchManager manager = this.getExecutingCore().getSearchManager();
+        final VirageSearchManager manager = execCore.getSearchManager();
         this.setResult(manager.analyzeComposition(DecompositionTree.parseString(
                     this.compositionField), this.unaryProperties));
-
     }
 }

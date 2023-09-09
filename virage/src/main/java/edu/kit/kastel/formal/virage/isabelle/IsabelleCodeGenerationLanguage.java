@@ -1,13 +1,28 @@
 package edu.kit.kastel.formal.virage.isabelle;
 
 /**
- * The target languages of Isabelle's code generator.
+ * The target programming languages of Isabelle's code generator.
  *
  * @author VeriVote
  */
 public enum IsabelleCodeGenerationLanguage {
     /**
-     * Languages Isabelle can generate code in.
+     * The strong statically typed object-oriented and functional Scala language that runs on Java.
      */
-    Scala, OCaml, SML, Haskell
+    Scala,
+
+    /**
+     * The multi-paradigm object-oriented and functional OCaml (Objective Caml) language.
+     */
+    OCaml,
+
+    /**
+     * The functional type-safe SML (Standard Meta Language) language.
+     */
+    SML,
+
+    /**
+     * The statically typed and functional Haskell language.
+     */
+    Haskell
 }

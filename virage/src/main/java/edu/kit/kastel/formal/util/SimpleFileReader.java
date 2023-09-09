@@ -37,12 +37,9 @@ public class SimpleFileReader {
      */
     public List<String> readFileByLine(final File file) throws IOException {
         LOGGER.info("Trying to read from file \"" + file + "\"");
-
         final List<String> res = new LinkedList<String>();
-
         try {
             this.reader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8));
-
             String line = this.reader.readLine();
             while (line != null) {
                 res.add(line);
@@ -63,7 +60,6 @@ public class SimpleFileReader {
                 LOGGER.warn("Closing the FileWriter was impossible.");
             }
         }
-
         return res;
     }
 
@@ -76,12 +72,10 @@ public class SimpleFileReader {
      */
     public String readFile(final File file) throws IOException {
         final List<String> list = this.readFileByLine(file);
-
-        String res = "";
-        for (final String s : list) {
+        String res = StringUtils.EMPTY;
+        for (final String s: list) {
             res += s + System.lineSeparator();
         }
-
         return res;
     }
 }

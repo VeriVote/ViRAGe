@@ -11,6 +11,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import edu.kit.kastel.formal.util.StringUtils;
+import edu.kit.kastel.formal.virage.prolog.ExtendedPrologStrings;
 import edu.kit.kastel.formal.virage.prolog.PrologParser;
 import edu.kit.kastel.formal.virage.prolog.PrologPredicate;
 import edu.kit.kastel.formal.virage.prolog.SimplePrologParser;
@@ -27,27 +29,32 @@ public class IsabelleProofStepGenerator {
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getLogger(IsabelleProofStepGenerator.class);
+
     /**
      * Template for proof step generation.
      */
-    private static String proofStepTemplate = "";
+    private static String proofStepTemplate = StringUtils.EMPTY;
 
     /**
      * Goal ID variable.
      */
     private static String varGoalId = "$GOAL_ID";
+
     /**
      * Goal variable.
      */
     private static String varGoal = "$GOAL";
+
     /**
      * Subgoal ID variable.
      */
     private static String varSubgoalIds = "$SUBGOAL_IDS";
+
     /**
      * Rule variable.
      */
     private static String varRule = "$RULE";
+
     /**
      * Solver variable.
      */
@@ -57,10 +64,12 @@ public class IsabelleProofStepGenerator {
      * Functions and definitions from an Isabelle session.
      */
     private final Map<String, String> functionsAndDefinitions;
+
     /**
      * The Prolog parser.
      */
     private final PrologParser parser;
+
     /**
      * The parent Isabelle Proof generator.
      */
@@ -73,10 +82,10 @@ public class IsabelleProofStepGenerator {
      * @param functionsAndDefinitionsValue set of all functions and definitions in parent's session
      */
     public IsabelleProofStepGenerator(final IsabelleProofGenerator parentValue,
-            final Map<String, String> functionsAndDefinitionsValue) {
-        if (proofStepTemplate.isEmpty()) {
+                                      final Map<String, String> functionsAndDefinitionsValue) {
+        if (IsabelleProofStepGenerator.proofStepTemplate.isEmpty()) {
             final InputStream proofStepTemplateStream = this.getClass().getClassLoader()
-                    .getResourceAsStream("proof_step.template");
+                    .getResourceAsStream("proof_step" + IsabelleCodeGenerator.DOT_TMPL);
             final StringWriter writer = new StringWriter();
             try {
                 IOUtils.copy(proofStepTemplateStream, writer, StandardCharsets.UTF_8);
@@ -84,12 +93,27 @@ public class IsabelleProofStepGenerator {
                 LOGGER.error("Something went wrong.", e);
                 e.printStackTrace();
             }
-            proofStepTemplate = writer.toString();
+            setProotStepTemplate(writer.toString());
         }
-
         this.functionsAndDefinitions = functionsAndDefinitionsValue;
         this.parser = new SimplePrologParser();
         this.parent = parentValue;
+    }
+
+    private static synchronized void setProotStepTemplate(final String newTemplate) {
+        proofStepTemplate = newTemplate;
+    }
+
+    private static String replaceVariables(final String goalId, final String goal,
+                                           final String subgoalIds, final String rule,
+                                           final String solver) {
+        String res = IsabelleProofStepGenerator.proofStepTemplate;
+        res = res.replace(varGoalId, goalId);
+        res = res.replace(varGoal, goal);
+        res = res.replace(varSubgoalIds, subgoalIds);
+        res = res.replace(varRule, rule);
+        res = res.replace(varSolver, solver);
+        return res;
     }
 
     /**
@@ -101,33 +125,29 @@ public class IsabelleProofStepGenerator {
      */
     public String generateIsabelleProofStep(final CompositionProof step) {
         final String goalId = step.getId();
-
         final PrologPredicate predicate = this.parser.parsePredicate(step.getGoal());
         this.parent.getParent().replacePrologVariables(predicate);
-        final Map<String, Set<String>> goalMap = IsabelleUtils
+        final Map<String, Set<String>> goalMap =
+                IsabelleUtils
                 .translatePrologToIsabelle(this.functionsAndDefinitions, predicate.toString());
-
         if (goalMap.keySet().size() != 1) {
             throw new IllegalArgumentException();
         }
-        String goal = "";
-        for (final String string : goalMap.keySet()) {
+        String goal = StringUtils.EMPTY;
+        for (final String string: goalMap.keySet()) {
             goal = string;
         }
 
-        final StringBuilder subgoalIds = new StringBuilder("");
-        for (final CompositionProof subgoal : step.getSubgoals()) {
+        final StringBuilder subgoalIds = new StringBuilder(StringUtils.EMPTY);
+        for (final CompositionProof subgoal: step.getSubgoals()) {
             if (subgoal.getAllCompositionRules().size() == 1) {
                 final CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
-
-                if (rule.getOrigin().equals("ASSUMPTION")) {
+                if (rule.getOrigin().equals(ExtendedPrologStrings.ASSUMPTION)) {
                     continue;
                 }
             }
-
-            subgoalIds.append(subgoal.getId() + " ");
+            subgoalIds.append(subgoal.getId() + StringUtils.SPACE);
         }
-
         final String rule = step.getRuleName();
 
         // TODO: Find heuristics to decide which method to use at what point.
@@ -138,20 +158,6 @@ public class IsabelleProofStepGenerator {
         // Problem: If it is not successful, query takes forever.
         // PaMpeR?
         final String solver = "simp";
-
-        return this.replaceVariables(goalId, goal, subgoalIds.toString(), rule, solver);
-    }
-
-    private String replaceVariables(final String goalId, final String goal, final String subgoalIds,
-            final String rule, final String solver) {
-        String res = proofStepTemplate;
-
-        res = res.replace(varGoalId, goalId);
-        res = res.replace(varGoal, goal);
-        res = res.replace(varSubgoalIds, subgoalIds);
-        res = res.replace(varRule, rule);
-        res = res.replace(varSolver, solver);
-
-        return res;
+        return replaceVariables(goalId, goal, subgoalIds.toString(), rule, solver);
     }
 }

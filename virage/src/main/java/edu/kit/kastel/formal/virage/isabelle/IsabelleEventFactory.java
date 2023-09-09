@@ -18,21 +18,24 @@ public class IsabelleEventFactory {
      * String for "OK" events.
      */
     private static final String OK_STRING = "OK";
+
     /**
      * String for "ERROR" events.
      */
     private static final String ERROR_STRING = "ERROR";
+
     /**
      * String for "NOTE" events.
      */
     private static final String NOTE_STRING = "NOTE";
+
     /**
      * String for "FINISHED" events.
      */
     private static final String FINISHED_STRING = "FINISHED";
 
     /**
-     * The object mapper.
+     * The object map.
      */
     private final ObjectMapper mapper;
 
@@ -51,7 +54,6 @@ public class IsabelleEventFactory {
      */
     public IsabelleEvent createEvent(final String s) {
         final Map<String, String> parameters = this.extractParameters(s);
-
         final IsabelleEvent res;
         if (s.startsWith(OK_STRING)) {
             res = new IsabelleOkEvent(parameters);
@@ -64,7 +66,6 @@ public class IsabelleEventFactory {
         } else {
             res = new IsabelleMiscEvent();
         }
-
         return res;
     }
 
@@ -72,17 +73,13 @@ public class IsabelleEventFactory {
         final Map<String, String> res = new HashMap<String, String>();
         final Pattern pattern = Pattern.compile("\\{.*\\}");
         final Matcher matcher = pattern.matcher(s);
-
         if (matcher.find()) {
             final String paramString = s.substring(matcher.start(), matcher.end());
-
             try {
                 final Map<?, ?> map = this.mapper.readValue(paramString, Map.class);
-
-                for (final Map.Entry<?, ?> e : map.entrySet()) {
+                for (final Map.Entry<?, ?> e: map.entrySet()) {
                     res.put(e.getKey().toString(), e.getValue().toString());
                 }
-
                 return res;
             } catch (final IOException e) {
                 // This should never happen.

@@ -1,5 +1,6 @@
 package edu.kit.kastel.formal.util;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.regex.Pattern;
  */
 public class StringUtils {
     /**
-     * Checkstyle pleaser.
+     * A space.
      */
     public static final String SPACE = " ";
 
@@ -22,14 +23,84 @@ public class StringUtils {
     public static final String PERIOD = ".";
 
     /**
+     * An opening parenthesis sign.
+     */
+    public static final String OPENING_PARENTHESIS = "(";
+
+    /**
+     * A closing parenthesis sign.
+     */
+    public static final String CLOSING_PARENTHESIS = ")";
+
+    /**
      * A tab sign.
      */
     public static final String TAB = "\t";
 
     /**
-     * Checkstyle pleaser.
+     * An escaped quotation mark.
      */
-    public static final String ESCAPED_QUOTATION_MARK = "\"";
+    public static final String QUOTATION = "\"";
+
+    /**
+     * An empty string.
+     */
+    public static final String EMPTY = "";
+
+    /**
+     * String representation of a comma sign.
+     */
+    public static final String COMMA = ",";
+
+    /**
+     * The colon sign.
+     */
+    public static final String COLON = ":";
+
+    /**
+     * The sign for a line break.
+     */
+    public static final String LINE_BREAK = "\n";
+
+    /**
+     * The caret sign.
+     */
+    public static final String CARET = "^";
+
+    /**
+     * The equality sign.
+     */
+    public static final String EQ = "=";
+
+    /**
+     * A space character.
+     */
+    public static final char SPACE_CHAR = ' ';
+
+    /**
+     * Dot character.
+     */
+    public static final char DOT_CHAR = '.';
+
+    /**
+     * Comma character.
+     */
+    public static final char COMMA_CHAR = ',';
+
+    /**
+     * Left (opening) parenthesis.
+     */
+    public static final char LEFT_PAREN = '(';
+
+    /**
+     * Right (closing) parenthesis.
+     */
+    public static final char RIGHT_PAREN = ')';
+
+    /**
+     * String for map function.
+     */
+    private static final String MAP = "map";
 
     /**
      * Base 64 hexadecimal code.
@@ -42,7 +113,7 @@ public class StringUtils {
      * @return the stripped command String
      */
     public static String strip(final String command) {
-        return command.replaceAll("[;&|`]*", "");
+        return command.replaceAll("[;&|`]*", EMPTY);
     }
 
     /**
@@ -62,7 +133,7 @@ public class StringUtils {
      * @return the sanitized command String
      */
     public static String stripAndEscape(final String command) {
-        return escape(strip(command)).replaceAll("[\r\n]", "");
+        return escape(strip(command)).replaceAll("[\r\n]", EMPTY);
     }
 
     /**
@@ -73,7 +144,6 @@ public class StringUtils {
      */
     public static boolean isNumeric(final String strNum) {
         final Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
-
         if (strNum == null) {
             return false;
         }
@@ -88,24 +158,70 @@ public class StringUtils {
      */
     public static String printCollection(final Collection<?> c) {
         if (c.isEmpty()) {
-            return "";
+            return EMPTY;
         }
-
-        final StringBuilder res = new StringBuilder("");
-        for (final Object obj : c) {
-            res.append(obj).append(",");
+        final StringBuilder res = new StringBuilder(EMPTY);
+        for (final Object obj: c) {
+            res.append(obj).append(COMMA);
         }
         return res.deleteCharAt(res.length() - 1).toString();
+    }
+
+    /**
+     * Creates a comma-separated String from a variable number of arguments.
+     *
+     * @param c the collection
+     * @return the String, empty if c is empty
+     */
+    public static String printCollection(final String... c) {
+        return printCollection(Arrays.asList(c));
+    }
+
+    /**
+     * Creates a space-separated String from a collection.
+     *
+     * @param c the collection
+     * @return the String, empty if c is empty
+     */
+    public static String printCollection2(final Collection<?> c) {
+        if (c.isEmpty()) {
+            return EMPTY;
+        }
+        final StringBuilder res = new StringBuilder(EMPTY);
+        for (final Object obj: c) {
+            res.append(obj).append(SPACE);
+        }
+        return res.deleteCharAt(res.length() - 1).toString();
+    }
+
+    /**
+     * Creates a space-separated String from a variable number of arguments.
+     *
+     * @param c the collection
+     * @return the String, empty if c is empty
+     */
+    public static String printCollection2(final String... c) {
+        return printCollection2(Arrays.asList(c));
     }
 
     /**
      * Removes whitespace from String.
      *
      * @param s the String
-     * @return new String, s without whitespace
+     * @return new String s without whitespace
      */
     public static String removeWhitespace(final String s) {
-        return s.replaceAll("\\s+", "");
+        return s.replaceAll("\\s+", EMPTY);
+    }
+
+    /**
+     * Adds a space after the given String.
+     *
+     * @param s the given String.
+     * @return new String with added space at the end
+     */
+    public static String addSpace(final String s) {
+        return s + SPACE;
     }
 
     /**
@@ -118,35 +234,103 @@ public class StringUtils {
     public static List<String> separate(final String separator, final String paramString) {
         final String string = StringUtils.removeWhitespace(paramString);
         final String[] substrings = string.split(separator);
-
         final List<String> res = new LinkedList<String>();
-        for (final String substring : substrings) {
+        for (final String substring: substrings) {
             res.add(substring);
         }
-
         return res;
     }
 
     /**
-     * Puts parentheses around a String.
-     * @param s the string
-     * @return (s)
+     * Puts parentheses around a comma-separated list of strings.
+     *
+     * @param args the string arguments to parenthesize
+     * @return the parenthesized string representation
      */
-    public static String parenthesize(final String s) {
-        return "(" + s + ")";
+    public static final String parenthesize(final String... args) {
+        return OPENING_PARENTHESIS + printCollection(Arrays.asList(args)) + CLOSING_PARENTHESIS;
     }
 
     /**
-     * Indents a String by a single tab.
+     * Puts parentheses around a comma-separated list of strings.
+     *
+     * @param args the string arguments to parenthesize
+     * @return the parenthesized string representation
+     */
+    public static final String parenthesize(final Collection<String> args) {
+        if (args == null || args.isEmpty()) {
+            return EMPTY;
+        }
+        return parenthesize(args.toArray(new String[args.size()]));
+    }
+
+    /**
+     * Puts parentheses around a space-separated list of strings.
+     *
+     * @param args the string arguments to parenthesize
+     * @return the parenthesized string representation
+     */
+    public static final String parenthesize2(final String... args) {
+        return OPENING_PARENTHESIS + printCollection2(Arrays.asList(args)) + CLOSING_PARENTHESIS;
+    }
+
+    /**
+     * Returns function string with a variable amount of argument.
+     *
+     * @param fun the function name
+     * @param args the arguments of the function
+     * @return the function string representation
+     */
+    public static final String func(final String fun, final String... args) {
+        return (fun != null ? fun : EMPTY) + parenthesize(args);
+    }
+
+    /**
+     * Returns function string with a variable amount of arguments.
+     *
+     * @param fun the function name
+     * @param args the arguments of the function
+     * @return the function string representation
+     */
+    public static final String func2(final String fun, final String... args) {
+        return (fun != null ? fun : EMPTY) + SPACE + parenthesize2(args);
+    }
+
+    /**
+     * Returns map-like function string with two separately parenthesized arguments.
+     *
+     * @param fun the function name
+     * @param arg1 the function which is to be applied by the map-like function
+     * @param arg2 the collection argument to which the function is applied
+     * @return the function string representation
+     */
+    public static final String map(final String fun, final String arg1, final String arg2) {
+        return (fun != null ? fun : EMPTY) + SPACE
+                + parenthesize2(arg1) + SPACE + parenthesize2(arg2);
+    }
+
+    /**
+     * Returns map function string with two separately parenthesized arguments.
+     *
+     * @param arg1 the function which is to be applied by the map
+     * @param arg2 the collection argument to which the function is applied
+     * @return the function string representation
+     */
+    public static final String map(final String arg1, final String arg2) {
+        return map(MAP, arg1, arg2);
+    }
+
+    /**
+     * Indents a string by a single tab.
      * @param s the string
-     * @return \ts
+     * @return the indented string
      */
     public static String indentWithTab(final String s) {
         return TAB + s;
     }
 
     /**
-     * Appends a period to a String.
+     * Appends a period to a string.
      * @param s the string
      * @return s.
      */
