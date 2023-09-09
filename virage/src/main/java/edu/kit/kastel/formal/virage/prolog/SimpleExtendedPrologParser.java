@@ -33,7 +33,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
     private static final Logger LOGGER = LogManager.getLogger(SimpleExtendedPrologParser.class);
 
     /**
-     * Regex that matches any parenthesized term.
+     * A regular expression that matches any parenthesized term.
      */
     private static final String PARENTH_REGEX = "\\(.*\\)";
 
@@ -41,6 +41,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
      * The file reader.
      */
     private final SimpleFileReader fileReader;
+
     /**
      * The Prolog parser.
      */
@@ -51,7 +52,6 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
      */
     public SimpleExtendedPrologParser() {
         LOGGER.info("Initialising SimpleExtendedPrologParser.");
-
         this.fileReader = new SimpleFileReader();
         this.prologParser = new SimplePrologParser();
     }
@@ -60,7 +60,6 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
     public FrameworkRepresentation parseFramework(final File file, final boolean addDummies)
             throws IOException, MalformedEplFileException {
         final List<String> framework = this.fileReader.readFileByLine(file);
-
         return this.parseFramework(framework, file.getAbsolutePath(), addDummies);
     }
 
@@ -75,10 +74,10 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
      *      extended Prolog format.
      */
     private FrameworkRepresentation parseFramework(final List<String> representation,
-            final String path, final boolean addDummies) throws MalformedEplFileException {
+                                                   final String path, final boolean addDummies)
+                                                           throws MalformedEplFileException {
         final FrameworkRepresentation framework = new FrameworkRepresentation(path);
         framework.setTheoryPath("undefined");
-
         ParserState state = ParserState.STARTING;
 
         final List<String> compositionTypeSection = new LinkedList<String>();
@@ -89,28 +88,22 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
         for (int lineNumber = 0; lineNumber < representation.size(); lineNumber++) {
             String currentLine = representation.get(lineNumber);
-
             // Skip comments
             if (currentLine.startsWith("%%")) {
                 continue;
             }
-
             if (currentLine.contains(ExtendedPrologStrings.THEORY_PATH_PREFIX)) {
                 this.findTheoryPath(currentLine, framework);
             }
-
             // Remove Prolog comment markings, they are not necessary any more.
-            currentLine = currentLine.replace("% ", "");
-            currentLine = currentLine.replace("%", "");
-
+            currentLine = currentLine.replace("% ", StringUtils.EMPTY);
+            currentLine = currentLine.replace("%", StringUtils.EMPTY);
             // Skip empty lines. (Careful: currentLine is not actually sanitized after
             // this!)
-            if (this.sanitizeLine(currentLine).equals("")) {
+            if (this.sanitizeLine(currentLine).equals(StringUtils.EMPTY)) {
                 continue;
             }
-
             state = this.newState(currentLine, state);
-
             switch (state) {
             case COMPOSITION_TYPE:
                 compositionTypeSection.add(currentLine);
@@ -127,7 +120,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
             case COMPOSITION_RULE:
                 compositionRuleSection.add(currentLine);
                 break;
-            default: // no-op, invalid call.
+            default: // skip operation, invalid call.
             }
         }
 
@@ -137,49 +130,43 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
                 ParserState.COMPOSITIONAL_STRUCTURE);
         this.parseSection(framework, propertySection, ParserState.PROPERTY);
         this.parseSection(framework, compositionRuleSection, ParserState.COMPOSITION_RULE);
-
         if (addDummies) {
             framework.addDummyAndAliasRulesIfNecessary();
         }
-
         return framework;
     }
 
     private void findTheoryPath(final String currentLine, final FrameworkRepresentation framework) {
         String line = currentLine;
-
         final String nameLineSeparator = " - ";
         if (line.contains(nameLineSeparator)) {
             final String[] splits = line.split(nameLineSeparator);
-
             line = splits[0];
             framework.setSessionName(splits[1]);
         }
-
-        line = line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, "");
-        line = line.replace(ExtendedPrologStrings.COMMENT, "");
-        line = StringUtils.removeWhitespace(line);
-
+        line = StringUtils.removeWhitespace(
+                line.replace(ExtendedPrologStrings.THEORY_PATH_PREFIX, StringUtils.EMPTY)
+                .replace(ExtendedPrologStrings.COMMENT, StringUtils.EMPTY));
         if (line.endsWith(IsabelleUtils.ROOT)) {
             line = line.substring(0, line.length() - IsabelleUtils.ROOT.length());
         }
-
         framework.setTheoryPath(line);
     }
 
     private List<ComponentType> extractParameters(final String component)
             throws MalformedEplFileException {
         final List<ComponentType> res = new LinkedList<ComponentType>();
-
-        if (!component.contains("(") || component.endsWith("()")) {
+        if (!component.contains(StringUtils.OPENING_PARENTHESIS)
+                || component.endsWith(
+                        StringUtils.OPENING_PARENTHESIS + StringUtils.CLOSING_PARENTHESIS)) {
             // No parameters.
             return res;
         }
 
         // Opening, but no closing bracket.
-        if (!component.contains(")")) {
+        if (!component.contains(StringUtils.CLOSING_PARENTHESIS)) {
             LOGGER.error("Opening, but no closing bracket on: \"" + component
-                    + StringUtils.ESCAPED_QUOTATION_MARK);
+                    + StringUtils.QUOTATION);
             throw new MalformedEplFileException();
         }
 
@@ -189,13 +176,11 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
         if (matcher.find()) {
             String parameterString = matcher.group();
-
             // Remove whitespace.
-            parameterString = parameterString.replace(" ", "");
+            parameterString = parameterString.replace(StringUtils.SPACE, StringUtils.EMPTY);
             // Get rid of parentheses.
             parameterString = parameterString.substring(1, parameterString.length() - 1);
-
-            final String[] parameters = parameterString.split(",");
+            final String[] parameters = parameterString.split(StringUtils.COMMA);
             for (int i = 0; i < parameters.length; i++) {
                 res.add(new ComponentType(parameters[i]));
             }
@@ -203,13 +188,11 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
             // This should never happen.
             throw new MalformedEplFileException();
         }
-
         return res;
     }
 
     private ParserState newState(final String line, final ParserState oldState) {
         ParserState toReturn = oldState;
-
         if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSITION_TYPE_HEADER)) {
             toReturn = ParserState.COMPOSITION_TYPE;
         } else if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSABLE_MODULE_HEADER)) {
@@ -222,25 +205,23 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
         } else if (line.toUpperCase().contains(ExtendedPrologStrings.COMPOSITION_RULE_HEADER)) {
             toReturn = ParserState.COMPOSITION_RULE;
         }
-
         return toReturn;
     }
 
     private void parseCompositionRuleSection(final FrameworkRepresentation framework,
-            final List<String> lines) throws MalformedEplFileException {
-        String origin = "";
-        String name = "";
-        String prologString = "";
-
+                                             final List<String> lines)
+                                                     throws MalformedEplFileException {
+        String origin = StringUtils.EMPTY;
+        String name = StringUtils.EMPTY;
+        String prologString = StringUtils.EMPTY;
         // Starting at 1, because of header.
         for (int i = 1; i < lines.size(); i++) {
             final String currentLine = lines.get(i);
-
             if (origin.isEmpty()) {
                 // No origin.
                 if (!currentLine.startsWith(ExtendedPrologStrings.FORMATTER)) {
                     LOGGER.error("No origin specified for: \"" + currentLine
-                            + StringUtils.ESCAPED_QUOTATION_MARK);
+                            + StringUtils.QUOTATION);
                     throw new MalformedEplFileException();
                 } else {
                     origin = this.sanitizeLine(currentLine);
@@ -254,17 +235,14 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
                 } else {
                     // Origin and name set, looking for Prolog clause now.
                     prologString += currentLine;
-
-                    if (currentLine.contains(".")) {
+                    if (currentLine.contains(StringUtils.PERIOD)) {
                         // Clause finished. Start Prolog Parser.
-
-                        final PrologClause clause = this.prologParser
-                                .parseSingleClause(prologString);
+                        final PrologClause clause =
+                                this.prologParser.parseSingleClause(prologString);
                         framework.add(new CompositionRule(name, origin, clause));
-
-                        origin = "";
-                        name = "";
-                        prologString = "";
+                        origin = StringUtils.EMPTY;
+                        name = StringUtils.EMPTY;
+                        prologString = StringUtils.EMPTY;
                     }
                 }
             }
@@ -272,13 +250,12 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
     }
 
     private void parseCompositionTypeSection(final FrameworkRepresentation framework,
-            final List<String> lines) throws MalformedEplFileException {
+                                             final List<String> lines)
+                                                     throws MalformedEplFileException {
         ComponentType currentType = null;
-
         // Starting at 1, because first line has to be the header by construction.
         for (int i = 1; i < lines.size(); i++) {
             String currentLine = lines.get(i);
-
             if (currentLine.startsWith("==")) {
                 // New type.
                 currentLine = this.sanitizeLine(currentLine);
@@ -290,23 +267,19 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
                     LOGGER.error("No type defined for \"" + currentLine + "\".");
                     throw new MalformedEplFileException();
                 }
-
                 currentLine = this.sanitizeLine(currentLine);
-
                 final List<ComponentType> parameters = this.extractParameters(currentLine);
                 currentLine = this.removeBracketExpression(currentLine);
-
                 framework.add(new Component(currentType, currentLine, parameters));
             }
         }
     }
 
     private void parseSection(final FrameworkRepresentation framework, final List<String> lines,
-            final ParserState state) throws MalformedEplFileException {
+                              final ParserState state) throws MalformedEplFileException {
         if (lines.isEmpty()) {
             return;
         }
-
         switch (state) {
         case COMPOSITION_TYPE:
             this.parseCompositionTypeSection(framework, lines);
@@ -319,20 +292,20 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
         case COMPOSITION_RULE:
             this.parseCompositionRuleSection(framework, lines);
             break;
-        default: // no-op, invalid call.
+        default: // skip operation, invalid call.
         }
     }
 
     private void parseSimpleSection(final FrameworkRepresentation framework,
-            final List<String> lines, final ParserState state) throws MalformedEplFileException {
+                                    final List<String> lines, final ParserState state)
+                                            throws MalformedEplFileException {
         final String header = lines.get(0);
         ComponentType type = null;
 
-        // Composable modules are the core component of the framework, the type shall be
-        // renameable.
+        // Modules that can be composed are the core component of the framework, the type's name
+        // shall be changeable.
         if (state == ParserState.COMPOSABLE_MODULE) {
             final String[] splits = header.split("-");
-
             if (splits.length > 1) {
                 if (splits.length == 2) {
                     // Alias is defined, this shall be a type.
@@ -347,17 +320,14 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
                 // Default type.
                 type = new ComponentType(ExtendedPrologStrings.COMPOSABLE_MODULE);
             }
-
             framework.add(type);
         }
 
         // Starting at 1 due to header.
         for (int i = 1; i < lines.size(); i++) {
             String name = lines.get(i);
-
             final List<ComponentType> parameters = this.extractParameters(name);
             name = this.removeBracketExpression(name);
-
             switch (state) {
             case COMPOSABLE_MODULE:
                 framework.add(new ComposableModule(type, name, parameters));
@@ -368,7 +338,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
             case PROPERTY:
                 framework.add(new Property(name, parameters));
                 break;
-            default: // no-op, invalid call.
+            default: // skip operation, invalid call.
             }
         }
     }
@@ -377,21 +347,16 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
         final String regex = PARENTH_REGEX;
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(string);
-
         String copyOfString = string;
         if (matcher.find()) {
             final String parameterString = matcher.group();
             // Remove parameters from component for simpler processing in calling method.
-            copyOfString = string.replace(parameterString, "");
+            copyOfString = string.replace(parameterString, StringUtils.EMPTY);
         }
-
         return copyOfString;
     }
 
     private String sanitizeLine(final String line) {
-        String res = line.replaceAll("=", "");
-        res = StringUtils.removeWhitespace(res);
-
-        return res;
+        return StringUtils.removeWhitespace(line.replaceAll("=", StringUtils.EMPTY));
     }
 }

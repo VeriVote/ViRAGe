@@ -7,7 +7,22 @@ package edu.kit.kastel.formal.virage.prolog;
  */
 public enum QueryState {
     /**
-     * Different states of a generic query.
+     * Time-out query.
      */
-    TIMEOUT, FAILED, ERROR, SUCCESS
+    TIMEOUT,
+
+    /**
+     * Failed query.
+     */
+    FAILED,
+
+    /**
+     * Erroneous query.
+     */
+    ERROR,
+
+    /**
+     * Successful query.
+     */
+    SUCCESS
 }

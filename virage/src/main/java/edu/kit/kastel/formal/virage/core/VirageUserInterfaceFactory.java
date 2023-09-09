@@ -15,7 +15,7 @@ public class VirageUserInterfaceFactory {
      * @return a user interface
      */
     public VirageUserInterface getUi(final String string, final VirageCore core) {
-        // TODO: Eventually also handle distinguish string.equals(VirageStrings.CLI_ARG)
+        // TODO: Eventually also handle the distinction string.equals(VirageStrings.CLI_ARG)
         return new VirageCommandLineInterface(core);
     }
 }

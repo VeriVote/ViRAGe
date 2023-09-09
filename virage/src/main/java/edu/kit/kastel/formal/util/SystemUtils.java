@@ -9,8 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +22,11 @@ import org.apache.logging.log4j.Logger;
  */
 public class SystemUtils {
     /**
+     * Resources directory.
+     */
+    public static final String RESOURCES = "src/test/resources/";
+
+    /**
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getRootLogger();
@@ -31,9 +36,73 @@ public class SystemUtils {
      */
     private static final String JAVA_LIBRARY_PATH = "java.library.path";
 
-    // See
-    // https://stackoverflow.com/questions/5419039/
-    // is-djava-library-path-equivalent-to-system-setpropertyjava-library-path
+    /**
+     * The user paths field.
+     */
+    private static final String USER_PATHS_FIELD = "usr_paths";
+
+    /**
+     * The pattern for printing time markers.
+     */
+    private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss OOOO";
+
+    private static String libraryFailureReason(final String reasonForFailure) {
+        return "Failed to get " + reasonForFailure + " to set library path";
+    }
+
+    /**
+     * Sanitize a raw file name and create file.
+     *
+     * @param rawFileName the raw file name as a string value
+     * @return the new file with a sanitized file name
+     * @throws IOException in case the file is invalid
+     */
+    private static File createSanitizedFile(final String rawFileName) throws IOException {
+        return new File(FilenameUtils.getFullPath(rawFileName),
+                        FilenameUtils.getName(rawFileName)).getCanonicalFile();
+    }
+
+    /**
+     * Sanitize a raw file name, drop its path and create file.
+     *
+     * @param rawFileName the raw file name as a string value
+     * @return the new file with a sanitized file name
+     * @throws IOException in case the file is invalid
+     */
+    private static File createSanitizedFileWithoutPath(final String rawFileName) {
+        return new File(FilenameUtils.getName(rawFileName));
+    }
+
+    /**
+     * Sanitize a raw file name and create file, in case of problems drop the path.
+     *
+     * @param rawFileName the raw file name as a string value
+     * @return the new file with a sanitized file name
+     */
+    public static File file(final String rawFileName) {
+        File file;
+        try {
+            file = createSanitizedFile(rawFileName);
+        } catch (IOException e) {
+            file = createSanitizedFileWithoutPath(rawFileName);
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    /**
+     * Sanitize a raw file name and create temporary file.
+     *
+     * @param rawFileName the raw file name as a string value
+     * @param fileExtension the file extension
+     * @return the new temporary file with a sanitized file name
+     * @throws IOException in case creating the temporary file fails
+     */
+    public static File tempFile(final String rawFileName, final String fileExtension)
+            throws IOException {
+        return File.createTempFile(FilenameUtils.getName(rawFileName), fileExtension);
+    }
+
     /**
      * A method to add paths to LD_LIBRARY_PATH. If possible, do not use this.
      *
@@ -45,7 +114,7 @@ public class SystemUtils {
             // This enables the java.library.path to be modified at runtime
             // From a Sun engineer at http://forums.sun.com/thread.jspa?threadID=707176
             //
-            final Field field = ClassLoader.class.getDeclaredField("usr_paths");
+            final Field field = ClassLoader.class.getDeclaredField(USER_PATHS_FIELD);
             field.setAccessible(true);
             final String[] paths = (String[]) field.get(null);
             for (int i = 0; i < paths.length; i++) {
@@ -60,53 +129,21 @@ public class SystemUtils {
             System.setProperty(JAVA_LIBRARY_PATH,
                     System.getProperty(JAVA_LIBRARY_PATH) + File.pathSeparator + s);
         } catch (final IllegalAccessException e) {
-            throw new IOException("Failed to get permissions to set library path");
+            throw new IOException(libraryFailureReason("permissions"));
         } catch (final NoSuchFieldException e) {
-            throw new IOException("Failed to get field handle to set library path");
+            throw new IOException(libraryFailureReason("field handle"));
         }
     }
 
     /**
-     * Returns current time (yyyy-MM-dd HH:mm:ss OOOO).
+     * Returns current time for usage as time markers.
+     *
      * @return the time
      */
     public static String getTime() {
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss OOOO");
+        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(TIMESTAMP_PATTERN);
         final ZonedDateTime now = ZonedDateTime.now();
         return dtf.format(now);
-    }
-
-    // TODO This is terrible and I know it. "export" is not possible from Java?
-    /**
-     * A method to set environment variables on Unix systems.
-     *
-     * @param name the environment variable to be changed
-     * @param value the new value of said variable
-     */
-    @SuppressWarnings("unchecked")
-    public static void setUnixEnvironmentVariable(final String name, final String value) {
-        final Map<String, String> env = System.getenv();
-
-        final Field field;
-        try {
-            field = env.getClass().getDeclaredField("m");
-
-            field.setAccessible(true);
-            ((Map<String, String>) field.get(env)).put(name, value);
-        } catch (final NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (final SecurityException e) {
-            e.printStackTrace();
-        } catch (final IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (final IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        LOGGER.info("New value: " + System.getenv(name));
-        if (!System.getenv(name).equals(value)) {
-            LOGGER.error("Setting environment variable " + name + " to " + value + " failed.");
-        }
     }
 
     /**
@@ -114,36 +151,45 @@ public class SystemUtils {
      */
     public static void semiBusyWaitingHelper() {
         final int defaultWait = 100;
-
         semiBusyWaitingHelper(defaultWait);
     }
 
     /**
      * Helper method to let a thread sleep without worrying about exceptions.
+     *
      * @param timeout the sleep duration
      */
     public static void semiBusyWaitingHelper(final long timeout) {
         try {
             Thread.sleep(timeout);
         } catch (final InterruptedException e) {
-            // No-op
+            // Skip operation
         }
     }
 
     /**
+     * Terminates ViRAGe.
+     *
+     * @param statusCode ViRAGe's exit code
+     */
+    public static synchronized void exit(final int statusCode) {
+        System.exit(statusCode);
+    }
+
+    /**
      * Copies a resource to the file system.
+     *
      * @param resource the resource
      * @param path the path of the file to be created
      */
     public static void copyResourceToFile(final String resource, final String path) {
-        final File newFile = new File(path);
+        final File newFile = file(path);
         try {
             Files.deleteIfExists(newFile.toPath());
         } catch (final IOException e1) {
             e1.printStackTrace();
         }
-
-        String content = "";
+        String content = StringUtils.EMPTY;
         final InputStream theoryTemplateStream = SystemUtils.class.getClassLoader()
                 .getResourceAsStream(resource);
         final StringWriter writer = new StringWriter();

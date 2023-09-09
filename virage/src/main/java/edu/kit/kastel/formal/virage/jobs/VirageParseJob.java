@@ -21,7 +21,7 @@ public final class VirageParseJob extends VirageJobWithExplicitResult<FrameworkR
     /**
      * Simple constructor.
      *
-     * @param issuer the issuing ui
+     * @param issuer the issuing user interface
      * @param fileValue the file
      */
     public VirageParseJob(final VirageUserInterface issuer, final File fileValue) {

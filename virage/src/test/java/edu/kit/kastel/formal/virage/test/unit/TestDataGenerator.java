@@ -17,6 +17,7 @@ public class TestDataGenerator {
      * The compositional framework.
      */
     private final FrameworkRepresentation framework;
+
     /**
      * All unary properties of this.framework.
      */
@@ -30,15 +31,14 @@ public class TestDataGenerator {
     public TestDataGenerator(final FrameworkRepresentation frameworkValue) {
         this.framework = frameworkValue;
         this.eligibleProperties = new LinkedList<Property>();
-
-        for (final Property property : this.framework.getProperties()) {
+        for (final Property property: this.framework.getProperties()) {
             if (property.getArity() == 1) {
                 /*
                  * List<ComponentType> parameters = property.getParameters(); ComponentType
                  * parameter = parameters.get(0);
-                 * if(parameter.getName().equals(this.framework.getAlias()) ||
+                 * if (parameter.getName().equals(this.framework.getAlias()) ||
                  * parameter.getName().equals(ExtendedPrologStrings.COMPOSABLE_MODULE)) {
-                 * if(property.getName().equals("electoral_module")) continue;
+                 * <code>if (property.getName().equals("electoral_module")) continue;</code>
                  *
                  * this.eligibleProperties.add(property); }
                  */
@@ -54,21 +54,17 @@ public class TestDataGenerator {
      */
     public List<List<Property>> getAllPossiblePropertySets() {
         final List<List<Property>> res = new ArrayList<List<Property>>();
-
         for (int i = 0; i < Math.pow(2, this.eligibleProperties.size()); i++) {
             res.add(new LinkedList<Property>());
         }
-
         for (int i = 0; i < this.eligibleProperties.size(); i++) {
             final Property p = this.eligibleProperties.get(i);
-
             for (int j = 0; j < Math.pow(2, this.eligibleProperties.size()); j++) {
                 if (((j >> i) & 1) == 1) {
                     res.get(j).add(p);
                 }
             }
         }
-
         return res;
     }
 
@@ -77,21 +73,18 @@ public class TestDataGenerator {
      *
      * @param amount size of the set to be generated
      * @return the set of properties
-     *  @throws IllegalArgumentException if too many properties are requested
+     * @throws IllegalArgumentException if too many properties are requested
      */
     public List<Property> getRandomComposableModuleProperties(final int amount)
             throws IllegalArgumentException {
         if (amount > this.eligibleProperties.size()) {
             throw new IllegalArgumentException();
         }
-
         final List<Property> res = new LinkedList<Property>();
-
         while (res.size() != amount) {
             final int idx = (int) (this.eligibleProperties.size() * Math.random());
             res.add(this.eligibleProperties.get(idx));
         }
-
         return res;
     }
 }

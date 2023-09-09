@@ -22,7 +22,7 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
      */
     private final List<CompositionProof> proofs;
     /**
-     * Path where the .thy-file will be saved.
+     * Path where the <code>*.thy</code>-file will be saved.
      */
     private final String outputPath;
 
@@ -34,7 +34,7 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
     /**
      * Simple constructor.
      *
-     * @param issuer the issuing ui
+     * @param issuer the issuing user interface
      * @param compositionValue the composition
      * @param proofsValue the proofs
      * @param outputPathValue the path for the generated theories

@@ -2,11 +2,10 @@ package edu.kit.kastel.formal.virage.types;
 
 /**
  * Exception wrapping different causes of code generation failure.
- * @author VeriVote
  *
+ * @author VeriVote
  */
 public final class FrameworkExtractionFailedException extends Exception {
-
     /**
      * The UID.
      */
@@ -19,6 +18,7 @@ public final class FrameworkExtractionFailedException extends Exception {
 
     /**
      * Simple constructor.
+     *
      * @param cause the causing Exception
      */
     public FrameworkExtractionFailedException(final Exception cause) {
@@ -29,5 +29,4 @@ public final class FrameworkExtractionFailedException extends Exception {
     public String getMessage() {
         return "Framework extraction failed: " + this.causeField.getMessage();
     }
-
 }

@@ -2,6 +2,7 @@ package edu.kit.kastel.formal.virage.types;
 
 import java.util.List;
 
+import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.prolog.PrologClause;
 import edu.kit.kastel.formal.virage.prolog.PrologPredicate;
 
@@ -16,10 +17,12 @@ public final class CompositionRule implements Comparable<CompositionRule> {
      * The name.
      */
     private final String name;
+
     /**
      * The origin.
      */
     private final String origin;
+
     /**
      * The Prolog clause.
      */
@@ -33,10 +36,9 @@ public final class CompositionRule implements Comparable<CompositionRule> {
      * @param clauseValue the clause
      */
     public CompositionRule(final String nameValue, final String originValue,
-            final PrologClause clauseValue) {
+                           final PrologClause clauseValue) {
         this.name = nameValue;
         this.origin = originValue;
-
         clauseValue.anonymizeSingletons();
         this.clause = clauseValue;
     }
@@ -46,11 +48,9 @@ public final class CompositionRule implements Comparable<CompositionRule> {
         if (this.equals(rule)) {
             return 0;
         }
-
         if (!this.getSuccedent().getName().equals(rule.getSuccedent().getName())) {
             return this.getSuccedent().getName().compareTo(rule.getSuccedent().getName());
         }
-
         final int toReturn;
         if (this.getAntecedents().size() < rule.getAntecedents().size()) {
             toReturn = -1;
@@ -59,7 +59,6 @@ public final class CompositionRule implements Comparable<CompositionRule> {
         } else {
             toReturn = 1;
         }
-
         return toReturn;
     }
 
@@ -99,22 +98,47 @@ public final class CompositionRule implements Comparable<CompositionRule> {
         return true;
     }
 
+    /**
+     * Return the rule's clause antecedents.
+     *
+     * @return a list of the clause's antecedents
+     */
     public List<PrologPredicate> getAntecedents() {
         return this.clause.getAntecedents();
     }
 
+    /**
+     * Return the rule's clause.
+     *
+     * @return the clause
+     */
     public PrologClause getClause() {
         return this.clause;
     }
 
+    /**
+     * Return the name of this rule.
+     *
+     * @return the name
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Return the origin of this rule.
+     *
+     * @return the origin
+     */
     public String getOrigin() {
         return this.origin;
     }
 
+    /**
+     * Return the rule's clause succedent.
+     *
+     * @return the clause's succedent
+     */
     public PrologPredicate getSuccedent() {
         return this.clause.getSuccedent();
     }
@@ -135,20 +159,17 @@ public final class CompositionRule implements Comparable<CompositionRule> {
      * @return the string representation
      */
     public String toEplString() {
-        String res = "";
-
+        String res = StringUtils.EMPTY;
         res += "% = " + this.origin + System.lineSeparator();
         res += "% " + this.name + System.lineSeparator();
         res += this.clause.toString() + System.lineSeparator();
-
         return res;
     }
 
     @Override
     public String toString() {
-        final String res = this.name + ": " + this.clause.toString() + " (from " + this.origin
-                + ")";
-
-        return res;
+        return this.name + StringUtils.COLON + StringUtils.SPACE + this.clause.toString()
+                + StringUtils.SPACE
+                + StringUtils.parenthesize("from" + StringUtils.SPACE + this.origin);
     }
 }

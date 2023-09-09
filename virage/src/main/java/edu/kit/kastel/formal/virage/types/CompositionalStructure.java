@@ -16,10 +16,12 @@ public final class CompositionalStructure implements TypedAndParameterized {
      * The name.
      */
     private final String name;
+
     /**
      * The parameters.
      */
     private final List<ComponentType> parameters;
+
     /**
      * The type.
      */
@@ -27,17 +29,23 @@ public final class CompositionalStructure implements TypedAndParameterized {
 
     /**
      * Simple constructor.
+     *
      * @param nameValue the name
      * @param typeValue the type
      * @param parametersValue the parameters
      */
     public CompositionalStructure(final String nameValue, final ComponentType typeValue,
-            final List<ComponentType> parametersValue) {
+                                  final List<ComponentType> parametersValue) {
         this.name = nameValue;
         this.parameters = parametersValue;
         this.type = typeValue;
     }
 
+    /**
+     * Return the name of this object.
+     *
+     * @return the name
+     */
     public String getName() {
         return this.name;
     }
@@ -54,9 +62,8 @@ public final class CompositionalStructure implements TypedAndParameterized {
 
     @Override
     public String toString() {
-        final String res = "(" + this.type + ") " + this.name + StringUtils.parenthesize(
-                StringUtils.printCollection(this.parameters));
-
-        return res;
+        return StringUtils.parenthesize(this.type.toString())
+                + StringUtils.SPACE
+                + StringUtils.func(this.name, StringUtils.printCollection(this.parameters));
     }
 }

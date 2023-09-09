@@ -27,7 +27,7 @@ public abstract class IsabelleEvent {
      * @param observer The {@link IsabelleProofChecker} observing the event
      */
     public void applyEffects(final IsabelleProofChecker observer) {
-        // default: no-op
+        // default: skip operation
     }
 
     /**
@@ -46,8 +46,7 @@ public abstract class IsabelleEvent {
     @Override
     public String toString() {
         String res = this.getClass().getCanonicalName();
-
-        for (final Map.Entry<String, String> entry : this.parameters.entrySet()) {
+        for (final Map.Entry<String, String> entry: this.parameters.entrySet()) {
             res += "\n\t" + entry.getKey() + ": " + entry.getValue();
         }
 

@@ -2,6 +2,7 @@ package edu.kit.kastel.formal.virage.test.unit;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
+import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.prolog.PrologClause;
 import edu.kit.kastel.formal.virage.prolog.PrologParser;
 import edu.kit.kastel.formal.virage.prolog.PrologPredicate;
@@ -20,16 +22,6 @@ import edu.kit.kastel.formal.virage.prolog.SimplePrologParser;
  * @author VeriVote
  */
 public class PrologParserTest {
-    /**
-     * Test Prolog predicate name "".
-     */
-    private static final String EMPTY = "";
-
-    /**
-     * Test Prolog predicate name ",".
-     */
-    private static final String COMMA = ",";
-
     /**
      * Test Prolog predicate name "a".
      */
@@ -111,24 +103,6 @@ public class PrologParserTest {
     }
 
     /**
-     * Translates a predicate name and arguments to a test Prolog predicate.
-     *
-     * @param name the predicate name of the composed predicate
-     * @param args the predicate's arguments
-     * @return a test String representing the composed Prolog predicate
-     */
-    private static String predicate(final String name, final String... args) {
-        String arg = EMPTY;
-        for (final String a : args) {
-            if (!arg.isEmpty()) {
-                arg += COMMA;
-            }
-            arg += a;
-        }
-        return "name" + "(" + arg + ")";
-    }
-
-    /**
      * Translates a head predicate and various body predicates to a test Prolog clause.
      *
      * @param head the head predicate of the composed clause
@@ -137,13 +111,7 @@ public class PrologParserTest {
      */
     private static String clause(final String head, final String... args) {
         final String sign = " :- ";
-        String body = EMPTY;
-        for (final String b : args) {
-            if (!body.isEmpty()) {
-                body += COMMA;
-            }
-            body += b;
-        }
+        final String body = StringUtils.printCollection(Arrays.asList(args));
         return fact(head + sign + body);
     }
 
@@ -153,9 +121,8 @@ public class PrologParserTest {
     @Test(expected = IllegalArgumentException.class)
     public void parseEmptyClause() {
         LOGGER.info("parseEmptyClause()");
-        final String clause = EMPTY;
+        final String clause = "";
         final PrologParser parser = new SimplePrologParser();
-
         parser.parseSingleClause(clause);
     }
 
@@ -234,11 +201,8 @@ public class PrologParserTest {
         LOGGER.info("parseFact()");
         final String clause = fact(A);
         final PrologClause res = new PrologClause(new PrologPredicate(A));
-
         final PrologParser parser = new SimplePrologParser();
-
         final PrologClause parsed = parser.parseSingleClause(clause);
-
         assertTrue(parsed.equals(res));
     }
 
@@ -255,9 +219,7 @@ public class PrologParserTest {
         final PrologClause res = new PrologClause(new PrologPredicate(A), antecedents);
 
         final PrologParser parser = new SimplePrologParser();
-
         final PrologClause parsed = parser.parseSingleClause(clause);
-
         assertTrue(parsed.equals(res));
     }
 
@@ -267,7 +229,11 @@ public class PrologParserTest {
     @Test
     public void parseComplexClause() {
         LOGGER.info("parseComplexClause()");
-        final String clause = clause(predicate(A, X, Y), B, predicate(C, X), predicate(D, X, Y));
+        final String clause =
+                clause(StringUtils.func(A, X, Y),
+                       B,
+                       StringUtils.func(C, X),
+                       StringUtils.func(D, X, Y));
 
         final List<PrologPredicate> x = new LinkedList<PrologPredicate>();
         x.add(new PrologPredicate(X));
@@ -286,11 +252,8 @@ public class PrologParserTest {
         antecedents.add(d);
 
         final PrologClause res = new PrologClause(a, antecedents);
-
         final PrologParser parser = new SimplePrologParser();
-
         final PrologClause parse = parser.parseSingleClause(clause);
-
         assertTrue(parse.equals(res));
     }
 
@@ -301,9 +264,11 @@ public class PrologParserTest {
     public void parseRealClause() {
         LOGGER.info("parseRealClause()");
         final String clause =
-            clause(predicate(MONO, predicate(SEQ_COMP, X, Y)), predicate(DEFER_LIFT_INV, X),
-                   predicate(NON_ELECTING, X), predicate(DEFERS, X, ONE), predicate(ELECTING, Y));
-
+            clause(StringUtils.func(MONO, StringUtils.func(SEQ_COMP, X, Y)),
+                   StringUtils.func(DEFER_LIFT_INV, X),
+                   StringUtils.func(NON_ELECTING, X),
+                   StringUtils.func(DEFERS, X, ONE),
+                   StringUtils.func(ELECTING, Y));
         final List<PrologPredicate> x = new LinkedList<PrologPredicate>();
         x.add(new PrologPredicate(X));
         final List<PrologPredicate> y = new LinkedList<PrologPredicate>();
@@ -323,7 +288,6 @@ public class PrologParserTest {
 
         final List<PrologPredicate> param = new LinkedList<PrologPredicate>();
         param.add(seq);
-
         final PrologPredicate mono = new PrologPredicate(MONO, param);
 
         final LinkedList<PrologPredicate> antecedents = new LinkedList<PrologPredicate>();
@@ -331,12 +295,9 @@ public class PrologParserTest {
         antecedents.add(nel);
         antecedents.add(def);
         antecedents.add(ele);
-
         final PrologClause reference = new PrologClause(mono, antecedents);
-
         final PrologParser parser = new SimplePrologParser();
         final PrologClause res = parser.parseSingleClause(clause);
-
         assertTrue(res.equals(reference));
     }
 }

@@ -11,7 +11,7 @@ public abstract class VirageJobWithoutExplicitResult extends VirageJob<Void> {
     /**
      * Simple constructor.
      *
-     * @param issuer the issuing ui.
+     * @param issuer the issuing user interface
      */
     public VirageJobWithoutExplicitResult(final VirageUserInterface issuer) {
         super(issuer);

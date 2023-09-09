@@ -33,9 +33,8 @@ public class SimpleFileWriter {
      */
     public void writeToFile(final String path, final Collection<?> collection) {
         try {
-            this.writer = new FileWriter(new File(path).getCanonicalFile(), StandardCharsets.UTF_8);
-
-            for (final Object o : collection) {
+            this.writer = new FileWriter(SystemUtils.file(path), StandardCharsets.UTF_8);
+            for (final Object o: collection) {
                 this.writer.write(o.toString() + System.lineSeparator());
             }
         } catch (final IOException e) {
@@ -57,8 +56,7 @@ public class SimpleFileWriter {
      */
     public void writeToFile(final String path, final String contents) {
         try {
-            final File file = new File(path).getCanonicalFile();
-
+            final File file = SystemUtils.file(path);
             this.writer = new FileWriter(file, StandardCharsets.UTF_8);
             this.writer.write(contents);
         } catch (final IOException e) {

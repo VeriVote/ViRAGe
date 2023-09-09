@@ -13,6 +13,7 @@ public class ComponentType {
 
     /**
      * Simple constructor.
+     *
      * @param nameValue the name
      */
     public ComponentType(final String nameValue) {
@@ -46,6 +47,7 @@ public class ComponentType {
 
     /**
      * Safe to override.
+     *
      * @return the name
      */
     public String getName() {

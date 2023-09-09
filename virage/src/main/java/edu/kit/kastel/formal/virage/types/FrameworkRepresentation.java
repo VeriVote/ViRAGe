@@ -18,6 +18,7 @@ import edu.kit.kastel.formal.util.SimpleFileWriter;
 import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.core.ConfigReader;
 import edu.kit.kastel.formal.virage.core.VirageCore;
+import edu.kit.kastel.formal.virage.isabelle.IsabelleUtils;
 import edu.kit.kastel.formal.virage.prolog.ExtendedPrologStrings;
 import edu.kit.kastel.formal.virage.prolog.PrologClause;
 import edu.kit.kastel.formal.virage.prolog.PrologParser;
@@ -25,7 +26,7 @@ import edu.kit.kastel.formal.virage.prolog.PrologPredicate;
 import edu.kit.kastel.formal.virage.prolog.SimplePrologParser;
 
 /**
- * The data model required to represent the compositional framework as a whole It is designed for
+ * The data model required to represent the compositional framework as a whole. It is designed for
  * the electoral module framework, but not at all limited to it.
  *
  * @author VeriVote
@@ -42,20 +43,17 @@ public final class FrameworkRepresentation {
     private static final String SEPARATOR = "%%%%%%%%%%%%%%%%%%%%\n";
 
     /**
-     * This symbol marks the end of a sentence.
-     */
-    private static final String FULL_STOP = ".";
-
-    /**
      * Path to the (E)PL file.
      */
     private String absolutePath;
+
     /**
      * Path to Isabelle theories.
      */
     private String theoryPath;
+
     /**
-     * Name of the Isabelle sesison.
+     * Name of the Isabelle session.
      */
     private String sessionName;
 
@@ -63,22 +61,27 @@ public final class FrameworkRepresentation {
      * Set of component types.
      */
     private final Set<ComponentType> componentTypes;
+
     /**
      * Set of components.
      */
     private final Set<Component> components;
+
     /**
-     * Set of composable modules.
+     * Set of modules that can be composed.
      */
     private final Set<ComposableModule> composableModules;
+
     /**
      * Set of compositional structures.
      */
     private final Set<CompositionalStructure> compositionalStructures;
+
     /**
      * Set of composition rules.
      */
     private final List<CompositionRule> compositionRules;
+
     /**
      * Set of properties.
      */
@@ -88,13 +91,14 @@ public final class FrameworkRepresentation {
      * List of type synonyms.
      */
     private List<Pair<String, String>> typeSynonyms;
+
     /**
      * List of atomic types.
      */
     private List<ComponentType> atomicTypes;
 
     /**
-     * Composable module alias.
+     * Alias for modules that can be composed.
      * <b>Warning:</b> This was set to deprecated with no explicit justification,
      * maybe handle with care.
      */
@@ -111,7 +115,6 @@ public final class FrameworkRepresentation {
      */
     public FrameworkRepresentation(final String absolutePathValue) {
         this.absolutePath = absolutePathValue;
-
         this.componentTypes = new HashSet<ComponentType>();
         this.components = new HashSet<Component>();
         this.composableModules = new HashSet<ComposableModule>();
@@ -125,7 +128,7 @@ public final class FrameworkRepresentation {
                                                        final String prefix, final String alias) {
         final List<PrologPredicate> newParams = new LinkedList<PrologPredicate>();
         for (int j = 0; j < p.getArity(); j++) {
-            if(arity == j) {
+            if (arity == j) {
                 newParams.add(parser.parsePredicate(alias));
             } else {
                 newParams.add(new PrologPredicate(prefix + j));
@@ -171,33 +174,31 @@ public final class FrameworkRepresentation {
      * <b>Warning:</b> This was set to deprecated with no explicit justification,
      * maybe handle with care.
      *
-     * @param cs the @link{CompositionalStructure} to be added
+     * @param structure the @link{CompositionalStructure} to be added
      */
-    public void add(final CompositionalStructure cs) {
-        // this.checkTypes(cs);
-        this.compositionalStructures.add(cs);
+    public void add(final CompositionalStructure structure) {
+        // this.checkTypes(structure);
+        this.compositionalStructures.add(structure);
     }
 
     /**
      * Adds a @link{CompositionRule} to the FrameworkRepresentation.
      *
-     * @param cr the @link{ComposiotionRule} to be added
+     * @param rule the @link{ComposiotionRule} to be added
      */
-    public void add(final CompositionRule cr) {
+    public void add(final CompositionRule rule) {
         /*
          * PrologClause actualClause = this.removeAtomicTypesFromClause(cr.getClause());
-         * if(actualClause == null) { return; }
+         * if (actualClause == null) { return; }
          *
-         * cr = new CompositionRule(cr.getName(), cr.getOrigin(), actualClause);
+         * rule = new CompositionRule(cr.getName(), cr.getOrigin(), actualClause);
          */
-
-        for (final CompositionRule rule : this.compositionRules) {
-            if (rule.equals(cr)) {
+        for (final CompositionRule cr: this.compositionRules) {
+            if (cr.equals(rule)) {
                 return;
             }
         }
-
-        this.compositionRules.add(cr);
+        this.compositionRules.add(rule);
     }
 
     /**
@@ -222,43 +223,35 @@ public final class FrameworkRepresentation {
     private void addAliasRules() {
         final Map<String, String> aliases = ConfigReader.getInstance().getComponentAliases();
         final PrologParser parser = new SimplePrologParser();
-
-        for (final Property p : this.properties) {
+        for (final Property p: this.properties) {
             for (int i = 0; i < p.getArity(); i++) {
-
                 final ComponentType propertyType = p.getParameters().get(i);
-
                 int aliasIdx = 0;
-                for (final Map.Entry<String, String> aliasEntry : aliases.entrySet()) {
+                for (final Map.Entry<String, String> aliasEntry: aliases.entrySet()) {
                     final PrologPredicate aliasPredicate =
                             parser.parsePredicate(aliasEntry.getKey());
                     final String aliasName = aliasPredicate.getName();
                     final Component aliasComponent = this.getComponent(aliasName);
-
                     if (aliasComponent != null && !aliasComponent.getType().equals(propertyType)) {
                         continue;
                     }
-
                     final String nextFreeVariable = "ALIAS_VAR_";
                     final PrologPredicate newSucc =
                         addPredicateAliases(parser, p, i, nextFreeVariable, aliasEntry.getKey());
                     final PrologPredicate newAnte =
                         addPredicateAliases(parser, p, i, nextFreeVariable, aliasEntry.getValue());
-
                     final PrologClause clause = new PrologClause(newSucc, newAnte);
-                    final CompositionRule rule = new CompositionRule(
-                            p.getName() + "_alias_" + aliasIdx, ExtendedPrologStrings.ASSUMPTION,
-                            clause);
+                    final CompositionRule rule =
+                            new CompositionRule(p.getName() + "_alias_" + aliasIdx,
+                                                ExtendedPrologStrings.ASSUMPTION,
+                                                clause);
                     this.add(rule);
-
                     /*
                      * final PrologClause clause2 = new PrologClause(newAnte, newSucc); final
                      * CompositionRule rule2 = new CompositionRule(p.getName() + "_alias_inv_" +
                      * aliasIdx, ExtendedPrologStrings.ASSUMPTION, clause2); this.add(rule2);
                      */
-
                     this.updateFile();
-
                     aliasIdx++;
                 }
             }
@@ -271,15 +264,15 @@ public final class FrameworkRepresentation {
     private void addDummyRules() {
         final List<String> atomicTypeStrings = ConfigReader.getInstance().getAtomicTypes();
         this.atomicTypes = new LinkedList<ComponentType>();
-        for (final String s : atomicTypeStrings) {
+        for (final String s: atomicTypeStrings) {
             final ComponentType type = new ComponentType(s);
             this.add(type);
             this.atomicTypes.add(type);
         }
 
-        for (final Property p : this.properties) {
+        for (final Property p: this.properties) {
             boolean allAtomicTypes = true;
-            for (final ComponentType type : p.getParameters()) {
+            for (final ComponentType type: p.getParameters()) {
                 if (!this.atomicTypes.contains(type)) {
                     allAtomicTypes = false;
                     break;
@@ -290,37 +283,33 @@ public final class FrameworkRepresentation {
                 // A new rule is added such that the atomic properties are ignored.
                 final List<PrologPredicate> params = new LinkedList<PrologPredicate>();
                 for (int i = 0; i < p.getParameters().size(); i++) {
-                    params.add(new PrologPredicate("_"));
+                    params.add(new PrologPredicate(PrologPredicate.ANONYMOUS));
                 }
-
                 p.setAtomic(true);
-
                 final PrologPredicate pred = new PrologPredicate(p.getName(), params);
                 final PrologClause clause = new PrologClause(pred);
-
-                final CompositionRule rule = new CompositionRule(p.getName() + "_intro",
-                        "ASSUMPTION", clause);
+                final CompositionRule rule =
+                        new CompositionRule(p.getName() + "_intro",
+                                            ExtendedPrologStrings.ASSUMPTION, clause);
                 this.add(rule);
-
                 this.updateFile();
             }
         }
     }
 
     private void checkTypes(final Parameterized object) {
-        for (final ComponentType paramType : object.getParameters()) {
+        for (final ComponentType paramType: object.getParameters()) {
             if (!this.componentTypes.contains(paramType)) {
                 LOGGER.info("Added item with unknown parameter type \"" + paramType.getName()
-                        + FULL_STOP);
+                        + StringUtils.PERIOD);
             }
         }
     }
 
     private void checkTypes(final Typed object) {
         final ComponentType type = object.getType();
-
         if (!this.componentTypes.contains(type)) {
-            LOGGER.info("Added item with unknown type \"" + type.getName() + FULL_STOP);
+            LOGGER.info("Added item with unknown type \"" + type.getName() + StringUtils.PERIOD);
         }
     }
 
@@ -331,15 +320,11 @@ public final class FrameworkRepresentation {
 
     private String createHeader() {
         String res = SEPARATOR;
-
         final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
         final ZonedDateTime now = ZonedDateTime.now();
-
         res += "%% Generated by ViRAGe " + VirageCore.getVersion() + " at " + dtf.format(now)
                 + ".\n";
-
         res += SEPARATOR;
-
         res += "%% To add new composition rules, go to the bottom of this file.\n"
                 + "%% A rule definition consists of three parts. "
                 + "The first one represents its origin,\n"
@@ -348,17 +333,24 @@ public final class FrameworkRepresentation {
                 + "%% The third part is a Prolog clause capturing the semantics of the rule.\n"
                 + "%%\n" + "%% Example:\n" + "%% % = UNPROVEN\n"
                 + "%% % example_rule_without_meaning\n" + "%% property_a(X) :- property_b(X).\n";
-
         res += SEPARATOR;
-
         return res;
-
     }
 
+    /**
+     * Get the absolute path as a string.
+     *
+     * @return the absolute path
+     */
     public String getAbsolutePath() {
         return this.absolutePath;
     }
 
+    /**
+     * Get the module's alias string.
+     *
+     * @return the module's alias
+     */
     public String getAlias() {
         return this.composableModuleAlias;
     }
@@ -370,25 +362,33 @@ public final class FrameworkRepresentation {
      * @return the {@link Component}, null if it does not exist.
      */
     public Component getComponent(final String name) {
-        for (final Component component : this.components) {
+        for (final Component component: this.components) {
             if (component.getName().equals(name)) {
                 return component;
             }
         }
-
-        for (final ComposableModule module : this.composableModules) {
+        for (final ComposableModule module: this.composableModules) {
             if (module.getName().equals(name)) {
                 return module;
             }
         }
-
         return null;
     }
 
+    /**
+     * Get components.
+     *
+     * @return the components
+     */
     public Set<Component> getComponents() {
         return this.components;
     }
 
+    /**
+     * Get component types.
+     *
+     * @return the component types
+     */
     public Set<ComponentType> getComponentTypes() {
         return this.componentTypes;
     }
@@ -400,15 +400,19 @@ public final class FrameworkRepresentation {
      * @return the {@link ComposableModule}, null if it does not exist.
      */
     public ComposableModule getComposableModule(final String name) {
-        for (final ComposableModule module : this.composableModules) {
+        for (final ComposableModule module: this.composableModules) {
             if (module.getName().equals(name)) {
                 return module;
             }
         }
-
         return null;
     }
 
+    /**
+     * Get the modules that can be composed.
+     *
+     * @return the modules that can be composed
+     */
     public Set<ComposableModule> getComposableModules() {
         return this.composableModules;
     }
@@ -420,23 +424,37 @@ public final class FrameworkRepresentation {
      * @return the {@link CompositionalStructure}, null if it does not exist.
      */
     public CompositionalStructure getCompositionalStructure(final String name) {
-        for (final CompositionalStructure component : this.compositionalStructures) {
+        for (final CompositionalStructure component: this.compositionalStructures) {
             if (component.getName().equals(name)) {
                 return component;
             }
         }
-
         return null;
     }
 
+    /**
+     * Get the compositional structures.
+     *
+     * @return the compositional structures
+     */
     public Set<CompositionalStructure> getCompositionalStructures() {
         return this.compositionalStructures;
     }
 
+    /**
+     * Get the composition rules.
+     *
+     * @return the composition rules
+     */
     public List<CompositionRule> getCompositionRules() {
         return this.compositionRules;
     }
 
+    /**
+     * Get the properties as a set.
+     *
+     * @return the properties
+     */
     public Set<Property> getProperties() {
         return this.properties;
     }
@@ -448,35 +466,64 @@ public final class FrameworkRepresentation {
      * @return the {@link Property}, null if it does not exist.
      */
     public Property getProperty(final String name) {
-        for (final Property property : this.properties) {
+        for (final Property property: this.properties) {
             if (property.getName().equals(name)) {
                 return property;
             }
         }
-
         return null;
     }
 
+    /**
+     * Get the session's name.
+     *
+     * @return the session name string
+     */
     public String getSessionName() {
         return this.sessionName;
     }
 
+    /**
+     * Get the theory path.
+     *
+     * @return the theory path string
+     */
     public String getTheoryPath() {
         return this.theoryPath;
     }
 
+    /**
+     * Get the current type synonyms.
+     *
+     * @return the type synonyms as a list
+     */
     public List<Pair<String, String>> getTypeSynonyms() {
         return this.typeSynonyms;
     }
 
+    /**
+     * Set new absolute path.
+     *
+     * @param newAbsolutePath the new absolute path string
+     */
     public void setAbsolutePath(final String newAbsolutePath) {
         this.absolutePath = newAbsolutePath;
     }
 
+    /**
+     * Set new module alias.
+     *
+     * @param alias the new alias string
+     */
     public void setAlias(final String alias) {
         this.composableModuleAlias = alias;
     }
 
+    /**
+     * Set new session name.
+     *
+     * @param newSessionName the new session name
+     */
     public void setSessionName(final String newSessionName) {
         this.sessionName = newSessionName;
     }
@@ -488,14 +535,17 @@ public final class FrameworkRepresentation {
      */
     public void setTheoryPath(final String newTheoryPath) {
         String theoryPathCopy = newTheoryPath;
-
         if (!newTheoryPath.endsWith(File.separator)) {
             theoryPathCopy = newTheoryPath + File.separator;
         }
-
         this.theoryPath = theoryPathCopy;
     }
 
+    /**
+     * Set new type synonyms.
+     *
+     * @param newTypeSynonyms new type synonyms
+     */
     public void setTypeSynonyms(final List<Pair<String, String>> newTypeSynonyms) {
         this.typeSynonyms = newTypeSynonyms;
     }
@@ -507,26 +557,21 @@ public final class FrameworkRepresentation {
      */
     public String toEplString() {
         Collections.sort(this.compositionRules);
-
         String res = this.createHeader();
-
-        res += "% ==== " + this.theoryPath + "ROOT" + " - " + this.sessionName
+        res += "% ==== " + this.theoryPath + IsabelleUtils.ROOT + " - " + this.sessionName
                 + System.lineSeparator();
-
         res += ExtendedPrologStrings.COMMENT + System.lineSeparator();
-
         res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
                 + ExtendedPrologStrings.COMPOSITION_TYPE_HEADER + System.lineSeparator();
-        for (final ComponentType type : this.componentTypes) {
+        for (final ComponentType type: this.componentTypes) {
             res += "% == " + type.getName() + System.lineSeparator();
-            for (final Component comp : this.components) {
+            for (final Component comp: this.components) {
                 if (comp.getType().equals(type)) {
                     res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
                             + comp.toStringWithoutTypeSignature() + System.lineSeparator();
                 }
             }
         }
-
         res += ExtendedPrologStrings.COMMENT + System.lineSeparator();
 
         /*
@@ -541,25 +586,22 @@ public final class FrameworkRepresentation {
 
         res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
                 + ExtendedPrologStrings.PROPERTY_HEADER + System.lineSeparator();
-        for (final Property prop : this.properties) {
+        for (final Property prop: this.properties) {
             res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE + prop.toString()
                     + System.lineSeparator();
         }
         final List<String> additionalProperties = ConfigReader.getInstance()
                 .getAdditionalProperties();
-        for (final String prop : additionalProperties) {
+        for (final String prop: additionalProperties) {
             res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE + prop
                     + System.lineSeparator();
         }
-
         res += "%\n";
-
         res += ExtendedPrologStrings.COMMENT + StringUtils.SPACE
                 + ExtendedPrologStrings.COMPOSITION_RULE_HEADER + System.lineSeparator();
-        for (final CompositionRule rule : this.compositionRules) {
+        for (final CompositionRule rule: this.compositionRules) {
             res += rule.toEplString() + System.lineSeparator();
         }
-
         return res;
     }
 
@@ -574,50 +616,42 @@ public final class FrameworkRepresentation {
      * @return the string representation
      */
     public String toVerboseString() {
-        final StringBuilder res = new StringBuilder("");
-
+        final StringBuilder res = new StringBuilder(StringUtils.EMPTY);
         res.append("ComponentTypes:\n");
-        for (final ComponentType ct : this.componentTypes) {
+        for (final ComponentType ct: this.componentTypes) {
             res.append(StringUtils.indentWithTab(ct.toString() + System.lineSeparator()));
         }
         res.append(System.lineSeparator());
-
         res.append("Components:\n");
-        for (final Component c : this.components) {
+        for (final Component c: this.components) {
             res.append(StringUtils.indentWithTab(c.toString() + System.lineSeparator()));
         }
         res.append(System.lineSeparator());
-
         res.append("ComposableModules:\n");
-        for (final ComposableModule cm : this.composableModules) {
+        for (final ComposableModule cm: this.composableModules) {
             res.append(StringUtils.indentWithTab(cm.toString() + System.lineSeparator()));
         }
         res.append(System.lineSeparator());
-
         res.append("CompositionalStructures:\n");
-        for (final CompositionalStructure cs : this.compositionalStructures) {
+        for (final CompositionalStructure cs: this.compositionalStructures) {
             res.append(StringUtils.indentWithTab(cs.toString() + System.lineSeparator()));
         }
         res.append(System.lineSeparator());
-
         res.append("Property:\n");
-        for (final Property p : this.properties) {
+        for (final Property p: this.properties) {
             res.append(StringUtils.indentWithTab(p.toString() + System.lineSeparator()));
         }
         res.append(System.lineSeparator());
-
         res.append("CompositionRules:\n");
-        for (final CompositionRule cr : this.compositionRules) {
+        for (final CompositionRule cr: this.compositionRules) {
             res.append(StringUtils.indentWithTab(cr.toString() + System.lineSeparator()));
         }
         res.append(System.lineSeparator());
-
         return res.toString();
     }
 
     private synchronized void updateFile() {
         final String newContent = this.toEplString();
-
         final SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(this.absolutePath, newContent);
     }

@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class IsabelleNoteEvent extends IsabelleEvent {
     /**
-     * Siple constructor.
+     * Simple constructor.
      * @param parameters the parameters.
      */
     public IsabelleNoteEvent(final Map<String, String> parameters) {

@@ -136,7 +136,6 @@ public class PrologProofTest {
     @Test
     public void testSmcMonotone() {
         final PrologProof proof = PrologProof.createProofFromString(input);
-
         assertTrue(proof.toString().equals(reference));
     }
 }

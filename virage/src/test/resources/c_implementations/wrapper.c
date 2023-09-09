@@ -13,8 +13,8 @@ char** split_string(char* str) {
 
   char* ptr = strtok(str,delim);
 
-  int i=0;
-  while(ptr != NULL) {
+  int i = 0;
+  while (ptr != NULL) {
     res[C-i-1] = ptr;
 
     ptr = strtok(NULL,delim);
@@ -26,15 +26,15 @@ char** split_string(char* str) {
 }
 
 int find_order_index(char* candidate) {
-  for(int i=0; i<C; i++) {
-    if(!strcmp(candidate, order[i])) return i;
+  for (int i = 0; i < C; i++) {
+    if (!strcmp(candidate, order[i])) return i;
   }
 
   return C;
 }
 
 int main(int argc, char** argv) {
-  if(argc < 1) {
+  if (argc < 1) {
     printf("Please submit an input file.\n");
   }
 
@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
 
 
   int** ballots = malloc(sizeof(int*)*V);
-  for(int i=0; i<V; i++) {
+  for (int i = 0; i < V; i++) {
     ballots[i] = malloc(sizeof(int)*C);
   }
 
@@ -58,19 +58,19 @@ int main(int argc, char** argv) {
   while ((read = getline(&line, &len, fp)) != -1) {
       char** ballot = split_string(line);
 
-      if(first) {
+      if (first) {
         order = malloc(sizeof(char*)*C);
-        for(int i=0; i<C; i++) {
+        for (int i = 0; i < C; i++) {
           order[i] = malloc(sizeof(char)*strlen(ballot[i]));
         }
 
-        for(int i=0; i<C; i++) {
+        for (int i = 0; i < C; i++) {
           strcpy(order[i],ballot[i]);
         }
         first = 0;
       }
 
-      for(int j=0; j<C; j++) {
+      for (int j = 0; j < C; j++) {
         int index = find_order_index(ballot[j]);
 
         ballots[voter][j] = index;
@@ -82,12 +82,12 @@ int main(int argc, char** argv) {
   fclose(fp);
 
   profile p;
-  for(int i=0; i<C; i++) {
+  for (int i = 0; i < C; i++) {
           p.alternatives[i] = i;
   }
 
-  for(int i=0; i<V; i++) {
-          for(int j=0; j<C; j++) {
+  for (int i = 0; i < V; i++) {
+          for (int j = 0; j < C; j++) {
                   p.votes[i][j] = ballots[i][j];
           }
   }
@@ -95,8 +95,8 @@ int main(int argc, char** argv) {
   result r = voting_rule(p);
 
   printf("elected: ");
-  for(int i=0; i<C; i++) {
-    if(r.values[i] == ELECTED) {
+  for (int i = 0; i < C; i++) {
+    if (r.values[i] == ELECTED) {
       printf("%s ",order[i]);
     }
   }

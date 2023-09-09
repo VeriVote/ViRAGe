@@ -38,6 +38,6 @@ public class VirageMain {
             LOGGER.fatal("An unrecoverable error has occurred.", e);
             LOGGER.fatal("The program will now terminate.");
         }
-        System.exit(1);
+        SystemUtils.exit(1);
     }
 }

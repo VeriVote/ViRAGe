@@ -24,10 +24,12 @@ public final class VirageAnalyzeJob
      * String representation of the desired properties.
      */
     private final List<String> propertyStrings;
+
     /**
      * The desired properties.
      */
     private List<Property> properties;
+
     /**
      * The composition.
      */
@@ -37,6 +39,7 @@ public final class VirageAnalyzeJob
      * The compositional framework.
      */
     private FrameworkRepresentation framework;
+
     /**
      * The search manager.
      */
@@ -52,7 +55,6 @@ public final class VirageAnalyzeJob
     public VirageAnalyzeJob(final VirageUserInterface issuer, final String treeValue,
             final List<String> propertiesValue) {
         super(issuer);
-
         this.tree = DecompositionTree.parseString(treeValue);
         this.propertyStrings = propertiesValue;
     }
@@ -61,13 +63,10 @@ public final class VirageAnalyzeJob
     public void concreteExecute() {
         this.framework = this.getExecutingCore().getFrameworkRepresentation();
         this.manager = this.getExecutingCore().getSearchManager();
-
         this.properties = new LinkedList<Property>();
-
-        for (final String s : this.propertyStrings) {
+        for (final String s: this.propertyStrings) {
             this.properties.add(this.framework.getProperty(s));
         }
-
         this.setResult(this.manager.analyzeComposition(this.tree, this.properties));
     }
 
@@ -87,23 +86,21 @@ public final class VirageAnalyzeJob
         if (this.properties.size() == 1) {
             prop = "property";
         }
-
         boolean hasProperties = false;
-        for (final List<SearchResult<BooleanWithUncertainty>> resultList : this.getResult()) {
-            for (final SearchResult<BooleanWithUncertainty> result : resultList) {
+        for (final List<SearchResult<BooleanWithUncertainty>> resultList: this.getResult()) {
+            for (final SearchResult<BooleanWithUncertainty> result: resultList) {
                 if (result.hasValue() && result.getValue() == BooleanWithUncertainty.TRUE) {
                     hasProperties = true;
                     break;
                 }
             }
         }
-
         if (hasProperties) {
             return this.tree.toString() + " has the " + prop + StringUtils.SPACE
-                    + StringUtils.printCollection(this.properties) + "";
+                    + StringUtils.printCollection(this.properties) + StringUtils.EMPTY;
         } else {
             return this.tree.toString() + " cannot be shown to have the " + prop + StringUtils.SPACE
-                    + StringUtils.printCollection(this.properties) + "";
+                    + StringUtils.printCollection(this.properties) + StringUtils.EMPTY;
         }
     }
 }

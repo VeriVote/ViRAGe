@@ -14,10 +14,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.kit.kastel.formal.util.StringUtils;
+import edu.kit.kastel.formal.util.SystemUtils;
 import edu.kit.kastel.formal.virage.analyzer.CompositionAnalyzer;
 import edu.kit.kastel.formal.virage.analyzer.SimplePrologCompositionAnalyzer;
 import edu.kit.kastel.formal.virage.prolog.ExtendedPrologParser;
 import edu.kit.kastel.formal.virage.prolog.MalformedEplFileException;
+import edu.kit.kastel.formal.virage.prolog.PrologParser;
 import edu.kit.kastel.formal.virage.prolog.QueryState;
 import edu.kit.kastel.formal.virage.prolog.SimpleExtendedPrologParser;
 import edu.kit.kastel.formal.virage.types.BooleanWithUncertainty;
@@ -34,16 +36,6 @@ import edu.kit.kastel.formal.virage.types.SearchResult;
  * @author VeriVote
  */
 public abstract class CompositionAnalyzerTest {
-    /**
-     * Test Prolog predicate name "".
-     */
-    private static final String EMPTY = "";
-
-    /**
-     * Test Prolog predicate name ",".
-     */
-    private static final String COMMA = ",";
-
     /**
      * Test Prolog predicate name "\t: ".
      */
@@ -157,7 +149,8 @@ public abstract class CompositionAnalyzerTest {
     /**
      * Path to an (E)PL file.
      */
-    private static final String FRAMEWORK_PATH = "src/test/resources/framework.pl";
+    private static final String FRAMEWORK_PATH =
+            SystemUtils.RESOURCES + "framework" + PrologParser.DOT_PL;
 
     /**
      * The test data generator.
@@ -170,24 +163,6 @@ public abstract class CompositionAnalyzerTest {
     private FrameworkRepresentation framework;
 
     /**
-     * Translates a predicate name and arguments to a test Prolog predicate.
-     *
-     * @param name the predicate name of the composed predicate
-     * @param args the predicate's arguments
-     * @return a test String representing the composed Prolog predicate
-     */
-    private static String predicate(final String name, final String... args) {
-        String arg = EMPTY;
-        for (final String a : args) {
-            if (!arg.isEmpty()) {
-                arg += COMMA;
-            }
-            arg += a;
-        }
-        return "name" + "(" + arg + ")";
-    }
-
-    /**
      * Performs setup for the following tests.
      *
      * @throws IOException if reading resources fails
@@ -197,15 +172,14 @@ public abstract class CompositionAnalyzerTest {
     public void setup() throws IOException, MalformedEplFileException {
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
         this.framework = parser.parseFramework(new File(FRAMEWORK_PATH), false);
-
         this.generator = new TestDataGenerator(this.framework);
     }
 
     /**
-     * The SimplePrologCompositionAnalyzer is considered to be correct and
-     * is thus used as a baseline for all other implementations of
-     * CompositionAnalyzer.
-     * @throws IOException if io fails
+     * The SimplePrologCompositionAnalyzer is considered to be correct and is thus used as a
+     * baseline for all other implementations of CompositionAnalyzer.
+     *
+     * @throws IOException if input or output fails
      * @throws ExternalSoftwareUnavailableException if JPL is unavailable
      */
     @Test
@@ -214,43 +188,34 @@ public abstract class CompositionAnalyzerTest {
         final SimplePrologCompositionAnalyzer spca = new SimplePrologCompositionAnalyzer(
                 this.framework);
         final CompositionAnalyzer self = this.createInstance();
-
         final int runs = 100;
         final int timeout = 10;
-
         spca.setTimeout(timeout);
         self.setTimeout(timeout);
-
         int conflicts = 0;
         int errors = 0;
 
         for (int i = 0; i < runs; i++) {
             final int amount = (int) (3 * Math.random()) + 1;
-
-            final List<Property> properties = this.generator
-                    .getRandomComposableModuleProperties(amount);
-
-            final SearchResult<DecompositionTree> trustedResult = spca
-                    .generateComposition(properties);
+            final List<Property> properties =
+                    this.generator.getRandomComposableModuleProperties(amount);
+            final SearchResult<DecompositionTree> trustedResult =
+                    spca.generateComposition(properties);
             final SearchResult<DecompositionTree> result = self.generateComposition(properties);
-
             if (result.getState() == QueryState.ERROR) {
                 errors++;
             }
-
             if (trustedResult.getState() == QueryState.FAILED) {
                 if (result.getState() == QueryState.SUCCESS) {
                     conflicts++;
                 }
             }
-
             if (trustedResult.getState() == QueryState.SUCCESS) {
                 if (result.getState() == QueryState.FAILED) {
                     conflicts++;
                 }
             }
         }
-
         if (errors > 0 || conflicts > 0) {
             fail();
         }
@@ -258,7 +223,8 @@ public abstract class CompositionAnalyzerTest {
 
     /**
      * Tests random property sets.
-     * @throws IOException if io fails
+     *
+     * @throws IOException if input or output fails
      * @throws ExternalSoftwareUnavailableException if external software is unavailable
      */
     @Test
@@ -301,10 +267,8 @@ public abstract class CompositionAnalyzerTest {
                 }
             }
         }
-
         LOGGER.debug("\nSucceeded:\t" + success + "\nFailed:\t\t" + failure + "\nTimed out:\t"
                 + timeouts + "\nErrors:\t\t" + error);
-
         if (failure == runs || success == runs || timeouts == runs) {
             LOGGER.warn("A highly unlikely result occured in the test.\n"
                     + "This might happen by (a very small) chance, "
@@ -316,49 +280,48 @@ public abstract class CompositionAnalyzerTest {
 
     /**
      * Tests SMC proof.
+     *
      * @throws Exception if something goes wrong
      */
     @Test
     public void testSequentialMajorityComparison() throws Exception {
         LOGGER.info("testSequentialMajorityComparison()");
         final String smc =
-            predicate(SEQ_COMP,
-                      predicate(LOOP_COMP,
-                                predicate(PAR_COMP,
-                                          predicate(SEQ_COMP,
-                                                    predicate(PASS, TWO, ANY),
-                                                    predicate(SEQ_COMP,
-                                                              predicate(REV_COMP, PLURALITY),
-                                                              predicate(PASS, ONE, ANY))),
-                                          predicate(DROP, TWO, ANY),
+                StringUtils.func(SEQ_COMP,
+                    StringUtils.func(LOOP_COMP,
+                              StringUtils.func(PAR_COMP,
+                                        StringUtils.func(SEQ_COMP,
+                                                  StringUtils.func(PASS, TWO, ANY),
+                                                    StringUtils.func(SEQ_COMP,
+                                                            StringUtils.func(REV_COMP, PLURALITY),
+                                                              StringUtils.func(PASS, ONE, ANY))),
+                                          StringUtils.func(DROP, TWO, ANY),
                                           MAX_AGG),
-                                predicate(DEF_EQ_COND, ONE)),
+                                StringUtils.func(DEF_EQ_COND, ONE)),
                       ELECT);
-
         final DecompositionTree smcTree = DecompositionTree.parseString(smc);
 
         final CompositionAnalyzer analyzer = this.createInstance();
         analyzer.setTimeout(DEFAULT_TIMEOUT);
-
         final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty(MONO));
 
-        final List<SearchResult<BooleanWithUncertainty>> resultList = analyzer
-                .analyzeComposition(smcTree, properties);
+        final List<SearchResult<BooleanWithUncertainty>> resultList =
+                analyzer.analyzeComposition(smcTree, properties);
         final SearchResult<BooleanWithUncertainty> result = resultList.get(0);
 
         if (result.getState() == QueryState.TIMEOUT) {
             LOGGER.warn("The current CompositionAnalyzer is very slow. "
                     + "This is not an error by definition, but something" + "seems to be wrong.");
         }
-
         assertTrue(result.hasValue());
         assertTrue(result.getValue() == BooleanWithUncertainty.TRUE);
     }
 
     /**
      * Tests simple proofs.
-     * @throws IOException if io fails
+     *
+     * @throws IOException if input or output fails
      * @throws ExternalSoftwareUnavailableException if external software is unavailable
      */
     @Test
@@ -366,32 +329,31 @@ public abstract class CompositionAnalyzerTest {
         final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty(MONO));
 
-        final String votingRule = predicate(SEQ_COMP, predicate(PASS, ONE, R), ELECT);
-
+        final String votingRule = StringUtils.func(SEQ_COMP, StringUtils.func(PASS, ONE, R), ELECT);
         final CompositionAnalyzer analyzer = this.createInstance();
-
-        final List<CompositionProof> proof = analyzer
-                .proveClaims(DecompositionTree.parseString(votingRule), properties);
+        final List<CompositionProof> proof =
+                analyzer.proveClaims(DecompositionTree.parseString(votingRule), properties);
 
         // Prolog variable names are not always the same.
         final String proofString = proof.get(0).toString().replaceAll("_[0-9]+", R);
 
         final String reference =
                 ": "
-                + predicate(MONO, predicate(SEQ_COMP, predicate(PASS, ONE, R), ELECT))
+                + StringUtils.func(MONO,
+                        StringUtils.func(SEQ_COMP, StringUtils.func(PASS, ONE, R), ELECT))
                 + " "
                 + "by seq_comp_mono\n"
                 + TAB_COLON
-                + predicate(DEFER_LIFT_INV, predicate(PASS, ONE, R))
+                + StringUtils.func(DEFER_LIFT_INV, StringUtils.func(PASS, ONE, R))
                 + " by pass_mod_dl_inv\n"
                 + TAB_COLON
-                + predicate(NON_ELECTING, predicate(PASS, ONE, R))
+                + StringUtils.func(NON_ELECTING, StringUtils.func(PASS, ONE, R))
                 + " by pass_mod_non_electing\n"
                 + TAB_COLON
-                + predicate(DEFERS, ONE, predicate(PASS, ONE, R))
+                + StringUtils.func(DEFERS, ONE, StringUtils.func(PASS, ONE, R))
                 + " by pass_one_mod_def_one\n"
                 + TAB_COLON
-                + predicate(ELECTING, ELECT)
+                + StringUtils.func(ELECTING, ELECT)
                 + " by elect_mod_electing";
         LOGGER.debug(proofString);
         assertTrue(proofString.equals(reference));
@@ -399,9 +361,10 @@ public abstract class CompositionAnalyzerTest {
 
     /**
      * Instance creation to allow reuse for all implementations.
+     *
      * @return an instance of the respective class
-     * @throws IOException if io fails
-     * @throws ExternalSoftwareUnavailableException if external software is unavailablw
+     * @throws IOException in case of an input or output failure
+     * @throws ExternalSoftwareUnavailableException if external software is unavailable
      */
     protected abstract CompositionAnalyzer createInstance()
             throws IOException, ExternalSoftwareUnavailableException;

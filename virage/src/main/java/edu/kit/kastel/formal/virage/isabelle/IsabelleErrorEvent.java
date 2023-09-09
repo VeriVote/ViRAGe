@@ -15,5 +15,4 @@ public class IsabelleErrorEvent extends IsabelleEvent {
     public IsabelleErrorEvent(final Map<String, String> parameters) {
         super(parameters);
     }
-
 }

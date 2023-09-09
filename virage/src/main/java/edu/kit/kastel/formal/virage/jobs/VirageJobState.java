@@ -10,14 +10,17 @@ public enum VirageJobState {
      * Job is waiting for execution.
      */
     PENDING,
+
     /**
      * Job is currently under execution.
      */
     RUNNING,
+
     /**
      * Job execution failed.
      */
     FAILED,
+
     /**
      * Job finished without errors.
      */

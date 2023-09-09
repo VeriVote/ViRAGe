@@ -7,10 +7,13 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.kit.kastel.formal.util.StringUtils;
+import edu.kit.kastel.formal.util.SystemUtils;
 import edu.kit.kastel.formal.virage.analyzer.CompositionAnalyzer;
 import edu.kit.kastel.formal.virage.analyzer.SimplePrologCompositionAnalyzer;
 import edu.kit.kastel.formal.virage.isabelle.IsabelleTheoryGenerator;
 import edu.kit.kastel.formal.virage.prolog.ExtendedPrologParser;
+import edu.kit.kastel.formal.virage.prolog.PrologParser;
 import edu.kit.kastel.formal.virage.prolog.SimpleExtendedPrologParser;
 import edu.kit.kastel.formal.virage.types.CompositionProof;
 import edu.kit.kastel.formal.virage.types.DecompositionTree;
@@ -23,16 +26,6 @@ import edu.kit.kastel.formal.virage.types.Property;
  * @author VeriVote
  */
 public final class IsabelleTheoryGeneratorTest {
-    /**
-     * Test Prolog predicate name "".
-     */
-    private static final String EMPTY = "";
-
-    /**
-     * Test Prolog predicate name ",".
-     */
-    private static final String COMMA = ",";
-
     /**
      * Test Prolog predicate name "_".
      */
@@ -109,31 +102,46 @@ public final class IsabelleTheoryGeneratorTest {
     private static final String MONO = "monotonicity";
 
     /**
+     * Test Prolog predicate name "condorcet_consistency".
+     */
+    private static final String CONDORCET = "condorcet_consistency";
+
+    /**
+     * Test Prolog predicate name "elimination_module".
+     */
+    private static final String ELIMINATION = "elimination_module";
+
+    /**
+     * Test Prolog predicate name "copeland_score".
+     */
+    private static final String COPELAND = "copeland_score";
+
+    /**
+     * Test Prolog predicate name "less".
+     */
+    private static final String LESS = "less";
+
+    /**
      * String representation of SMC.
      */
     private static final String SMC =
-        predicate(SEQ_COMP,
-                  predicate(LOOP_COMP,
-                            predicate(PAR_COMP,
-                                      predicate(SEQ_COMP,
-                                                predicate(PASS, TWO, ANY),
-                                                predicate(SEQ_COMP,
-                                                          predicate(REV_COMP, PLURALITY),
-                                                          predicate(PASS, ONE, ANY))),
-                                      predicate(DROP, TWO, ANY),
-                                      MAX_AGG),
-                            predicate(DEF_EQ_COND, ONE)),
-                  ELECT);
-
-    /**
-     * Path to the resources directory.
-     */
-    private static final String RSC = "src/test/resources/";
+            StringUtils.func(SEQ_COMP,
+                    StringUtils.func(LOOP_COMP,
+                            StringUtils.func(PAR_COMP,
+                                    StringUtils.func(SEQ_COMP,
+                                            StringUtils.func(PASS, TWO, ANY),
+                                            StringUtils.func(SEQ_COMP,
+                                                    StringUtils.func(REV_COMP, PLURALITY),
+                                                    StringUtils.func(PASS, ONE, ANY))),
+                                    StringUtils.func(DROP, TWO, ANY),
+                                    MAX_AGG),
+                            StringUtils.func(DEF_EQ_COND, ONE)),
+                    ELECT);
 
     /**
      * Path to the (E)PL file.
      */
-    private static final String PATH = RSC + "framework.pl";
+    private static final String PATH = SystemUtils.RESOURCES + "framework" + PrologParser.DOT_PL;
 
     /**
      * The compositional framework.
@@ -146,24 +154,6 @@ public final class IsabelleTheoryGeneratorTest {
     private CompositionAnalyzer analyzer;
 
     /**
-     * Translates a predicate name and arguments to a test Prolog predicate.
-     *
-     * @param name the predicate name of the composed predicate
-     * @param args the predicate's arguments
-     * @return a test String representing the composed Prolog predicate
-     */
-    private static String predicate(final String name, final String... args) {
-        String arg = EMPTY;
-        for (final String a : args) {
-            if (!arg.isEmpty()) {
-                arg += COMMA;
-            }
-            arg += a;
-        }
-        return "name" + "(" + arg + ")";
-    }
-
-    /**
      * Initialization for the following tests.
      *
      * @throws Exception if something goes wrong
@@ -172,43 +162,33 @@ public final class IsabelleTheoryGeneratorTest {
     public void init() throws Exception {
         final ExtendedPrologParser parser = new SimpleExtendedPrologParser();
         this.framework = parser.parseFramework(new File(PATH), false);
-
         this.analyzer = new SimplePrologCompositionAnalyzer(this.framework);
     }
 
     /**
      * Used to prove claims for further test use.
+     *
      * @param properties the desired properties
      * @param composition the composition
      */
     protected void proveClaims(final List<Property> properties, final String composition) {
-        final List<CompositionProof> proofs = this.analyzer
-                .proveClaims(DecompositionTree.parseString(composition), properties);
-
-        final IsabelleTheoryGenerator generator = new IsabelleTheoryGenerator(
-                RSC + "theories/", this.framework);
-
+        final List<CompositionProof> proofs =
+                this.analyzer.proveClaims(DecompositionTree.parseString(composition), properties);
+        final IsabelleTheoryGenerator generator =
+                new IsabelleTheoryGenerator(SystemUtils.RESOURCES + "theories/", this.framework);
         generator.generateTheoryFile(composition, proofs);
     }
 
-    /*
-     * Test disabled after introduction of settings
-     *
-     * @Test
-     */
     /**
      * Tests proof of condorcet_consistency for an elimination module.
+     *
+     * <b>Notice:</b> Test disabled after introduction of settings.
      */
     public void testCondorcetProof() {
         final List<Property> properties = new LinkedList<Property>();
-        properties.add(this.framework.getProperty("condorcet_consistency"));
-
+        properties.add(this.framework.getProperty(CONDORCET));
         this.proveClaims(properties,
-                         predicate(SEQ_COMP,
-                                   predicate("elimination_module",
-                                             "copeland_score",
-                                             "less"),
-                                   ELECT));
+                StringUtils.func(SEQ_COMP, StringUtils.func(ELIMINATION, COPELAND, LESS), ELECT));
     }
 
     /**
@@ -219,8 +199,8 @@ public final class IsabelleTheoryGeneratorTest {
         final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty(ELECTING));
         properties.add(this.framework.getProperty(MONO));
-
-        this.proveClaims(properties, predicate(SEQ_COMP, predicate(PASS, ONE, ANY), ELECT));
+        this.proveClaims(properties,
+                StringUtils.func(SEQ_COMP, StringUtils.func(PASS, ONE, ANY), ELECT));
     }
 
     /**
@@ -231,7 +211,6 @@ public final class IsabelleTheoryGeneratorTest {
         final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty(MONO));
         properties.add(this.framework.getProperty(ELECTING));
-
         this.proveClaims(properties, SMC);
     }
 
@@ -242,7 +221,6 @@ public final class IsabelleTheoryGeneratorTest {
     public void testVerySimpleProof() {
         final List<Property> properties = new LinkedList<Property>();
         properties.add(this.framework.getProperty(ELECTING));
-
         this.proveClaims(properties, ELECT);
     }
 }

@@ -15,10 +15,12 @@ public final class Property implements Parameterized {
      * The name.
      */
     private final String name;
+
     /**
      * The arity.
      */
     private final int arity;
+
     /**
      * The types of the parameters.
      */
@@ -69,14 +71,29 @@ public final class Property implements Parameterized {
         return true;
     }
 
+    /**
+     * Returns the property's arity.
+     *
+     * @return the property's arity
+     */
     public int getArity() {
         return this.arity;
     }
 
+    /**
+     * Returns whether the property is atomic.
+     *
+     * @return whether the property is atomic
+     */
     public boolean isAtomic() {
         return this.isAtomic;
     }
 
+    /**
+     * Set whether the property is atomic.
+     *
+     * @param atomic whether the property shall be atomic
+     */
     public void setAtomic(final boolean atomic) {
         this.isAtomic = atomic;
     }
@@ -92,11 +109,7 @@ public final class Property implements Parameterized {
         if (strings.size() != this.parameters.size()) {
             throw new IllegalArgumentException();
         }
-
-        final String res = this.name
-                + StringUtils.parenthesize(StringUtils.printCollection(strings));
-
-        return res;
+        return this.name + StringUtils.parenthesize(StringUtils.printCollection(strings));
     }
 
     /**
@@ -110,10 +123,7 @@ public final class Property implements Parameterized {
         if (this.parameters.size() != 1) {
             throw new IllegalArgumentException();
         }
-
-        final String res = this.name + StringUtils.parenthesize(string);
-
-        return res;
+        return this.name + StringUtils.parenthesize(string);
     }
 
     /**
@@ -127,10 +137,7 @@ public final class Property implements Parameterized {
         if (strings.size() != this.parameters.size()) {
             throw new IllegalArgumentException();
         }
-
-        final String res = StringUtils.parenthesize(StringUtils.printCollection(strings));
-
-        return res;
+        return StringUtils.parenthesize(StringUtils.printCollection(strings));
     }
 
     /**
@@ -144,12 +151,14 @@ public final class Property implements Parameterized {
         if (this.parameters.size() != 1) {
             throw new IllegalArgumentException();
         }
-
-        final String res = StringUtils.parenthesize(string);
-
-        return res;
+        return StringUtils.parenthesize(string);
     }
 
+    /**
+     * Returns the property's name string.
+     *
+     * @return the name
+     */
     public String getName() {
         return this.name;
     }
@@ -170,8 +179,6 @@ public final class Property implements Parameterized {
 
     @Override
     public String toString() {
-        final String res = this.name + "(" + StringUtils.printCollection(this.parameters) + ")";
-
-        return res;
+        return this.name + StringUtils.parenthesize(StringUtils.printCollection(this.parameters));
     }
 }

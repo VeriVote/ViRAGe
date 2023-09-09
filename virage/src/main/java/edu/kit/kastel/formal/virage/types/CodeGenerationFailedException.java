@@ -2,11 +2,10 @@ package edu.kit.kastel.formal.virage.types;
 
 /**
  * Exception wrapping different causes of code generation failure.
- * @author VeriVote
  *
+ * @author VeriVote
  */
 public final class CodeGenerationFailedException extends Exception {
-
     /**
      * The UID.
      */
@@ -19,6 +18,7 @@ public final class CodeGenerationFailedException extends Exception {
 
     /**
      * Simple constructor.
+     *
      * @param cause the causing Exception
      */
     public CodeGenerationFailedException(final Exception cause) {

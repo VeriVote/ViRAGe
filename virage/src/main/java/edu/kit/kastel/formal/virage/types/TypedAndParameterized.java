@@ -6,5 +6,4 @@ package edu.kit.kastel.formal.virage.types;
  * @author VeriVote
  */
 public interface TypedAndParameterized extends Typed, Parameterized {
-
 }

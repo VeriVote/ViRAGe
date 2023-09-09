@@ -10,7 +10,8 @@ import java.util.List;
 public interface Parameterized {
     /**
      * Simple getter.
-     * @return the parameters types
+     *
+     * @return the parameters' types
      */
     List<ComponentType> getParameters();
 }

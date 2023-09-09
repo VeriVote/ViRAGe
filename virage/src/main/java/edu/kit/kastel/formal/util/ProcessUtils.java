@@ -1,5 +1,6 @@
 package edu.kit.kastel.formal.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -18,31 +19,48 @@ public class ProcessUtils {
     private static final Logger LOGGER = LogManager.getLogger(ProcessUtils.class);
 
     /**
+     * Start process for given editorExecutable in given file path.
+     *
+     * @param editorExecutable executable editor
+     * @param path the given file path
+     */
+    public static void start(final String editorExecutable, final File path) {
+        final ProcessBuilder pb =
+                new ProcessBuilder(StringUtils.stripAndEscape(editorExecutable),
+                                   path.getAbsolutePath());
+        try {
+            final Process process = pb.directory(null).start();
+            process.waitFor();
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Executes a terminating command and prints its output to System.out/System.err, respectively.
      * <b>Does not return if the command is non-terminating!</b>
      *
      * @param command the command to be executed (as is, i.e. the String has to contain all
      *      parameters etc.)
-     * @return a Pair of strings representing stdout and stderr of the process
+     * @return a Pair of strings representing standard output and standard error of the process
      * @throws IOException if reading the outputs fails
      * @throws InterruptedException if command execution is interrupted
      */
     public static Output runTerminatingProcess(final String command)
             throws IOException, InterruptedException {
         final Runtime rt = Runtime.getRuntime();
-
         final Process p = rt.exec(StringUtils.stripAndEscape(command));
         final int status = p.waitFor();
-
         final String stdErr = new String(p.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
         final String stdOut = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-
         return new Output(stdOut, stdErr, status);
     }
 
     /**
-     * Executes a terminating command and logs it outputs, stderr going to logger.warn(), stdout to
-     * logger.info(). <b>Does not return if the command is non-terminating!</b>
+     * Executes a terminating command and logs it outputs, standard error going to logger.warn(),
+     * standard output to logger.info(). <b>Does not return if the command is non-terminating!</b>
      *
      * @param command the command to be executed (as is, i.e. the String has to contain all
      *      parameters etc.)
@@ -95,10 +113,12 @@ public class ProcessUtils {
          * The standard output stream as a string.
          */
         public final String stdOut;
+
         /**
          * The error output stream as a string.
          */
         public final String stdErr;
+
         /**
          * The status output as an integer value.
          */

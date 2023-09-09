@@ -22,10 +22,12 @@ public final class VirageProveJob
      * List of String representations of desired properties.
      */
     private final List<String> propertyStrings;
+
     /**
      * List of desired properties.
      */
     private List<Property> properties;
+
     /**
      * Composition to be checked.
      */
@@ -39,14 +41,13 @@ public final class VirageProveJob
     /**
      * Simple constructor.
      *
-     * @param issuer the issuing ui
+     * @param issuer the issuing user interface
      * @param treeValue the tree
      * @param propertiesValue the properties
      */
     public VirageProveJob(final VirageUserInterface issuer, final String treeValue,
-            final List<String> propertiesValue) {
+                          final List<String> propertiesValue) {
         super(issuer);
-
         this.tree = DecompositionTree.parseString(treeValue);
         this.propertyStrings = propertiesValue;
     }
@@ -54,15 +55,12 @@ public final class VirageProveJob
     @Override
     public void concreteExecute() {
         this.framework = this.getExecutingCore().getFrameworkRepresentation();
-
         this.properties = new LinkedList<Property>();
-
-        for (final String s : this.propertyStrings) {
+        for (final String s: this.propertyStrings) {
             this.properties.add(this.framework.getProperty(s));
         }
-
         this.setResult(this.getExecutingCore().getSearchManager().proveClaims(this.tree,
-                this.properties));
+                                                                              this.properties));
     }
 
     @Override
@@ -81,10 +79,8 @@ public final class VirageProveJob
         if (this.properties.size() == 1) {
             prop = "property";
         }
-
-        final String res = "Proof found. " + this.tree.toString() + " satisfies the " + prop + " "
-                + StringUtils.printCollection(this.properties) + ".";
-
-        return res;
+        return "Proof found." + StringUtils.SPACE + this.tree.toString() + StringUtils.SPACE
+                + "satisfies the" + StringUtils.SPACE + prop + StringUtils.SPACE
+                + StringUtils.printCollection(this.properties) + StringUtils.PERIOD;
     }
 }

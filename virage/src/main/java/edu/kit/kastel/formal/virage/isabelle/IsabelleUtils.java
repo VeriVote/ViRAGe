@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.kit.kastel.formal.util.SimpleFileReader;
+import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.prolog.PrologPredicate;
 
 /**
@@ -28,7 +29,12 @@ public class IsabelleUtils {
     /**
      * File extension for Isabelle theory files.
      */
-    public static final String FILE_EXTENSION = ".thy";
+    public static final String DOT_THY = StringUtils.PERIOD + "thy";
+
+    /**
+     * File extension for LaTeX files.
+     */
+    public static final String DOT_TEX = StringUtils.PERIOD + "tex";
 
     /**
      * String used by Isabelle to denote successful termination.
@@ -43,12 +49,17 @@ public class IsabelleUtils {
     /**
      * String used by Isabelle in type signatures.
      */
-    public static final String RIGHTARROW = "=>";
+    public static final String RIGHT_ARROW = "=>";
 
     /**
      * String used by Isabelle for anonymous types.
      */
     public static final String TYPE_ALIAS = "'a";
+
+    /**
+     * String "A".
+     */
+    public static final String DEFAULT_SET = "A";
 
     /**
      * Isabelle ROOT keyword.
@@ -61,15 +72,40 @@ public class IsabelleUtils {
     public static final String FUN = "fun";
 
     /**
+     * The Isabelle proof command 'by'.
+     */
+    public static final String BY = StringUtils.SPACE + "by" + StringUtils.SPACE;
+
+    /**
      * String used to separate session and theory names.
      */
-    public static final String THEORY_NAME_SEPARATOR = ".";
+    public static final String THEORY_NAME_SEPARATOR = StringUtils.PERIOD;
+
+    /**
+     * Higher-order logic theory.
+     */
+    public static final String HOL = "HOL";
+
+    /**
+     * Isabelle's set theory.
+     */
+    public static final String SET = "Set";
+
+    /**
+     * String to represent the HOL type for natural numbers.
+     */
+    public static final String NAT = "Nat" + THEORY_NAME_SEPARATOR + "nat";
+
+    /**
+     * String to represent the HOL boolean type.
+     */
+    public static final String BOOL = HOL + THEORY_NAME_SEPARATOR + "bool";
 
     // TODO: Add all types
     /**
      * Simple types offered by Isabelle/HOL.
      */
-    private static final String[] SIMPLE_TYPES = {"Nat.nat", "HOL.bool"};
+    private static final String[] SIMPLE_TYPES = {NAT, BOOL};
 
     /**
      * This method tries, along with other things, to match Prolog predicates to Isabelle entities.
@@ -85,28 +121,24 @@ public class IsabelleUtils {
     public static Map<String, Set<String>> translatePrologToIsabelle(
             final Map<String, String> functionsAndDefinitions, final String predicate) {
         final Set<String> requiredFiles = new HashSet<String>();
-
-        String res = predicate.replace(",", ")(");
-        res = res.replace("(", " (");
-
+        String res = predicate.replace(",",
+                StringUtils.CLOSING_PARENTHESIS + StringUtils.OPENING_PARENTHESIS);
+        res = res.replace(StringUtils.OPENING_PARENTHESIS,
+                            StringUtils.SPACE + StringUtils.OPENING_PARENTHESIS);
         final Pattern pattern = Pattern.compile("[a-zA-Z_]+");
         final Matcher matcher = pattern.matcher(res);
-
         while (matcher.find()) {
             final String match = res.substring(matcher.start(), matcher.end());
             String replacement = match;
-
-            for (final Map.Entry<String, String> entry : functionsAndDefinitions.entrySet()) {
+            for (final Map.Entry<String, String> entry: functionsAndDefinitions.entrySet()) {
                 if (entry.getKey().equalsIgnoreCase(match)) {
                     replacement = entry.getKey();
                     requiredFiles.add(entry.getValue());
                     break;
                 }
             }
-
             res = res.replace(match, replacement);
         }
-
         final Map<String, Set<String>> resMap = new HashMap<String, Set<String>>();
         resMap.put(res, requiredFiles);
         return resMap;
@@ -136,12 +168,11 @@ public class IsabelleUtils {
      * @return true if type is simple type, false otherwise
      */
     public static boolean isSimpleType(final String type) {
-        for (final String standardType : SIMPLE_TYPES) {
+        for (final String standardType: SIMPLE_TYPES) {
             if (standardType.equals(type)) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -152,12 +183,10 @@ public class IsabelleUtils {
      * @return a new variable ('x' if possible, otherwise tries 'x1', 'x2', ...)
      */
     public static String getUnusedVariable(final String statement) {
-        final String unused = "x";
-
+        final String unused = ScalaIsabelleFacade.DEFAULT_VARIABLE;
         if (!statement.contains(unused)) {
             return unused;
         }
-
         for (int i = 1; true; i++) {
             if (!statement.contains(unused + i)) {
                 return unused + i;
@@ -173,20 +202,16 @@ public class IsabelleUtils {
      */
     public static List<String> getSessionNamesFromRootFile(final File root) throws IOException {
         final List<String> res = new LinkedList<String>();
-
-        final SimpleFileReader reader = new SimpleFileReader();
-        final List<String> lines = reader.readFileByLine(root);
-
-        final Pattern pattern = Pattern.compile("session[\\s]+(.*)[\\s]+=.*");
-
-        for(final String line: lines) {
-            final Matcher matcher = pattern.matcher(line);
-
-            if(matcher.matches()) {
-                res.add(matcher.group(1));
+        if (root.exists()) {
+            final SimpleFileReader reader = new SimpleFileReader();
+            final Pattern pattern = Pattern.compile("session[\\s]+(.*)[\\s]+=.*");
+            for (final String line: reader.readFileByLine(root)) {
+                final Matcher matcher = pattern.matcher(line);
+                if (matcher.matches()) {
+                    res.add(matcher.group(1));
+                }
             }
         }
-
         return res;
     }
 }
