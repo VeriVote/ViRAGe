@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpl7.JPLException;
 
+import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.util.SystemUtils;
 import edu.kit.kastel.formal.virage.analyzer.AdmissionCheckPrologCompositionAnalyzer;
 import edu.kit.kastel.formal.virage.beast.CCodeGenerator;
@@ -229,7 +230,8 @@ public final class VirageCore implements Runnable {
             final String newValue;
             try {
                 newValue = this.ui.requestString(
-                        "Please input the path to the SWI-Prolog " + "library directory.\n"
+                        StringUtils.sentence("Please input the path to the SWI-Prolog "
+                                            + "library directory")
                                 + "For your setup of SWI-Prolog, the typical value is \""
                                 + ConfigReader.getInstance().getSwiplLib()
                                 + "\", but this might differ on your system.");
@@ -244,7 +246,8 @@ public final class VirageCore implements Runnable {
             this.ui.displayError("libswipl.so could not be located.");
             final String newValue;
             try {
-                newValue = this.ui.requestString("Please input the path to libswipl.so.\n"
+                newValue = this.ui.requestString(
+                        StringUtils.sentence("Please input the path to libswipl.so")
                         + "For your setup of SWI-Prolog, "
                         + "typical values are \"/usr/lib/libswipl.so\" or \""
                         + ConfigReader.getInstance().getSwiplLib() + "libswipl.so\""
@@ -261,7 +264,8 @@ public final class VirageCore implements Runnable {
             unsafeState = true;
         }
         if (unsafeState) {
-            this.ui.displayMessage("A restart is required for the changes to take effect.\n"
+            this.ui.displayMessage(
+                    StringUtils.sentence("A restart is required for the changes to take effect")
                     + "Please restart ViRAGe after it terminated.");
             SystemUtils.exit(0);
         }
@@ -323,7 +327,8 @@ public final class VirageCore implements Runnable {
                 final VirageJob<?> job;
                 try {
                     job = this.jobs.take();
-                    this.ui.displayMessage("---------- " + job.getDescription());
+                    this.ui.displayMessage(StringUtils.addSpace("----------")
+                                            + job.getDescription());
                     job.execute(this);
                     // The code style checker does not like this catch-all block.
                     // I think it is justified here, as this is the last
@@ -332,6 +337,7 @@ public final class VirageCore implements Runnable {
                     // program. The type of exceptions is unknown, as
                     // job.execute can do virtually anything.
                 } catch (final Exception e) {
+                    e.printStackTrace();
                     LOGGER.error("An error occured.", e);
                 }
             } else {

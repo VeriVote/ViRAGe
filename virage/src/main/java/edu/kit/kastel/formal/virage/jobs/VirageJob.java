@@ -1,7 +1,5 @@
 package edu.kit.kastel.formal.virage.jobs;
 
-import java.time.Instant;
-
 import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.util.SystemUtils;
 import edu.kit.kastel.formal.virage.core.VirageCore;
@@ -136,14 +134,14 @@ public abstract class VirageJob<T> {
      */
     public String presentResult() {
         String res = StringUtils.EMPTY;
-        final float timeInMs = this.timeFinished - this.timeStarted;
-        final float timeInS = timeInMs / 1000;
-        res += "Started at " + SystemUtils.getTime() + ".\n";
-        res += "Job ran for " + String.format("%.2f", timeInS) + " seconds.\n";
+        res += StringUtils.sentence(StringUtils.addSpace("Started at")
+                                    + SystemUtils.getTime(this.timeStarted));
+        res += StringUtils.sentence(StringUtils.addSpace("Job ran for")
+                + SystemUtils.getDuration(this.timeStarted, this.timeFinished));
         if (this.state == VirageJobState.FINISHED) {
             res += this.presentConcreteResult() + System.lineSeparator();
         } else {
-            res += "Something went wrong while executing this job.\n";
+            res += StringUtils.sentence("Something went wrong while executing this job");
         }
         res += "----------";
         return res;
@@ -169,17 +167,23 @@ public abstract class VirageJob<T> {
      */
     @Override
     public String toString() {
-        String res = "----------- " + this.getClass().getCanonicalName() + System.lineSeparator();
-        res += "ID: " + this.id + System.lineSeparator();
-        res += "Issued: " + Instant.ofEpochMilli(this.timeIssued).toString()
+        final boolean finished =
+                this.state == VirageJobState.FAILED || this.state == VirageJobState.FINISHED;
+        final long lastMeasurement = finished ? this.timeFinished : System.currentTimeMillis();
+        String res = StringUtils.addSpace("-----------") + this.getClass().getCanonicalName()
+                        + System.lineSeparator();
+        res += StringUtils.addSpace("ID:") + this.id + System.lineSeparator();
+        res += StringUtils.addSpace("Issued:")
+                + SystemUtils.getTime(this.timeIssued) + System.lineSeparator();
+        res += StringUtils.addSpace("Started:")
+                + SystemUtils.getTime(this.timeStarted) + System.lineSeparator();
+        res += (finished ? StringUtils.addSpace("Finished:") : StringUtils.addSpace("Now:"))
+                + SystemUtils.getTime(lastMeasurement) + System.lineSeparator();
+        res += StringUtils.addSpace("Elapsed time:")
+                + SystemUtils.getDuration(this.timeStarted, lastMeasurement)
                 + System.lineSeparator();
-        res += "Started: " + Instant.ofEpochMilli(this.timeStarted).toString()
-                + System.lineSeparator();
-        res += "Finished: " + Instant.ofEpochMilli(this.timeFinished).toString()
-                + System.lineSeparator();
-        res += "Time elapsed: " + (this.timeFinished - this.timeStarted) + " milliseconds \n";
-        res += "-----\n";
-        res += "State: " + this.state + System.lineSeparator();
+        res += "-----" + System.lineSeparator();
+        res += StringUtils.addSpace("State:") + this.state + System.lineSeparator();
         return res;
     }
 

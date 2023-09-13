@@ -342,16 +342,16 @@ public abstract class CompositionAnalyzerTest {
                 + StringUtils.func(MONO,
                         StringUtils.func(SEQ_COMP, StringUtils.func(PASS, ONE, R), ELECT))
                 + " "
-                + "by seq_comp_mono\n"
+                + "by seq_comp_mono" + System.lineSeparator()
                 + TAB_COLON
                 + StringUtils.func(DEFER_LIFT_INV, StringUtils.func(PASS, ONE, R))
-                + " by pass_mod_dl_inv\n"
+                + " by pass_mod_dl_inv" + System.lineSeparator()
                 + TAB_COLON
                 + StringUtils.func(NON_ELECTING, StringUtils.func(PASS, ONE, R))
-                + " by pass_mod_non_electing\n"
+                + " by pass_mod_non_electing" + System.lineSeparator()
                 + TAB_COLON
                 + StringUtils.func(DEFERS, ONE, StringUtils.func(PASS, ONE, R))
-                + " by pass_one_mod_def_one\n"
+                + " by pass_one_mod_def_one" + System.lineSeparator()
                 + TAB_COLON
                 + StringUtils.func(ELECTING, ELECT)
                 + " by elect_mod_electing";

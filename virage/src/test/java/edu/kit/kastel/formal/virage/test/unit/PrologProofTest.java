@@ -19,55 +19,58 @@ public class PrologProofTest {
             + "loop_composition(parallel_composition("
             + "sequential_composition(pass_module(2),sequential_composition("
             + "downgrade(plurality_module),pass_module(1))),drop_module(2),max_aggregator),"
-            + "defer_eq_condition(1)),elect_module))\n"
+            + "defer_eq_condition(1)),elect_module))" + System.lineSeparator()
             + "\tdefer_lift_invariant(loop_composition(parallel_composition("
             + "sequential_composition(pass_module(2),sequential_"
             + "composition(downgrade(plurality_module),"
-            + "pass_module(1)))," + "drop_module(2),max_aggregator),defer_eq_condition(1)))\n"
+            + "pass_module(1)))," + "drop_module(2),max_aggregator),defer_eq_condition(1)))"
+            + System.lineSeparator()
             + "\t\tdefer_lift_invariant(parallel_composition(sequential_composition("
             + "pass_module(2),sequential_composition(downgrade(plurality_module)"
             + ",pass_module(1))),"
-            + "drop_module(2),max_aggregator))\n"
+            + "drop_module(2),max_aggregator))" + System.lineSeparator()
             + "\t\t\tdisjoint_compatible(sequential_composition(pass_module(2)"
             + ",sequential_composition(downgrade(plurality_module),"
-            + "pass_module(1))),drop_module(2))\n"
+            + "pass_module(1))),drop_module(2))" + System.lineSeparator()
             + "\t\t\t\tdisjoint_compatible(pass_module(2),"
-            + "drop_module(2))\n"
+            + "drop_module(2))" + System.lineSeparator()
             + "\t\t\t\t\tdisjoint_compatible(drop_module(2),"
-            + "pass_module(2))\n"
+            + "pass_module(2))" + System.lineSeparator()
             + "\t\t\tdefer_lift_invariant(sequential_composition(pass_module(2),"
-            + "sequential_composition(downgrade(plurality_module),pass_module(1))))\n"
-            + "\t\t\t\tdefer_lift_invariant(pass_module(2))\n"
+            + "sequential_composition(downgrade(plurality_module),pass_module(1))))"
+            + System.lineSeparator()
+            + "\t\t\t\tdefer_lift_invariant(pass_module(2))" + System.lineSeparator()
             + "\t\t\t\tdefer_lift_invariant(sequential_composition("
-            + "downgrade(plurality_module),pass_module(1)))\n"
+            + "downgrade(plurality_module),pass_module(1)))" + System.lineSeparator()
             + "\t\t\t\t\tdefer_invariant_monotone(downgrade("
-            + "plurality_module))\n"
+            + "plurality_module))" + System.lineSeparator()
             + "\t\t\t\t\t\tinvariant_monotone("
-            + "plurality_module)\n\t\t\t\t\tnon_electing(pass_module(1))\n"
-            + "\t\t\t\t\tdefers(pass_module(1),1)\n"
-            + "\t\t\t\t\tdefer_monotone(pass_module(1))\n"
+            + "plurality_module)\n\t\t\t\t\tnon_electing(pass_module(1))" + System.lineSeparator()
+            + "\t\t\t\t\tdefers(pass_module(1),1)" + System.lineSeparator()
+            + "\t\t\t\t\tdefer_monotone(pass_module(1))" + System.lineSeparator()
             + "\t\t\t\t\t\tdefer_lift_invariant("
-            + "pass_module(1))\n"
-            + "\t\t\tdefer_lift_invariant(drop_module(2))\n"
+            + "pass_module(1))" + System.lineSeparator()
+            + "\t\t\tdefer_lift_invariant(drop_module(2))" + System.lineSeparator()
             + "\tnon_electing(loop_composition(parallel_composition("
             + "sequential_composition("
             + "pass_module(2),sequential_composition(downgrade(plurality_module),"
-            + "pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)))\n"
+            + "pass_module(1))),drop_module(2),max_aggregator),defer_eq_condition(1)))"
+            + System.lineSeparator()
             + "\t\tnon_electing(parallel_composition(sequential_composition(pass_module(2),"
             + "sequential_composition(downgrade(plurality_module),"
             + "pass_module(1))),drop_module(2),"
-            + "max_aggregator))\n"
+            + "max_aggregator))" + System.lineSeparator()
             + "\t\t\tnon_electing(sequential_composition(pass_module(2)"
             + ",sequential_composition("
-            + "downgrade(plurality_module),pass_module(1))))\n"
-            + "\t\t\t\tnon_electing(pass_module(2))\n"
+            + "downgrade(plurality_module),pass_module(1))))" + System.lineSeparator()
+            + "\t\t\t\tnon_electing(pass_module(2))" + System.lineSeparator()
             + "\t\t\t\tnon_electing(sequential_composition("
             + "downgrade(plurality_module),"
-            + "pass_module(1)))\n"
-            + "\t\t\t\t\tnon_electing(downgrade(plurality_module))\n"
-            + "\t\t\t\t\tnon_electing(pass_module(1))\n"
-            + "\t\t\tnon_electing(drop_module(2))\n"
-            + "\t\t\tconservative(max_aggregator)\n"
+            + "pass_module(1)))" + System.lineSeparator()
+            + "\t\t\t\t\tnon_electing(downgrade(plurality_module))" + System.lineSeparator()
+            + "\t\t\t\t\tnon_electing(pass_module(1))" + System.lineSeparator()
+            + "\t\t\tnon_electing(drop_module(2))" + System.lineSeparator()
+            + "\t\t\tconservative(max_aggregator)" + System.lineSeparator()
             + "\tdefers(loop_composition(parallel_composition("
             + "sequential_composition(pass_module(2),"
             + "sequential_composition(downgrade(plurality_module),pass_module(1))),"
@@ -121,7 +124,8 @@ public class PrologProofTest {
             + "non_electing(pass_module(2)), true), \nsubgoal(non_"
             + "electing(sequential_composition(downgrade(plurality_module), pass_module(1))), "
             + "\n','(subgoal(non_electing(downgrade(plura"
-            + "lity_module)), true), \nsubgoal(non_electing(pass_module(1)), true))))), \n"
+            + "lity_module)), true), \nsubgoal(non_electing(pass_module(1)), true))))), "
+            + System.lineSeparator()
             + "','(subgoal(non_electing(drop_module(2)), true"
             + "), \nsubgoal(conservative(max_aggregator), true))))), \n','(subgoal(defers("
             + "loop_composition(parallel_composition(sequenti"

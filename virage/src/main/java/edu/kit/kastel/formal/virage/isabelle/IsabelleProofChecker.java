@@ -279,7 +279,7 @@ public final class IsabelleProofChecker {
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
      * @throws IsabelleBuildFailedException if the build process fails
      */
-    public static synchronized IsabelleProofChecker getInstance(final String sessionName,
+    public static IsabelleProofChecker getInstance(final String sessionName,
                                                                 final String theoryPath)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
         if (instance == null || instance.sessionName == null
@@ -475,8 +475,22 @@ public final class IsabelleProofChecker {
      *
      * @param newFinished the new finished value
      */
-    public synchronized void setFinished(final boolean newFinished) {
+    private synchronized void setFinished(final boolean newFinished) {
         this.finished = newFinished;
+    }
+
+    /**
+     * Set the checker process finished value to true.
+     */
+    public void finish() {
+        this.setFinished(true);
+    }
+
+    /**
+     * Set the checker process finished value to false.
+     */
+    public void resetFinished() {
+        this.setFinished(false);
     }
 
     /**
@@ -561,6 +575,6 @@ public final class IsabelleProofChecker {
         while (!this.getFinished()) {
             SystemUtils.semiBusyWaitingHelper();
         }
-        this.setFinished(false);
+        this.finish();
     }
 }

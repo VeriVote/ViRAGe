@@ -7,11 +7,14 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.time.ZonedDateTime;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +23,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author VeriVote
  */
-public class SystemUtils {
+public final class SystemUtils {
     /**
      * Resources directory.
      */
@@ -45,6 +48,8 @@ public class SystemUtils {
      * The pattern for printing time markers.
      */
     private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss OOOO";
+
+    private SystemUtils() { }
 
     private static String libraryFailureReason(final String reasonForFailure) {
         return "Failed to get " + reasonForFailure + " to set library path";
@@ -136,14 +141,36 @@ public class SystemUtils {
     }
 
     /**
+     * Returns formatted time.
+     *
+     * @param time the time that should be formatted
+     * @return the time
+     */
+    public static String getTime(final long time) {
+        return DateTimeFormatter.ofPattern(TIMESTAMP_PATTERN)
+                .format(Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()));
+    }
+
+    /**
      * Returns current time for usage as time markers.
      *
      * @return the time
      */
-    public static String getTime() {
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(TIMESTAMP_PATTERN);
-        final ZonedDateTime now = ZonedDateTime.now();
-        return dtf.format(now);
+    public static String getCurrentTime() {
+        return getTime(System.currentTimeMillis());
+    }
+
+    /**
+     * Returns elapsed duration between start and end time.
+     *
+     * @param start start time
+     * @param end end time
+     * @return the duration in some readable string format
+     */
+    public static String getDuration(final long start, final long end) {
+        final Duration endTime = Duration.ofMillis(end);
+        final Duration startTime = Duration.ofMillis(start);
+        return DurationFormatUtils.formatDurationHMS(endTime.minus(startTime).toMillis());
     }
 
     /**

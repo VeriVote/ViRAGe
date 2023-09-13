@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  *
  * @author VeriVote
  */
-public class StringUtils {
+public final class StringUtils {
     /**
      * A space.
      */
@@ -21,6 +21,11 @@ public class StringUtils {
      * A period sign.
      */
     public static final String PERIOD = ".";
+
+    /**
+     * A hash sign.
+     */
+    public static final String HASH = "#";
 
     /**
      * An opening parenthesis sign.
@@ -58,11 +63,6 @@ public class StringUtils {
     public static final String COLON = ":";
 
     /**
-     * The sign for a line break.
-     */
-    public static final String LINE_BREAK = "\n";
-
-    /**
      * The caret sign.
      */
     public static final String CARET = "^";
@@ -98,6 +98,11 @@ public class StringUtils {
     public static final char RIGHT_PAREN = ')';
 
     /**
+     * The number three.
+     */
+    private static final int THREE = 3;
+
+    /**
      * String for map function.
      */
     private static final String MAP = "map";
@@ -107,8 +112,11 @@ public class StringUtils {
      */
     private static final int BASE_64 = 0x10000;
 
+    private StringUtils() { }
+
     /**
      * Strip the given command String.
+     *
      * @param command the potentially dangerous command String
      * @return the stripped command String
      */
@@ -118,6 +126,7 @@ public class StringUtils {
 
     /**
      * Escape the given command String.
+     *
      * @param command the potentially dangerous command String
      * @return the escaped command String
      */
@@ -129,6 +138,7 @@ public class StringUtils {
 
     /**
      * Sanitize a given command String to avoid code injections or similar.
+     *
      * @param command the potentially dangerous command String
      * @return the sanitized command String
      */
@@ -247,7 +257,7 @@ public class StringUtils {
      * @param args the string arguments to parenthesize
      * @return the parenthesized string representation
      */
-    public static final String parenthesize(final String... args) {
+    public static String parenthesize(final String... args) {
         return OPENING_PARENTHESIS + printCollection(Arrays.asList(args)) + CLOSING_PARENTHESIS;
     }
 
@@ -257,7 +267,7 @@ public class StringUtils {
      * @param args the string arguments to parenthesize
      * @return the parenthesized string representation
      */
-    public static final String parenthesize(final Collection<String> args) {
+    public static String parenthesize(final Collection<String> args) {
         if (args == null || args.isEmpty()) {
             return EMPTY;
         }
@@ -270,7 +280,7 @@ public class StringUtils {
      * @param args the string arguments to parenthesize
      * @return the parenthesized string representation
      */
-    public static final String parenthesize2(final String... args) {
+    public static String parenthesize2(final String... args) {
         return OPENING_PARENTHESIS + printCollection2(Arrays.asList(args)) + CLOSING_PARENTHESIS;
     }
 
@@ -281,7 +291,7 @@ public class StringUtils {
      * @param args the arguments of the function
      * @return the function string representation
      */
-    public static final String func(final String fun, final String... args) {
+    public static String func(final String fun, final String... args) {
         return (fun != null ? fun : EMPTY) + parenthesize(args);
     }
 
@@ -292,7 +302,7 @@ public class StringUtils {
      * @param args the arguments of the function
      * @return the function string representation
      */
-    public static final String func2(final String fun, final String... args) {
+    public static String func2(final String fun, final String... args) {
         return (fun != null ? fun : EMPTY) + SPACE + parenthesize2(args);
     }
 
@@ -304,7 +314,7 @@ public class StringUtils {
      * @param arg2 the collection argument to which the function is applied
      * @return the function string representation
      */
-    public static final String map(final String fun, final String arg1, final String arg2) {
+    public static String map(final String fun, final String arg1, final String arg2) {
         return (fun != null ? fun : EMPTY) + SPACE
                 + parenthesize2(arg1) + SPACE + parenthesize2(arg2);
     }
@@ -316,25 +326,87 @@ public class StringUtils {
      * @param arg2 the collection argument to which the function is applied
      * @return the function string representation
      */
-    public static final String map(final String arg1, final String arg2) {
+    public static String map(final String arg1, final String arg2) {
         return map(MAP, arg1, arg2);
     }
 
     /**
+     * Repeats a string 'm' times if 'm' is nonnegative, otherwise return null.
+     *
+     * @param m the amount of tabs to indent
+     * @param s the string
+     * @return the repeated string
+     */
+    public static String repeat(final int m, final String s) {
+        String res;
+        if (m < 0) {
+            res = null;
+        } else {
+            res = EMPTY;
+            for (int i = 0; i < m; i++) {
+                res += s;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Indents a string by 'm' tabs if 'm' is nonnegative, otherwise return null.
+     *
+     * @param m the amount of tabs to indent
+     * @param s the string
+     * @return the indented string
+     */
+    public static String indentWithTabs(final int m, final String s) {
+        String res;
+        if (m < 0) {
+            res = null;
+        } else {
+            res = s;
+            for (int i = 0; i < m; i++) {
+                res = TAB + res;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Indents a string by three tabs.
+     *
+     * @param s the string
+     * @return the indented string
+     */
+    public static String indentWithThreeTab(final String s) {
+        return indentWithTabs(THREE, s);
+    }
+
+    /**
      * Indents a string by a single tab.
+     *
      * @param s the string
      * @return the indented string
      */
     public static String indentWithTab(final String s) {
-        return TAB + s;
+        return indentWithTabs(1, s);
     }
 
     /**
      * Appends a period to a string.
+     *
      * @param s the string
      * @return s.
      */
     public static String appendPeriod(final String s) {
         return s + PERIOD;
+    }
+
+    /**
+     * Appends a period and a line break to a string.
+     *
+     * @param s the string
+     * @return s.\n
+     */
+    public static String sentence(final String s) {
+        return s + PERIOD + System.lineSeparator();
     }
 }

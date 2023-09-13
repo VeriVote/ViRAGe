@@ -10,11 +10,13 @@ import edu.kit.kastel.formal.util.SystemUtils;
  *
  * @author VeriVote
  */
-public class VirageMain {
+public final class VirageMain {
     /**
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getLogger(VirageMain.class);
+
+    private VirageMain() { }
 
     /**
      * The main entry point for ViRAGe.
@@ -35,6 +37,7 @@ public class VirageMain {
             // that I cannot even imagine it now, so no more specialized
             // catch clause is possible.
         } catch (final Exception e) {
+            e.printStackTrace();
             LOGGER.fatal("An unrecoverable error has occurred.", e);
             LOGGER.fatal("The program will now terminate.");
         }

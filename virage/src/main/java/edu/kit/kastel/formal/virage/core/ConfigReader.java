@@ -310,7 +310,7 @@ public final class ConfigReader {
      */
     private static String getCommandOutput(final String command, final String option)
             throws IOException, InterruptedException {
-        final String none = "<NONE>" + StringUtils.LINE_BREAK;
+        final String none = "<NONE>" + System.lineSeparator();
         final String proc = command + StringUtils.SPACE + option;
         final ProcessUtils.Output output = ProcessUtils.runTerminatingProcess(proc);
         final String result = output.stdOut.isEmpty() ? output.stdErr : output.stdOut;
@@ -323,16 +323,26 @@ public final class ConfigReader {
      * @return string representation of all software and versions
      */
     public String checkAvailabilityAndGetVersions() {
-        String res = "External dependency versions:\n\n";
+        String res = "External dependency versions:"
+                    + System.lineSeparator() + System.lineSeparator();
         // JAVA
-        res += "Java: \t\t" + System.getProperty("java.version") + System.lineSeparator();
+        res += StringUtils.addSpace("Java:")
+                + StringUtils.indentWithTabs(2,
+                        System.getProperty("java.version") + System.lineSeparator());
         // ISABELLE
+        final String isa = "Isabelle:";
+        final String notFound = "NOT FOUND";
         try {
             final String isaExec = this.getIsabelleExecutable();
-            res += "Isabelle: \t\t" + getCommandOutput(isaExec, "version");
-            res += "Scala (via Isabelle): " + getCommandOutput(isaExec + " scalac", "-version");
+            res += StringUtils.addSpace(isa)
+                    + StringUtils.indentWithTabs(2, getCommandOutput(isaExec, "version"));
+            res += StringUtils.addSpace("Scala (via Isabelle):")
+                    + getCommandOutput(isaExec + " scalac", "-version");
         } catch (final IOException e) {
-            res += "Isabelle: \t\tNOT FOUND\n";
+            res += StringUtils.addSpace(isa)
+                    + StringUtils.indentWithTabs(2, notFound) + System.lineSeparator();
+            res += StringUtils.addSpace("Scala:")
+                    + StringUtils.indentWithTabs(2, notFound) + System.lineSeparator();
             this.isabelleAvailable = false;
         } catch (final InterruptedException e) {
             e.printStackTrace();
@@ -340,11 +350,14 @@ public final class ConfigReader {
             e.printStackTrace();
         }
         // SWIPL
+        final String swi = "SWI-Prolog:";
         try {
-            res += "SWI-Prolog: \t\t"
-                    + getCommandOutput((String)this.properties.get(SWIPL_BIN), "--version");
+            res += StringUtils.addSpace(swi)
+                    + StringUtils.indentWithTabs(2,
+                            getCommandOutput((String)this.properties.get(SWIPL_BIN), "--version"));
         } catch (final IOException e) {
-            System.out.println("SWI-Prolog: NOT FOUND\n");
+            res += StringUtils.addSpace(swi)
+                    + StringUtils.indentWithTabs(2, notFound) + System.lineSeparator();
             this.swiplAvailable = false;
             this.jplAvailable = false;
         } catch (final InterruptedException e) {
@@ -357,7 +370,7 @@ public final class ConfigReader {
             this.jplAvailable = false;
             this.swiplAvailable = false;
         }
-        res += "JPL: \t\t\t" + JPL.version_string();
+        res += StringUtils.addSpace("JPL:") + StringUtils.indentWithThreeTab(JPL.version_string());
         return res;
     }
 
@@ -840,7 +853,7 @@ public final class ConfigReader {
         try {
             config = builder.getConfiguration();
             config.setProperty(name, newValue);
-            config.setProperty(TIMESTAMP, SystemUtils.getTime());
+            config.setProperty(TIMESTAMP, SystemUtils.getCurrentTime());
             builder.save();
         } catch (final ConfigurationException e) {
             LOGGER.error("Updating \"" + name + "\" failed.");

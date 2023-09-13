@@ -20,7 +20,7 @@ import edu.kit.kastel.formal.virage.prolog.PrologPredicate;
  *
  * @author VeriVote
  */
-public class IsabelleUtils {
+public final class IsabelleUtils {
     /**
      * String used by Isabelle to mark Exceptions in its commands.
      */
@@ -106,6 +106,8 @@ public class IsabelleUtils {
      * Simple types offered by Isabelle/HOL.
      */
     private static final String[] SIMPLE_TYPES = {NAT, BOOL};
+
+    private IsabelleUtils() { }
 
     /**
      * This method tries, along with other things, to match Prolog predicates to Isabelle entities.

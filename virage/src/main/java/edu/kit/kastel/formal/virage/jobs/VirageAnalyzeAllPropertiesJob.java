@@ -68,9 +68,9 @@ public class VirageAnalyzeAllPropertiesJob extends
         for (int i = 0; i < this.unaryProperties.size(); i++) {
             final String propertySatisfaction =
                     hasProperties.get(i) ? "has" : "cannot be shown to have";
-            res += StringUtils.appendPeriod(this.compositionField
+            res += StringUtils.sentence(this.compositionField
                     + StringUtils.SPACE + propertySatisfaction + " the property "
-                    + this.unaryProperties.get(i).toString()) + System.lineSeparator();
+                    + this.unaryProperties.get(i).toString());
         }
         return res;
     }

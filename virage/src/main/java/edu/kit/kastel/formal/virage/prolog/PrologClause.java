@@ -171,7 +171,6 @@ public final class PrologClause {
                 }
             }
         }
-        res += StringUtils.PERIOD;
-        return res;
+        return StringUtils.appendPeriod(res);
     }
 }

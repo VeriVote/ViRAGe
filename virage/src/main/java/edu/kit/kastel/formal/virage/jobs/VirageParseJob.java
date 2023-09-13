@@ -3,6 +3,7 @@ package edu.kit.kastel.formal.virage.jobs;
 import java.io.File;
 import java.io.IOException;
 
+import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
 import edu.kit.kastel.formal.virage.prolog.MalformedEplFileException;
 import edu.kit.kastel.formal.virage.types.FrameworkRepresentation;
@@ -26,13 +27,11 @@ public final class VirageParseJob extends VirageJobWithExplicitResult<FrameworkR
      */
     public VirageParseJob(final VirageUserInterface issuer, final File fileValue) {
         super(issuer);
-
         this.file = fileValue;
     }
 
     @Override
     public void concreteExecute() throws IOException, MalformedEplFileException {
-
         this.setResult(this.getExecutingCore()
                 .getExtendedPrologParser().parseFramework(this.file, true));
         this.getExecutingCore().setFrameworkRepresentation(this.getResult());
@@ -52,9 +51,7 @@ public final class VirageParseJob extends VirageJobWithExplicitResult<FrameworkR
 
     @Override
     public String presentConcreteResult() {
-        final String res = "Successfully loaded (E)PL file at \'" + this.file.getAbsolutePath()
-            + "\'.\n";
-
-        return res;
+        return StringUtils.sentence(
+                "Successfully loaded (E)PL file at \'" + this.file.getAbsolutePath() + "\'");
     }
 }
