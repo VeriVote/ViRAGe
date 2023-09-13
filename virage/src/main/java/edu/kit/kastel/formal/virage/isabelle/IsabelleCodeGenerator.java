@@ -323,7 +323,8 @@ public final class IsabelleCodeGenerator {
         final String exportCommand =
                 IsabelleCodeGenerator.exportTemplate
                 .replace(MODULE_NAME_VAR, newName).replace(LANGUAGE_VAR, language);
-        final String result = newDefinition + "\n\n" + exportCommand;
+        final String result =
+                newDefinition + System.lineSeparator() + System.lineSeparator() + exportCommand;
         final List<String> lines = this.reader.readFileByLine(theory);
         for (int i = 0; i < lines.size(); i++) {
             final String line = lines.get(i);

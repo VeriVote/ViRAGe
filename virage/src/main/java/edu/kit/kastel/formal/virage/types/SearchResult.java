@@ -1,5 +1,6 @@
 package edu.kit.kastel.formal.virage.types;
 
+import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.prolog.QueryState;
 
 /**
@@ -85,7 +86,7 @@ public final class SearchResult<T> {
     public String toString() {
         String res = this.state.toString();
         if (this.hasValue()) {
-            res += ": " + this.value.toString();
+            res += StringUtils.addSpace(StringUtils.COLON) + this.value.toString();
         }
         return res;
     }

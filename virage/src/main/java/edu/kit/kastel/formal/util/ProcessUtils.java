@@ -12,11 +12,13 @@ import org.apache.logging.log4j.Logger;
  *
  * @author VeriVote
  */
-public class ProcessUtils {
+public final class ProcessUtils {
     /**
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getLogger(ProcessUtils.class);
+
+    private ProcessUtils() { }
 
     /**
      * Start process for given editorExecutable in given file path.

@@ -193,7 +193,7 @@ public class IsabelleProofGenerator {
         }
         final StringBuilder assumptionString = new StringBuilder(StringUtils.EMPTY);
         for (final String s: assumptions) {
-            assumptionString.append(s + "\n\t");
+            assumptionString.append(s + System.lineSeparator() + StringUtils.TAB);
         }
         final String subgoalIds = DEFAULT_ID;
         return replaceVariables(theoremName, goal, proofSteps.toString(),

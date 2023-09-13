@@ -34,16 +34,14 @@ public abstract class VirageJobWithExplicitResult<T> extends VirageJob<T> {
      */
     @Override
     public String toString() {
-        String res = super.toString();
-
-        String resultString = "null";
+        final String res = super.toString();
+        final String resultString;
         if (this.result != null) {
             resultString = this.result.toString();
+        } else {
+            resultString = "null";
         }
-
-        res += "Result: " + resultString + System.lineSeparator();
-
-        return res;
+        return res + "Result: " + resultString + System.lineSeparator();
     }
 
     /**

@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.unruh.isabelle.control.Isabelle;
 import de.unruh.isabelle.control.Isabelle.Setup;
+import de.unruh.isabelle.java.JIsabelle;
 import de.unruh.isabelle.mlvalue.ListConverter;
 import de.unruh.isabelle.mlvalue.MLFunction;
 import de.unruh.isabelle.mlvalue.MLFunction0;
@@ -32,12 +33,12 @@ import de.unruh.isabelle.pure.Context;
 import de.unruh.isabelle.pure.Implicits;
 import de.unruh.isabelle.pure.Theory;
 import de.unruh.isabelle.pure.Thm;
+import edu.kit.kastel.formal.util.JIsabelleWrapper;
 import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.util.SystemUtils;
 import edu.kit.kastel.formal.virage.core.ConfigReader;
 import edu.kit.kastel.formal.virage.types.ExternalSoftwareUnavailableException;
 import edu.kit.kastel.formal.virage.types.IsabelleBuildFailedException;
-import scala.Some;
 import scala.Tuple2;
 import scala.collection.JavaConverters;
 import scala.concurrent.ExecutionContext;
@@ -284,21 +285,12 @@ public final class ScalaIsabelleFacade {
         this.sessionDir = SystemUtils.file(sessionDirValue).getAbsolutePath();
         this.sessionName = sessionNameValue;
         this.theoryNames = new HashSet<String>();
-
-        final List<Path> sessionDirs = new LinkedList<Path>();
-        sessionDirs.add(Path.of(this.sessionDir));
+        final List<String> sessionDirs = new LinkedList<String>();
+        sessionDirs.add(this.sessionDir);
         final String isabelleHome = ConfigReader.getInstance().getIsabelleHome();
-        this.setup = // JIsabelle.setupSetBuild(true, JIsabelle.setup(Path.of(isabelleHome)));
-                new Setup(Path.of(isabelleHome),
-                          sessionNameValue,
-                          new Some<Path>(
-                                  Path.of(ConfigReader.getInstance().getIsabelleSessionDir())),
-                          Path.of(sessionDirValue),
-                          JavaConverters.asScalaIteratorConverter(
-                                  sessionDirs.iterator()).asScala().toSeq(),
-                          true, true /*try verbose first*/,
-                          (Isabelle i) -> i.exceptionManager(),
-                          null /* try to get away with null first */);
+        final boolean verbosity = true;
+        final String isabelleDir = ConfigReader.getInstance().getIsabelleSessionDir();
+        this.setup = setup(isabelleHome, verbosity, isabelleDir, this.sessionDir, sessionDirs);
         try {
             setIsabelleInstance(new Isabelle(this.setup));
             // Scala has no checked Exceptions and the constructor is not annotated.
@@ -317,6 +309,29 @@ public final class ScalaIsabelleFacade {
             throw new IsabelleBuildFailedException();
         }
         this.init();
+    }
+
+    private static Iterable<Path> toPaths(final Iterable<String> paths) {
+        final List<Path> dirs = new LinkedList<Path>();
+        if (paths == null) {
+            return dirs;
+        }
+        for (final String path: paths) {
+            dirs.add(Path.of(path));
+        }
+        return dirs;
+    }
+
+    private static Setup setup(final String isabelleHome, final boolean verbose,
+                               final String isabelleDirectory, final String sessionDir,
+                               final Iterable<String> sessionDirs) {
+        Setup s;
+        s = JIsabelle.setupSetBuild(true, JIsabelle.setup(Path.of(isabelleHome)));
+        s = JIsabelleWrapper.setupSetVerbose(true, s);
+        s = JIsabelleWrapper.setupSetUserDir(Path.of(isabelleDirectory), s);
+        s = JIsabelleWrapper.setupSetWorkingDirectory(Path.of(sessionDir), s);
+        s = JIsabelleWrapper.setupSetSessionRoots(toPaths(sessionDirs), s);
+        return s;
     }
 
     private static synchronized void setIsabelleInstance(final Isabelle instance) {
@@ -344,14 +359,14 @@ public final class ScalaIsabelleFacade {
                     func2(TYP_TO_STRING, DEFAULT_VARIABLE + StringUtils.COLON,
                           TYP + StringUtils.COLON),
                     "string", StringUtils.EQ, "case", DEFAULT_VARIABLE, "of")
-                    + StringUtils.LINE_BREAK
+                    + System.lineSeparator()
                 + printCollection2(TYPE, DEFAULT_VARIABLE, TO, StringUtils.QUOTATION)
                 + parenthesize2(func2(printCollection2(StringUtils.QUOTATION, StringUtils.CARET),
                                       FST, DEFAULT_VARIABLE), StringUtils.CARET,
                                 func2(CONCAT,
                                       map(TYP_TO_STRING, printCollection2(SND, DEFAULT_VARIABLE))),
                                 StringUtils.CARET, StringUtils.QUOTATION)
-                + StringUtils.QUOTATION + StringUtils.LINE_BREAK
+                + StringUtils.QUOTATION + System.lineSeparator()
                 + func(printCollection2("|", IsabelleTheoryGenerator.NAME_SEPARATOR, TO,
                                         StringUtils.QUOTATION),
                        "?" + polyType)
@@ -385,25 +400,22 @@ public final class ScalaIsabelleFacade {
         if (ScalaIsabelleFacade.isabelle != null) {
             return;
         }
-        final List<Path> sessionDirs = new LinkedList<Path>();
+        final String session = SystemUtils.file(sessionDir).getAbsolutePath();
         final ConfigReader configReader = ConfigReader.getInstance();
-        sessionDirs.add(Path.of(SystemUtils.file(sessionDir).getAbsolutePath()));
-        final Setup setup =
-                new Setup(Path.of(configReader.getIsabelleHome()),
-                          sessionName,
-                          new Some<Path>(Path.of(configReader.getIsabelleSessionDir())),
-                          Path.of(sessionDir),
-                          JavaConverters.asScalaIteratorConverter(sessionDirs.iterator())
-                          .asScala().toSeq(),
-                          true, true /*try verbose first*/, (Isabelle i) -> i.exceptionManager(),
-                          null /* try to get away with null first */);
+        final List<String> sessionDirs = new LinkedList<String>();
+        sessionDirs.add(session);
+        final String isabelleHome = configReader.getIsabelleHome();
+        final boolean verbosity = true;
+        final String isabelleDir = configReader.getIsabelleSessionDir();
+        final Setup setup = setup(isabelleHome, verbosity, isabelleDir, session, sessionDirs);
         try {
-            ScalaIsabelleFacade.isabelle = new Isabelle(setup);
+            setIsabelleInstance(new Isabelle(setup));
             ScalaIsabelleFacade.isabelle.destroy();
             // Scala has no checked Exceptions and the constructor is not annotated.
             // Therefore, the Java compiler thinks that the (implicitly checked)
             // IsabelleBuildException cannot be thrown.
         } catch (/* IsabelleBuild */final Exception e) {
+            e.printStackTrace();
             LOGGER.error("Building session " + sessionName
                     + " failed. Restarting ViRAGe or building"
                     + " the session manually within Isabelle might help. If the session is supposed"

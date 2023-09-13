@@ -19,6 +19,6 @@ public final class IsabelleFinishedEvent extends IsabelleEvent {
 
     @Override
     public void applyEffects(final IsabelleProofChecker checker) {
-        checker.setFinished(true);
+        checker.finish();
     }
 }

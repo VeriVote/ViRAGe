@@ -5,7 +5,7 @@ package edu.kit.kastel.formal.virage.analyzer;
  *
  * @author VeriVote
  */
-public class AdmissionGuardStrings {
+public final class AdmissionGuardStrings {
     /**
      * Prefix for admission guard predicates.
      */
@@ -15,4 +15,6 @@ public class AdmissionGuardStrings {
      * Suffix for admission guard predicates.
      */
     public static final String SUFFIX = "_wa";
+
+    private AdmissionGuardStrings() { }
 }

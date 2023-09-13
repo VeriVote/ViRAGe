@@ -2,6 +2,8 @@ package edu.kit.kastel.formal.virage.isabelle;
 
 import java.util.Map;
 
+import edu.kit.kastel.formal.util.StringUtils;
+
 /**
  * A class to represent the events raised by the Isabelle CLI.
  *
@@ -47,7 +49,8 @@ public abstract class IsabelleEvent {
     public String toString() {
         String res = this.getClass().getCanonicalName();
         for (final Map.Entry<String, String> entry: this.parameters.entrySet()) {
-            res += "\n\t" + entry.getKey() + ": " + entry.getValue();
+            res += System.lineSeparator() + StringUtils.indentWithTab(entry.getKey())
+                    + ": " + entry.getValue();
         }
 
         return res;

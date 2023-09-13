@@ -188,10 +188,7 @@ public final class PrologProof {
 
     private String toString(final int n) {
         String res = StringUtils.EMPTY;
-        for (int i = 0; i < n; i++) {
-            res += StringUtils.TAB;
-        }
-        res += this.goal;
+        res += StringUtils.indentWithTabs(n, this.goal);
         for (final PrologProof subgoal: this.subgoals) {
             res += System.lineSeparator() + subgoal.toString(n + 1);
         }

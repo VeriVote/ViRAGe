@@ -196,14 +196,26 @@ public final class IsabelleTheoryGenerator {
             }
         }
         for (final String origin: originStrings) {
-            res += sessionName + IsabelleUtils.THEORY_NAME_SEPARATOR + origin + StringUtils.SPACE;
+            res += StringUtils.addSpace(sessionName + IsabelleUtils.THEORY_NAME_SEPARATOR + origin);
         }
         if (usingUnprovenFacts) {
-            res += "\n\n(* * * * * * * * * * * * * * * * * * * * * * * *)\n"
-                    + "(* Some proofs appear to rely on facts not yet *)\n"
-                    + "(*  proven within Isabelle/HOL. Check Isabelle *)\n"
-                    + "(*     error messages for more information.    *)\n"
-                    + "(* * * * * * * * * * * * * * * * * * * * * * * *)";
+            final String star = "*";
+            final String separatorStart = StringUtils.addSpace(star);
+            final String separatorEnd = StringUtils.SPACE + star;
+            final String separatorLine =
+                    StringUtils.parenthesize(
+                            StringUtils.repeat(22, StringUtils.addSpace(star)) + star);
+            res += System.lineSeparator() + System.lineSeparator()
+                    + separatorLine + System.lineSeparator()
+                    + StringUtils.parenthesize(separatorStart
+                            + "Some proofs appear to rely on facts not yet" + separatorEnd)
+                     + System.lineSeparator()
+                    + StringUtils.parenthesize(separatorStart
+                            + " proven within Isabelle/HOL. Check Isabelle" + separatorEnd)
+                     + System.lineSeparator()
+                    + StringUtils.parenthesize(separatorStart
+                            + "    error messages for more information.   " + separatorEnd)
+                     + System.lineSeparator() + separatorLine;
         }
         return res;
     }
@@ -337,7 +349,8 @@ public final class IsabelleTheoryGenerator {
                 buildModuleDef(moduleDefMap, imports, this.framework.getSessionName());
         final StringBuilder proofsString = new StringBuilder(StringUtils.EMPTY);
         for (final CompositionProof proof: proofs) {
-            proofsString.append(this.generator.generateIsabelleProof(proof) + "\n\n");
+            proofsString.append(this.generator.generateIsabelleProof(proof)
+                                + System.lineSeparator() + System.lineSeparator());
         }
         final String prfString = proofsString.toString();
         final String fileContents =

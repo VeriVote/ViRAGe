@@ -122,7 +122,8 @@ public final class CCodeGenerator {
         final String signatureGroup = "signature";
         final Pattern pattern = Pattern.compile("\\/\\/[ ]*(?<" + componentNameGroup
                 + ">\\w+)\n(?<" + implementationGroup + ">[^\\(]*(?<"
-                + signatureGroup + ">[^\\)]*\\)).*)\\/\\/[ ]*\\k<" + componentNameGroup + ">\n",
+                + signatureGroup + ">[^\\)]*\\)).*)\\/\\/[ ]*\\k<" + componentNameGroup + ">"
+                + System.lineSeparator(),
                 Pattern.DOTALL);
         final Matcher matcher = pattern.matcher(this.compositionsTemplate);
         while (matcher.find()) {

@@ -192,7 +192,6 @@ public final class IsabelleFrameworkExtractor {
                 if (insideBrackets) {
                     final int endIdx = findMatchingBracket(copyOfs, i);
                     if (endIdx == -1) {
-                        // System.out.println("\t\t\tError");
                         continue;
                     }
                     res += convertIsabelleToProlog(copyOfs.substring(i + 1, endIdx));

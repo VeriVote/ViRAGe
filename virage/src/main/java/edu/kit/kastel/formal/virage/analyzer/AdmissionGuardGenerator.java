@@ -7,6 +7,7 @@ import java.util.List;
 
 import edu.kit.kastel.formal.util.SimpleFileWriter;
 import edu.kit.kastel.formal.util.StringUtils;
+import edu.kit.kastel.formal.util.SystemUtils;
 import edu.kit.kastel.formal.virage.prolog.ExtendedPrologStrings;
 import edu.kit.kastel.formal.virage.prolog.PrologClause;
 import edu.kit.kastel.formal.virage.prolog.PrologParser;
@@ -61,7 +62,7 @@ public class AdmissionGuardGenerator {
         for (final CompositionRule rule: newRules) {
             newClauses.add(rule.getClause());
         }
-        final File file = File.createTempFile("admission_guards", PrologParser.DOT_PL);
+        final File file = SystemUtils.tempFile("admission_guards", PrologParser.DOT_PL);
         file.deleteOnExit();
         final SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(file.getAbsolutePath(), newClauses);

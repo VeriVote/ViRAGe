@@ -122,7 +122,7 @@ public final class JplFacade {
                     + "ViRAGe attempts to run in compatibility mode, "
                     + "but results might be unexpected. "
                     + "Especially, queries that result in Prolog terms containing variables will "
-                    + "always fail.\n"
+                    + "always fail." + System.lineSeparator()
                     + "Please consider upgrading to SWI-Prolog 8.0.0 "
                     + "or newer to avoid this in the future.");
             this.compatibilityMode = true;
