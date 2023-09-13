@@ -354,6 +354,7 @@ public final class IsabelleProofChecker {
         final String clString =
             ConfigReader.getInstance().getIsabelleExecutable()
             + CLIENT_TOOL + NAME_OPT + StringUtils.SPACE + SERVER_NAME;
+        this.sessionName = localSessionName;
         this.client = this.runtime.exec(String.format(clString));
         this.clientInput = this.client.getOutputStream();
 
