@@ -853,8 +853,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     public void run() {
         LOGGER.info("Started VirageCommandLineInterface.");
         extractOrParseInputs();
-        boolean unchosen = true;
-        while (unchosen) {
+        while (true) {
             final String arg = this
                     .requestString("Do you want to (g)enerate a composition, (a)nalyze one, "
                             + "run an (A)nalysis of all properties for a composition, "
@@ -863,32 +862,27 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             final VirageJob<?> job;
             switch (arg.substring(0, arg.isEmpty() ? 0 : 1)) {
             case "g":
-                unchosen = false;
                 job = this.createGenerationQuery();
                 break;
             case "a":
-                unchosen = false;
                 job = this.createAnalysisQuery();
                 break;
             case "p":
-                unchosen = false;
                 job = this.createIsabelleQuery();
                 break;
             case "S":
-                unchosen = false;
                 job = this.createCodeGenerationQuery();
                 break;
             case "C":
-                unchosen = false;
                 job = this.createCCodeGenerationQuery();
                 break;
             case "A":
-                unchosen = false;
                 job = new VirageAnalyzeAllPropertiesJob(this, this.requestCompositionString());
                 break;
             default:
                 this.displayMessage(TRY_AGAIN);
                 job = null;
+                continue;
             }
             this.core.submit(job);
             // VirageCore is intended to work on jobs asynchronously
