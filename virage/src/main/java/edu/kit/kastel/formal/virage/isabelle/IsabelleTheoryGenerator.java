@@ -177,7 +177,6 @@ public final class IsabelleTheoryGenerator {
 
     private static String findImportsFromCompositionRules(final List<CompositionProof> proofs,
                                                           final String sessionName) {
-        String res = StringUtils.EMPTY;
         final Set<String> origins = new HashSet<String>();
         for (final CompositionProof proof: proofs) {
             origins.addAll(proof.getAllOrigins());
@@ -195,13 +194,16 @@ public final class IsabelleTheoryGenerator {
                 }
             }
         }
+        final StringBuilder r = new StringBuilder();
         for (final String origin: originStrings) {
-            res += StringUtils.addSpace(sessionName + IsabelleUtils.THEORY_NAME_SEPARATOR + origin);
+            r.append(StringUtils.addSpace(sessionName
+                     + IsabelleUtils.THEORY_NAME_SEPARATOR + origin));
         }
+        String res = r.toString();
         if (usingUnprovenFacts) {
             final String star = "*";
             final String separatorStart = StringUtils.addSpace(star);
-            final String separatorEnd = StringUtils.SPACE + star;
+            final String separatorEnd = StringUtils.prefixSpace(star);
             final String separatorLine =
                     StringUtils.parenthesize(
                             StringUtils.repeat(22, StringUtils.addSpace(star)) + star);
@@ -239,17 +241,18 @@ public final class IsabelleTheoryGenerator {
                 if (module.getValue().equals(moduleParametersList.get(i))) {
                     final StringBuilder moduleParamType =
                             IsabelleUtils.isSimpleType(module.getKey())
-                            ? new StringBuilder(StringUtils.EMPTY)
+                            ? new StringBuilder()
                                     // Simple types (e.g., natural numbers) do not require "'a".
-                                    : new StringBuilder(IsabelleUtils.TYPE_ALIAS
-                                                        + StringUtils.SPACE);
-                    moduleParamType.append(module.getKey() + StringUtils.SPACE
-                                            + IsabelleUtils.RIGHT_ARROW + StringUtils.SPACE);
+                                    : new StringBuilder(
+                                            StringUtils.addSpace(IsabelleUtils.TYPE_ALIAS));
+                    moduleParamType.append(
+                            StringUtils.addSpace(StringUtils.printCollection2(
+                                    module.getKey(), IsabelleUtils.RIGHT_ARROW)));
                     moduleParamTypesList.add(i, moduleParamType.toString());
                 }
             }
         }
-        final StringBuilder moduleParamTypes = new StringBuilder(StringUtils.EMPTY);
+        final StringBuilder moduleParamTypes = new StringBuilder();
         for (final String type: moduleParamTypesList) {
             moduleParamTypes.append(type);
         }
@@ -275,7 +278,7 @@ public final class IsabelleTheoryGenerator {
                 if (!imports.toString().contains(importStringWithoutSuffix)) {
                     final String importWithSuffix =
                             sessionName + StringUtils.PERIOD + importStringWithoutSuffix;
-                    imports.append(StringUtils.SPACE + importWithSuffix + StringUtils.SPACE);
+                    imports.append(StringUtils.surroundWithSpaces(importWithSuffix));
                 }
             }
         }
@@ -330,9 +333,9 @@ public final class IsabelleTheoryGenerator {
             moduleParametersList.add(module.getValue());
         }
         Collections.sort(moduleParametersList);
-        final StringBuilder moduleParameters = new StringBuilder(StringUtils.EMPTY);
+        final StringBuilder moduleParameters = new StringBuilder();
         for (final String param: moduleParametersList) {
-            moduleParameters.append(StringUtils.SPACE + param);
+            moduleParameters.append(StringUtils.prefixSpace(param));
         }
         final String moduleParameterString = moduleParameters.toString();
         final String moduleParameterTypeString =
@@ -347,7 +350,7 @@ public final class IsabelleTheoryGenerator {
         }
         final Pair<String, String> moduleDefResult =
                 buildModuleDef(moduleDefMap, imports, this.framework.getSessionName());
-        final StringBuilder proofsString = new StringBuilder(StringUtils.EMPTY);
+        final StringBuilder proofsString = new StringBuilder();
         for (final CompositionProof proof: proofs) {
             proofsString.append(this.generator.generateIsabelleProof(proof)
                                 + System.lineSeparator() + System.lineSeparator());

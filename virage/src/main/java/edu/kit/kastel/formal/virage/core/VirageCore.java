@@ -327,8 +327,10 @@ public final class VirageCore implements Runnable {
                 final VirageJob<?> job;
                 try {
                     job = this.jobs.take();
-                    this.ui.displayMessage(StringUtils.addSpace("----------")
-                                            + job.getDescription());
+                    this.ui.displayMessage(
+                            StringUtils.printCollection2(
+                                    StringUtils.repeat(StringUtils.TEN, StringUtils.DASH),
+                                    job.getDescription()));
                     job.execute(this);
                     // The code style checker does not like this catch-all block.
                     // I think it is justified here, as this is the last

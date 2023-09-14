@@ -161,7 +161,7 @@ public final class PrologClause {
         String res = StringUtils.EMPTY;
         res += this.succedent.toString();
         if (!this.antecedents.isEmpty()) {
-            res += StringUtils.SPACE + PrologParser.NECK + StringUtils.SPACE;
+            res += StringUtils.surroundWithSpaces(PrologParser.NECK);
             int ctr = 0;
             for (final PrologPredicate antecedent: this.antecedents) {
                 ctr++;

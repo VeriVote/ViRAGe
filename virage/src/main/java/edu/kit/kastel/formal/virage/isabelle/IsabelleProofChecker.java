@@ -41,42 +41,42 @@ public final class IsabelleProofChecker {
     /**
      * Parameter to override an Isabelle system option.
      */
-    public static final String SYS_OPT = " -o";
+    public static final String SYS_OPT = "-o";
 
     /**
      * Parameter to include an Isabelle build option.
      */
-    public static final String BUILD_OPT = " -b";
+    public static final String BUILD_OPT = "-b";
 
     /**
      * Parameter to trigger Isabelle's quick and dirty option.
      */
-    public static final String Q_AND_D_OPT = " quick_and_dirty";
+    public static final String Q_AND_D_OPT = "quick_and_dirty";
 
     /**
      * Parameter to invoke the build process for Isabelle sessions.
      */
-    public static final String BUILD_TOOL = " build";
+    public static final String BUILD_TOOL = "build";
 
     /**
      * Parameter to invoke Isabelle's scalac tool which wraps to the Scala compiler.
      */
-    public static final String SCALAC_TOOL = " scalac";
+    public static final String SCALAC_TOOL = "scalac";
 
     /**
      * Parameter to include Isabelle session directory.
      */
-    public static final String INCL_SESS_DIR = " -d";
+    public static final String INCL_SESS_DIR = "-d";
 
     /**
      * Parameter to include Isabelle session directory and select its sessions.
      */
-    public static final String INCL_SEL_SESS_DIR = " -D";
+    public static final String INCL_SEL_SESS_DIR = "-D";
 
     /**
      * Parameter to export files from session specification into file system.
      */
-    public static final String EXPORT_FILES = " -e";
+    public static final String EXPORT_FILES = "-e";
 
     /**
      * The singleton instance.
@@ -96,7 +96,7 @@ public final class IsabelleProofChecker {
     /**
      * Parameter to set an explicit client/server name.
      */
-    private static final String NAME_OPT = " -n";
+    private static final String NAME_OPT = "-n";
 
     /**
      * String to refer to Isabelle logic session documents.
@@ -106,12 +106,12 @@ public final class IsabelleProofChecker {
     /**
      * Parameter to manage resident Isabelle server processes.
      */
-    private static final String SERVER_TOOL = " server";
+    private static final String SERVER_TOOL = "server";
 
     /**
      * Parameter to provide console interaction for Isabelle servers.
      */
-    private static final String CLIENT_TOOL = " client";
+    private static final String CLIENT_TOOL = "client";
 
     /**
      * String suffix for root options.
@@ -121,12 +121,12 @@ public final class IsabelleProofChecker {
     /**
      * Browser info option for command line call of Isabelle.
      */
-    private static final String BROWSER_INFO = SYS_OPT + " browser_info";
+    private static final String BROWSER_INFO = "browser_info";
 
     /**
      * Parameter to pass the Unix PWD (print working directory) command.
      */
-    private static final String PWD_CMD = " `pwd`";
+    private static final String PWD_CMD = "`pwd`";
 
     /**
      * The session name variable.
@@ -219,8 +219,10 @@ public final class IsabelleProofChecker {
 
         try {
             final String clString =
-                ConfigReader.getInstance().getIsabelleExecutable()
-                + BUILD_TOOL + BROWSER_INFO + BUILD_OPT + INCL_SEL_SESS_DIR + PWD_CMD;
+                    StringUtils.printCollection2(
+                            ConfigReader.getInstance().getIsabelleExecutable(),
+                            BUILD_TOOL, SYS_OPT, BROWSER_INFO,
+                            BUILD_OPT, INCL_SEL_SESS_DIR, PWD_CMD);
             final Process process = Runtime.getRuntime().exec(String.format(clString));
             process.waitFor();
 
@@ -308,7 +310,7 @@ public final class IsabelleProofChecker {
     /**
      * Destroys the current instance and its associated Isabelle processes.
      */
-    public void destroy() {
+    public synchronized void destroy() {
         this.client.destroy();
         this.server.destroy();
         destroyInstance();
@@ -326,14 +328,13 @@ public final class IsabelleProofChecker {
                 + IsabelleUtils.ROOT.toLowerCase() + IsabelleUtils.DOT_TEX;
         final SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(texDoc, this.texTemplate);
-        final String quickAndDirty = SYS_OPT + Q_AND_D_OPT;
 
         final String isabelleCommand =
-                ConfigReader.getInstance().getIsabelleExecutable()
-                + BUILD_TOOL + EXPORT_FILES + INCL_SEL_SESS_DIR + StringUtils.SPACE + generatedPath
-                + INCL_SEL_SESS_DIR + StringUtils.SPACE + localTheoryPath
-                + quickAndDirty + BROWSER_INFO
-                + BUILD_OPT + StringUtils.SPACE + adHocSessionName;
+                StringUtils.printCollection2(
+                        ConfigReader.getInstance().getIsabelleExecutable(),
+                        BUILD_TOOL, EXPORT_FILES, INCL_SEL_SESS_DIR, generatedPath,
+                        INCL_SEL_SESS_DIR, localTheoryPath, SYS_OPT, Q_AND_D_OPT,
+                        SYS_OPT, BROWSER_INFO, BUILD_OPT, adHocSessionName);
         final int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
         if (status != 0) {
             LOGGER.warn("Isabelle documentation generation failed.");
@@ -352,8 +353,9 @@ public final class IsabelleProofChecker {
     private void initClient(final String localSessionName, final String localTheoryPath)
             throws IOException, ExternalSoftwareUnavailableException {
         final String clString =
-            ConfigReader.getInstance().getIsabelleExecutable()
-            + CLIENT_TOOL + NAME_OPT + StringUtils.SPACE + SERVER_NAME;
+                StringUtils.printCollection2(
+                        ConfigReader.getInstance().getIsabelleExecutable(),
+                        CLIENT_TOOL, NAME_OPT, SERVER_NAME);
         this.sessionName = localSessionName;
         this.client = this.runtime.exec(String.format(clString));
         this.clientInput = this.client.getOutputStream();
@@ -368,8 +370,9 @@ public final class IsabelleProofChecker {
 
     private void initServer() throws IOException, ExternalSoftwareUnavailableException {
         final String clString =
-            ConfigReader.getInstance().getIsabelleExecutable()
-            + SERVER_TOOL + NAME_OPT + StringUtils.SPACE + SERVER_NAME;
+                StringUtils.printCollection2(
+                        ConfigReader.getInstance().getIsabelleExecutable(),
+                        SERVER_TOOL, NAME_OPT, SERVER_NAME);
         this.server = this.runtime.exec(String.format(clString));
         // The server will send a message when startup is finished.
         // Contents are irrelevant, just wait for it to appear.

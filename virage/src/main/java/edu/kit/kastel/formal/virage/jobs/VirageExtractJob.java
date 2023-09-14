@@ -73,13 +73,12 @@ public final class VirageExtractJob extends VirageJobWithExplicitResult<Framewor
 
     @Override
     public String getDescription() {
-        return "Extracting (E)PL file ...";
+        return "Extracting (extended) Prolog file (.epl) ...";
     }
 
     @Override
     public String presentConcreteResult() {
-        return "Extracted (E)PL file \'" + this.getResult().getAbsolutePath()
-                + "\' from \'" + this.path
-                + "\'.";
+        return "Extracted (extended) Prolog file (.epl) \'" + this.getResult().getAbsolutePath()
+                + "\' from \'" + this.path + "\'.";
     }
 }

@@ -75,12 +75,9 @@ public final class VirageProveJob
 
     @Override
     public String presentConcreteResult() {
-        String prop = "properties";
-        if (this.properties.size() == 1) {
-            prop = "property";
-        }
-        return "Proof found." + StringUtils.SPACE + this.tree.toString() + StringUtils.SPACE
-                + "satisfies the" + StringUtils.SPACE + prop + StringUtils.SPACE
-                + StringUtils.printCollection(this.properties) + StringUtils.PERIOD;
+        return StringUtils.printCollection2(
+                StringUtils.appendPeriod("Proof found"), this.tree.toString(),
+                "satisfies the", this.properties.size() == 1 ? "property" : "properties",
+                StringUtils.appendPeriod(StringUtils.printCollection(this.properties)));
     }
 }

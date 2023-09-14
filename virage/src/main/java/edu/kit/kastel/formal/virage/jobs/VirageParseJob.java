@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
+import edu.kit.kastel.formal.virage.prolog.ExtendedPrologParser;
 import edu.kit.kastel.formal.virage.prolog.MalformedEplFileException;
 import edu.kit.kastel.formal.virage.types.FrameworkRepresentation;
 
@@ -30,12 +31,14 @@ public final class VirageParseJob extends VirageJobWithExplicitResult<FrameworkR
         this.file = fileValue;
     }
 
+    private ExtendedPrologParser getParser() {
+        return this.getExecutingCore().getExtendedPrologParser();
+    }
+
     @Override
     public void concreteExecute() throws IOException, MalformedEplFileException {
-        this.setResult(this.getExecutingCore()
-                .getExtendedPrologParser().parseFramework(this.file, true));
+        this.setResult(this.getParser().parseFramework(this.file, true));
         this.getExecutingCore().setFrameworkRepresentation(this.getResult());
-
     }
 
     @Override
@@ -45,13 +48,14 @@ public final class VirageParseJob extends VirageJobWithExplicitResult<FrameworkR
 
     @Override
     public String getDescription() {
-        return "Parsing (E)PL file and invoking the Isabelle session it references ...";
-
+        return "Parsing (extended) Prolog file (.epl) and "
+                + "invoking the respective Isabelle session(s) ...";
     }
 
     @Override
     public String presentConcreteResult() {
         return StringUtils.sentence(
-                "Successfully loaded (E)PL file at \'" + this.file.getAbsolutePath() + "\'");
+                "Successfully loaded (extended) Prolog file (.epl) at \'"
+                        + this.file.getAbsolutePath() + "\'");
     }
 }

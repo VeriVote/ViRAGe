@@ -51,14 +51,9 @@ public final class Pair<S, T> {
 
     @Override
     public String toString() {
-        String firstString = StringUtils.EMPTY;
-        String secondString = StringUtils.EMPTY;
-        if (this.first != null) {
-            firstString = this.first.toString();
-        }
-        if (this.second != null) {
-            secondString = this.second.toString();
-        }
-        return StringUtils.parenthesize(firstString, StringUtils.SPACE + secondString);
+        final String empty = StringUtils.EMPTY;
+        final String firstString = this.first != null ? this.first.toString() : empty;
+        final String secondString = this.second != null ? this.second.toString() : empty;
+        return StringUtils.parenthesize(firstString, StringUtils.prefixSpace(secondString));
     }
 }

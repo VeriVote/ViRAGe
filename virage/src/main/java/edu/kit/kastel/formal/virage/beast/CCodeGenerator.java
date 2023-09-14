@@ -241,8 +241,8 @@ public final class CCodeGenerator {
         String resourceLocation = StringUtils.EMPTY;
         for (final String s: additionalFiles) {
             final String location = C_DIR + File.separator + s;
-            cFiles += StringUtils.SPACE + this.getClass().getClassLoader()
-                .getResource(location).getFile();
+            cFiles += StringUtils.prefixSpace(this.getClass().getClassLoader()
+                .getResource(location).getFile());
             if (resourceLocation.isEmpty()) {
                 resourceLocation = new File(this.getClass().getClassLoader()
                     .getResource(location).getFile()).getParent();
@@ -258,7 +258,7 @@ public final class CCodeGenerator {
             new File(TARGET_DIR + File.separator + RULE_FILE + StringUtils.PERIOD
                         + ScalaIsabelleFacade.DEFAULT_VARIABLE).getAbsoluteFile();
         final String gccCommand = ConfigReader.getInstance().getGccExecutable()
-                + StringUtils.SPACE + tmpVotingRuleFile.getAbsolutePath()
+                + StringUtils.prefixSpace(tmpVotingRuleFile.getAbsolutePath())
                 + cFiles + " -o " + exeFile.getAbsolutePath() + " -D V=" + numVoters
                 + " -D C=" + numCandidates;
         final Pair<String, String> output = ProcessUtils.runTerminatingProcess(gccCommand);

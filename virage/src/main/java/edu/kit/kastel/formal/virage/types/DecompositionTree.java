@@ -73,7 +73,7 @@ public final class DecompositionTree {
      */
     public static DecompositionTree parseString(final String passedString) {
         final String s = StringUtils.removeWhitespace(passedString);
-        final StringBuilder label = new StringBuilder(StringUtils.EMPTY);
+        final StringBuilder label = new StringBuilder();
         final List<DecompositionTree> children = new LinkedList<DecompositionTree>();
         String currentChild = StringUtils.EMPTY;
         int level = 0;

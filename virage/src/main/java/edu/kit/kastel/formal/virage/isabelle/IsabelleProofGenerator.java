@@ -158,7 +158,7 @@ public class IsabelleProofGenerator {
                         IsabelleTheoryGenerator.VAR_MODULE_PARAMETERS);
 
         final Set<String> assumptions = new HashSet<String>();
-        final StringBuilder proofSteps = new StringBuilder(StringUtils.EMPTY);
+        final StringBuilder proofSteps = new StringBuilder();
         for (final CompositionProof subgoal: proof.getAllStepsDepthFirst()) {
             if (subgoal.getAllCompositionRules().size() == 1) {
                 final CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
@@ -177,9 +177,9 @@ public class IsabelleProofGenerator {
                             break;
                         }
                         newAssumptions +=
-                                this.getParent().getTypedVariables().get(child.getName())
-                                + StringUtils.SPACE;
-                        newAssumptions += StringUtils.QUOTATION;
+                                StringUtils.addSpace(
+                                        this.getParent().getTypedVariables().get(child.getName()))
+                                    + StringUtils.QUOTATION;
                         assumptions.add(newAssumptions);
                     }
                     // This is needed to not add subgoal identities for these "virtual" goals.
@@ -191,7 +191,7 @@ public class IsabelleProofGenerator {
         if (assumptions.isEmpty()) {
             assumptions.add(TRUE);
         }
-        final StringBuilder assumptionString = new StringBuilder(StringUtils.EMPTY);
+        final StringBuilder assumptionString = new StringBuilder();
         for (final String s: assumptions) {
             assumptionString.append(s + System.lineSeparator() + StringUtils.TAB);
         }

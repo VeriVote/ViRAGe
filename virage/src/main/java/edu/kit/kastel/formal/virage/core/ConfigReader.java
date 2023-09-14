@@ -40,14 +40,14 @@ import edu.kit.kastel.formal.virage.types.InvalidConfigVersionException;
  */
 public final class ConfigReader {
     /**
+     * Character used to separate lists in the settings file.
+     */
+    public static final String LIST_SEPARATOR = ";";
+
+    /**
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getRootLogger();
-
-    /**
-     * Character used to separate lists in the settings file.
-     */
-    private static final String LIST_SEPARATOR = ";";
 
     /**
      * The separator between keys and values.
@@ -299,6 +299,20 @@ public final class ConfigReader {
         return instance;
     }
 
+    private static String getVersionString(final String dependency, final String suffix,
+                                           final String version, final int numberOfTabs) {
+        final String suffixString =
+                suffix != null && !suffix.isEmpty()
+                ? StringUtils.prefixSpace(suffix) : StringUtils.EMPTY;
+        final String leftColumn = StringUtils.addColon(dependency + suffixString);
+        final String rightColumn = version + System.lineSeparator();
+        if (0 < numberOfTabs) {
+            return leftColumn + StringUtils.indentWithTabs(numberOfTabs, rightColumn);
+        } else {
+            return StringUtils.printCollection2(leftColumn, rightColumn);
+        }
+    }
+
     /**
      * Short-hand method for the command output within the command line interface.
      *
@@ -311,7 +325,7 @@ public final class ConfigReader {
     private static String getCommandOutput(final String command, final String option)
             throws IOException, InterruptedException {
         final String none = "<NONE>" + System.lineSeparator();
-        final String proc = command + StringUtils.SPACE + option;
+        final String proc = command + StringUtils.prefixSpace(option);
         final ProcessUtils.Output output = ProcessUtils.runTerminatingProcess(proc);
         final String result = output.stdOut.isEmpty() ? output.stdErr : output.stdOut;
         return result.isEmpty() ? none : result;
@@ -323,46 +337,47 @@ public final class ConfigReader {
      * @return string representation of all software and versions
      */
     public String checkAvailabilityAndGetVersions() {
-        String res = "External dependency versions:"
+        final String notFound = "NOT FOUND";
+        final String versionOpt = "version";
+        String res = StringUtils.addColon("External dependency versions")
                     + System.lineSeparator() + System.lineSeparator();
         // JAVA
-        res += StringUtils.addSpace("Java:")
-                + StringUtils.indentWithTabs(2,
-                        System.getProperty("java.version") + System.lineSeparator());
-        // ISABELLE
-        final String isa = "Isabelle:";
-        final String notFound = "NOT FOUND";
+        res += getVersionString("Java", null,
+                                System.getProperty(StringUtils.appendPeriod("java") + versionOpt),
+                                2);
+        // ISABELLE and SCALA
+        final String isa = "Isabelle";
+        String isaVersion;
+        String scalaVersion;
+        String scalaSuffix;
         try {
             final String isaExec = this.getIsabelleExecutable();
-            res += StringUtils.addSpace(isa)
-                    + StringUtils.indentWithTabs(2, getCommandOutput(isaExec, "version"));
-            res += StringUtils.addSpace("Scala (via Isabelle):")
-                    + getCommandOutput(isaExec + " scalac", "-version");
-        } catch (final IOException e) {
-            res += StringUtils.addSpace(isa)
-                    + StringUtils.indentWithTabs(2, notFound) + System.lineSeparator();
-            res += StringUtils.addSpace("Scala:")
-                    + StringUtils.indentWithTabs(2, notFound) + System.lineSeparator();
+            isaVersion = getCommandOutput(isaExec, versionOpt);
+            scalaVersion = getCommandOutput(StringUtils.printCollection2(isaExec, "scalac"),
+                                            StringUtils.DASH + versionOpt);
+            scalaSuffix = StringUtils.prefixSpace(StringUtils.parenthesize2("via", isa));
+        } catch (final
+                IOException | InterruptedException | ExternalSoftwareUnavailableException e) {
             this.isabelleAvailable = false;
-        } catch (final InterruptedException e) {
-            e.printStackTrace();
-        } catch (final ExternalSoftwareUnavailableException e) {
+            isaVersion = notFound;
+            scalaVersion = notFound;
+            scalaSuffix = StringUtils.EMPTY;
             e.printStackTrace();
         }
-        // SWIPL
-        final String swi = "SWI-Prolog:";
+        res += getVersionString(isa, null, isaVersion, 2);
+        res += getVersionString("Scala", scalaSuffix, scalaVersion, this.isabelleAvailable ? 0 : 2);
+        // SWIPL and JPL
+        String swiplVersion;
         try {
-            res += StringUtils.addSpace(swi)
-                    + StringUtils.indentWithTabs(2,
-                            getCommandOutput((String)this.properties.get(SWIPL_BIN), "--version"));
-        } catch (final IOException e) {
-            res += StringUtils.addSpace(swi)
-                    + StringUtils.indentWithTabs(2, notFound) + System.lineSeparator();
+            swiplVersion = getCommandOutput((String)this.properties.get(SWIPL_BIN),
+                                            StringUtils.repeat(2, StringUtils.DASH) + versionOpt);
+        } catch (final IOException | InterruptedException e) {
+            e.printStackTrace();
             this.swiplAvailable = false;
             this.jplAvailable = false;
-        } catch (final InterruptedException e) {
-            e.printStackTrace();
+            swiplVersion = notFound;
         }
+        res += getVersionString("SWI-Prolog", null, swiplVersion, 2);
         try {
             this.getSwiplHome();
             this.getSwiplLib();
@@ -370,7 +385,7 @@ public final class ConfigReader {
             this.jplAvailable = false;
             this.swiplAvailable = false;
         }
-        res += StringUtils.addSpace("JPL:") + StringUtils.indentWithThreeTab(JPL.version_string());
+        res += getVersionString("JPL", null, JPL.version_string(), StringUtils.THREE);
         return res;
     }
 

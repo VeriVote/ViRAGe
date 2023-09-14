@@ -64,15 +64,16 @@ public class VirageAnalyzeAllPropertiesJob extends
                         && result.getValue() == BooleanWithUncertainty.TRUE);
             }
         }
-        String res = StringUtils.EMPTY;
+        final StringBuilder res = new StringBuilder();
         for (int i = 0; i < this.unaryProperties.size(); i++) {
             final String propertySatisfaction =
                     hasProperties.get(i) ? "has" : "cannot be shown to have";
-            res += StringUtils.sentence(this.compositionField
-                    + StringUtils.SPACE + propertySatisfaction + " the property "
-                    + this.unaryProperties.get(i).toString());
+            res.append(StringUtils.sentence(
+                    StringUtils.printCollection2(
+                            this.compositionField, propertySatisfaction, "the property",
+                            this.unaryProperties.get(i).toString())));
         }
-        return res;
+        return res.toString();
     }
 
     @Override

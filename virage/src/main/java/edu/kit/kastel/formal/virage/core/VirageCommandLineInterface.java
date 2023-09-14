@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.apache.commons.io.IOUtils;
@@ -150,6 +151,11 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     private static final String TRY_AGAIN = "Please try again.";
 
     /**
+     * Message with ENTER for default.
+     */
+    private static final String ENTER_FOR_DEFAULT_MESSAGE = "Press ENTER for default: ";
+
+    /**
      * A Scanner to read input.
      */
     private final Scanner scanner;
@@ -281,11 +287,12 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         String newValue;
         try {
             while (true) {
-                newValue = this.requestString(StringUtils.appendPeriod("Please input the path to "
-                        + LIBSWIPL_SO) + StringUtils.SPACE
+                newValue = this.requestString(
+                        StringUtils.addSpace(StringUtils.appendPeriod(
+                                "Please input the path to " + LIBSWIPL_SO))
                         + "For your setup of SWI Prolog, typical values are "
-                        + this.addQuotationsToPath("/usr/lib/" + LIBSWIPL_SO) + " or "
-                        + this.addQuotationsToPath(
+                        + addQuotationsToPath("/usr/lib/" + LIBSWIPL_SO) + " or "
+                        + addQuotationsToPath(
                                 ConfigReader.getInstance().getSwiplLib() + LIBSWIPL_SO)
                         + ", but"
                         + " this might differ on your system.");
@@ -318,7 +325,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 newValue = this.requestString(
                         "Please input the path to the SWI Prolog " + "library directory. "
                                 + "For your setup of SWI Prolog, the typical value is "
-                                + this.addQuotationsToPath(ConfigReader.getInstance().getSwiplLib())
+                                + addQuotationsToPath(ConfigReader.getInstance().getSwiplLib())
                                 + ", but this might differ "
                                 + "on your system.");
                 if (!newValue.isEmpty()) {
@@ -369,7 +376,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         }
     }
 
-    private String addQuotationsToPath(final String pathString) {
+    private static String addQuotationsToPath(final String pathString) {
         final String pathDelimiter = "\'";
         return pathDelimiter + pathString + pathDelimiter;
     }
@@ -377,7 +384,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     private void printSettings() {
         this.displayMessage(StringUtils.appendPeriod(HEADER_LINE_START
                 + "Reading configuration from "
-                + this.addQuotationsToPath(ConfigReader.getConfigPath())));
+                + addQuotationsToPath(ConfigReader.getConfigPath())));
         this.displayMessage(HEADER_LINE_START);
         this.displayMessage(HEADER_LINE_START + "The following settings were found: ");
         final List<String> propertyNames = new LinkedList<String>();
@@ -393,7 +400,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 lastPrefix = s.split(prefixSeparator)[0];
             }
             String value =
-                    ConfigReader.getInstance().getAllProperties().get(s).replaceAll(";", ";\n#\t");
+                    ConfigReader.getInstance().getAllProperties().get(s)
+                        .replaceAll(ConfigReader.LIST_SEPARATOR, ";\n#\t");
             if (value.isEmpty()) {
                 value = "NOT_SET";
             }
@@ -621,8 +629,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         final String defaultPath = ConfigReader.getInstance().getDefaultOutputPath();
         String outputPath = this.requestString("Please specify a directory for the "
                 + "generated theory file."
-                + StringUtils.parenthesize("Press ENTER for default: "
-                + this.addQuotationsToPath(defaultPath)));
+                + StringUtils.parenthesize(
+                        ENTER_FOR_DEFAULT_MESSAGE + addQuotationsToPath(defaultPath)));
         if (outputPath.isEmpty()) {
             outputPath = defaultPath;
         }
@@ -749,17 +757,19 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 if (files != null) {
                     for (final File child: files) {
                         if (child != null
-                                && child.getAbsolutePath()
-                                .endsWith(PrologParser.DOT_PL)) {
+                                && child.getAbsolutePath().endsWith(PrologParser.DOT_PL)) {
                             plFiles.add(child);
                         }
                     }
                 }
                 if (!plFiles.isEmpty()) {
-                    final int idx = this.chooseAlternative("The following (E)PL files were found. "
-                            + "Do you want to use one of those and skip (E)PL generation? "
+                    final int idx = this.chooseAlternative(
+                            "The following (extended) Prolog files (.epl) were found. "
+                            + "Do you want to use one of those and skip (extended) Prolog "
+                            + "file (.epl) generation? "
                             + "This saves time if no changes to the Isabelle theories were "
-                            + "made since the (E)PL file was created.", plFiles, true);
+                            + "made since the (extended) Prolog file (.epl) was created.",
+                            plFiles, true);
 
                     if (idx != -1) {
                         return this.extractAndOrParseFramework(plFiles.get(idx).getAbsolutePath());
@@ -771,7 +781,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
             if (!ConfigReader.getInstance().hasIsabelle()) {
                 this.displayMessage("Isabelle is not available. "
-                        + "Please install Isabelle or supply an (E)PL-file directly.");
+                        + "Please install Isabelle or supply an "
+                        + "(extended) Prolog file (.epl) directly.");
                 throw new ExternalSoftwareUnavailableException();
             }
             final VirageExtractJob extractJob =
@@ -786,6 +797,42 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             path = extractJob.getResult().getAbsolutePath();
         }
         return parseAndSubmitJob(path);
+    }
+
+    /**
+     * Extract paths, collect inputs, and parse data for running further jobs.
+     */
+    private void extractOrParseInputs() {
+        final String defaultPath = "./" + SystemUtils.RESOURCES + "framework" + PrologParser.DOT_PL;
+        String path;
+        boolean firstTry = true;
+        while (true) {
+            if (ConfigReader.getInstance().hasPathToRootFile() && firstTry
+                    && this.requestConfirmation(
+                            "Configuration option \"ISABELLE_PATH_TO_ROOT_FILE\" "
+                                    + "is specified as "
+                                    + addQuotationsToPath(
+                                            ConfigReader.getInstance().getPathToRootFile())
+                                    + ". " + "Do you want to use this Isabelle ROOT file to "
+                                    + "generate an (extended) Prolog file (.epl)?")) {
+                path = ConfigReader.getInstance().getPathToRootFile();
+                firstTry = false;
+            } else {
+                path = this.requestString("Please input the path to an (E)PL file or "
+                        + "an Isabelle ROOT file. " + "(Press ENTER for default: "
+                        + addQuotationsToPath(defaultPath) + ")");
+            }
+            if (path.isEmpty()) {
+                path = defaultPath;
+            }
+            try {
+                if (this.extractAndOrParseFramework(path) != null) {
+                    break;
+                }
+            } catch (final IOException | ExternalSoftwareUnavailableException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -805,59 +852,43 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     @Override
     public void run() {
         LOGGER.info("Started VirageCommandLineInterface.");
-        final String defaultPath = "./" + SystemUtils.RESOURCES + "framework" + PrologParser.DOT_PL;
-        String path;
-        boolean firstTry = true;
-        while (true) {
-            if (ConfigReader.getInstance().hasPathToRootFile() && firstTry
-                    && this.requestConfirmation(
-                            "Configuration option \"ISABELLE_PATH_TO_ROOT_FILE\" "
-                                    + "is specified as " + this.addQuotationsToPath(
-                                    ConfigReader.getInstance().getPathToRootFile())
-                                    + ". " + "Do you want to use this Isabelle ROOT file to "
-                                    + "generate an (E)PL file?")) {
-                path = ConfigReader.getInstance().getPathToRootFile();
-                firstTry = false;
-            } else {
-                path = this.requestString("Please input the path to an (E)PL file or "
-                        + "an Isabelle ROOT file. " + "(Press ENTER for default: "
-                        + this.addQuotationsToPath(defaultPath) + ")");
-            }
-            if (path.isEmpty()) {
-                path = defaultPath;
-            }
-            try {
-                if (this.extractAndOrParseFramework(path) != null) {
-                    break;
-                }
-            } catch (final IOException | ExternalSoftwareUnavailableException e) {
-                e.printStackTrace();
-            }
-        }
-        while (true) {
+        extractOrParseInputs();
+        boolean unchosen = true;
+        while (unchosen) {
             final String arg = this
                     .requestString("Do you want to (g)enerate a composition, (a)nalyze one, "
                             + "run an (A)nalysis of all properties for a composition, "
                             + "generate Isabelle (p)roofs, generate (S)cala code "
-                            + "or generate (C) code?");
-
-            VirageJob<?> job = null;
-            // TODO Revise to using the type enumerable
-            if ("g".equals(arg)) {
+                            + "or generate (C) code?").strip();
+            final VirageJob<?> job;
+            switch (arg.substring(0, arg.isEmpty() ? 0 : 1)) {
+            case "g":
+                unchosen = false;
                 job = this.createGenerationQuery();
-            } else if ("a".equals(arg)) {
+                break;
+            case "a":
+                unchosen = false;
                 job = this.createAnalysisQuery();
-            } else if ("p".equals(arg)) {
+                break;
+            case "p":
+                unchosen = false;
                 job = this.createIsabelleQuery();
-            } else if ("S".equals(arg)) {
+                break;
+            case "S":
+                unchosen = false;
                 job = this.createCodeGenerationQuery();
-            } else if ("C".equals(arg)) {
+                break;
+            case "C":
+                unchosen = false;
                 job = this.createCCodeGenerationQuery();
-            } else if ("A".equals(arg)) {
+                break;
+            case "A":
+                unchosen = false;
                 job = new VirageAnalyzeAllPropertiesJob(this, this.requestCompositionString());
-            } else {
+                break;
+            default:
                 this.displayMessage(TRY_AGAIN);
-                continue;
+                job = null;
             }
             this.core.submit(job);
             // VirageCore is intended to work on jobs asynchronously

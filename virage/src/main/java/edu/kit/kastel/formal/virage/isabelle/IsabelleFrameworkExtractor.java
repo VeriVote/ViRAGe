@@ -36,6 +36,26 @@ import edu.kit.kastel.formal.virage.types.Property;
  */
 public final class IsabelleFrameworkExtractor {
     /**
+     * Left brackets encoded for Isabelle.
+     */
+    private static final String LBRAKK = "\\<lbrakk>";
+
+    /**
+     * Right brackets encoded for Isabelle.
+     */
+    private static final String RBRAKK = "\\<rbrakk>";
+
+    /**
+     * Implication arrow encoded for Isabelle.
+     */
+    private static final String LONGRIGHTARROW = "\\<Longrightarrow>";
+
+    /**
+     * Regular expression prefix for string expressions.
+     */
+    private static final String REGEX_STRING_PREFIX = "\\";
+
+    /**
      * Regular expression for dots.
      */
     private static final String DOT_REGEX = "\\.";
@@ -44,6 +64,11 @@ public final class IsabelleFrameworkExtractor {
      * Regular expression for question marks.
      */
     private static final String QST_REGEX = "\\?";
+
+    /**
+     * Default file name for (extended) Prolog file.
+     */
+    private static final String PL_FILE_NAME_DEFAULT = "framework";
 
     /**
      * The logger.
@@ -72,14 +97,13 @@ public final class IsabelleFrameworkExtractor {
                                                   final List<String> antecedents) {
         final StringBuilder res = new StringBuilder(succedent);
         if (!antecedents.isEmpty()) {
-            res.append(StringUtils.SPACE + PrologParser.NECK + StringUtils.SPACE);
+            res.append(StringUtils.surroundWithSpaces(PrologParser.NECK));
             for (final String antecedent: antecedents) {
-                res.append(antecedent + StringUtils.COMMA + StringUtils.SPACE);
+                res.append(StringUtils.addSpace(antecedent + StringUtils.COMMA));
             }
             res.delete(res.length() - 2, res.length() - 1);
         }
-        res.append(StringUtils.PERIOD);
-        return res.toString();
+        return StringUtils.appendPeriod(res.toString());
     }
 
     private static void convertComponents(final FrameworkRepresentation framework,
@@ -136,14 +160,13 @@ public final class IsabelleFrameworkExtractor {
 
                 final List<String> antecedents = new LinkedList<String>();
                 String succedent = StringUtils.EMPTY;
-                if (sign.contains("\\<Longrightarrow>")) {
-                    final String[] splits = sign.split("\\\\<Longrightarrow>");
-                    String antecedentString = splits[0];
-                    antecedentString =
-                            antecedentString
-                            .replace("\\<lbrakk>", StringUtils.EMPTY)
-                            .replace("\\<rbrakk>", StringUtils.EMPTY);
-                    final String[] antecedentStringSplits = antecedentString.split(";");
+                if (sign.contains(LONGRIGHTARROW)) {
+                    final String[] splits = sign.split(REGEX_STRING_PREFIX + LONGRIGHTARROW);
+                    final String antecedentString =
+                            splits[0].replace(LBRAKK, StringUtils.EMPTY)
+                                    .replace(RBRAKK, StringUtils.EMPTY);
+                    final String[] antecedentStringSplits =
+                            antecedentString.split(ConfigReader.LIST_SEPARATOR);
                     for (final String ant: antecedentStringSplits) {
                         antecedents.add(convertIsabelleToProlog(replaceVariables(ant)));
                     }
@@ -236,7 +259,7 @@ public final class IsabelleFrameworkExtractor {
     public FrameworkRepresentation extract(final String sessionDir, final String sessionName)
             throws FrameworkExtractionFailedException {
         return extract(sessionDir, sessionName,
-                       "framework" + System.currentTimeMillis() + PrologParser.DOT_PL);
+                       PL_FILE_NAME_DEFAULT + System.currentTimeMillis() + PrologParser.DOT_PL);
     }
 
     /**
@@ -258,17 +281,19 @@ public final class IsabelleFrameworkExtractor {
         try {
             facade = new ScalaIsabelleFacade(sessionDir, sessionName);
         } catch (ExternalSoftwareUnavailableException | IsabelleBuildFailedException e1) {
+            e1.printStackTrace();
             throw new FrameworkExtractionFailedException(e1);
         }
         final File plFile = SystemUtils.file(sessionDir + File.separator + fileName);
-        try {
-            plFile.createNewFile();
-        } catch (final IOException e) {
-            e.printStackTrace();
+        if (!plFile.exists()) {
+            try {
+                plFile.createNewFile();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
         }
         final FrameworkRepresentation framework =
                 new FrameworkRepresentation(plFile.getAbsolutePath());
-        framework.setAbsolutePath(plFile.getAbsolutePath());
         framework.setTheoryPath(sessionDir);
         framework.setSessionName(sessionName);
         final Map<String, Map<String, String>> compRulesRaw = facade.getTheorems();
@@ -432,12 +457,12 @@ public final class IsabelleFrameworkExtractor {
     }
 
     private static List<String> parseFun(final String funString) {
-        final StringBuilder first = new StringBuilder(StringUtils.EMPTY);
-        final StringBuilder second = new StringBuilder(StringUtils.EMPTY);
+        final StringBuilder first = new StringBuilder();
+        final StringBuilder second = new StringBuilder();
         int depth = 0;
         boolean readingFirst = false;
         // Omit "(fun" and trailing ")".
-        for (int i = (IsabelleUtils.FUN + StringUtils.SPACE).length(); i < funString.length() - 1;
+        for (int i = StringUtils.addSpace(IsabelleUtils.FUN).length(); i < funString.length() - 1;
                 i++) {
             final char current = funString.charAt(i);
             if (current == StringUtils.OPENING_PARENTHESIS.charAt(0)) {
@@ -498,7 +523,8 @@ public final class IsabelleFrameworkExtractor {
         Matcher matcher = pattern.matcher(prologString);
         while (matcher.find()) {
             final String varName = prologString.substring(matcher.start(), matcher.end());
-            prologString = prologString.replaceAll("\\" + varName, varName.toUpperCase());
+            prologString = prologString.replaceAll(REGEX_STRING_PREFIX + varName,
+                                                   varName.toUpperCase());
             matcher = pattern.matcher(prologString);
         }
         prologString = prologString.replace("?", StringUtils.EMPTY);
