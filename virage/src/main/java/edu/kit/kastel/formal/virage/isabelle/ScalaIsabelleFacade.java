@@ -290,7 +290,8 @@ public final class ScalaIsabelleFacade {
         final String isabelleHome = ConfigReader.getInstance().getIsabelleHome();
         final boolean verbosity = true;
         final String isabelleDir = ConfigReader.getInstance().getIsabelleSessionDir();
-        this.setup = setup(isabelleHome, verbosity, isabelleDir, this.sessionDir, sessionDirs);
+        this.setup = setup(isabelleHome, verbosity, isabelleDir, sessionNameValue,
+                           this.sessionDir, sessionDirs);
         try {
             setIsabelleInstance(new Isabelle(this.setup));
             // Scala has no checked Exceptions and the constructor is not annotated.
@@ -323,19 +324,26 @@ public final class ScalaIsabelleFacade {
     }
 
     private static Setup setup(final String isabelleHome, final boolean verbose,
-                               final String isabelleDirectory, final String sessionDir,
+                               final String isabelleDirectory, final String sessionName,
+                               final String sessionDir,
                                final Iterable<String> sessionDirs) {
-        Setup s;
-        s = JIsabelle.setupSetBuild(true, JIsabelle.setup(Path.of(isabelleHome)));
+        Setup s = JIsabelle.setup(Path.of(isabelleHome));
         s = JIsabelleWrapper.setupSetVerbose(true, s);
         s = JIsabelleWrapper.setupSetUserDir(Path.of(isabelleDirectory), s);
         s = JIsabelleWrapper.setupSetWorkingDirectory(Path.of(sessionDir), s);
         s = JIsabelleWrapper.setupSetSessionRoots(toPaths(sessionDirs), s);
+        s = JIsabelleWrapper.setupSetLogic(sessionName, s);
+        s = JIsabelle.setupSetBuild(true, s);
         return s;
     }
 
     private static synchronized void setIsabelleInstance(final Isabelle instance) {
         isabelle = instance;
+    }
+
+    private static synchronized void destroyIsabelleInstance() {
+        isabelle.destroy();
+        // isabelle = null;
     }
 
     private static String fnTo(final String s, final String... args) {
@@ -346,10 +354,12 @@ public final class ScalaIsabelleFacade {
         final String descr = "#description";
         final String filter = "filter";
         return func2(fnTo(thy),
-                     map(func2(fnTo(thy), func2(descr, func2(HD, func2(SND, DEFAULT_VARIABLE)))),
+                     map(func2(fnTo(DEFAULT_VARIABLE),
+                               func2(descr, func2(HD, func2(SND, DEFAULT_VARIABLE)))),
                          map(filter,
-                             func2(fnTo(thy), map(IS_PREFIX, printCollection2(THY_NAME, thy),
-                                                  func2(SND, func2(FST, DEFAULT_VARIABLE)))),
+                             func2(fnTo(DEFAULT_VARIABLE),
+                                   map(IS_PREFIX, printCollection2(THY_NAME, thy),
+                                       func2(SND, func2(FST, DEFAULT_VARIABLE)))),
                              func2(SPECS_OF, DEFS_OF, thy))));
     }
 
@@ -357,7 +367,7 @@ public final class ScalaIsabelleFacade {
         final String polyType = "\'a";
         return fnTo(DEFAULT_VARIABLE, "let", "fun",
                     func2(TYP_TO_STRING, DEFAULT_VARIABLE + StringUtils.COLON,
-                          TYP + StringUtils.COLON),
+                          TYP) + StringUtils.COLON,
                     "string", StringUtils.EQ, "case", DEFAULT_VARIABLE, "of")
                     + System.lineSeparator()
                 + printCollection2(TYPE, DEFAULT_VARIABLE, TO, StringUtils.QUOTATION)
@@ -407,10 +417,11 @@ public final class ScalaIsabelleFacade {
         final String isabelleHome = configReader.getIsabelleHome();
         final boolean verbosity = true;
         final String isabelleDir = configReader.getIsabelleSessionDir();
-        final Setup setup = setup(isabelleHome, verbosity, isabelleDir, session, sessionDirs);
+        final Setup setup = setup(isabelleHome, verbosity, isabelleDir, sessionName,
+                                  session, sessionDirs);
         try {
             setIsabelleInstance(new Isabelle(setup));
-            ScalaIsabelleFacade.isabelle.destroy();
+            destroyIsabelleInstance();
             // Scala has no checked Exceptions and the constructor is not annotated.
             // Therefore, the Java compiler thinks that the (implicitly checked)
             // IsabelleBuildException cannot be thrown.
@@ -577,11 +588,11 @@ public final class ScalaIsabelleFacade {
         return this.theoryNames;
     }
 
-    private void init() {
+    private synchronized void init() {
         this.extractTheoryNames();
         this.extractTheorems();
         this.extractFunctionsAndDefinitions();
-        ScalaIsabelleFacade.isabelle.destroy();
+        destroyIsabelleInstance();
     }
 
     /**

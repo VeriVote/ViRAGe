@@ -62,8 +62,8 @@ public final class CompositionalStructure implements TypedAndParameterized {
 
     @Override
     public String toString() {
-        return StringUtils.parenthesize(this.type.toString())
-                + StringUtils.SPACE
-                + StringUtils.func(this.name, StringUtils.printCollection(this.parameters));
+        return StringUtils.printCollection2(
+                StringUtils.parenthesize(this.type.toString()),
+                StringUtils.func(this.name, StringUtils.printCollection(this.parameters)));
     }
 }

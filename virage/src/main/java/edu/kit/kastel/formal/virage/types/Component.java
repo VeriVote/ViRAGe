@@ -81,10 +81,10 @@ public class Component implements TypedAndParameterized {
      */
     @Override
     public String toString() {
-        return StringUtils.parenthesize(this.typeField.toString())
-                + StringUtils.SPACE
-                + StringUtils.func(this.nameField,
-                                   StringUtils.printCollection(this.parametersField));
+        return StringUtils.printCollection2(
+                StringUtils.parenthesize(this.typeField.toString()),
+                StringUtils.func(this.nameField, StringUtils.printCollection(this.parametersField))
+                );
     }
 
     /**

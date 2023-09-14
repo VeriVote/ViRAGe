@@ -74,7 +74,7 @@ public final class IsabelleUtils {
     /**
      * The Isabelle proof command 'by'.
      */
-    public static final String BY = StringUtils.SPACE + "by" + StringUtils.SPACE;
+    public static final String BY = "by";
 
     /**
      * String used to separate session and theory names.
@@ -126,7 +126,7 @@ public final class IsabelleUtils {
         String res = predicate.replace(",",
                 StringUtils.CLOSING_PARENTHESIS + StringUtils.OPENING_PARENTHESIS);
         res = res.replace(StringUtils.OPENING_PARENTHESIS,
-                            StringUtils.SPACE + StringUtils.OPENING_PARENTHESIS);
+                          StringUtils.prefixSpace(StringUtils.OPENING_PARENTHESIS));
         final Pattern pattern = Pattern.compile("[a-zA-Z_]+");
         final Matcher matcher = pattern.matcher(res);
         while (matcher.find()) {

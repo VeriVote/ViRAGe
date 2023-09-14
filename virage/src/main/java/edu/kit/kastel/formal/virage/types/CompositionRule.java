@@ -160,16 +160,16 @@ public final class CompositionRule implements Comparable<CompositionRule> {
      */
     public String toEplString() {
         String res = StringUtils.EMPTY;
-        res += StringUtils.addSpace("% =") + this.origin + System.lineSeparator();
-        res += StringUtils.addSpace("%") + this.name + System.lineSeparator();
+        res += StringUtils.printCollection2("% =", this.origin) + System.lineSeparator();
+        res += StringUtils.printCollection2("%", this.name) + System.lineSeparator();
         res += this.clause.toString() + System.lineSeparator();
         return res;
     }
 
     @Override
     public String toString() {
-        return this.name + StringUtils.COLON + StringUtils.SPACE + this.clause.toString()
-                + StringUtils.SPACE
-                + StringUtils.parenthesize("from" + StringUtils.SPACE + this.origin);
+        return StringUtils.printCollection2(
+                this.name + StringUtils.COLON, this.clause.toString(),
+                StringUtils.parenthesize2("from", this.origin));
     }
 }

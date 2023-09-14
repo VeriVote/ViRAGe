@@ -23,6 +23,11 @@ public final class StringUtils {
     public static final String PERIOD = ".";
 
     /**
+     * A dash sign.
+     */
+    public static final String DASH = "-";
+
+    /**
      * A hash sign.
      */
     public static final String HASH = "#";
@@ -100,7 +105,17 @@ public final class StringUtils {
     /**
      * The number three.
      */
-    private static final int THREE = 3;
+    public static final int THREE = 3;
+
+    /**
+     * The number five.
+     */
+    public static final int FIVE = 5;
+
+    /**
+     * The number ten.
+     */
+    public static final int TEN = 10;
 
     /**
      * String for map function.
@@ -225,6 +240,16 @@ public final class StringUtils {
     }
 
     /**
+     * Adds a space as prefix before the given String.
+     *
+     * @param s the given String.
+     * @return new String with added space in the beginning
+     */
+    public static String prefixSpace(final String s) {
+        return SPACE + s;
+    }
+
+    /**
      * Adds a space after the given String.
      *
      * @param s the given String.
@@ -232,6 +257,26 @@ public final class StringUtils {
      */
     public static String addSpace(final String s) {
         return s + SPACE;
+    }
+
+    /**
+     * Adds one space before and one after the given String.
+     *
+     * @param s the given String.
+     * @return new String with added spaces before and after
+     */
+    public static String surroundWithSpaces(final String s) {
+        return SPACE + s + SPACE;
+    }
+
+    /**
+     * Adds a colon after the given String.
+     *
+     * @param s the given String.
+     * @return new String with added colon at the end
+     */
+    public static String addColon(final String s) {
+        return s + COLON;
     }
 
     /**
@@ -303,7 +348,7 @@ public final class StringUtils {
      * @return the function string representation
      */
     public static String func2(final String fun, final String... args) {
-        return (fun != null ? fun : EMPTY) + SPACE + parenthesize2(args);
+        return addSpace(fun != null ? fun : EMPTY) + parenthesize2(args);
     }
 
     /**
@@ -315,8 +360,8 @@ public final class StringUtils {
      * @return the function string representation
      */
     public static String map(final String fun, final String arg1, final String arg2) {
-        return (fun != null ? fun : EMPTY) + SPACE
-                + parenthesize2(arg1) + SPACE + parenthesize2(arg2);
+        return addSpace(fun != null ? fun : EMPTY)
+                + addSpace(parenthesize2(arg1)) + parenthesize2(arg2);
     }
 
     /**
@@ -338,14 +383,15 @@ public final class StringUtils {
      * @return the repeated string
      */
     public static String repeat(final int m, final String s) {
-        String res;
+        final String res;
         if (m < 0) {
             res = null;
         } else {
-            res = EMPTY;
+            final StringBuilder r = new StringBuilder();
             for (int i = 0; i < m; i++) {
-                res += s;
+                r.append(s);
             }
+            res = r.toString();
         }
         return res;
     }

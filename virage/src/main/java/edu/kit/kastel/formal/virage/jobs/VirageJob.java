@@ -71,6 +71,10 @@ public abstract class VirageJob<T> {
         nextID++;
     }
 
+    private static String printPropertyLine(final String... args) {
+        return StringUtils.printCollection2(args) + System.lineSeparator();
+    }
+
     /**
      * Runs the job and notifies its issuer on termination. Should only be run after checking
      * {@link #externalSoftwareAvailable()}, otherwise behavior is undefined.
@@ -134,16 +138,18 @@ public abstract class VirageJob<T> {
      */
     public String presentResult() {
         String res = StringUtils.EMPTY;
-        res += StringUtils.sentence(StringUtils.addSpace("Started at")
-                                    + SystemUtils.getTime(this.timeStarted));
-        res += StringUtils.sentence(StringUtils.addSpace("Job ran for")
-                + SystemUtils.getDuration(this.timeStarted, this.timeFinished));
+        res += StringUtils.sentence(
+                StringUtils.printCollection2("Started at", SystemUtils.getTime(this.timeStarted)));
+        res += StringUtils.sentence(
+                StringUtils.printCollection2(
+                        "Job ran for",
+                        SystemUtils.getDuration(this.timeStarted, this.timeFinished)));
         if (this.state == VirageJobState.FINISHED) {
             res += this.presentConcreteResult() + System.lineSeparator();
         } else {
             res += StringUtils.sentence("Something went wrong while executing this job");
         }
-        res += "----------";
+        res += StringUtils.repeat(StringUtils.TEN, StringUtils.DASH);
         return res;
     }
 
@@ -169,21 +175,24 @@ public abstract class VirageJob<T> {
     public String toString() {
         final boolean finished =
                 this.state == VirageJobState.FAILED || this.state == VirageJobState.FINISHED;
+        final boolean started = this.state != VirageJobState.PENDING;
         final long lastMeasurement = finished ? this.timeFinished : System.currentTimeMillis();
-        String res = StringUtils.addSpace("-----------") + this.getClass().getCanonicalName()
-                        + System.lineSeparator();
-        res += StringUtils.addSpace("ID:") + this.id + System.lineSeparator();
-        res += StringUtils.addSpace("Issued:")
-                + SystemUtils.getTime(this.timeIssued) + System.lineSeparator();
-        res += StringUtils.addSpace("Started:")
-                + SystemUtils.getTime(this.timeStarted) + System.lineSeparator();
-        res += (finished ? StringUtils.addSpace("Finished:") : StringUtils.addSpace("Now:"))
-                + SystemUtils.getTime(lastMeasurement) + System.lineSeparator();
-        res += StringUtils.addSpace("Elapsed time:")
-                + SystemUtils.getDuration(this.timeStarted, lastMeasurement)
-                + System.lineSeparator();
-        res += "-----" + System.lineSeparator();
-        res += StringUtils.addSpace("State:") + this.state + System.lineSeparator();
+        final String dashLine = StringUtils.repeat(11, StringUtils.DASH);
+
+        final String issueTime = SystemUtils.getTime(this.timeIssued);
+        final String startTime = started ? SystemUtils.getTime(this.timeStarted) : "not yet";
+        final String elapsedTime =
+                started ? SystemUtils.getDuration(this.timeStarted, lastMeasurement) : "none";
+        final String finishedString = finished ? "Finished:" : "Now:";
+
+        String res = printPropertyLine(dashLine, this.getClass().getCanonicalName());
+        res += printPropertyLine("ID:", Long.toString(this.id));
+        res += printPropertyLine("Issued:", issueTime);
+        res += printPropertyLine("Started:", startTime);
+        res += printPropertyLine(finishedString, SystemUtils.getTime(lastMeasurement));
+        res += printPropertyLine("Elapsed time:", elapsedTime);
+        res += printPropertyLine(StringUtils.repeat(StringUtils.FIVE, StringUtils.DASH));
+        res += printPropertyLine("State:", this.state.toString());
         return res;
     }
 

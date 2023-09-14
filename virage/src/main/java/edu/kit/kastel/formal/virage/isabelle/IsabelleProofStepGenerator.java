@@ -138,7 +138,7 @@ public class IsabelleProofStepGenerator {
             goal = string;
         }
 
-        final StringBuilder subgoalIds = new StringBuilder(StringUtils.EMPTY);
+        final StringBuilder subgoalIds = new StringBuilder();
         for (final CompositionProof subgoal: step.getSubgoals()) {
             if (subgoal.getAllCompositionRules().size() == 1) {
                 final CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
@@ -146,7 +146,7 @@ public class IsabelleProofStepGenerator {
                     continue;
                 }
             }
-            subgoalIds.append(subgoal.getId() + StringUtils.SPACE);
+            subgoalIds.append(StringUtils.addSpace(subgoal.getId()));
         }
         final String rule = step.getRuleName();
 

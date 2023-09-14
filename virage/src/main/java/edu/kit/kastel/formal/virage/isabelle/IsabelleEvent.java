@@ -49,8 +49,10 @@ public abstract class IsabelleEvent {
     public String toString() {
         String res = this.getClass().getCanonicalName();
         for (final Map.Entry<String, String> entry: this.parameters.entrySet()) {
-            res += System.lineSeparator() + StringUtils.indentWithTab(entry.getKey())
-                    + StringUtils.addSpace(StringUtils.COLON) + entry.getValue();
+            res += System.lineSeparator()
+                    + StringUtils.printCollection2(
+                            StringUtils.indentWithTab(entry.getKey()),
+                            StringUtils.COLON, entry.getValue());
         }
         return res;
     }

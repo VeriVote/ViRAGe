@@ -158,8 +158,9 @@ public final class CompositionProof {
 
     private String toString(final int n) {
         String res = StringUtils.EMPTY;
-        res += StringUtils.indentWithTabs(n, StringUtils.addSpace(this.id + StringUtils.COLON));
-        res += this.goal + IsabelleUtils.BY + this.rule.getName();
+        res += StringUtils.indentWithTabs(n,
+                StringUtils.printCollection2(this.id + StringUtils.COLON,
+                        this.goal, IsabelleUtils.BY, this.rule.getName()));
         for (final CompositionProof subgoal: this.subgoals) {
             res += System.lineSeparator() + subgoal.toString(n + 1);
         }

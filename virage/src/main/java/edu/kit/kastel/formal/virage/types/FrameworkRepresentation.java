@@ -557,6 +557,10 @@ public final class FrameworkRepresentation {
         this.typeSynonyms = newTypeSynonyms;
     }
 
+    private static String printPropertyLine(final String... args) {
+        return StringUtils.printCollection2(args) + System.lineSeparator();
+    }
+
     /**
      * Creates a string representation of this in the EPL format.
      *
@@ -565,21 +569,21 @@ public final class FrameworkRepresentation {
     public String toEplString() {
         Collections.sort(this.compositionRules);
         String res = this.createHeader();
-        res += StringUtils.addSpace("% ====") + this.theoryPath + IsabelleUtils.ROOT
-                + " - " + this.sessionName + System.lineSeparator();
-        res += ExtendedPrologStrings.COMMENT + System.lineSeparator();
-        res += StringUtils.addSpace(ExtendedPrologStrings.COMMENT)
-                + ExtendedPrologStrings.COMPOSITION_TYPE_HEADER + System.lineSeparator();
+        res += printPropertyLine("% ====", this.theoryPath + IsabelleUtils.ROOT,
+                                 StringUtils.DASH, this.sessionName);
+        res += printPropertyLine(ExtendedPrologStrings.COMMENT);
+        res += printPropertyLine(ExtendedPrologStrings.COMMENT,
+                                 ExtendedPrologStrings.COMPOSITION_TYPE_HEADER);
         for (final ComponentType type: this.componentTypes) {
-            res += StringUtils.addSpace("% ==") + type.getName() + System.lineSeparator();
+            res += printPropertyLine("% ==", type.getName());
             for (final Component comp: this.components) {
                 if (comp.getType().equals(type)) {
-                    res += StringUtils.addSpace(ExtendedPrologStrings.COMMENT)
-                            + comp.toStringWithoutTypeSignature() + System.lineSeparator();
+                    res += printPropertyLine(ExtendedPrologStrings.COMMENT,
+                                             comp.toStringWithoutTypeSignature());
                 }
             }
         }
-        res += ExtendedPrologStrings.COMMENT + System.lineSeparator();
+        res += printPropertyLine(ExtendedPrologStrings.COMMENT);
 
         /*
          * res += "% === composable_module" +  + System.lineSeparator(); res +=
@@ -591,23 +595,21 @@ public final class FrameworkRepresentation {
          * res += "%" +  + System.lineSeparator();
          */
 
-        res += StringUtils.addSpace(ExtendedPrologStrings.COMMENT)
-                + ExtendedPrologStrings.PROPERTY_HEADER + System.lineSeparator();
+        res += printPropertyLine(ExtendedPrologStrings.COMMENT,
+                                 ExtendedPrologStrings.PROPERTY_HEADER);
         for (final Property prop: this.properties) {
-            res += StringUtils.addSpace(ExtendedPrologStrings.COMMENT) + prop.toString()
-                    + System.lineSeparator();
+            res += printPropertyLine(ExtendedPrologStrings.COMMENT, prop.toString());
         }
         final List<String> additionalProperties = ConfigReader.getInstance()
                 .getAdditionalProperties();
         for (final String prop: additionalProperties) {
-            res += StringUtils.addSpace(ExtendedPrologStrings.COMMENT) + prop
-                    + System.lineSeparator();
+            res += printPropertyLine(ExtendedPrologStrings.COMMENT, prop);
         }
-        res += "%" + System.lineSeparator();
-        res += StringUtils.addSpace(ExtendedPrologStrings.COMMENT)
-                + ExtendedPrologStrings.COMPOSITION_RULE_HEADER + System.lineSeparator();
+        res += printPropertyLine("%");
+        res += printPropertyLine(ExtendedPrologStrings.COMMENT,
+                                 ExtendedPrologStrings.COMPOSITION_RULE_HEADER);
         for (final CompositionRule rule: this.compositionRules) {
-            res += rule.toEplString() + System.lineSeparator();
+            res += printPropertyLine(rule.toEplString());
         }
         return res;
     }
@@ -623,7 +625,7 @@ public final class FrameworkRepresentation {
      * @return the string representation
      */
     public String toVerboseString() {
-        final StringBuilder res = new StringBuilder(StringUtils.EMPTY);
+        final StringBuilder res = new StringBuilder();
         res.append("ComponentTypes:" + System.lineSeparator());
         for (final ComponentType ct: this.componentTypes) {
             res.append(StringUtils.indentWithTab(ct.toString() + System.lineSeparator()));

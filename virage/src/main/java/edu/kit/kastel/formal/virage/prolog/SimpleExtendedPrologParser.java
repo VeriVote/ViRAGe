@@ -33,6 +33,11 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
     private static final Logger LOGGER = LogManager.getLogger(SimpleExtendedPrologParser.class);
 
     /**
+     * A string to represent an undefined value.
+     */
+    private static final String UNDEFINED = "undefined";
+
+    /**
      * A regular expression that matches any parenthesized term.
      */
     private static final String PARENTH_REGEX = "\\(.*\\)";
@@ -51,7 +56,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
      * Simple constructor.
      */
     public SimpleExtendedPrologParser() {
-        LOGGER.info("Initialising SimpleExtendedPrologParser.");
+        LOGGER.info("Initializing " + this.getClass().getCanonicalName() + ".");
         this.fileReader = new SimpleFileReader();
         this.prologParser = new SimplePrologParser();
     }
@@ -77,7 +82,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
                                                    final String path, final boolean addDummies)
                                                            throws MalformedEplFileException {
         final FrameworkRepresentation framework = new FrameworkRepresentation(path);
-        framework.setTheoryPath("undefined");
+        framework.setTheoryPath(UNDEFINED);
         ParserState state = ParserState.STARTING;
 
         final List<String> compositionTypeSection = new LinkedList<String>();
@@ -100,7 +105,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
             currentLine = currentLine.replace("%", StringUtils.EMPTY);
             // Skip empty lines. (Careful: currentLine is not actually sanitized after
             // this!)
-            if (this.sanitizeLine(currentLine).equals(StringUtils.EMPTY)) {
+            if (this.sanitizeLine(currentLine).isEmpty()) {
                 continue;
             }
             state = this.newState(currentLine, state);
@@ -138,7 +143,8 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
 
     private void findTheoryPath(final String currentLine, final FrameworkRepresentation framework) {
         String line = currentLine;
-        final String nameLineSeparator = " - ";
+        final String nameLineSeparator =
+                StringUtils.addSpace(StringUtils.prefixSpace(StringUtils.DASH));
         if (line.contains(nameLineSeparator)) {
             final String[] splits = line.split(nameLineSeparator);
             line = splits[0];
@@ -175,9 +181,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
         final Matcher matcher = pattern.matcher(component);
 
         if (matcher.find()) {
-            String parameterString = matcher.group();
-            // Remove whitespace.
-            parameterString = parameterString.replace(StringUtils.SPACE, StringUtils.EMPTY);
+            String parameterString = matcher.group().replace(StringUtils.SPACE, StringUtils.EMPTY);
             // Get rid of parentheses.
             parameterString = parameterString.substring(1, parameterString.length() - 1);
             final String[] parameters = parameterString.split(StringUtils.COMMA);
@@ -305,7 +309,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
         // Modules that can be composed are the core component of the framework, the type's name
         // shall be changeable.
         if (state == ParserState.COMPOSABLE_MODULE) {
-            final String[] splits = header.split("-");
+            final String[] splits = header.split(StringUtils.DASH);
             if (splits.length > 1) {
                 if (splits.length == 2) {
                     // Alias is defined, this shall be a type.

@@ -95,12 +95,9 @@ public final class VirageAnalyzeJob
                 }
             }
         }
-        if (hasProperties) {
-            return this.tree.toString() + " has the " + prop + StringUtils.SPACE
-                    + StringUtils.printCollection(this.properties) + StringUtils.EMPTY;
-        } else {
-            return this.tree.toString() + " cannot be shown to have the " + prop + StringUtils.SPACE
-                    + StringUtils.printCollection(this.properties) + StringUtils.EMPTY;
-        }
+        final String hasOrNot = hasProperties ? "has" : "cannot be shown to have";
+        return StringUtils.printCollection2(
+                this.tree.toString(), hasOrNot, "the", prop,
+                StringUtils.printCollection(this.properties));
     }
 }

@@ -13,10 +13,9 @@ import edu.kit.kastel.formal.util.StringUtils;
 public final class SimplePrologParser implements PrologParser {
 
     private static String sanitizeClause(final String clause) {
-        String res = clause.replace(StringUtils.SPACE, StringUtils.EMPTY);
-        res = res.replace(System.lineSeparator(), StringUtils.EMPTY);
-        res = res.replace(StringUtils.TAB, StringUtils.EMPTY);
-        return res;
+        return clause.replace(StringUtils.SPACE, StringUtils.EMPTY)
+                .replace(System.lineSeparator(), StringUtils.EMPTY)
+                .replace(StringUtils.TAB, StringUtils.EMPTY);
     }
 
     private List<PrologPredicate> splitAntecedents(final String antecedentString) {
@@ -59,7 +58,7 @@ public final class SimplePrologParser implements PrologParser {
         if (string.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        final StringBuilder name = new StringBuilder(StringUtils.EMPTY);
+        final StringBuilder name = new StringBuilder();
         final List<PrologPredicate> parameters = new LinkedList<PrologPredicate>();
         String currentPredicate = StringUtils.EMPTY;
         int level = 0;

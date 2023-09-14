@@ -259,10 +259,9 @@ public final class IsabelleCodeGenerator {
                                            final String codeFilePath,
                                            final String votingContextPath,
                                            final String jarPath) {
-        return isabelleExecutable
-                + IsabelleProofChecker.SCALAC_TOOL
-                + StringUtils.SPACE + codeFilePath + StringUtils.SPACE + votingContextPath
-                + IsabelleProofChecker.INCL_SESS_DIR + StringUtils.SPACE + jarPath;
+        return StringUtils.printCollection2(
+                isabelleExecutable, IsabelleProofChecker.SCALAC_TOOL, codeFilePath,
+                votingContextPath, IsabelleProofChecker.INCL_SESS_DIR, jarPath);
     }
 
     private static String getCanonicalPath(final File file) throws CodeGenerationFailedException {
@@ -459,15 +458,14 @@ public final class IsabelleCodeGenerator {
                                                              ExternalSoftwareUnavailableException {
         final String generatedPath = theory.getParent();
         final String theoryPath = SystemUtils.file(this.framework.getTheoryPath()).getPath();
-        final String quickAndDirty =
-                IsabelleProofChecker.SYS_OPT + IsabelleProofChecker.Q_AND_D_OPT;
-        final String outputParameter = IsabelleProofChecker.INCL_SEL_SESS_DIR + StringUtils.SPACE;
         final String isabelleCommand =
-                ConfigReader.getInstance().getIsabelleExecutable()
-                + IsabelleProofChecker.BUILD_TOOL + IsabelleProofChecker.EXPORT_FILES
-                + outputParameter + generatedPath + outputParameter
-                + theoryPath + quickAndDirty + IsabelleProofChecker.BUILD_OPT + StringUtils.SPACE
-                + sessionName;
+                StringUtils.printCollection2(
+                        ConfigReader.getInstance().getIsabelleExecutable(),
+                        IsabelleProofChecker.BUILD_TOOL, IsabelleProofChecker.EXPORT_FILES,
+                        IsabelleProofChecker.INCL_SEL_SESS_DIR, generatedPath,
+                        IsabelleProofChecker.INCL_SEL_SESS_DIR, theoryPath,
+                        IsabelleProofChecker.SYS_OPT, IsabelleProofChecker.Q_AND_D_OPT,
+                        IsabelleProofChecker.BUILD_OPT, sessionName);
         final int status = ProcessUtils.runTerminatingProcessAndLogOutput(isabelleCommand);
         if (status != 0) {
             LOGGER.error("Isabelle code generation failed.");
