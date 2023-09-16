@@ -46,6 +46,11 @@ public class IsabelleProofGenerator {
     private static final String DEFAULT_ID = "0";
 
     /**
+     * File name for the proof template.
+     */
+    private static final String PROOF_TEMPLATE_FILE_NAME = "proof";
+
+    /**
      * Theorem name variable.
      */
     private static final String VAR_THEOREM_NAME = "$THEOREM_NAME";
@@ -96,7 +101,7 @@ public class IsabelleProofGenerator {
         if (IsabelleProofGenerator.proofTemplate.isEmpty()) {
             final InputStream proofTemplateStream =
                     this.getClass().getClassLoader()
-                    .getResourceAsStream("proof" + IsabelleCodeGenerator.DOT_TMPL);
+                    .getResourceAsStream(PROOF_TEMPLATE_FILE_NAME + IsabelleCodeGenerator.DOT_TMPL);
             final StringWriter writer = new StringWriter();
             try {
                 IOUtils.copy(proofTemplateStream, writer, StandardCharsets.UTF_8);

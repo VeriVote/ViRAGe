@@ -6,7 +6,6 @@ import static edu.kit.kastel.formal.util.StringUtils.func2;
 import static edu.kit.kastel.formal.util.StringUtils.map;
 import static edu.kit.kastel.formal.util.StringUtils.parenthesize2;
 import static edu.kit.kastel.formal.util.StringUtils.printCollection2;
-import static scala.concurrent.ExecutionContext.global;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.unruh.isabelle.control.Isabelle;
 import de.unruh.isabelle.control.Isabelle.Setup;
+import de.unruh.isabelle.control.IsabelleBuildException;
 import de.unruh.isabelle.java.JIsabelle;
 import de.unruh.isabelle.mlvalue.ListConverter;
 import de.unruh.isabelle.mlvalue.MLFunction;
@@ -41,7 +41,6 @@ import edu.kit.kastel.formal.virage.types.ExternalSoftwareUnavailableException;
 import edu.kit.kastel.formal.virage.types.IsabelleBuildFailedException;
 import scala.Tuple2;
 import scala.collection.JavaConverters;
-import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 
 /**
@@ -56,25 +55,14 @@ public final class ScalaIsabelleFacade {
     public static final String DEFAULT_VARIABLE = "x";
 
     /**
-     * The Isabelle instance.
-     */
-    private static Isabelle isabelle;
-
-    /**
-     * The list converter for scala-isabelle.
-     */
-    private static final ListConverter<String> LIST_CONVERTER =
-            new ListConverter<String>(new JavaStringConverter());
-
-    /**
      * The logger.
      */
     private static final Logger LOGGER = LogManager.getRootLogger();
 
     /**
-     * The string converter for scala-isabelle.
+     * The Isabelle instance.
      */
-    private static final JavaStringConverter STRING_CONVERTER = new JavaStringConverter();
+    private static Isabelle isabelle;
 
     /**
      * The function application sign.
@@ -110,6 +98,21 @@ public final class ScalaIsabelleFacade {
      * The function that takes the second element.
      */
     private static final String SND = "snd";
+
+    /**
+     * The set function.
+     */
+    private static final String SET_FUN = "set";
+
+    /**
+     * Type for alternatives.
+     */
+    private static final String ALTERNATIVE = "alternative";
+
+    /**
+     * New name for alternatives.
+     */
+    private static final String ALTERNATIVES_NAME = "alternatives";
 
     /**
      * The type command.
@@ -236,6 +239,17 @@ public final class ScalaIsabelleFacade {
             "Thy_Info" + IsabelleUtils.THEORY_NAME_SEPARATOR + "get_names";
 
     /**
+     * The list converter for scala-isabelle.
+     */
+    private static final ListConverter<String> LIST_CONVERTER =
+            new ListConverter<String>(new JavaStringConverter());
+
+    /**
+     * The string converter for scala-isabelle.
+     */
+    private static final JavaStringConverter STRING_CONVERTER = new JavaStringConverter();
+
+    /**
      * The "pair-to-list" converter for scala-isabelle.
      */
     private static final ListConverter<Tuple2<String, String>> PAIR_TO_LIST_CONVERTER =
@@ -293,11 +307,11 @@ public final class ScalaIsabelleFacade {
         this.setup = setup(isabelleHome, verbosity, isabelleDir, sessionNameValue,
                            this.sessionDir, sessionDirs);
         try {
-            setIsabelleInstance(new Isabelle(this.setup));
+            buildAndSetIsabelle(this.setup);
             // Scala has no checked Exceptions and the constructor is not annotated.
             // Therefore, the Java compiler thinks that the (implicitly checked)
             // IsabelleBuildException cannot be thrown.
-        } catch (/* IsabelleBuild */final Exception e) {
+        } catch (/* IsabelleBuild */final IsabelleBuildException e) {
             e.printStackTrace();
             LOGGER.error("Building "
                     + "session " + sessionNameValue
@@ -328,10 +342,10 @@ public final class ScalaIsabelleFacade {
                                final String sessionDir,
                                final Iterable<String> sessionDirs) {
         Setup s = JIsabelle.setup(Path.of(isabelleHome));
-        s = JIsabelleWrapper.setupSetVerbose(true, s);
-        s = JIsabelleWrapper.setupSetUserDir(Path.of(isabelleDirectory), s);
-        s = JIsabelleWrapper.setupSetWorkingDirectory(Path.of(sessionDir), s);
-        s = JIsabelleWrapper.setupSetSessionRoots(toPaths(sessionDirs), s);
+        s = JIsabelle.setupSetVerbose(true, s);
+        s = JIsabelle.setupSetUserDir(Path.of(isabelleDirectory), s);
+        s = JIsabelle.setupSetWorkingDirectory(Path.of(sessionDir), s);
+        s = JIsabelle.setupSetSessionRoots(toPaths(sessionDirs), s);
         s = JIsabelleWrapper.setupSetLogic(sessionName, s);
         s = JIsabelle.setupSetBuild(true, s);
         return s;
@@ -341,9 +355,13 @@ public final class ScalaIsabelleFacade {
         isabelle = instance;
     }
 
+    private static void buildAndSetIsabelle(final Setup setup) throws IsabelleBuildException {
+        setIsabelleInstance(JIsabelleWrapper.isabelle(setup));
+    }
+
     private static synchronized void destroyIsabelleInstance() {
         isabelle.destroy();
-        // isabelle = null;
+        setIsabelleInstance(null);
     }
 
     private static String fnTo(final String s, final String... args) {
@@ -420,19 +438,20 @@ public final class ScalaIsabelleFacade {
         final Setup setup = setup(isabelleHome, verbosity, isabelleDir, sessionName,
                                   session, sessionDirs);
         try {
-            setIsabelleInstance(new Isabelle(setup));
-            destroyIsabelleInstance();
+            buildAndSetIsabelle(setup);
             // Scala has no checked Exceptions and the constructor is not annotated.
             // Therefore, the Java compiler thinks that the (implicitly checked)
             // IsabelleBuildException cannot be thrown.
-        } catch (/* IsabelleBuild */final Exception e) {
+        } catch (/* IsabelleBuild */final IsabelleBuildException e) {
             e.printStackTrace();
             LOGGER.error("Building session " + sessionName
-                    + " failed. Restarting ViRAGe or building"
-                    + " the session manually within Isabelle might help. If the session is supposed"
-                    + " to generate documentation, TeX Live is required!");
+                    + " failed. Restarting ViRAGe or building "
+                    + "the session manually within Isabelle might help. "
+                    + "If the session is supposed "
+                    + "to generate documentation, TeX Live is required!");
             throw new IsabelleBuildFailedException();
         }
+        destroyIsabelleInstance();
     }
 
     /**
@@ -442,26 +461,25 @@ public final class ScalaIsabelleFacade {
         this.functionsAndDefinitions = new HashMap<String, Map<String, String>>();
         final MLFunction<Theory, scala.collection.immutable.List<String>> mlFunToExtractAllNames =
                 MLValue.compileFunction(funToExtractAllNames(THY), ScalaIsabelleFacade.isabelle,
-                                        global(), Implicits.theoryConverter(), LIST_CONVERTER);
+                                        Implicits.theoryConverter(), LIST_CONVERTER);
         final MLFunction<Theory, scala.collection.immutable.List<Tuple2<String, String>>>
             mlFunToExtractSigns =
-            MLValue.compileFunction(funToExtractSigns(THY), ScalaIsabelleFacade.isabelle, global(),
+            MLValue.compileFunction(funToExtractSigns(THY), ScalaIsabelleFacade.isabelle,
                                     Implicits.theoryConverter(), PAIR_TO_LIST_CONVERTER);
         for (final String thy: this.theoryNames) {
             final String thyWithoutSession = thy.split("\\.")[1];
             final Map<String, String> toBeFilled = new HashMap<String, String>();
             this.functionsAndDefinitions.put(thy, toBeFilled);
-            final Context ctxt = Context.apply(thy, ScalaIsabelleFacade.isabelle, global());
-            final Theory theory = ctxt.theoryOf(ScalaIsabelleFacade.isabelle, global());
+            final Context ctxt = Context.apply(thy, ScalaIsabelleFacade.isabelle);
+            final Theory theory = ctxt.theoryOf(ScalaIsabelleFacade.isabelle);
             final List<String> names =
                     JavaConverters.asJava(mlFunToExtractAllNames
-                            .apply(theory.mlValue(), ScalaIsabelleFacade.isabelle, global())
-                            .retrieveNow(LIST_CONVERTER, ScalaIsabelleFacade.isabelle, global()));
+                            .apply(theory.mlValue(), ScalaIsabelleFacade.isabelle)
+                            .retrieveNow(LIST_CONVERTER, ScalaIsabelleFacade.isabelle));
             final List<Tuple2<String, String>> types =
                     JavaConverters.asJava(mlFunToExtractSigns
-                            .apply(theory.mlValue(), ScalaIsabelleFacade.isabelle, global())
-                            .retrieveNow(PAIR_TO_LIST_CONVERTER, ScalaIsabelleFacade.isabelle,
-                                         global()));
+                            .apply(theory.mlValue(), ScalaIsabelleFacade.isabelle)
+                            .retrieveNow(PAIR_TO_LIST_CONVERTER, ScalaIsabelleFacade.isabelle));
             for (int i = 0; i < names.size(); i++) {
                 String name = names.get(i);
                 if (!name.startsWith(thyWithoutSession + IsabelleUtils.THEORY_NAME_SEPARATOR)) {
@@ -487,8 +505,8 @@ public final class ScalaIsabelleFacade {
                     }
                     type = type.replace(
                             IsabelleUtils.SET + IsabelleUtils.THEORY_NAME_SEPARATOR
-                            + StringUtils.func("set", "alternative"),
-                            "alternatives");
+                            + StringUtils.func(SET_FUN, ALTERNATIVE),
+                            ALTERNATIVES_NAME);
                     toBeFilled.put(name, type);
                 }
             }
@@ -502,7 +520,7 @@ public final class ScalaIsabelleFacade {
                         addSpace(fnTo(THY,
                                       map(fnTo(DEFAULT_VARIABLE, func2(FST, SND, DEFAULT_VARIABLE)),
                                           printCollection2(DEST_THM_NAMES, THY)))),
-                        ScalaIsabelleFacade.isabelle, global(),
+                        ScalaIsabelleFacade.isabelle,
                         Implicits.theoryConverter(), LIST_CONVERTER);
         final MLFunction<Thm, String> convString =
                 MLValue.compileFunction(
@@ -510,17 +528,16 @@ public final class ScalaIsabelleFacade {
                               map(STRING_OF_TERM,
                                   func2(HD, func2(ANCESTS_OF, THY_OF_THM, THM)),
                                   printCollection2(PROP_OF, THM))),
-                        ScalaIsabelleFacade.isabelle, global(),
+                        ScalaIsabelleFacade.isabelle,
                         Implicits.thmConverter(), STRING_CONVERTER);
         for (final String thyName: this.theoryNames) {
             final Map<String, String> toBeFilled = new HashMap<String, String>();
             this.theorems.put(thyName, toBeFilled);
-            final Context ctxt = Context.apply(thyName, ScalaIsabelleFacade.isabelle, global());
-            final Theory theory = ctxt.theoryOf(ScalaIsabelleFacade.isabelle, global());
+            final Context ctxt = Context.apply(thyName, ScalaIsabelleFacade.isabelle);
+            final Theory theory = ctxt.theoryOf(ScalaIsabelleFacade.isabelle);
             final scala.collection.immutable.List<String> defs =
-                    mlFun.apply(theory, ScalaIsabelleFacade.isabelle, global(),
-                                Implicits.theoryConverter())
-                    .retrieveNow(LIST_CONVERTER, ScalaIsabelleFacade.isabelle, global());
+                    mlFun.apply(theory, ScalaIsabelleFacade.isabelle, Implicits.theoryConverter())
+                    .retrieveNow(LIST_CONVERTER, ScalaIsabelleFacade.isabelle);
             for (int i = 0; i < defs.length(); i++) {
                 final String thmName = defs.apply(i);
                 // This filters out all theorems generated by Isabelle for internal usage.
@@ -531,16 +548,15 @@ public final class ScalaIsabelleFacade {
                         MLValue.compileFunction(
                                 fnTo(THY, GET_THM, THY,
                                         StringUtils.QUOTATION + thmName + StringUtils.QUOTATION),
-                                ScalaIsabelleFacade.isabelle, global(),
+                                ScalaIsabelleFacade.isabelle,
                                 Implicits.theoryConverter(), Implicits.thmConverter());
                 final Thm thm =
-                        thmFun.apply(theory, ScalaIsabelleFacade.isabelle, global(),
+                        thmFun.apply(theory, ScalaIsabelleFacade.isabelle,
                                      Implicits.theoryConverter())
-                        .retrieveNow(Implicits.thmConverter(), ScalaIsabelleFacade.isabelle,
-                                     global());
+                        .retrieveNow(Implicits.thmConverter(), ScalaIsabelleFacade.isabelle);
                 final String pretty =
-                        convString.apply(thm.mlValue(), ScalaIsabelleFacade.isabelle, global())
-                        .retrieveNow(STRING_CONVERTER, ScalaIsabelleFacade.isabelle, global());
+                        convString.apply(thm.mlValue(), ScalaIsabelleFacade.isabelle)
+                        .retrieveNow(STRING_CONVERTER, ScalaIsabelleFacade.isabelle);
                 toBeFilled.put(thmName, pretty);
             }
         }
@@ -549,11 +565,10 @@ public final class ScalaIsabelleFacade {
     private void extractTheoryNames() {
         final String prefix = this.sessionName + IsabelleUtils.THEORY_NAME_SEPARATOR;
         final MLFunction0<scala.collection.immutable.List<String>> mlFun =
-                MLValue.compileFunction0(GET_NAMES, ScalaIsabelleFacade.isabelle,
-                                         global(), LIST_CONVERTER);
+                MLValue.compileFunction0(GET_NAMES, ScalaIsabelleFacade.isabelle, LIST_CONVERTER);
         final scala.collection.immutable.List<String> thys =
-                mlFun.apply(ScalaIsabelleFacade.isabelle, global())
-                .retrieveNow(LIST_CONVERTER, ScalaIsabelleFacade.isabelle, global());
+                mlFun.apply(ScalaIsabelleFacade.isabelle)
+                .retrieveNow(LIST_CONVERTER, ScalaIsabelleFacade.isabelle);
         for (final String thy: JavaConverters.asJava(thys)) {
             if (thy.startsWith(prefix)) {
                 this.theoryNames.add(thy);
@@ -600,30 +615,28 @@ public final class ScalaIsabelleFacade {
      */
     private static final class JavaStringConverter extends Converter<String> {
         @Override
-        public String exnToValue(final Isabelle localIsabelle, final ExecutionContext ec) {
-            return StringConverter.exnToValue(localIsabelle, ec);
+        public String exnToValue(final Isabelle localIsabelle) {
+            return StringConverter.exnToValue(localIsabelle);
         }
 
         @Override
-        public String mlType(final Isabelle localIsabelle, final ExecutionContext ec) {
-            return StringConverter.mlType(localIsabelle, ec);
+        public String mlType(final Isabelle localIsabelle) {
+            return StringConverter.mlType(localIsabelle);
         }
 
         @Override
-        public Future<String> retrieve(final MLValue<String> value, final Isabelle localIsabelle,
-                final ExecutionContext ec) {
-            return StringConverter.retrieve(value, localIsabelle, ec);
+        public Future<String> retrieve(final MLValue<String> value, final Isabelle localIsabelle) {
+            return StringConverter.retrieve(value, localIsabelle);
         }
 
         @Override
-        public MLValue<String> store(final String value, final Isabelle localIsabelle,
-                final ExecutionContext ec) {
-            return StringConverter.store(value, localIsabelle, ec);
+        public MLValue<String> store(final String value, final Isabelle localIsabelle) {
+            return StringConverter.store(value, localIsabelle);
         }
 
         @Override
-        public String valueToExn(final Isabelle localIsabelle, final ExecutionContext ec) {
-            return StringConverter.valueToExn(localIsabelle, ec);
+        public String valueToExn(final Isabelle localIsabelle) {
+            return StringConverter.valueToExn(localIsabelle);
         }
     }
 }

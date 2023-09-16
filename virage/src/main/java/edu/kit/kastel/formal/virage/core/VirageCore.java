@@ -53,6 +53,16 @@ public final class VirageCore implements Runnable {
     private static final String UI_OPTION_KEY = "ui";
 
     /**
+     * The display name for the user interface option.
+     */
+    private static final String UI_DISPLAY_OPTION = "interface";
+
+    /**
+     * Description for the user interface option.
+     */
+    private static final String UI_DESCRIPTION = "the interface to be used (supported: cli)";
+
+    /**
      * Command line argument container.
      */
     private CommandLine cl;
@@ -207,8 +217,12 @@ public final class VirageCore implements Runnable {
         // Initialize user interface
         final VirageUserInterfaceFactory factory = new VirageUserInterfaceFactory();
         this.ui = factory.getUi(this.cl.hasOption(UI_OPTION_KEY)
-                ? this.cl.getOptionValue(UI_OPTION_KEY) : "none", this);
-        this.ui.launch();
+                ? this.cl.getOptionValue(UI_OPTION_KEY) : VirageStrings.NO_ARG, this);
+        if (this.ui != null) {
+            this.ui.launch();
+        } else {
+            throw new ParseException("No user interface selected.");
+        }
         this.extendedPrologParser = new SimpleExtendedPrologParser();
         this.searchManager = new VirageSearchManager();
     }
@@ -294,8 +308,8 @@ public final class VirageCore implements Runnable {
         final Options options = new Options();
         final Option uiOption =
                 Option.builder(UI_OPTION_KEY)
-                        .argName("interface").hasArg()
-                        .desc("the interface to be used (supported: cli)")
+                        .argName(UI_DISPLAY_OPTION).hasArg()
+                        .desc(UI_DESCRIPTION)
                         .build();
         options.addOption(uiOption);
         final CommandLineParser parser = new DefaultParser();
@@ -332,13 +346,7 @@ public final class VirageCore implements Runnable {
                                     StringUtils.repeat(StringUtils.TEN, StringUtils.DASH),
                                     job.getDescription()));
                     job.execute(this);
-                    // The code style checker does not like this catch-all block.
-                    // I think it is justified here, as this is the last
-                    // reasonable point to catch exceptions without
-                    // escalating to the main function and crashing the
-                    // program. The type of exceptions is unknown, as
-                    // job.execute can do virtually anything.
-                } catch (final Exception e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
                     LOGGER.error("An error occured.", e);
                 }

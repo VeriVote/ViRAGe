@@ -59,6 +59,21 @@ public final class IsabelleTheoryGenerator {
     private static final Logger LOGGER = LogManager.getLogger(IsabelleTheoryGenerator.class);
 
     /**
+     * File name for the theory template.
+     */
+    private static final String THEORY_TEMPLATE_FILE_NAME = "theory";
+
+    /**
+     * The name of generated theories.
+     */
+    private static final String THEORY_NAME = "generated_theory";
+
+    /**
+     * The name of generated modules.
+     */
+    private static final String MODULE_NAME = "Generated_module";
+
+    /**
      * The theory name variable.
      */
     private static final String VAR_THEORY_NAME = "$THEORY_NAME";
@@ -82,16 +97,6 @@ public final class IsabelleTheoryGenerator {
      * The proofs variable.
      */
     private static final String VAR_PROOFS = "$PROOFS";
-
-    /**
-     * The name of generated theories.
-     */
-    private static final String THEORY_NAME = "generated_theory";
-
-    /**
-     * The name of generated modules.
-     */
-    private static final String MODULE_NAME = "Generated_module";
 
     /**
      * The template for generated theories.
@@ -146,7 +151,8 @@ public final class IsabelleTheoryGenerator {
                                    final FrameworkRepresentation frameworkValue) {
         if (IsabelleTheoryGenerator.theoryTemplate.isEmpty()) {
             final InputStream theoryTemplateStream = this.getClass().getClassLoader()
-                    .getResourceAsStream("theory" + IsabelleCodeGenerator.DOT_TMPL);
+                    .getResourceAsStream(THEORY_TEMPLATE_FILE_NAME
+                                        + IsabelleCodeGenerator.DOT_TMPL);
             final StringWriter writer = new StringWriter();
             try {
                 IOUtils.copy(theoryTemplateStream, writer, StandardCharsets.UTF_8);

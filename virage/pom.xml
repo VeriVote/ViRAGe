@@ -82,7 +82,7 @@
   </repositories>
 
   <dependencies>
-    <dependency><!-- Remove once new scala-isabelle version is released -->
+    <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
@@ -158,7 +158,7 @@
     <dependency>
       <groupId>de.unruh</groupId>
       <artifactId>scala-isabelle_2.13</artifactId>
-      <version>0.4.1</version>
+      <version>0.4.2-RC1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -224,7 +224,7 @@
         <artifactId>maven-resources-plugin</artifactId>
         <version>${maven.clean.version}</version>
       </plugin>
-      <plugin><!-- Remove once new scala-isabelle version is released -->
+      <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
         <version>4.8.1</version>
@@ -288,14 +288,13 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>${maven.jar.version}</version>
         <configuration>
+          <configLocation>checks.xml</configLocation>
+          <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
           <failsOnError>false</failsOnError>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
           <includeResources>true</includeResources>
           <includeTestResources>true</includeTestResources>
-          <configLocation>checks.xml</configLocation>
-          <encoding>UTF-8</encoding>
-          <consoleOutput>true</consoleOutput>
-          <failsOnError>true</failsOnError>
         </configuration>
         <executions>
           <execution>
@@ -327,6 +326,11 @@
               <artifactId>findsecbugs-plugin</artifactId>
               <version>1.12.0</version>
             </plugin>
+            <plugin>
+              <groupId>com.mebigfatguy.fb-contrib</groupId>
+              <artifactId>fb-contrib</artifactId>
+              <version>7.4.3</version>
+            </plugin>
           </plugins>
         </configuration>
         <dependencies>
@@ -337,7 +341,7 @@
           </dependency>
         </dependencies>
       </plugin>
-      <plugin><!-- Remove once new scala-isabelle version is released -->
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>3.4.0</version>
@@ -467,6 +471,8 @@
             <argument>-classpath</argument>
             <classpath />
             <argument>${main.class}</argument>
+            <argument>-ui</argument>
+            <argument>cli</argument>
           </arguments>
           <environmentVariables>
             <SWI_HOME_DIR>${swi.home.dir}</SWI_HOME_DIR>
@@ -481,7 +487,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>${maven.jar.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -491,7 +497,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>3.6.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

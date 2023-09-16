@@ -29,14 +29,12 @@ public final class VirageGenerateCCodeJob extends VirageJobWithExplicitResult<Fi
      */
     public VirageGenerateCCodeJob(final VirageUserInterface issuer, final String compositionValue) {
         super(issuer);
-
         this.composition = compositionValue;
     }
 
     @Override
-    protected void concreteExecute() throws Exception {
+    protected void concreteExecute() {
         this.generator = this.getExecutingCore().getCCodeGenerator();
-
         this.setResult(this.generator.getCCodeFromComposition(this.composition));
     }
 

@@ -49,6 +49,16 @@ public final class SystemUtils {
      */
     private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss OOOO";
 
+    /**
+     * String with the library failure reason due to insufficient permissions.
+     */
+    private static final String PERMISSIONS_EXC_REASON = "permissions";
+
+    /**
+     * String with the library failure reason due to insufficient field handle.
+     */
+    private static final String FIELD_HANDLE_EXC_REASON = "field handle";
+
     private SystemUtils() { }
 
     private static String libraryFailureReason(final String reasonForFailure) {
@@ -134,9 +144,9 @@ public final class SystemUtils {
             System.setProperty(JAVA_LIBRARY_PATH,
                     System.getProperty(JAVA_LIBRARY_PATH) + File.pathSeparator + s);
         } catch (final IllegalAccessException e) {
-            throw new IOException(libraryFailureReason("permissions"));
+            throw new IOException(libraryFailureReason(PERMISSIONS_EXC_REASON));
         } catch (final NoSuchFieldException e) {
-            throw new IOException(libraryFailureReason("field handle"));
+            throw new IOException(libraryFailureReason(FIELD_HANDLE_EXC_REASON));
         }
     }
 

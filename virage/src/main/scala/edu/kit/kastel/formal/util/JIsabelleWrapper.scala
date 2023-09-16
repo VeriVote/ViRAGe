@@ -4,34 +4,12 @@ import java.nio.file.Path
 
 import de.unruh.isabelle.control
 import de.unruh.isabelle.control.Isabelle
-import collection.JavaConverters._
+import de.unruh.isabelle.control.IsabelleBuildException
+import scala.jdk.CollectionConverters._
 
 object JIsabelleWrapper {
-
-  /** Sets the [[de.unruh.isabelle.control.Isabelle.Setup.verbose verbose]] flag in the setup `setup`.
-   *
-   * @return `setup` with [[de.unruh.isabelle.control.Isabelle.Setup.verbose verbose]] set to `verbose`
-   * @param verbose the new value for `setup.`[[de.unruh.isabelle.control.Isabelle.Setup.verbose verbose]]
-   * */
-  def setupSetVerbose(verbose : Boolean, setup : Isabelle.Setup): Isabelle.Setup = setup.copy(verbose = verbose)
-
-  /** Sets the [[de.unruh.isabelle.control.Isabelle.Setup.userDir userDir]] directory in the setup `setup`.
-   * Note: There is no way to change the `userDir` to `None`. However, the default value for `userDir` is `None`.
-   *
-   * @return `setup` with [[de.unruh.isabelle.control.Isabelle.Setup.userDir userDir]] set to `Some(userDir)`
-   * @param verbose the new value for `setup.`[[de.unruh.isabelle.control.Isabelle.Setup.verbose verbose]]
-   * */
-  def setupSetUserDir(userDir: Path, setup: Isabelle.Setup): Isabelle.Setup = setup.copy(userDir = Some(userDir))
-
-  /** Sets the [[de.unruh.isabelle.control.Isabelle.Setup.workingDirectory workingDirectory]] directory in the setup `setup`.
-   *
-   * @return `setup` with [[de.unruh.isabelle.control.Isabelle.Setup.workingDirectory workingDirectory]] set to `workingDirectory`
-   * @param workingDirectory the new value for `setup.`[[de.unruh.isabelle.control.Isabelle.Setup.workingDirectory workingDirectory]]
-   * */
-  def setupSetWorkingDirectory(workingDirectory: Path, setup: Isabelle.Setup): Isabelle.Setup =
-    setup.copy(workingDirectory = workingDirectory)
-
-  /** Sets the [[de.unruh.isabelle.control.Isabelle.Setup.logic logic]] directory in the setup `setup`.
+  /** Sets the [[de.unruh.isabelle.control.Isabelle.Setup.logic logic]] directory in the
+   *  setup `setup`.
    *
    * @return `setup` with [[de.unruh.isabelle.control.Isabelle.Setup.logic logic]] set to `logic`
    * @param logic the new value for `setup.`[[de.unruh.isabelle.control.Isabelle.Setup.logic logic]]
@@ -39,13 +17,16 @@ object JIsabelleWrapper {
   def setupSetLogic(logic: String, setup: Isabelle.Setup): Isabelle.Setup =
     setup.copy(logic = logic)
 
-  /** Sets the [[de.unruh.isabelle.control.Isabelle.Setup.sessionRoots sessionRoots]] directories in the setup `setup`.
+  /**
+   * Invokes the constructor [[de.unruh.isabelle.control.Isabelle]]`(setup: SetupGeneral)` and
+   * explicitly declares that exceptions of [[de.unruh.isabelle.control.IsabelleBuildException]]
+   * may be thrown.
    *
-   * @return `setup` with [[de.unruh.isabelle.control.Isabelle.Setup.sessionRoots sessionRoots]] set to `sessionRoots`
-   * @param sessionRoots the new value for `setup.`[[de.unruh.isabelle.control.Isabelle.Setup.sessionRoots sessionRoots]].
-   *                     It will automatically be converted to a Scala [[Seq]].
-   * */
-  def setupSetSessionRoots(sessionRoots: java.lang.Iterable[Path], setup: Isabelle.Setup): Isabelle.Setup =
-    setup.copy(sessionRoots = sessionRoots.asScala.toSeq)
-
+   * @constructor Partly asynchronous initialization of the Isabelle instance
+   * @param setup Configuration object that specifies the path of the Isabelle binary, the heap
+   *              image, and more
+   * @throws IsabelleBuildException if building the Isabelle instance fails
+   */
+  @throws(classOf[IsabelleBuildException])
+  def isabelle(setup: Isabelle.Setup): Isabelle = new Isabelle(setup)
 }

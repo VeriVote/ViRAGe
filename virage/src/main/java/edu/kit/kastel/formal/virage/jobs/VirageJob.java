@@ -1,9 +1,14 @@
 package edu.kit.kastel.formal.virage.jobs;
 
+import java.io.IOException;
+
 import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.util.SystemUtils;
 import edu.kit.kastel.formal.virage.core.VirageCore;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
+import edu.kit.kastel.formal.virage.prolog.MalformedEplFileException;
+import edu.kit.kastel.formal.virage.types.CodeGenerationFailedException;
+import edu.kit.kastel.formal.virage.types.FrameworkExtractionFailedException;
 
 /**
  * Wrapper class for all tasks to be completed by
@@ -88,7 +93,8 @@ public abstract class VirageJob<T> {
             this.concreteExecute();
             this.setState(VirageJobState.FINISHED);
             // this.concreteExecute() can throw virtually any runtime exception.
-        } catch (final Exception e) {
+        } catch (final IOException | InterruptedException | FrameworkExtractionFailedException
+                    | CodeGenerationFailedException | MalformedEplFileException e) {
             e.printStackTrace();
             this.setState(VirageJobState.FAILED);
         }
@@ -217,10 +223,20 @@ public abstract class VirageJob<T> {
     /**
      * The actual implementation of the job's functionality.
      *
-     * @throws Exception which will be caught by the
-     *     {@link edu.kit.kastel.formal.virage.core.VirageCore} object
+     * @throws IOException                        if reading a file or other file system
+     *                                            interaction fails
+     * @throws InterruptedException               if execution is interrupted by the OS
+     * @throws FrameworkExtractionFailedException if extracting the framework failed, possibly due
+     *                                            to missing or incorrect dependencies
+     * @throws CodeGenerationFailedException      in case of input, output or interruption failures
+     *                                            in case of file operation failure or similar
+     *                                            compilation of generated code fails
+     * @throws MalformedEplFileException          if the input does not follow the specification
+     *                                            of the extended Prolog format
      */
-    protected abstract void concreteExecute() throws Exception;
+    protected abstract void concreteExecute()
+            throws IOException, InterruptedException, FrameworkExtractionFailedException,
+                   CodeGenerationFailedException, MalformedEplFileException;
 
     /**
      * Simple getter.

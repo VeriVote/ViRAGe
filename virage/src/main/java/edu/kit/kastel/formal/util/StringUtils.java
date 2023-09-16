@@ -23,6 +23,11 @@ public final class StringUtils {
     public static final String PERIOD = ".";
 
     /**
+     * A question mark.
+     */
+    public static final String QUESTION = "?";
+
+    /**
      * A dash sign.
      */
     public static final String DASH = "-";
@@ -116,6 +121,11 @@ public final class StringUtils {
      * The number ten.
      */
     public static final int TEN = 10;
+
+    /**
+     * The disjunction (or) sign.
+     */
+    private static final String OR = "or";
 
     /**
      * String for map function.
@@ -270,13 +280,46 @@ public final class StringUtils {
     }
 
     /**
-     * Adds a colon after the given String.
+     * Returns a disjunction of the two string arguments.
+     *
+     * @param s1 the first argument
+     * @param s2 the second argument
+     * @return the disjunction of the two strings
+     */
+    public static String or(final String s1, final String s2) {
+        return printCollection2(s1, OR, s2);
+    }
+
+    /**
+     * Adds a colon after the given string.
      *
      * @param s the given String.
      * @return new String with added colon at the end
      */
     public static String addColon(final String s) {
         return s + COLON;
+    }
+
+    /**
+     * Add single quotes around the string.
+     *
+     * @param string the given string
+     * @return the string with single quotes around it
+     */
+    public static String addQuotations(final String string) {
+        final String delimiter = "\'";
+        return delimiter + string + delimiter;
+    }
+
+    /**
+     * Adds double quotes around the string.
+     *
+     * @param string the given string
+     * @return the string with double quotes around it
+     */
+    public static String addDoubleQuotes(final String string) {
+        final String delimiter = StringUtils.QUOTATION;
+        return delimiter + string + delimiter;
     }
 
     /**
@@ -437,6 +480,16 @@ public final class StringUtils {
     }
 
     /**
+     * Appends a question mark to a string.
+     *
+     * @param s the string
+     * @return s?
+     */
+    public static String appendQuestionMark(final String s) {
+        return s + QUESTION;
+    }
+
+    /**
      * Appends a period to a string.
      *
      * @param s the string
@@ -453,6 +506,6 @@ public final class StringUtils {
      * @return s.\n
      */
     public static String sentence(final String s) {
-        return s + PERIOD + System.lineSeparator();
+        return appendPeriod(s) + System.lineSeparator();
     }
 }

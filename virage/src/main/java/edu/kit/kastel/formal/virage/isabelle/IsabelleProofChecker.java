@@ -79,6 +79,16 @@ public final class IsabelleProofChecker {
     public static final String EXPORT_FILES = "-e";
 
     /**
+     * Parameter for Isabelle's document functionality.
+     */
+    private static final String DOC_OPTION = "doc";
+
+    /**
+     * Parameter for Isabelle's TeX functionality.
+     */
+    private static final String TEX_OPTION = "tex";
+
+    /**
      * The singleton instance.
      */
     private static IsabelleProofChecker instance;
@@ -122,6 +132,16 @@ public final class IsabelleProofChecker {
      * Browser info option for command line call of Isabelle.
      */
     private static final String BROWSER_INFO = "browser_info";
+
+    /**
+     * Command to start a session.
+     */
+    private static final String SESSION_START_CMD = "session_start";
+
+    /**
+     * Event key for a session id.
+     */
+    private static final String SESSION_ID_EVENT_KEY = "session_id";
 
     /**
      * Parameter to pass the Unix PWD (print working directory) command.
@@ -210,6 +230,7 @@ public final class IsabelleProofChecker {
 
     private IsabelleProofChecker(final String sessionNameValue, final String theoryPathValue)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
+        this.theoryPath = theoryPathValue;
         this.runtime = Runtime.getRuntime();
         this.solvers = ConfigReader.getInstance().getIsabelleTactics();
 
@@ -232,7 +253,8 @@ public final class IsabelleProofChecker {
             if (this.rootTemplate.isEmpty()) {
                 StringWriter writer = new StringWriter();
                 final InputStream rootTemplateStream = this.getClass().getClassLoader()
-                        .getResourceAsStream("doc" + ROOT_SUFFIX + IsabelleCodeGenerator.DOT_TMPL);
+                        .getResourceAsStream(DOC_OPTION + ROOT_SUFFIX
+                                                + IsabelleCodeGenerator.DOT_TMPL);
                 try {
                     IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
                 } catch (final IOException e) {
@@ -242,7 +264,8 @@ public final class IsabelleProofChecker {
 
                 writer = new StringWriter();
                 final InputStream texTemplateStream = this.getClass().getClassLoader()
-                        .getResourceAsStream("tex" + ROOT_SUFFIX + IsabelleCodeGenerator.DOT_TMPL);
+                        .getResourceAsStream(TEX_OPTION + ROOT_SUFFIX
+                                                + IsabelleCodeGenerator.DOT_TMPL);
                 try {
                     IOUtils.copy(texTemplateStream, writer, StandardCharsets.UTF_8);
                 } catch (final IOException e) {
@@ -281,7 +304,7 @@ public final class IsabelleProofChecker {
      * @throws ExternalSoftwareUnavailableException if Isabelle is unavailable
      * @throws IsabelleBuildFailedException if the build process fails
      */
-    public static IsabelleProofChecker getInstance(final String sessionName,
+    public static synchronized IsabelleProofChecker getInstance(final String sessionName,
                                                                 final String theoryPath)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
         if (instance == null || instance.sessionName == null
@@ -364,8 +387,9 @@ public final class IsabelleProofChecker {
 
         final String sessionAndTheoriesCommand =
                 sessionAndTheoriesCommand(localSessionName, false, localTheoryPath, true);
-        this.sendCommandAndWaitForTermination("session_start " + sessionAndTheoriesCommand);
-        this.sessionId = this.lastEvent.getValue("session_id");
+        this.sendCommandAndWaitForTermination(
+                StringUtils.printCollection2(SESSION_START_CMD, sessionAndTheoriesCommand));
+        this.sessionId = this.lastEvent.getValue(SESSION_ID_EVENT_KEY);
     }
 
     private void initServer() throws IOException, ExternalSoftwareUnavailableException {

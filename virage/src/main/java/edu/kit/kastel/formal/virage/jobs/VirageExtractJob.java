@@ -1,8 +1,10 @@
 package edu.kit.kastel.formal.virage.jobs;
 
+import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.core.ConfigReader;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
 import edu.kit.kastel.formal.virage.isabelle.IsabelleFrameworkExtractor;
+import edu.kit.kastel.formal.virage.prolog.PrologParser;
 import edu.kit.kastel.formal.virage.types.FrameworkExtractionFailedException;
 import edu.kit.kastel.formal.virage.types.FrameworkRepresentation;
 
@@ -73,12 +75,18 @@ public final class VirageExtractJob extends VirageJobWithExplicitResult<Framewor
 
     @Override
     public String getDescription() {
-        return "Extracting (extended) Prolog file (.epl) ...";
+        return StringUtils.printCollection2(
+                "Extracting", PrologParser.EPL_FILE,
+                StringUtils.parenthesize(PrologParser.DOT_PL), "...");
     }
 
     @Override
     public String presentConcreteResult() {
-        return "Extracted (extended) Prolog file (.epl) \'" + this.getResult().getAbsolutePath()
-                + "\' from \'" + this.path + "\'.";
+        return StringUtils.appendPeriod(
+                StringUtils.printCollection2(
+                        "Extracted", PrologParser.EPL_FILE,
+                        StringUtils.parenthesize(PrologParser.DOT_PL),
+                        StringUtils.addQuotations(this.getResult().getAbsolutePath()), "from",
+                        StringUtils.addQuotations(this.path)));
     }
 }

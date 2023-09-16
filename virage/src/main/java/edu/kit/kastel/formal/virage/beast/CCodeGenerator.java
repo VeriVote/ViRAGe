@@ -65,6 +65,36 @@ public final class CCodeGenerator {
     private static final String RULE_FILE = "voting_rule";
 
     /**
+     * File name for the code file template.
+     */
+    private static final String CODE_FILE_TEMPLATE_NAME = "code_file";
+
+    /**
+     * File name for the components file template.
+     */
+    private static final String COMPONENTS_FILE_TEMPLATE_NAME = "components";
+
+    /**
+     * Variable for code content to replace from the template file.
+     */
+    private static final String CODE_CONTENT_VARIABLE = "$CONTENT";
+
+    /**
+     * Variable for file content entry to replace from the template file.
+     */
+    private static final String FILE_CONTENT_ENTRY_VARIABLE = "$ENTRY";
+
+    /**
+     * Variable for component index to replace from the template file.
+     */
+    private static final String COMPONENT_INDEX_VARIABLE = "$IDX";
+
+    /**
+     * Variable for component parameter to replace from the template file.
+     */
+    private static final String COMPONENT_PARAMETER_VARIABLE = "$PARAM_";
+
+    /**
      * Template for the voting_rule.c file.
      */
     private final String codeFileTemplate;
@@ -98,7 +128,7 @@ public final class CCodeGenerator {
         final StringWriter writer = new StringWriter();
         final InputStream codeFileTemplateStream =
                 this.getClass().getClassLoader()
-                .getResourceAsStream("code_file" + IsabelleCodeGenerator.DOT_TMPL);
+                .getResourceAsStream(CODE_FILE_TEMPLATE_NAME + IsabelleCodeGenerator.DOT_TMPL);
         try {
             IOUtils.copy(codeFileTemplateStream, writer, StandardCharsets.UTF_8);
         } catch (final IOException e) {
@@ -107,7 +137,7 @@ public final class CCodeGenerator {
         this.codeFileTemplate = writer.toString();
         final InputStream compositionsTemplateStream =
                 this.getClass().getClassLoader()
-                .getResourceAsStream(C_DIR + File.separator + "components"
+                .getResourceAsStream(C_DIR + File.separator + COMPONENTS_FILE_TEMPLATE_NAME
                                         + IsabelleCodeGenerator.DOT_TMPL);
         try {
             IOUtils.copy(compositionsTemplateStream, writer, StandardCharsets.UTF_8);
@@ -133,7 +163,7 @@ public final class CCodeGenerator {
             // Remove brackets.
             rawSignature = rawSignature.substring(0, rawSignature.length() - 1);
             final List<String> parameterNames = new LinkedList<String>();
-            final String[] parameters = rawSignature.split(",");
+            final String[] parameters = rawSignature.split(StringUtils.COMMA);
             for (int i = 0; i < parameters.length; i++) {
                 parameters[i] = parameters[i].strip();
                 final String[] parameterNameArray = parameters[i].split(StringUtils.SPACE);
@@ -160,9 +190,11 @@ public final class CCodeGenerator {
         final Pair<Pair<String, String>, Integer> res =
                 this.getCCodeFromComposition(composition, 0);
         String fileContents =
-                this.codeFileTemplate.replace("$CONTENT", res.getFirstValue().getSecondValue());
-        fileContents = fileContents.replace("$ENTRY", res.getFirstValue().getFirstValue()
-                + this.buildParameterString(composition.getLabel()));
+                this.codeFileTemplate.replace(CODE_CONTENT_VARIABLE,
+                                              res.getFirstValue().getSecondValue());
+        fileContents = fileContents.replace(FILE_CONTENT_ENTRY_VARIABLE,
+                                            res.getFirstValue().getFirstValue()
+                                            + this.buildParameterString(composition.getLabel()));
         final File result =
                 SystemUtils.file(TARGET_DIR + File.separator + RULE_FILE
                                 + System.currentTimeMillis() + DOT_C);
@@ -180,7 +212,8 @@ public final class CCodeGenerator {
             final String componentName = composition.getLabel();
             if (this.templates.containsKey(componentName)) {
                 String componentTemplate = this.templates.get(componentName);
-                componentTemplate = componentTemplate.replace("$IDX", String.valueOf(ctr));
+                componentTemplate =
+                        componentTemplate.replace(COMPONENT_INDEX_VARIABLE, String.valueOf(ctr));
                 int moduleCounter = 1;
                 for (int i = 0; i < composition.getArity(); i++) {
                     final DecompositionTree child = composition.getChildren().get(i);
@@ -195,9 +228,9 @@ public final class CCodeGenerator {
                         replacement = childCode.getFirstValue().getFirstValue()
                                 + this.buildParameterString(child.getLabel());
                     }
-                    componentTemplate =
-                            componentTemplate.replace("$PARAM_" + String.valueOf(moduleCounter),
-                                                      replacement);
+                    componentTemplate = componentTemplate
+                            .replace(COMPONENT_PARAMETER_VARIABLE + String.valueOf(moduleCounter),
+                                     replacement);
                     moduleCounter++;
                 }
                 body += componentTemplate;

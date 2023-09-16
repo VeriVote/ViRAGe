@@ -304,7 +304,7 @@ public final class IsabelleFrameworkExtractor {
         return framework;
     }
 
-    private Map<PrologPredicate, List<PrologPredicate>>
+    private Map<PrologPredicate, List<PrologPredicate>> // throws MalformedSettingsValueException
                 computeTransitiveClosureOfComponentAliases() {
         final Map<String, String> input = ConfigReader.getInstance().getComponentAliases();
         final Map<PrologPredicate, List<PrologPredicate>> res =

@@ -22,6 +22,11 @@ import edu.kit.kastel.formal.virage.types.FrameworkRepresentation;
  * @author VeriVote
  */
 public class AdmissionGuardGenerator {
+    /**
+     * Prefix for the temporary files with the admission guards.
+     */
+    private static final String ADMISSION_GUARDS_FILE_PREFIX = "admission_guards";
+
     /** The framework representation used throughout. */
     private final FrameworkRepresentation frameworkField;
 
@@ -62,7 +67,7 @@ public class AdmissionGuardGenerator {
         for (final CompositionRule rule: newRules) {
             newClauses.add(rule.getClause());
         }
-        final File file = SystemUtils.tempFile("admission_guards", PrologParser.DOT_PL);
+        final File file = SystemUtils.tempFile(ADMISSION_GUARDS_FILE_PREFIX, PrologParser.DOT_PL);
         file.deleteOnExit();
         final SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(file.getAbsolutePath(), newClauses);
