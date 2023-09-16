@@ -1,6 +1,7 @@
 package edu.kit.kastel.formal.virage.jobs;
 
 import java.io.File;
+import java.io.IOException;
 
 import edu.kit.kastel.formal.util.Pair;
 import edu.kit.kastel.formal.virage.core.ConfigReader;
@@ -57,7 +58,7 @@ public final class VirageIsabelleVerifyJob
     }
 
     @Override
-    protected void concreteExecute() throws Exception {
+    protected void concreteExecute() throws IOException, InterruptedException {
         this.checker = this.getExecutingCore().getIsabelleProofChecker();
 
         this.setResult(this.checker.verifyTheoryFile(this.file,

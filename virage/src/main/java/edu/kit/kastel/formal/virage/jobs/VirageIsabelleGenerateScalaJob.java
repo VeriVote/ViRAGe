@@ -5,6 +5,7 @@ import java.io.File;
 import edu.kit.kastel.formal.virage.core.ConfigReader;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
 import edu.kit.kastel.formal.virage.isabelle.IsabelleCodeGenerator;
+import edu.kit.kastel.formal.virage.types.CodeGenerationFailedException;
 
 /**
  * A {@link VirageJob} used to invoke Isabelle code generation.
@@ -51,9 +52,8 @@ public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitR
     }
 
     @Override
-    protected void concreteExecute() throws Exception {
+    protected void concreteExecute() throws CodeGenerationFailedException {
         this.generator = this.getExecutingCore().getIsabelleCodeGenerator();
-
         this.setResult(this.generator.generateScalaCodeAndCompile(this.composition));
     }
 }

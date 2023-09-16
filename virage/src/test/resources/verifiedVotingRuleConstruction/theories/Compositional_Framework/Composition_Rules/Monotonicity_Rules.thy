@@ -71,7 +71,7 @@ next
       "{a} = defer m A q \<longrightarrow> defer (m \<triangleright> n) A q \<subseteq> {a}"
       using finite_profile_q electoral_mod_m electoral_mod_n
             seq_comp_def_set_sound
-      by (metis (no_types, hide_lams))
+      by (metis (no_types, opaque_lifting))
     ultimately have
       "(a \<in> defer m A p) \<longrightarrow> defer (m \<triangleright> n) A q \<subseteq> {a}"
       by blast (* lifted defer-subset of a *)
@@ -598,7 +598,7 @@ proof (induct n arbitrary: acc rule: less_induct)
           by blast
         thus ?thesis
           using card_changed monotone_m f_prof seq_comp_def_set_trans
-          by (metis (no_types, hide_lams))
+          by (metis (no_types, opaque_lifting))
       qed
       hence
         "defer_lift_invariance (acc \<triangleright> m) \<and> defer_lift_invariance (acc) \<longrightarrow>

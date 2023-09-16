@@ -11,5 +11,10 @@ public final class VirageStrings {
      */
     public static final String CLI_ARG = "cli";
 
+    /**
+     * Identifier that no user interface has been selected.
+     */
+    public static final String NO_ARG = "none";
+
     private VirageStrings() { }
 }

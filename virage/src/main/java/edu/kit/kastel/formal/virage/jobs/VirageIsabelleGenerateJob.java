@@ -43,7 +43,6 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
             final String compositionValue, final List<CompositionProof> proofsValue,
             final String outputPathValue) {
         super(issuer);
-
         this.composition = compositionValue;
         this.proofs = proofsValue;
         this.outputPath = outputPathValue;
@@ -65,10 +64,9 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
     }
 
     @Override
-    protected void concreteExecute() throws Exception {
+    protected void concreteExecute() {
         this.generator = this.getExecutingCore().getIsabelleTheoryGenerator();
-
-        this.setResult(this.generator.generateTheoryFile(this.composition, this.proofs,
-                this.outputPath));
+        this.setResult(this.generator
+                .generateTheoryFile(this.composition, this.proofs, this.outputPath));
     }
 }

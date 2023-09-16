@@ -77,7 +77,7 @@ public class VirageAnalyzeAllPropertiesJob extends
     }
 
     @Override
-    protected final void concreteExecute() throws Exception {
+    protected final void concreteExecute() {
         this.unaryProperties = new LinkedList<Property>();
         final VirageCore execCore = this.getExecutingCore();
         for (final Property candidate: execCore.getFrameworkRepresentation().getProperties()) {

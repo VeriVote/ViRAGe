@@ -7,6 +7,7 @@ import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
 import edu.kit.kastel.formal.virage.prolog.ExtendedPrologParser;
 import edu.kit.kastel.formal.virage.prolog.MalformedEplFileException;
+import edu.kit.kastel.formal.virage.prolog.PrologParser;
 import edu.kit.kastel.formal.virage.types.FrameworkRepresentation;
 
 /**
@@ -48,14 +49,16 @@ public final class VirageParseJob extends VirageJobWithExplicitResult<FrameworkR
 
     @Override
     public String getDescription() {
-        return "Parsing (extended) Prolog file (.epl) and "
-                + "invoking the respective Isabelle session(s) ...";
+        return "Parsing " + PrologParser.EPL_FILE + StringUtils.SPACE
+                + StringUtils.parenthesize(PrologParser.DOT_PL)
+                + " and invoking the respective Isabelle session(s) ...";
     }
 
     @Override
     public String presentConcreteResult() {
         return StringUtils.sentence(
-                "Successfully loaded (extended) Prolog file (.epl) at \'"
-                        + this.file.getAbsolutePath() + "\'");
+                "Successfully loaded " + PrologParser.EPL_FILE + StringUtils.SPACE
+                        + StringUtils.parenthesize(PrologParser.DOT_PL) + " at "
+                        + StringUtils.addQuotations(this.file.getAbsolutePath()));
     }
 }

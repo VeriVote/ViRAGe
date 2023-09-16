@@ -31,34 +31,44 @@ public class IsabelleProofStepGenerator {
     private static final Logger LOGGER = LogManager.getLogger(IsabelleProofStepGenerator.class);
 
     /**
-     * Template for proof step generation.
+     * File name for the proof step template.
      */
-    private static String proofStepTemplate = StringUtils.EMPTY;
+    private static final String PROOF_STEP_TEMPLATE_FILE_NAME = "proof_step";
+
+    /**
+     * Isabelle's proof method for simplification tactics.
+     */
+    private static final String SIMP_PROOF_METHOD = "simp";
 
     /**
      * Goal ID variable.
      */
-    private static String varGoalId = "$GOAL_ID";
+    private static final String VAR_GOAL_ID = "$GOAL_ID";
 
     /**
      * Goal variable.
      */
-    private static String varGoal = "$GOAL";
+    private static final String VAR_GOAL = "$GOAL";
 
     /**
      * Subgoal ID variable.
      */
-    private static String varSubgoalIds = "$SUBGOAL_IDS";
+    private static final String VAR_SUBGOAL_IDS = "$SUBGOAL_IDS";
 
     /**
      * Rule variable.
      */
-    private static String varRule = "$RULE";
+    private static final String VAR_RULE = "$RULE";
 
     /**
      * Solver variable.
      */
-    private static String varSolver = "$SOLVER";
+    private static final String VAR_SOLVER = "$SOLVER";
+
+    /**
+     * Template for proof step generation.
+     */
+    private static String proofStepTemplate = StringUtils.EMPTY;
 
     /**
      * Functions and definitions from an Isabelle session.
@@ -85,7 +95,8 @@ public class IsabelleProofStepGenerator {
                                       final Map<String, String> functionsAndDefinitionsValue) {
         if (IsabelleProofStepGenerator.proofStepTemplate.isEmpty()) {
             final InputStream proofStepTemplateStream = this.getClass().getClassLoader()
-                    .getResourceAsStream("proof_step" + IsabelleCodeGenerator.DOT_TMPL);
+                    .getResourceAsStream(PROOF_STEP_TEMPLATE_FILE_NAME
+                                        + IsabelleCodeGenerator.DOT_TMPL);
             final StringWriter writer = new StringWriter();
             try {
                 IOUtils.copy(proofStepTemplateStream, writer, StandardCharsets.UTF_8);
@@ -108,11 +119,11 @@ public class IsabelleProofStepGenerator {
                                            final String subgoalIds, final String rule,
                                            final String solver) {
         String res = IsabelleProofStepGenerator.proofStepTemplate;
-        res = res.replace(varGoalId, goalId);
-        res = res.replace(varGoal, goal);
-        res = res.replace(varSubgoalIds, subgoalIds);
-        res = res.replace(varRule, rule);
-        res = res.replace(varSolver, solver);
+        res = res.replace(VAR_GOAL_ID, goalId);
+        res = res.replace(VAR_GOAL, goal);
+        res = res.replace(VAR_SUBGOAL_IDS, subgoalIds);
+        res = res.replace(VAR_RULE, rule);
+        res = res.replace(VAR_SOLVER, solver);
         return res;
     }
 
@@ -157,7 +168,6 @@ public class IsabelleProofStepGenerator {
         // everything.
         // Problem: If it is not successful, query takes forever.
         // PaMpeR?
-        final String solver = "simp";
-        return replaceVariables(goalId, goal, subgoalIds.toString(), rule, solver);
+        return replaceVariables(goalId, goal, subgoalIds.toString(), rule, SIMP_PROOF_METHOD);
     }
 }

@@ -19,6 +19,16 @@ public interface PrologParser {
     String DOT_PL = StringUtils.PERIOD + "pl";
 
     /**
+     * SWI Prolog as string.
+     */
+    String SWI_PROLOG = "SWI Prolog";
+
+    /**
+     * EPL file as string.
+     */
+    String EPL_FILE = "(extended) Prolog file";
+
+    /**
      * Parses a single Prolog predicate.
      *
      * @param predicate the predicate to be parsed

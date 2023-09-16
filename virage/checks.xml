@@ -373,7 +373,7 @@
     <module name="MutableException" />
     <module name="OneTopLevelClass"/>
     <module name="ThrowsCount">
-      <property name="max" value="2" />
+      <property name="max" value="5" />
     </module>
 
     <module name="VisibilityModifier">

@@ -82,19 +82,24 @@ public final class IsabelleCodeGenerator {
     private static final String EXPORT_FILE = "export";
 
     /**
-     * Template for code export.
+     * File name for the code root template.
      */
-    private static String exportTemplate = StringUtils.EMPTY;
+    private static final String CODE_ROOT_TEMPLATE_NAME = "code_root";
 
     /**
-     * Isabelle ROOT file template.
+     * File name for the voting context template.
      */
-    private static String rootTemplate = StringUtils.EMPTY;
+    private static final String VOTING_CONTEXT_TEMPLATE_NAME = "voting_context";
 
     /**
-     * Voting context template.
+     * The prefix for ad-hoc Isabelle sessions.
      */
-    private static String votingContextTemplate = StringUtils.EMPTY;
+    private static final String AD_HOC_SESSION_PREFIX = "ad_hoc_session_";
+
+    /**
+     * The pattern for simple date formats, intended for creating quasi unique file names.
+     */
+    private static final String DATE_FORMAT_PATTERN = "yyyyMMddHHmmss";
 
     /**
      * Module name variable.
@@ -178,6 +183,36 @@ public final class IsabelleCodeGenerator {
     private static final String COMMENT_CLOSE = " */";
 
     /**
+     * Bounded parameter name.
+     */
+    private static final String BOUNDED_PARAMETER = "bounded";
+
+    /**
+     * Eq parameter name.
+     */
+    private static final String EQ_PARAMETER = "eq";
+
+    /**
+     * File name for the scala file with the voting context.
+     */
+    private static final String VOTING_CONTEXT_SCALA_FILE_NAME = "votingContext";
+
+    /**
+     * Template for code export.
+     */
+    private static String exportTemplate = StringUtils.EMPTY;
+
+    /**
+     * Isabelle ROOT file template.
+     */
+    private static String rootTemplate = StringUtils.EMPTY;
+
+    /**
+     * Voting context template.
+     */
+    private static String votingContextTemplate = StringUtils.EMPTY;
+
+    /**
      * The compositional framework.
      */
     private final FrameworkRepresentation framework;
@@ -220,8 +255,8 @@ public final class IsabelleCodeGenerator {
             }
             setExportTemplate(writer.toString());
             writer = new StringWriter();
-            final InputStream rootTemplateStream =
-                    this.getClass().getClassLoader().getResourceAsStream("code_root" + DOT_TMPL);
+            final InputStream rootTemplateStream = this.getClass().getClassLoader()
+                    .getResourceAsStream(CODE_ROOT_TEMPLATE_NAME + DOT_TMPL);
             try {
                 IOUtils.copy(rootTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
@@ -232,7 +267,7 @@ public final class IsabelleCodeGenerator {
             writer = new StringWriter();
             final InputStream votingContextTemplateStream =
                     this.getClass().getClassLoader()
-                    .getResourceAsStream("voting_context" + DOT_TMPL);
+                    .getResourceAsStream(VOTING_CONTEXT_TEMPLATE_NAME + DOT_TMPL);
             try {
                 IOUtils.copy(votingContextTemplateStream, writer, StandardCharsets.UTF_8);
             } catch (final IOException e) {
@@ -339,15 +374,14 @@ public final class IsabelleCodeGenerator {
 
     /**
      * Prepare the theory file.
-     * TODO: Should this become public?
      *
      * @param theory the theory file
      * @param language the programming language for the generated code
      * @return the theory file name
      * @throws IOException in case of any input or output exceptions from file operations
      */
-    private String prepareTheoryFile(final File theory,
-                                     final IsabelleCodeGenerationLanguage language)
+    public String prepareTheoryFile(final File theory,
+                                    final IsabelleCodeGenerationLanguage language)
                                              throws IOException {
         return this.prepareTheoryFile(theory, language.toString());
     }
@@ -356,15 +390,14 @@ public final class IsabelleCodeGenerator {
         // Session names MUST be universally unique, as Isabelle seems to be incapable
         // of rebuilding single sessions without triggering full rebuilds.
         // TODO: Is there a way to do it?
-        final String sessionName = "ad_hoc_session_"
-                + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        final String sessionName = AD_HOC_SESSION_PREFIX
+                + new SimpleDateFormat(DATE_FORMAT_PATTERN).format(new Date());
         String result =
                 IsabelleCodeGenerator.rootTemplate
                 .replace(SESSION_NAME_VAR, sessionName).replace(THEORY_NAME_VAR, theoryName);
         result = result.replace(PARENT_NAME_VAR, this.framework.getSessionName());
         final SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(theory.getParent() + File.separator + IsabelleUtils.ROOT, result);
-
         return sessionName;
     }
 
@@ -385,12 +418,12 @@ public final class IsabelleCodeGenerator {
         if (containsEnum) {
             result = result.replace(COMMENT_OPEN + ENUM_COMMENT, StringUtils.EMPTY)
                     .replace(ENUM_COMMENT + COMMENT_CLOSE, StringUtils.EMPTY);
-            parameters.add("bounded");
+            parameters.add(BOUNDED_PARAMETER);
         }
         if (containsEquality) {
             result = result.replace(COMMENT_OPEN + EQUALITY_COMMENT, StringUtils.EMPTY)
                     .replace(EQUALITY_COMMENT + COMMENT_CLOSE, StringUtils.EMPTY);
-            parameters.add("eq");
+            parameters.add(EQ_PARAMETER);
         }
         if (requiresRelation) {
             result = result.replace(COMMENT_OPEN + OPTION2_COMMENT, StringUtils.EMPTY)
@@ -407,7 +440,7 @@ public final class IsabelleCodeGenerator {
             paramString = StringUtils.parenthesize(StringUtils.printCollection(parameters));
         }
         result = result.replace(PARAM_VAR, paramString);
-        final String path = dir + File.separator + "votingContext" + DOT_SCALA;
+        final String path = dir + File.separator + VOTING_CONTEXT_SCALA_FILE_NAME + DOT_SCALA;
         final SimpleFileWriter writer = new SimpleFileWriter();
         writer.writeToFile(path, result);
         return SystemUtils.file(path);

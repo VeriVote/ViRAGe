@@ -355,7 +355,7 @@ proof (induct n arbitrary: acc rule: less_induct)
           by blast
         thus ?thesis
           using card_changed monotone_m f_prof seq_comp_def_set_trans
-          by (metis (no_types, hide_lams))
+          by (metis (no_types, opaque_lifting))
       qed
       hence
         "defer_lift_invariance (acc \<triangleright> m) \<and> defer_lift_invariance (acc) \<longrightarrow>

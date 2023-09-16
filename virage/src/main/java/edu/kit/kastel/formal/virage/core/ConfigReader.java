@@ -30,6 +30,7 @@ import edu.kit.kastel.formal.util.SimpleFileReader;
 import edu.kit.kastel.formal.util.SimpleFileWriter;
 import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.util.SystemUtils;
+import edu.kit.kastel.formal.virage.prolog.PrologParser;
 import edu.kit.kastel.formal.virage.types.ExternalSoftwareUnavailableException;
 import edu.kit.kastel.formal.virage.types.InvalidConfigVersionException;
 
@@ -43,6 +44,41 @@ public final class ConfigReader {
      * Character used to separate lists in the settings file.
      */
     public static final String LIST_SEPARATOR = ";";
+
+    /**
+     * The environment variable containing the default text editor.
+     */
+    protected static final String EDITOR = "EDITOR";
+
+    /**
+     * Name of the option containing the system text editor.
+     */
+    protected static final String SYSTEM_EDITOR = "SYSTEM_TEXT_" + EDITOR;
+
+    /**
+     * The free-desktop open command. Maybe only makes real sense for Unix systems, but well.
+     */
+    protected static final String XDG_OPEN = "xdg-open";
+
+    /**
+     * Name of the option containing the path to a ROOT file.
+     */
+    protected static final String ROOT_FILE_PATH = "ISABELLE_PATH_TO_ROOT_FILE";
+
+    /**
+     * Name of the settings file.
+     */
+    private static final String SETTINGS = "settings";
+
+    /**
+     * Prefix for the old settings file.
+     */
+    private static final String OLD_PREFIX = "old_";
+
+    /**
+     * File with old settings.
+     */
+    protected static final String OLD_SETTINGS = OLD_PREFIX + SETTINGS;
 
     /**
      * The logger.
@@ -63,16 +99,6 @@ public final class ConfigReader {
      * The default settings folder name.
      */
     private static final String VIRAGE_FOLDER = ".virage";
-
-    /**
-     * Name of the settings file.
-     */
-    private static final String SETTINGS = "settings";
-
-    /**
-     * Prefix for the old settings file.
-     */
-    private static final String OLD_PREFIX = "old_";
 
     /**
      * The user.home system property.
@@ -120,24 +146,9 @@ public final class ConfigReader {
     private static final String ISABELLE_TACTICS = "ISABELLE_TACTICS";
 
     /**
-     * Name of the option containing the path to a ROOT file.
-     */
-    private static final String ISABELLE_PATH_TO_ROOT_FILE = "ISABELLE_PATH_TO_ROOT_FILE";
-
-    /**
-     * Name of the option containing the system text editor.
-     */
-    private static final String SYSTEM_TEXT_EDITOR = "SYSTEM_TEXT_EDITOR";
-
-    /**
      * Name of the option containing type aliases.
      */
     private static final String SESSION_SPECIFIC_TYPE_ALIASES = "SESSION_SPECIFIC_TYPE_ALIASES";
-
-    /**
-     * The environment variable containing the default text editor.
-     */
-    private static final String EDITOR = "EDITOR";
 
     /**
      * Name of the option containing session specific assumptions.
@@ -185,14 +196,9 @@ public final class ConfigReader {
     private static final String PLARCH = "PLARCH";
 
     /**
-     * The free-desktop open command. Maybe only makes real sense for Unix systems, but well.
-     */
-    private static final String XDG_OPEN = "xdg-open";
-
-    /**
      * The get environment ("<code>getenv</code>") command for Unix systems.
      */
-    private static final String GET_ENVIRONMENT_COMMAND = "getenv ";
+    private static final String GET_ENVIRONMENT_CMD = "getenv";
 
     /**
      * Name of the option containing the Prolog libraries' path.
@@ -324,11 +330,11 @@ public final class ConfigReader {
      */
     private static String getCommandOutput(final String command, final String option)
             throws IOException, InterruptedException {
-        final String none = "<NONE>" + System.lineSeparator();
+        final String none = "<NONE>";
         final String proc = command + StringUtils.prefixSpace(option);
         final ProcessUtils.Output output = ProcessUtils.runTerminatingProcess(proc);
         final String result = output.stdOut.isEmpty() ? output.stdErr : output.stdOut;
-        return result.isEmpty() ? none : result;
+        return result.isEmpty() ? none : result.trim();
     }
 
     /**
@@ -344,7 +350,7 @@ public final class ConfigReader {
         // JAVA
         res += getVersionString("Java", null,
                                 System.getProperty(StringUtils.appendPeriod("java") + versionOpt),
-                                2);
+                                StringUtils.THREE);
         // ISABELLE and SCALA
         final String isa = "Isabelle";
         String isaVersion;
@@ -355,7 +361,7 @@ public final class ConfigReader {
             isaVersion = getCommandOutput(isaExec, versionOpt);
             scalaVersion = getCommandOutput(StringUtils.printCollection2(isaExec, "scalac"),
                                             StringUtils.DASH + versionOpt);
-            scalaSuffix = StringUtils.prefixSpace(StringUtils.parenthesize2("via", isa));
+            scalaSuffix = StringUtils.parenthesize2("via", isa);
         } catch (final
                 IOException | InterruptedException | ExternalSoftwareUnavailableException e) {
             this.isabelleAvailable = false;
@@ -377,7 +383,7 @@ public final class ConfigReader {
             this.jplAvailable = false;
             swiplVersion = notFound;
         }
-        res += getVersionString("SWI-Prolog", null, swiplVersion, 2);
+        res += getVersionString(PrologParser.SWI_PROLOG, null, swiplVersion, 2);
         try {
             this.getSwiplHome();
             this.getSwiplLib();
@@ -418,7 +424,7 @@ public final class ConfigReader {
             throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
         final String output =
                 getCommandOutput(this.getIsabelleExecutable(),
-                                 GET_ENVIRONMENT_COMMAND + ISABELLE_HOME);
+                                 StringUtils.printCollection2(GET_ENVIRONMENT_CMD, ISABELLE_HOME));
         return output.split(KEY_VALUE_SEPARATOR)[1].trim();
     }
 
@@ -426,7 +432,8 @@ public final class ConfigReader {
             throws IOException, InterruptedException, ExternalSoftwareUnavailableException {
         final String output =
                 getCommandOutput(this.getIsabelleExecutable(),
-                                 GET_ENVIRONMENT_COMMAND + ISABELLE_HOME_USER);
+                                 StringUtils.printCollection2(GET_ENVIRONMENT_CMD,
+                                                              ISABELLE_HOME_USER));
         return output.split(KEY_VALUE_SEPARATOR)[1].trim();
     }
 
@@ -597,7 +604,7 @@ public final class ConfigReader {
      * @return Path to Isabelle's root file
      */
     public String getPathToRootFile() {
-        return this.properties.getProperty(ISABELLE_PATH_TO_ROOT_FILE);
+        return this.properties.getProperty(ROOT_FILE_PATH);
     }
 
     /**
@@ -700,9 +707,7 @@ public final class ConfigReader {
                     path = path + File.separator;
                 }
                 this.swiplLib = path;
-            } catch (final IOException e) {
-                e.printStackTrace();
-            } catch (final InterruptedException e) {
+            } catch (final IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -752,7 +757,7 @@ public final class ConfigReader {
      * @return true iff "ISABELLE_PATH_TO_ROOT_FILE" is specified
      */
     public boolean hasPathToRootFile() {
-        return this.properties.containsKey(ISABELLE_PATH_TO_ROOT_FILE);
+        return this.properties.containsKey(ROOT_FILE_PATH);
     }
 
     /**
@@ -771,9 +776,9 @@ public final class ConfigReader {
     public void openConfigFileForEditing() throws ExternalSoftwareUnavailableException {
         ProcessUtils.start(XDG_OPEN, this.configFile);
         final String editorExecutable;
-        if (this.properties.containsKey(SYSTEM_TEXT_EDITOR)
-                && !this.properties.getProperty(SYSTEM_TEXT_EDITOR).toString().isEmpty()) {
-            editorExecutable = this.properties.getProperty(SYSTEM_TEXT_EDITOR);
+        if (this.properties.containsKey(SYSTEM_EDITOR)
+                && !this.properties.getProperty(SYSTEM_EDITOR).toString().isEmpty()) {
+            editorExecutable = this.properties.getProperty(SYSTEM_EDITOR);
         } else if (System.getenv().containsKey(EDITOR)
                 && !System.getenv().get(EDITOR).isEmpty()) {
             editorExecutable = System.getenv().get(EDITOR);

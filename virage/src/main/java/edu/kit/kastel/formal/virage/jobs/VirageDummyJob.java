@@ -19,7 +19,7 @@ public final class VirageDummyJob extends VirageJobWithoutExplicitResult {
     }
 
     @Override
-    protected void concreteExecute() throws Exception {
+    protected void concreteExecute() {
         // skip operation
     }
 

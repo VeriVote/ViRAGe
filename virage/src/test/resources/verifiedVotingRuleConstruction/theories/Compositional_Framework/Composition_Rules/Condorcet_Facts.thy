@@ -19,7 +19,7 @@ proof -
           (\<forall>A rs a. condorcet_winner A rs a \<longrightarrow>
             (\<forall>aa. f aa A rs < f a A rs \<or> a = aa \<or> aa \<notin> A)))"
     unfolding condorcet_rating_def
-    by (metis (mono_tags, hide_lams))
+    by (metis (mono_tags, opaque_lifting))
   thus ?thesis
     using cond_winner_unique condorcet_score.simps zero_less_one
     by (metis (no_types))

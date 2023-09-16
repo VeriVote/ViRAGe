@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import org.apache.commons.io.IOUtils;
@@ -60,14 +59,45 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     private static final Logger LOGGER = LogManager.getLogger(VirageCommandLineInterface.class);
 
     /**
+     * Linux user library path.
+     */
+    private static final String USR_LIB_PATH = "/usr/lib/";
+
+    /**
+     * File extension for text files.
+     */
+    private static final String DOT_TXT = StringUtils.DOT_CHAR + "txt";
+
+    /**
+     * File extension for .so-library files.
+     */
+    private static final String DOT_SO = StringUtils.DOT_CHAR + "so";
+
+    /**
      * Name of libswipl.so.
      */
-    private static final String LIBSWIPL_SO = "libswipl.so";
+    private static final String LIBSWIPL_SO = "libswipl" + DOT_SO;
+
+    /**
+     * Name of libjpl.so.
+     */
+    private static final String LIBJPL_SO = "libjpl" + DOT_SO;
+
+    /**
+     * String option for expressing 'yes'.
+     */
+    private static final String YES = "y";
+
+    /**
+     * String option for expressing 'no'.
+     */
+    private static final String NO = "n";
 
     /**
      * The separator.
      */
     private static final String SEPARATOR = StringUtils.repeat(59, StringUtils.HASH);
+
     /**
      * The banner.
      */
@@ -91,12 +121,33 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     private static final String HEADER_LINE_START = StringUtils.addSpace(StringUtils.HASH);
 
     /**
+     * Dialog fragment for library directory.
+     */
+    private static final String LIB_DIR = "library directory";
+
+    /**
+     * Dialog fragment for path input.
+     */
+    private static final String INPUT_PATH_MSG = "Please input the path to ";
+
+    /**
+     * Dialog fragment for your setup of something.
+     */
+    private static final String YOUR_SETUP_MSG = "For your setup of ";
+
+    /**
+     * Dialog fragment for your system settings.
+     */
+    private static final String YOUR_SYSTEM_MSG = ", but this might differ on your system.";
+
+    /**
      * Dialog whether settings should be changed.
      */
     private static final String SETTINGS_CHANGE_MESSAGE =
             "ViRAGe can replace the settings file with an up-to-date one. "
-                    + "Your old settings file will be moved to \"old_settings\", "
-                    + "and as many settings " + "as possible will be transferred. "
+                    + "Your old settings file will be moved to "
+                    + StringUtils.addDoubleQuotes(ConfigReader.OLD_SETTINGS)
+                    + ", and as many settings " + "as possible will be transferred. "
                     + "Do you want to let ViRAGe perform this operation?";
 
     /**
@@ -117,14 +168,31 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     private static final String VERSION_MESSAGE = "Version ";
 
     /**
+     * Help string.
+     */
+    private static final String HELP = "help";
+
+    /**
+     * Exit string.
+     */
+    private static final String EXIT = "exit";
+
+    /**
      * Help info message.
      */
-    private static final String HELP_MESSAGE = "If you need help, type \"help\", \"h\" or \"?\".";
+    private static final String HELP_MESSAGE =
+            StringUtils.appendPeriod(
+                    "If you need " + HELP + ", type " + StringUtils.addDoubleQuotes(HELP)
+                            + StringUtils.COMMA + StringUtils.SPACE
+                            + StringUtils.or(
+                                    StringUtils.addDoubleQuotes(String.valueOf(HELP.charAt(0))),
+                                    StringUtils.addDoubleQuotes(StringUtils.QUESTION)));
 
     /**
      * Info message on how to exit.
      */
-    private static final String EXIT_INFO_MESSAGE = "To exit ViRAGe, type \"exit\".";
+    private static final String EXIT_INFO_MESSAGE =
+            StringUtils.appendPeriod("To exit ViRAGe, type " + StringUtils.addDoubleQuotes(EXIT));
 
     /**
      * First line of purpose message.
@@ -142,8 +210,9 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
      * Message that SWI library could not be located.
      */
     private static final String SWI_LIBRARY_ERROR_MESSAGE =
-            "A required SWI Prolog library (\""
-                    + LIBSWIPL_SO + "\") could not be located.";
+            "A required " + PrologParser.SWI_PROLOG + " library "
+                    + StringUtils.parenthesize(StringUtils.addDoubleQuotes(LIBSWIPL_SO))
+                    + " could not be located.";
 
     /**
      * Message to ask the user to retry.
@@ -159,6 +228,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
      * A Scanner to read input.
      */
     private final Scanner scanner;
+
     /**
      * The core this UI is attached to.
      */
@@ -184,9 +254,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         this.outputWriter =
                 new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8),
                                    bufferSize);
-
         LOGGER.info("Initialising VirageCommandLineInterface.");
-
         this.scanner = new Scanner(System.in, StandardCharsets.UTF_8);
         this.core = coreValue;
 
@@ -202,6 +270,11 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         this.printSeparator(); /* ----- */
         this.printSettings();
         this.printSeparator(); /* ----- */
+    }
+
+    private static boolean isYesNo(final String input, final boolean yesNo) {
+        final String lowerCase = input.toLowerCase();
+        return lowerCase.startsWith(yesNo ? YES : NO);
     }
 
     @Override
@@ -230,12 +303,11 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     @Override
     public boolean requestConfirmation(final String message) {
         while (true) {
-            final String input = this.requestString(message + " (y/n)");
-            final String lowerCase = input.toLowerCase();
-            final boolean yes = lowerCase.startsWith("y");
-            final boolean no = lowerCase.startsWith("n");
-            if (yes || no) {
-                return yes;
+            final String request =
+                    StringUtils.printCollection2(message, StringUtils.parenthesize(YES + "/" + NO));
+            final String input = this.requestString(request);
+            if (isYesNo(input, true) || isYesNo(input, false)) {
+                return isYesNo(input, true);
             } else {
                 this.displayMessage(TRY_AGAIN);
             }
@@ -266,8 +338,10 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
     private void printTimestamp() {
         final String now = SystemUtils.getCurrentTime();
-        this.displayMessage(HEADER_LINE_START + VERSION_MESSAGE + VirageCore.getVersion()
-                + ", Timestamp: " + now);
+        this.displayMessage(
+                StringUtils.printCollection2(HEADER_LINE_START, VERSION_MESSAGE,
+                                             VirageCore.getVersion() + StringUtils.COMMA,
+                                             StringUtils.addColon("Timestamp"), now));
         this.displayMessage(HEADER_LINE_START + HELP_MESSAGE);
         this.displayMessage(HEADER_LINE_START + EXIT_INFO_MESSAGE);
     }
@@ -289,21 +363,23 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             while (true) {
                 newValue = this.requestString(
                         StringUtils.addSpace(StringUtils.appendPeriod(
-                                "Please input the path to " + LIBSWIPL_SO))
-                        + "For your setup of SWI Prolog, typical values are "
-                        + addQuotationsToPath("/usr/lib/" + LIBSWIPL_SO) + " or "
-                        + addQuotationsToPath(
-                                ConfigReader.getInstance().getSwiplLib() + LIBSWIPL_SO)
-                        + ", but"
-                        + " this might differ on your system.");
+                                INPUT_PATH_MSG + LIBSWIPL_SO))
+                        + YOUR_SETUP_MSG + PrologParser.SWI_PROLOG + ", typical values are "
+                        + StringUtils.or(
+                                StringUtils.addQuotations(USR_LIB_PATH + LIBSWIPL_SO),
+                                StringUtils.addQuotations(
+                                        ConfigReader.getInstance().getSwiplLib() + LIBSWIPL_SO))
+                        + YOUR_SYSTEM_MSG);
                 if (!newValue.isEmpty()) {
                     final File file = SystemUtils.file(newValue);
                     if (!file.exists()) {
-                        this.displayError("This file does not exist. Please try again.");
+                        this.displayError("This file does not exist. " + TRY_AGAIN);
                         continue;
                     }
                     if (!newValue.endsWith(LIBSWIPL_SO)) {
-                        this.displayError("This is not \"" + LIBSWIPL_SO + "\". Please try again.");
+                        this.displayError(StringUtils.appendPeriod(
+                                "This is not " + StringUtils.addDoubleQuotes(LIBSWIPL_SO))
+                                + StringUtils.SPACE + TRY_AGAIN);
                         continue;
                     }
                     ConfigReader.getInstance().updateValueForLibswiplPath(newValue);
@@ -316,30 +392,35 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     }
 
     private void setubLibjpl() {
-        this.displayError("The SWI Prolog library directory could not be located. "
-                + "This directory must contain the library \"libjpl.so\", otherwise "
-                + "ViRAGe will not work properly.");
+        this.displayError("The " + PrologParser.SWI_PROLOG
+                + StringUtils.SPACE + LIB_DIR + " could not be located. "
+                + "This directory must contain the library "
+                + StringUtils.addDoubleQuotes(LIBJPL_SO)
+                + ", otherwise ViRAGe will not work properly.");
         String newValue;
         try {
             while (true) {
                 newValue = this.requestString(
-                        "Please input the path to the SWI Prolog " + "library directory. "
-                                + "For your setup of SWI Prolog, the typical value is "
-                                + addQuotationsToPath(ConfigReader.getInstance().getSwiplLib())
-                                + ", but this might differ "
-                                + "on your system.");
+                        StringUtils.appendPeriod(INPUT_PATH_MSG + "the " + PrologParser.SWI_PROLOG
+                                + StringUtils.SPACE + LIB_DIR) + StringUtils.SPACE
+                        + YOUR_SETUP_MSG + PrologParser.SWI_PROLOG + ", the typical value is "
+                        + StringUtils.addQuotations(ConfigReader.getInstance().getSwiplLib())
+                        + YOUR_SYSTEM_MSG);
                 if (!newValue.isEmpty()) {
                     final File file = SystemUtils.file(newValue);
                     if (!file.exists()) {
-                        this.displayError("This directory does not exist. Please try again.");
+                        this.displayError("This directory does not exist. " + TRY_AGAIN);
                         continue;
                     } else if (!file.isDirectory()) {
-                        this.displayError("This path is not a directory. Please try again.");
+                        this.displayError("This path is not a directory. " + TRY_AGAIN);
                         continue;
-                    } else if (!(SystemUtils.file(newValue + File.separator + "libjpl.so")
+                    } else if (!(SystemUtils.file(newValue + File.separator + LIBJPL_SO)
                                     .exists())) {
-                        this.displayError("This directory does not contain \"libjpl.so\". "
-                                + "You either supplied the wrong directory, "
+                        this.displayError(
+                                StringUtils.appendPeriod(
+                                        "This directory does not contain "
+                                                + StringUtils.addDoubleQuotes(LIBJPL_SO))
+                                + " You either supplied the wrong directory, "
                                 + "or JPL is not installed.");
                         continue;
                     }
@@ -376,17 +457,10 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         }
     }
 
-    private static String addQuotationsToPath(final String pathString) {
-        final String pathDelimiter = "\'";
-        return pathDelimiter + pathString + pathDelimiter;
-    }
-
     private void printSettings() {
-        this.displayMessage(StringUtils.appendPeriod(HEADER_LINE_START
-                + "Reading configuration from "
-                + addQuotationsToPath(ConfigReader.getConfigPath())));
-        this.displayMessage(HEADER_LINE_START);
-        this.displayMessage(HEADER_LINE_START + "The following settings were found: ");
+        this.displayMessage(HEADER_LINE_START + "Reading configuration from "
+                + StringUtils.addQuotations(ConfigReader.getConfigPath()) + StringUtils.COMMA);
+        this.displayMessage(HEADER_LINE_START + "the following settings were found:");
         final List<String> propertyNames = new LinkedList<String>();
         for (final String s: ConfigReader.getInstance().getAllProperties().keySet()) {
             propertyNames.add(s);
@@ -409,15 +483,20 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                                 + System.lineSeparator() + StringUtils.HASH + StringUtils.TAB
                                 + value);
         }
+        if (!propertyNames.isEmpty()) {
+            this.displayMessage(HEADER_LINE_START);
+        }
         if (this.requestConfirmation(HEADER_LINE_START + "Do you want to edit these settings? "
-                + "This will open the configuration "
-                + "file via \'xdg-open\' or your chosen text editor"
+                + "This will open the configuration file via "
+                + StringUtils.addQuotations(ConfigReader.XDG_OPEN) + " or your chosen text editor"
                 + " and require a restart of ViRAGe.")) {
             try {
                 this.displayMessage(HEADER_LINE_START
                         + "If ViRAGe freezes or terminates without opening an editor, "
-                        + "please try another one by setting \"SYSTEM_TEXT_EDITOR\" in "
-                        + ConfigReader.getConfigPath() + ". At the moment, only windowed "
+                        + "please try another one by setting "
+                        + StringUtils.addDoubleQuotes(ConfigReader.SYSTEM_EDITOR)
+                        + " in " + ConfigReader.getConfigPath()
+                        + ". At the moment, only windowed "
                         + "editors (mousepad, ...) are supported, not in-terminal ones "
                         + "(nano, vim, ...).");
                 ConfigReader.getInstance().openConfigFileForEditing();
@@ -425,9 +504,13 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                         + "Please restart ViRAGe for the changes to take effect.");
                 SystemUtils.exit(0);
             } catch (final ExternalSoftwareUnavailableException e) {
-                this.displayMessage(HEADER_LINE_START
-                        + "No text editor available. Please set the configuration option "
-                        + "\"SYSTEM_TEXT_EDITOR\" or the environment variable \"EDITOR\".");
+                this.displayMessage(
+                        HEADER_LINE_START + "No text editor available. "
+                        + StringUtils.appendPeriod(
+                                "Please set the configuration option "
+                                        + StringUtils.addDoubleQuotes(ConfigReader.SYSTEM_EDITOR)
+                                        + " or the environment variable "
+                                        + StringUtils.addDoubleQuotes(ConfigReader.EDITOR)));
             }
         }
     }
@@ -437,7 +520,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
      */
     public void displayHelp() {
         final InputStream helpStream =
-                this.getClass().getClassLoader().getResourceAsStream("help.txt");
+                this.getClass().getClassLoader().getResourceAsStream(HELP + DOT_TXT);
         final StringWriter writer = new StringWriter();
         try {
             IOUtils.copy(helpStream, writer, StandardCharsets.UTF_8);
@@ -446,12 +529,15 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             e.printStackTrace();
         }
         this.displayMessage(writer.toString());
-        this.requestString("Press ENTER to leave help and return to previous state.");
+        this.requestString("Press ENTER to leave " + HELP + " and return to previous state.");
     }
 
     private void displayInputMarker() {
         try {
-            this.outputWriter.append(".......... \033[1A" + System.lineSeparator());
+            this.outputWriter.append(
+                    StringUtils.printCollection2(
+                            StringUtils.repeat(StringUtils.TEN, StringUtils.PERIOD), "\033[1A")
+                            + System.lineSeparator());
             this.outputWriter.flush();
         } catch (final IOException e) {
             e.printStackTrace();
@@ -465,12 +551,12 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             this.displayInputMarker();
             final String input = this.scanner.nextLine();
             switch (input) {
-            case "?":
+            case StringUtils.QUESTION:
             case "h":
-            case "help":
+            case HELP:
                 this.displayHelp();
                 break;
-            case "exit":
+            case EXIT:
                 this.core.submit(new VirageExitJob(this, 0));
                 break;
             default:
@@ -515,7 +601,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
     /**
      * Request the property string.
-     * TODO: Change to return type <code>List&lt;Property&gt;</code>, maybe?
+     * TODO: Change to return type to <code>List&lt;Property&gt;</code>, maybe?
      *
      * @return the property string.
      */
@@ -523,7 +609,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         final FrameworkRepresentation framework = this.core.getFrameworkRepresentation();
         String propertiesString =
                 this.requestString("Please input the desired "
-                                    + "properties (separated by ',') or "
+                                    + "properties (separated by '" + StringUtils.COMMA + "') or "
                                     + "leave empty to display available properties.");
         propertiesString = StringUtils.removeWhitespace(propertiesString);
         boolean invalid = false;
@@ -532,7 +618,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             for (final String propertyString: propertyStrings) {
                 final Property property = framework.getProperty(propertyString);
                 if (property == null) {
-                    LOGGER.error("Property \"" + propertyString + "\" is undefined.");
+                    LOGGER.error("Property " + StringUtils.addDoubleQuotes(propertyString)
+                                + " is undefined.");
                     invalid = true;
                     break;
                 }
@@ -557,8 +644,9 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
     private String requestCompositionString() {
         boolean invalid = false;
         String compositionString = this
-                .requestString("Please input a composition (in Prolog format) "
-                        + "or leave empty to display available components.");
+                .requestString("Please input a composition "
+                        + StringUtils.parenthesize("in Prolog format")
+                        + " or leave empty to display available components.");
         compositionString = StringUtils.removeWhitespace(compositionString);
         if (!compositionString.isEmpty()) {
             try {
@@ -567,8 +655,8 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 this.displayMessage("Interpreted input as " + tree.toString() + StringUtils.PERIOD);
                 return tree.toString();
             } catch (final IllegalArgumentException e) {
-                LOGGER.error("\"" + compositionString
-                        + "\" could not be parsed. Please check the brackets and try again.");
+                LOGGER.error(StringUtils.addDoubleQuotes(compositionString)
+                            + " could not be parsed. Please check the brackets and try again.");
                 invalid = true;
             }
         }
@@ -630,7 +718,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         String outputPath = this.requestString("Please specify a directory for the "
                 + "generated theory file."
                 + StringUtils.parenthesize(
-                        ENTER_FOR_DEFAULT_MESSAGE + addQuotationsToPath(defaultPath)));
+                        ENTER_FOR_DEFAULT_MESSAGE + StringUtils.addQuotations(defaultPath)));
         if (outputPath.isEmpty()) {
             outputPath = defaultPath;
         }
@@ -676,8 +764,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
      * @return the job result
      */
     private FrameworkRepresentation parseAndSubmitJob(final String path) {
-        final File f = SystemUtils.file(path);
-        final VirageParseJob parseJob = new VirageParseJob(this, f);
+        final VirageParseJob parseJob = new VirageParseJob(this, SystemUtils.file(path));
         this.displayMessage("The following operation might take some time, "
                 + "especially when ViRAGe is run with previously " + "un-built Isabelle sessions.");
         this.core.submit(parseJob);
@@ -686,12 +773,11 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         SystemUtils.semiBusyWaitingHelper();
         final FrameworkRepresentation toReturn;
         switch (parseJob.getState()) {
-        case FAILED:
+        case FINISHED:
             toReturn = parseJob.getResult();
             break;
         default:
             toReturn = null;
-            break;
         }
         return toReturn;
     }
@@ -703,17 +789,17 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                         SystemUtils.file(path + File.separator + IsabelleUtils.ROOT)
                         );
         if (sessionNames.isEmpty()) {
-            this.displayError("No sessions found in the ROOT file!");
+            this.displayError("No sessions found in the " + IsabelleUtils.ROOT + " file!");
             return null;
         } else if (sessionNames.size() == 1) {
             sessionName = sessionNames.get(0);
-            this.displayMessage(
-                    "Found only one session, \"" + sessionName + "\", this will be used.");
+            this.displayMessage("Found only one session, "
+                            + StringUtils.addDoubleQuotes(sessionName) + ", this will be used.");
         } else {
             final int sessionNameIndex =
                     this.chooseAlternative(
-                            "Which of the following sessions specified in the ROOT file "
-                                    + "shall be used?",
+                            "Which of the following sessions specified in the "
+                                    + IsabelleUtils.ROOT + " file shall be used?",
                             sessionNames, false);
             sessionName = sessionNames.get(sessionNameIndex);
         }
@@ -764,13 +850,15 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
                 }
                 if (!plFiles.isEmpty()) {
                     final int idx = this.chooseAlternative(
-                            "The following (extended) Prolog files (.epl) were found. "
-                            + "Do you want to use one of those and skip (extended) Prolog "
-                            + "file (.epl) generation? "
+                            "The following " + PrologParser.EPL_FILE + "s "
+                            + StringUtils.parenthesize(PrologParser.DOT_PL) + " were found. "
+                            + "Do you want to use one of those and skip " + PrologParser.EPL_FILE
+                            + StringUtils.SPACE + StringUtils.parenthesize(PrologParser.DOT_PL)
+                            + " generation? "
                             + "This saves time if no changes to the Isabelle theories were "
-                            + "made since the (extended) Prolog file (.epl) was created.",
+                            + "made since the " + PrologParser.EPL_FILE + StringUtils.SPACE
+                            + StringUtils.parenthesize(PrologParser.DOT_PL) + " was created.",
                             plFiles, true);
-
                     if (idx != -1) {
                         return this.extractAndOrParseFramework(plFiles.get(idx).getAbsolutePath());
                     } else {
@@ -781,8 +869,9 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
             if (!ConfigReader.getInstance().hasIsabelle()) {
                 this.displayMessage("Isabelle is not available. "
-                        + "Please install Isabelle or supply an "
-                        + "(extended) Prolog file (.epl) directly.");
+                        + "Please install Isabelle or supply an " + PrologParser.EPL_FILE
+                        + StringUtils.SPACE
+                        + StringUtils.parenthesize(PrologParser.DOT_PL) + " directly.");
                 throw new ExternalSoftwareUnavailableException();
             }
             final VirageExtractJob extractJob =
@@ -809,18 +898,26 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         while (true) {
             if (ConfigReader.getInstance().hasPathToRootFile() && firstTry
                     && this.requestConfirmation(
-                            "Configuration option \"ISABELLE_PATH_TO_ROOT_FILE\" "
-                                    + "is specified as "
-                                    + addQuotationsToPath(
-                                            ConfigReader.getInstance().getPathToRootFile())
-                                    + ". " + "Do you want to use this Isabelle ROOT file to "
-                                    + "generate an (extended) Prolog file (.epl)?")) {
+                            StringUtils.appendPeriod(
+                                    "Configuration option "
+                                    + StringUtils.addDoubleQuotes(ConfigReader.ROOT_FILE_PATH)
+                                    + " is specified as "
+                                    + StringUtils.addQuotations(
+                                            ConfigReader.getInstance().getPathToRootFile()))
+                                    + StringUtils.SPACE
+                                    + StringUtils.appendQuestionMark(
+                                            "Do you want to use this Isabelle " + IsabelleUtils.ROOT
+                                            + " file to generate an " + PrologParser.EPL_FILE
+                                            + StringUtils.SPACE
+                                    + StringUtils.parenthesize(PrologParser.DOT_PL)))) {
                 path = ConfigReader.getInstance().getPathToRootFile();
                 firstTry = false;
             } else {
-                path = this.requestString("Please input the path to an (E)PL file or "
-                        + "an Isabelle ROOT file. " + "(Press ENTER for default: "
-                        + addQuotationsToPath(defaultPath) + ")");
+                path = this.requestString(INPUT_PATH_MSG
+                        + "an " + PrologParser.EPL_FILE + " or an Isabelle " + IsabelleUtils.ROOT
+                        + " file. "
+                        + StringUtils.parenthesize(ENTER_FOR_DEFAULT_MESSAGE
+                                                    + StringUtils.addQuotations(defaultPath)));
             }
             if (path.isEmpty()) {
                 path = defaultPath;
