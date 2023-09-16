@@ -333,5 +333,5 @@ lemma seq_comp_def_set_trans:
       a \<in> defer m A p"
   using seq_comp_def_set_bounded assms(1) assms(2)
         assms(3) in_mono seq_comp_defers_def_set
-  by (metis (no_types, hide_lams))
+  by (metis (no_types, opaque_lifting))
 end

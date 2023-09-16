@@ -331,7 +331,7 @@ lemma seq_comp_def_set_trans:
       a \<in> defer m A p"
   using seq_comp_def_set_bounded assms(1) assms(2)
         assms(3) in_mono seq_comp_defers_def_set
-  by (metis (no_types, hide_lams))
+  by (metis (no_types, opaque_lifting))
 
 subsection \<open>Composition Rules\<close>
 
@@ -573,7 +573,7 @@ next
       defer n (defer m A p) (limit_profile (defer m A p) p)"
     using def_1_n defers_def fin_A non_blocking_def non_blocking_m
           prof_A seq_comp_defers_def_set
-    by (metis (no_types, hide_lams))
+    by (metis (no_types, opaque_lifting))
   have
     "\<forall>n f. defers n f =
       (electoral_module f \<and>
@@ -800,7 +800,7 @@ next
       "{a} = defer m A q \<longrightarrow> defer (m \<triangleright> n) A q \<subseteq> {a}"
       using finite_profile_q electoral_mod_m electoral_mod_n
             seq_comp_def_set_sound
-      by (metis (no_types, hide_lams))
+      by (metis (no_types, opaque_lifting))
     ultimately have
       "(a \<in> defer m A p) \<longrightarrow> defer (m \<triangleright> n) A q \<subseteq> {a}"
       by blast (* lifted defer-subset of a *)

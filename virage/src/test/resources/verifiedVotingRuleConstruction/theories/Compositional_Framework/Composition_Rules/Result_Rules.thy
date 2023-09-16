@@ -381,7 +381,7 @@ next
       defer n (defer m A p) (limit_profile (defer m A p) p)"
     using def_1_n defers_def fin_A non_blocking_def non_blocking_m
           prof_A seq_comp_defers_def_set
-    by (metis (no_types, hide_lams))
+    by (metis (no_types, opaque_lifting))
   have
     "\<forall>n f. defers n f =
       (electoral_module f \<and>
