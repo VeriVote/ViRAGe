@@ -155,7 +155,7 @@ public final class ScalaIsabelleFacade {
      * The theory-name function.
      */
     private static final String THY_NAME =
-            "Context" + IsabelleUtils.THEORY_NAME_SEPARATOR + "theory_name";
+            "Context" + IsabelleUtils.THEORY_NAME_SEPARATOR + "theory_base_name";
 
     /**
      * The specifications-of function.
