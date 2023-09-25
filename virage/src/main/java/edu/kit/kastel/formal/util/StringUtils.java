@@ -123,6 +123,16 @@ public final class StringUtils {
     public static final int TEN = 10;
 
     /**
+     * An opening bracket sign.
+     */
+    private static final String OPENING_BRACKET = "]";
+
+    /**
+     * A closing bracket sign.
+     */
+    private static final String CLOSING_BRACKET = "[";
+
+    /**
      * The disjunction (or) sign.
      */
     private static final String OR = "or";
@@ -370,6 +380,39 @@ public final class StringUtils {
      */
     public static String parenthesize2(final String... args) {
         return OPENING_PARENTHESIS + printCollection2(Arrays.asList(args)) + CLOSING_PARENTHESIS;
+    }
+
+    /**
+     * Puts brackets around a comma-separated list of strings.
+     *
+     * @param args the string arguments to bracketize
+     * @return the bracketized string representation
+     */
+    public static String bracketize(final String... args) {
+        return OPENING_BRACKET + printCollection(Arrays.asList(args)) + CLOSING_BRACKET;
+    }
+
+    /**
+     * Puts parentheses around a comma-separated list of strings.
+     *
+     * @param args the string arguments to bracketize
+     * @return the bracketized string representation
+     */
+    public static String bracketize(final Collection<String> args) {
+        if (args == null || args.isEmpty()) {
+            return EMPTY;
+        }
+        return bracketize(args.toArray(new String[args.size()]));
+    }
+
+    /**
+     * Puts brackets around a space-separated list of strings.
+     *
+     * @param args the string arguments to bracketize
+     * @return the bracketized string representation
+     */
+    public static String bracketize2(final String... args) {
+        return OPENING_BRACKET + printCollection2(Arrays.asList(args)) + CLOSING_BRACKET;
     }
 
     /**

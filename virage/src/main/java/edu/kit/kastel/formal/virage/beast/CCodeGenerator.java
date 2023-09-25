@@ -267,7 +267,7 @@ public final class CCodeGenerator {
 
     /*public File generateAndCompileCCodeFromComposition(final String compositionString,
                                                          final int numVoters,
-                                                         final int numCandidates)
+                                                         final int numAlternatives)
                 throws IOException, InterruptedException, CompilationFailedException {
         final File votingRuleFile = this.getCCodeFromComposition(compositionString);
         String cFiles = StringUtils.EMPTY;
@@ -293,7 +293,7 @@ public final class CCodeGenerator {
         final String gccCommand = ConfigReader.getInstance().getGccExecutable()
                 + StringUtils.prefixSpace(tmpVotingRuleFile.getAbsolutePath())
                 + cFiles + " -o " + exeFile.getAbsolutePath() + " -D V=" + numVoters
-                + " -D C=" + numCandidates;
+                + " -D C=" + numAlternatives;
         final Pair<String, String> output = ProcessUtils.runTerminatingProcess(gccCommand);
         if (!output.getFirstValue().isEmpty()) {
             LOGGER.warn(output.getFirstValue());

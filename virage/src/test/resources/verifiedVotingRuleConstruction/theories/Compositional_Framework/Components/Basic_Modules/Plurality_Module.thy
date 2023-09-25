@@ -59,23 +59,4 @@ proof -
     by (simp add: electoral_modI)
 qed
 
-ML \<open>
-    (* val w = (Defs.all_specifications_of (Theory.defs_of @{theory}))
-    val x = filter (fn x => String.isPrefix "Seq" x) (map (fn x => snd (fst x))
-        (Defs.all_specifications_of (Theory.defs_of @{theory}))) *)
-    val y = filter (fn x => (String.isPrefix ("Plurality_Module.plurality") (snd (fst (x))))) 
-        (Defs.all_specifications_of (Theory.defs_of @{theory}))
-    val z = filter (fn x => String.isPrefix ("Plurality_Module.plurality_def") (#description x)) (map (fn x => (hd (snd x))) y)
-
-    val def = hd z
-    val def_rhs = #rhs def
-
-    val def_funs = filter (fn x => String.isPrefix ("fun") (snd (fst x))) (def_rhs)
-    val def_consts = filter (fn x => not (String.isPrefix ("fun") (snd (fst x)))) (def_rhs)
-
-    val fun_type = Defs.pretty_entry (Defs.global_context @{theory}) (List.last def_funs)
-
-   (* val a = Defs.pretty_entry (Defs.global_context @{theory}) (nth (snd (#lhs (hd z), #rhs (hd z)) )2) *)
- \<close>
-
 end

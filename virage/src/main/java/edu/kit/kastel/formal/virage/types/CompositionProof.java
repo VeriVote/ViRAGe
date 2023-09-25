@@ -36,18 +36,6 @@ public final class CompositionProof {
     private String id = StringUtils.EMPTY;
 
     /**
-     * Simple constructor for a terminal proof step.
-     *
-     * @param goalValue the goal
-     * @param ruleValue the rule
-     */
-    public CompositionProof(final String goalValue, final CompositionRule ruleValue) {
-        this.goal = goalValue;
-        this.subgoals = new LinkedList<CompositionProof>();
-        this.rule = ruleValue;
-    }
-
-    /**
      * Simple constructor.
      *
      * @param goalValue the goal
@@ -59,6 +47,16 @@ public final class CompositionProof {
         this.goal = goalValue;
         this.subgoals = subgoalsValue;
         this.rule = ruleValue;
+    }
+
+    /**
+     * Simple constructor for a terminal proof step.
+     *
+     * @param goalValue the goal
+     * @param ruleValue the rule
+     */
+    public CompositionProof(final String goalValue, final CompositionRule ruleValue) {
+        this(goalValue, new LinkedList<CompositionProof>(), ruleValue);
     }
 
     /**

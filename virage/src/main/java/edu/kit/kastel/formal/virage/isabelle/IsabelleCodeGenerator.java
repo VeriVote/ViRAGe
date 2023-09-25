@@ -132,11 +132,6 @@ public final class IsabelleCodeGenerator {
     private static final String PARENT_NAME_VAR = "$PARENT_NAME";
 
     /**
-     * String for enumerable.
-     */
-    private static final String ENUM = "Enum";
-
-    /**
      * Comment for enumerable.
      */
     private static final String ENUM_COMMENT = "ENUM";
@@ -158,9 +153,11 @@ public final class IsabelleCodeGenerator {
     private static final String RELATION =
             StringUtils.parenthesize2(
                     ScalaIsabelleFacade.DEFAULT_VARIABLE + StringUtils.COLON,
-                    IsabelleUtils.SET + IsabelleUtils.THEORY_NAME_SEPARATOR + "set["
-                    + StringUtils.parenthesize(IsabelleUtils.DEFAULT_SET, IsabelleUtils.DEFAULT_SET)
-                    + "]") + StringUtils.COLON;
+                    IsabelleUtils.SET + IsabelleUtils.THEORY_NAME_SEPARATOR + IsabelleUtils.SET_FUNC
+                    + StringUtils.bracketize(
+                            StringUtils.parenthesize(
+                                    IsabelleUtils.DEFAULT_SET, IsabelleUtils.DEFAULT_SET)))
+            + StringUtils.COLON;
 
     /**
      * Option1 comment.
@@ -410,7 +407,7 @@ public final class IsabelleCodeGenerator {
         String result =
                 IsabelleCodeGenerator.votingContextTemplate
                 .replace(THEORY_NAME_VAR, theoryName).replace(MODULE_NAME_VAR, moduleName);
-        final boolean containsEnum = code.contains(ENUM);
+        final boolean containsEnum = code.contains(IsabelleUtils.ENUM);
         final boolean containsEquality = code.contains(EQUALITY);
         final boolean requiresRelation = code.contains(RELATION);
         final List<String> parameters = new LinkedList<String>();
@@ -423,7 +420,7 @@ public final class IsabelleCodeGenerator {
         if (containsEquality) {
             result = result.replace(COMMENT_OPEN + EQUALITY_COMMENT, StringUtils.EMPTY)
                     .replace(EQUALITY_COMMENT + COMMENT_CLOSE, StringUtils.EMPTY);
-            parameters.add(EQ_PARAMETER);
+            parameters.add(StringUtils.prefixSpace(EQ_PARAMETER));
         }
         if (requiresRelation) {
             result = result.replace(COMMENT_OPEN + OPTION2_COMMENT, StringUtils.EMPTY)
@@ -618,8 +615,10 @@ public final class IsabelleCodeGenerator {
                         theory.getName().length() - (IsabelleUtils.DOT_THY.length()));
         final String sessionName = this.buildSessionRoot(theoryName, theory);
         final File codeFile = invokeScalaCodeFromIsabelleTheory(theory, sessionName, theoryName);
-        // First, try using implicit values only
-        File votingContext = generateVotingContextFile(theoryName, moduleName, codeFile, false);
+        // First, try using implicit values only.
+        final File cxtImplVals = generateVotingContextFile(theoryName, moduleName, codeFile, false);
+        // If implicit values did not work, try setting them explicitly.
+        final File cxtExplVals = generateVotingContextFile(theoryName, moduleName, codeFile, true);
         final String jarPath = codeFile.getParent() + File.separator + moduleName + DOT_JAR;
         final String isaExec;
         try {
@@ -627,10 +626,15 @@ public final class IsabelleCodeGenerator {
         } catch (ExternalSoftwareUnavailableException e) {
             throw new CodeGenerationFailedException(e);
         }
-        int status = runScalaCompileProcess(codeFile, votingContext, isaExec, jarPath);
-        if (status != 0) { // Implicit values did not work, try setting them explicitly.
-            votingContext = generateVotingContextFile(theoryName, moduleName, codeFile, true);
-            status = runScalaCompileProcess(codeFile, votingContext, isaExec, jarPath);
+        int status = 1;
+        try {
+            status = runScalaCompileProcess(codeFile, cxtImplVals, isaExec, jarPath);
+        } catch (CodeGenerationFailedException e) {
+            LOGGER.info("Scala compilation with implicit values did not work,"
+                        + "now trying with explicit values.");
+        }
+        if (status != 0) {
+            status = runScalaCompileProcess(codeFile, cxtExplVals, isaExec, jarPath);
             if (status != 0) {
                 throw new CodeGenerationFailedException(
                         new CompilationFailedException(

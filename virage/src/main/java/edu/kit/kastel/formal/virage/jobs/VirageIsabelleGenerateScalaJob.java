@@ -30,9 +30,8 @@ public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitR
      * @param compositionValue the composition
      */
     public VirageIsabelleGenerateScalaJob(final VirageUserInterface issuer,
-            final String compositionValue) {
+                                          final String compositionValue) {
         super(issuer);
-
         this.composition = compositionValue;
     }
 

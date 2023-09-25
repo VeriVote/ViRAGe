@@ -334,16 +334,16 @@ public final class IsabelleFrameworkExtractor {
             changesMade = false;
             for (final PrologPredicate alias: toReturn.keySet()) {
                 final List<PrologPredicate> aliasExpansions = toReturn.get(alias);
-                for (final PrologPredicate candidate: toReturn.keySet()) {
-                    if (candidate == alias) {
+                for (final PrologPredicate predicate: toReturn.keySet()) {
+                    if (predicate == alias) {
                         continue;
                     }
-                    final List<PrologPredicate> candidateExpansions = toReturn.get(candidate);
+                    final List<PrologPredicate> predicateExpansions = toReturn.get(predicate);
                     final List<PrologPredicate> newValues =
-                        computeAllExpansions(alias, aliasExpansions, candidateExpansions);
+                        computeAllExpansions(alias, aliasExpansions, predicateExpansions);
                     for (final PrologPredicate newValue: newValues) {
-                        if (!candidateExpansions.contains(newValue)) {
-                            candidateExpansions.add(newValue);
+                        if (!predicateExpansions.contains(newValue)) {
+                            predicateExpansions.add(newValue);
                             changesMade = true;
                         }
                     }
@@ -356,15 +356,15 @@ public final class IsabelleFrameworkExtractor {
     private static List<PrologPredicate>
                 computeAllExpansions(final PrologPredicate alias,
                                      final List<PrologPredicate> aliasExpansions,
-                                     final List<PrologPredicate> candidateExpansions)
+                                     final List<PrologPredicate> predicateExpansions)
                     throws ExternalSoftwareUnavailableException {
         final List<PrologPredicate> toReturn = new LinkedList<PrologPredicate>();
-        for (final PrologPredicate candidateExpansion: candidateExpansions) {
-            final List<PrologPredicate> children = candidateExpansion.getAllChildren();
+        for (final PrologPredicate predicateExpansion: predicateExpansions) {
+            final List<PrologPredicate> children = predicateExpansion.getAllChildren();
             for (final PrologPredicate child: children) {
                 if (child.getName().equals(alias.getName())) {
                     for (final PrologPredicate aliasExpansion: aliasExpansions) {
-                        toReturn.add(replaceAlias(candidateExpansion, child, aliasExpansion));
+                        toReturn.add(replaceAlias(predicateExpansion, child, aliasExpansion));
                     }
                 }
             }

@@ -551,12 +551,10 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             this.displayInputMarker();
             final String input = this.scanner.nextLine();
             switch (input) {
-            case StringUtils.QUESTION:
-            case "h":
-            case HELP:
+            case StringUtils.QUESTION, "h", "H", HELP:
                 this.displayHelp();
                 break;
-            case EXIT:
+            case "x", "X", "q", "Q", EXIT:
                 this.core.submit(new VirageExitJob(this, 0));
                 break;
             default:

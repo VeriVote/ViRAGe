@@ -25,9 +25,9 @@ char** split_string(char* str) {
   return res;
 }
 
-int find_order_index(char* candidate) {
+int find_order_index(char* alternative) {
   for (int i = 0; i < C; i++) {
-    if (!strcmp(candidate, order[i])) return i;
+    if (!strcmp(alternative, order[i])) return i;
   }
 
   return C;

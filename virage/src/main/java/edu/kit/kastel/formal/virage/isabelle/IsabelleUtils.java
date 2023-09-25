@@ -82,6 +82,11 @@ public final class IsabelleUtils {
     public static final String THEORY_NAME_SEPARATOR = StringUtils.PERIOD;
 
     /**
+     * Main theory.
+     */
+    public static final String MAIN = "Main";
+
+    /**
      * Higher-order logic theory.
      */
     public static final String HOL = "HOL";
@@ -90,6 +95,16 @@ public final class IsabelleUtils {
      * Isabelle's set theory.
      */
     public static final String SET = "Set";
+
+    /**
+     * Isabelle's enumerable theory.
+     */
+    public static final String ENUM = "Enum";
+
+    /**
+     * Isabelle's set function.
+     */
+    public static final String SET_FUNC = "set";
 
     /**
      * String to represent the HOL type for natural numbers.

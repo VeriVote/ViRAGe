@@ -80,9 +80,9 @@ public class VirageAnalyzeAllPropertiesJob extends
     protected final void concreteExecute() {
         this.unaryProperties = new LinkedList<Property>();
         final VirageCore execCore = this.getExecutingCore();
-        for (final Property candidate: execCore.getFrameworkRepresentation().getProperties()) {
-            if (!candidate.isAtomic() && candidate.getArity() == 1) {
-                this.unaryProperties.add(candidate);
+        for (final Property property: execCore.getFrameworkRepresentation().getProperties()) {
+            if (!property.isAtomic() && property.getArity() == 1) {
+                this.unaryProperties.add(property);
             }
         }
         Collections.sort(this.unaryProperties,
