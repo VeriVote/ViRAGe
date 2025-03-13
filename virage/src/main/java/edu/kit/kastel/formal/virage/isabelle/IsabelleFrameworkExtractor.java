@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.collect.Maps;
+
 import edu.kit.kastel.formal.util.Pair;
 import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.util.SystemUtils;
@@ -81,16 +83,10 @@ public final class IsabelleFrameworkExtractor {
     private final PrologParser parser;
 
     /**
-     * List of Prolog Strings.
-     */
-    private final List<String> prologStrings;
-
-    /**
      * Simple constructor.
      */
     public IsabelleFrameworkExtractor() {
         this.parser = new SimplePrologParser();
-        this.prologStrings = new LinkedList<String>();
     }
 
     private static String buildPrologClauseString(final String succedent,
@@ -185,18 +181,13 @@ public final class IsabelleFrameworkExtractor {
                         continue thmLoop;
                     }
                 }
-                final List<String> prologStringList = new LinkedList<String>();
-                prologStringList.add(buildPrologClauseString(succedent, antecedents));
+                final String prologString = buildPrologClauseString(succedent, antecedents);
                 try {
-                    for (final String prologString: prologStringList) {
-                        final CompositionRule rule =
-                                new CompositionRule(thm.getKey(),
-                                                    thy.getKey().split(DOT_REGEX)[1]
-                                                            + IsabelleUtils.DOT_THY,
-                                                    this.parser.parseSingleClause(prologString));
-                        framework.add(rule);
-                        this.prologStrings.add(prologString);
-                    }
+                    framework.add(
+                            new CompositionRule(thm.getKey(),
+                                                thy.getKey().split(DOT_REGEX)[1]
+                                                        + IsabelleUtils.DOT_THY,
+                                                this.parser.parseSingleClause(prologString)));
                 } catch (final IllegalArgumentException e) {
                     this.logger.warn(e);
                 }
@@ -244,8 +235,7 @@ public final class IsabelleFrameworkExtractor {
                 break;
             }
         }
-        res += StringUtils.RIGHT_PAREN;
-        return res;
+        return res + StringUtils.RIGHT_PAREN;
     }
 
     /**
@@ -308,7 +298,7 @@ public final class IsabelleFrameworkExtractor {
                 computeTransitiveClosureOfComponentAliases() {
         final Map<String, String> input = ConfigReader.getInstance().getComponentAliases();
         final Map<PrologPredicate, List<PrologPredicate>> res =
-                    new HashMap<PrologPredicate, List<PrologPredicate>>();
+                Maps.newHashMapWithExpectedSize(input.size());
         for (final Map.Entry<String, String> in: input.entrySet()) {
             res.put(this.parser.parsePredicate(in.getKey()),
                     List.of(this.parser.parsePredicate(in.getValue())));
@@ -334,16 +324,16 @@ public final class IsabelleFrameworkExtractor {
             changesMade = false;
             for (final PrologPredicate alias: toReturn.keySet()) {
                 final List<PrologPredicate> aliasExpansions = toReturn.get(alias);
-                for (final PrologPredicate candidate: toReturn.keySet()) {
-                    if (candidate == alias) {
+                for (final PrologPredicate predicate: toReturn.keySet()) {
+                    if (predicate == alias) {
                         continue;
                     }
-                    final List<PrologPredicate> candidateExpansions = toReturn.get(candidate);
+                    final List<PrologPredicate> predicateExpansions = toReturn.get(predicate);
                     final List<PrologPredicate> newValues =
-                        computeAllExpansions(alias, aliasExpansions, candidateExpansions);
+                        computeAllExpansions(alias, aliasExpansions, predicateExpansions);
                     for (final PrologPredicate newValue: newValues) {
-                        if (!candidateExpansions.contains(newValue)) {
-                            candidateExpansions.add(newValue);
+                        if (!predicateExpansions.contains(newValue)) {
+                            predicateExpansions.add(newValue);
                             changesMade = true;
                         }
                     }
@@ -356,15 +346,15 @@ public final class IsabelleFrameworkExtractor {
     private static List<PrologPredicate>
                 computeAllExpansions(final PrologPredicate alias,
                                      final List<PrologPredicate> aliasExpansions,
-                                     final List<PrologPredicate> candidateExpansions)
+                                     final List<PrologPredicate> predicateExpansions)
                     throws ExternalSoftwareUnavailableException {
         final List<PrologPredicate> toReturn = new LinkedList<PrologPredicate>();
-        for (final PrologPredicate candidateExpansion: candidateExpansions) {
-            final List<PrologPredicate> children = candidateExpansion.getAllChildren();
+        for (final PrologPredicate predicateExpansion: predicateExpansions) {
+            final List<PrologPredicate> children = predicateExpansion.getAllChildren();
             for (final PrologPredicate child: children) {
                 if (child.getName().equals(alias.getName())) {
                     for (final PrologPredicate aliasExpansion: aliasExpansions) {
-                        toReturn.add(replaceAlias(candidateExpansion, child, aliasExpansion));
+                        toReturn.add(replaceAlias(predicateExpansion, child, aliasExpansion));
                     }
                 }
             }
@@ -384,7 +374,7 @@ public final class IsabelleFrameworkExtractor {
         } catch (final IllegalArgumentException e) {
             unifiable = false;
         }
-        if (replacements.keySet().contains(PrologPredicate.ANONYMOUS)) {
+        if (replacements.containsKey(PrologPredicate.ANONYMOUS)) {
             replacements.remove(PrologPredicate.ANONYMOUS);
         }
         final boolean onlyOneVariable =
@@ -527,7 +517,6 @@ public final class IsabelleFrameworkExtractor {
                                                    varName.toUpperCase());
             matcher = pattern.matcher(prologString);
         }
-        prologString = prologString.replace("?", StringUtils.EMPTY);
-        return prologString;
+        return prologString.replace("?", StringUtils.EMPTY);
     }
 }

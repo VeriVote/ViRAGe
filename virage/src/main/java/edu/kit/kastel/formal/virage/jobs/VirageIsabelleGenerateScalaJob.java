@@ -14,11 +14,6 @@ import edu.kit.kastel.formal.virage.types.CodeGenerationFailedException;
  */
 public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitResult<File> {
     /**
-     * The Isabelle Scala generator.
-     */
-    private IsabelleCodeGenerator generator;
-
-    /**
      * The composition from which an implementation shall be generated.
      */
     private final String composition;
@@ -30,9 +25,8 @@ public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitR
      * @param compositionValue the composition
      */
     public VirageIsabelleGenerateScalaJob(final VirageUserInterface issuer,
-            final String compositionValue) {
+                                          final String compositionValue) {
         super(issuer);
-
         this.composition = compositionValue;
     }
 
@@ -53,7 +47,7 @@ public final class VirageIsabelleGenerateScalaJob extends VirageJobWithExplicitR
 
     @Override
     protected void concreteExecute() throws CodeGenerationFailedException {
-        this.generator = this.getExecutingCore().getIsabelleCodeGenerator();
-        this.setResult(this.generator.generateScalaCodeAndCompile(this.composition));
+        final IsabelleCodeGenerator generator = this.getExecutingCore().getIsabelleCodeGenerator();
+        this.setResult(generator.generateScalaCodeAndCompile(this.composition));
     }
 }

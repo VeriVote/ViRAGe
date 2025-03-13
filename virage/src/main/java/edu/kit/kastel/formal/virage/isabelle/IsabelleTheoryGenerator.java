@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -194,7 +196,7 @@ public final class IsabelleTheoryGenerator {
                 // Isabelle expects imports without suffix.
                 originStrings.add(origin.replace(IsabelleUtils.DOT_THY, StringUtils.EMPTY));
             } else {
-                if (origin.equals(ExtendedPrologStrings.UNPROVEN)) {
+                if (ExtendedPrologStrings.UNPROVEN.equals(origin)) {
                     // Proof relies on unproven facts, add a comment explaining this.
                     usingUnprovenFacts = true;
                 }
@@ -207,23 +209,11 @@ public final class IsabelleTheoryGenerator {
         }
         String res = r.toString();
         if (usingUnprovenFacts) {
-            final String star = "*";
-            final String separatorStart = StringUtils.addSpace(star);
-            final String separatorEnd = StringUtils.prefixSpace(star);
-            final String separatorLine =
-                    StringUtils.parenthesize(
-                            StringUtils.repeat(22, StringUtils.addSpace(star)) + star);
             res += System.lineSeparator() + System.lineSeparator()
-                    + separatorLine + System.lineSeparator()
-                    + StringUtils.parenthesize(separatorStart
-                            + "Some proofs appear to rely on facts not yet" + separatorEnd)
-                     + System.lineSeparator()
-                    + StringUtils.parenthesize(separatorStart
-                            + " proven within Isabelle/HOL. Check Isabelle" + separatorEnd)
-                     + System.lineSeparator()
-                    + StringUtils.parenthesize(separatorStart
-                            + "    error messages for more information.   " + separatorEnd)
-                     + System.lineSeparator() + separatorLine;
+                    + StringUtils.isabelleCommentBlock(
+                            "Some proofs appear to rely on facts not yet",
+                            " proven within Isabelle/HOL. Check Isabelle",
+                            "    error messages for more information.   ");
         }
         return res;
     }
@@ -262,48 +252,51 @@ public final class IsabelleTheoryGenerator {
         for (final String type: moduleParamTypesList) {
             moduleParamTypes.append(type);
         }
-        final String moduleParameterTypeString = moduleParamTypes.toString();
-        return moduleParameterTypeString;
+        return moduleParamTypes.toString();
     }
 
     private static Pair<String, String> buildModuleDef(final Map<String, Set<String>> moduleDefMap,
                                                        final String importsParam,
                                                        final String sessionName) {
-        String moduleDef = StringUtils.EMPTY;
-        final StringBuilder imports = new StringBuilder(importsParam);
-        // There will be only one iteration, but it is a bit tedious to extract
-        // single elements from sets.
-        for (final Map.Entry<String, Set<String>> entry: moduleDefMap.entrySet()) {
-            moduleDef = entry.getKey();
-            // Additional imports might have occurred, which are only relevant
-            // for the definition of the module, but not used within the proofs.
-            // Add those.
-            for (final String importString: entry.getValue()) {
-                final String importStringWithoutSuffix =
-                        importString.replace(IsabelleUtils.DOT_THY, StringUtils.EMPTY);
-                if (!imports.toString().contains(importStringWithoutSuffix)) {
-                    final String importWithSuffix =
-                            sessionName + StringUtils.PERIOD + importStringWithoutSuffix;
-                    imports.append(StringUtils.surroundWithSpaces(importWithSuffix));
-                }
+        final Set<String> imports = new LinkedHashSet<String>();
+        imports.add(importsParam);
+        // There exists only one element, otherwise there is an exception thrown beforehand.
+        final String moduleDef = new ArrayList<String>(moduleDefMap.keySet()).get(0);
+        // imports.add(sessionName + StringUtils.PERIOD + moduleDef);
+        // Additional imports might have occurred, which are only relevant
+        // for the definition of the module, but not used within the proofs.
+        // Add those.
+        for (final String importString: new ArrayList<Set<String>>(moduleDefMap.values()).get(0)) {
+            final String importStringWithoutSuffix =
+                    importString.replace(IsabelleUtils.DOT_THY, StringUtils.EMPTY);
+            if (!imports.contains(importStringWithoutSuffix)) {
+                final String importWithSuffix =
+                        sessionName + StringUtils.PERIOD + importStringWithoutSuffix;
+                imports.add(importWithSuffix);
             }
         }
-        return new Pair<String, String>(moduleDef, imports.toString());
+        // Build string from chain of imports
+        final StringBuilder importBuild = new StringBuilder(importsParam);
+        for (final String entry: imports) {
+            importBuild.append(StringUtils.surroundWithSpaces(entry));
+        }
+        final String importString =
+                importBuild.toString().isBlank() ? IsabelleUtils.MAIN : importBuild.toString();
+        return new Pair<String, String>(moduleDef, importString);
     }
 
     private static String replaceVariables(final String theoryName, final String imports,
                                            final String moduleParamTypes, final String moduleName,
                                            final String moduleParameters, final String moduleDef,
                                            final String proofs) {
-        String res = IsabelleTheoryGenerator.theoryTemplate;
-        res = res.replace(VAR_PROOFS, proofs);
-        res = res.replace(VAR_THEORY_NAME, theoryName);
-        res = res.replace(VAR_IMPORTS, imports);
-        res = res.replace(VAR_MODULE_PARAM_TYPES, moduleParamTypes);
-        res = res.replace(VAR_MODULE_DEF, moduleDef);
-        res = res.replace(VAR_MODULE_NAME, moduleName);
-        res = res.replace(VAR_MODULE_PARAMETERS, moduleParameters);
-        return res;
+        return IsabelleTheoryGenerator.theoryTemplate
+                .replace(VAR_PROOFS, proofs)
+                .replace(VAR_THEORY_NAME, theoryName)
+                .replace(VAR_IMPORTS, imports)
+                .replace(VAR_MODULE_PARAM_TYPES, moduleParamTypes)
+                .replace(VAR_MODULE_DEF, moduleDef)
+                .replace(VAR_MODULE_NAME, moduleName)
+                .replace(VAR_MODULE_PARAMETERS, moduleParameters);
     }
 
     /**
@@ -351,21 +344,23 @@ public final class IsabelleTheoryGenerator {
         final Map<String, Set<String>> moduleDefMap =
                 IsabelleUtils.translatePrologToIsabelle(this.functionsAndDefinitions,
                                                         proofPredicate);
-        if (moduleDefMap.keySet().size() != 1) {
+        if (moduleDefMap.size() != 1) {
             throw new IllegalArgumentException();
         }
         final Pair<String, String> moduleDefResult =
                 buildModuleDef(moduleDefMap, imports, this.framework.getSessionName());
+        if (moduleDefResult.getSecondValue().isBlank()) {
+            throw new IllegalArgumentException();
+        }
         final StringBuilder proofsString = new StringBuilder();
         for (final CompositionProof proof: proofs) {
             proofsString.append(this.generator.generateIsabelleProof(proof)
                                 + System.lineSeparator() + System.lineSeparator());
         }
-        final String prfString = proofsString.toString();
         final String fileContents =
                 replaceVariables(theoryName, moduleDefResult.getSecondValue(),
                                  moduleParameterTypeString, moduleName, moduleParameterString,
-                                 moduleDefResult.getFirstValue(), prfString);
+                                 moduleDefResult.getFirstValue(), proofsString.toString());
         final SimpleFileWriter writer = new SimpleFileWriter();
         final String outputPath = buildOutputPath(passedOutputPath, theoryName);
         writer.writeToFile(outputPath, fileContents);

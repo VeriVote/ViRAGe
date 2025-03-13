@@ -20,6 +20,8 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Variable;
 
+import com.google.common.collect.Maps;
+
 import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.util.SystemUtils;
 import edu.kit.kastel.formal.virage.core.ConfigReader;
@@ -163,19 +165,22 @@ public final class JplFacade {
      */
     public static Map<String, String> parseReplacementMap(final String variable,
                                                           final Map<String, String> map) {
-        final Map<String, String> result = new HashMap<String, String>();
-        // Looks like this: ['='(_108, 1)]
-        // _NUMBER is an alias for a variable.
         String replacementString = map.get(variable);
         replacementString = StringUtils.removeWhitespace(replacementString);
         replacementString = replacementString.substring(1, replacementString.length() - 1);
+
+        final String[] replacements = replacementString.isEmpty()
+                ? new String[] {} : replacementString.split("\\'=\\'");
+        // replacements[0] is always empty, as the String starts with the splitting
+        // regular expression.
+
+        final Map<String, String> result = new HashMap<String, String>(replacements.length);
+        // Looks like this: ['='(_108, 1)]
+        // _NUMBER is an alias for a variable.
         if (replacementString.isEmpty()) {
             // List of replacements is empty.
             return result;
         }
-        final String[] replacements = replacementString.split("\\'=\\'");
-        // replacements[0] is always empty, as the String starts with the splitting
-        // regular expression.
         for (int i = 1; i < replacements.length; i++) {
             String replacement = replacements[i];
             if (replacement.endsWith(StringUtils.COMMA)) {
@@ -316,18 +321,18 @@ public final class JplFacade {
             SearchResult<Boolean> toReturn = null;
             if (result == null) {
                 // No solution, query failed.
-                toReturn = new SearchResult<Boolean>(QueryState.FAILED, false);
+                toReturn = new SearchResult<Boolean>(QueryState.FAILED, Boolean.FALSE);
             } else if (!result.containsKey(unusedVariable)) {
                 // Empty Map was received, timeout.
                 toReturn = new SearchResult<Boolean>(QueryState.TIMEOUT, null);
-            } else if (result.get(unusedVariable).equals(DEPTH_LIMIT_EXCEEDED)) {
+            } else if (DEPTH_LIMIT_EXCEEDED.equals(result.get(unusedVariable))) {
                 // Depth limit exceeded, increase and try again.
                 maxDepth++;
                 continue;
             } else if (StringUtils.isNumeric(result.get(unusedVariable))) {
                 // Query succeeded.
                 result.remove(unusedVariable);
-                toReturn = new SearchResult<Boolean>(QueryState.SUCCESS, true);
+                toReturn = new SearchResult<Boolean>(QueryState.SUCCESS, Boolean.TRUE);
             }
             if (toReturn != null) {
                 return toReturn;
@@ -387,7 +392,7 @@ public final class JplFacade {
                 // Empty Map was received, timeout.
                 toReturn = new SearchResult<Map<String, String>>(QueryState.TIMEOUT, null);
             } else {
-                if (result.get(unusedVariable).equals(DEPTH_LIMIT_EXCEEDED)) {
+                if (DEPTH_LIMIT_EXCEEDED.equals(result.get(unusedVariable))) {
                     // Depth limit exceeded, increase and try again.
                     maxDepth++;
                     continue;
@@ -452,7 +457,8 @@ public final class JplFacade {
             if (query.hasMoreSolutions()) {
                 try {
                     final Map<String, Term> solution = query.nextSolution();
-                    final Map<String, String> result = new HashMap<String, String>();
+                    final Map<String, String> result =
+                            Maps.newHashMapWithExpectedSize(solution.size());
                     for (final Map.Entry<String, Term> entry: solution.entrySet()) {
                         final String termString = entry.getValue().toString();
                         result.put(entry.getKey(), termString);
@@ -473,7 +479,7 @@ public final class JplFacade {
                 return null;
             }
         } catch (final PrologException e) {
-            if (!e.getMessage().equals("PrologException: time_limit_exceeded")) {
+            if (!"PrologException: time_limit_exceeded".equals(e.getMessage())) {
                 LOGGER.error("A Prolog error occured.");
                 throw e;
             }

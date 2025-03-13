@@ -34,11 +34,6 @@ public final class VirageProveJob
     private final DecompositionTree tree;
 
     /**
-     * The framework representation.
-     */
-    private FrameworkRepresentation framework;
-
-    /**
      * Simple constructor.
      *
      * @param issuer the issuing user interface
@@ -54,10 +49,11 @@ public final class VirageProveJob
 
     @Override
     public void concreteExecute() {
-        this.framework = this.getExecutingCore().getFrameworkRepresentation();
+        final FrameworkRepresentation framework =
+                this.getExecutingCore().getFrameworkRepresentation();
         this.properties = new LinkedList<Property>();
         for (final String s: this.propertyStrings) {
-            this.properties.add(this.framework.getProperty(s));
+            this.properties.add(framework.getProperty(s));
         }
         this.setResult(this.getExecutingCore().getSearchManager().proveClaims(this.tree,
                                                                               this.properties));

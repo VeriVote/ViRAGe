@@ -1,13 +1,11 @@
 package edu.kit.kastel.formal.virage.core;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +21,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jpl7.JPL;
+
+import com.google.common.collect.Maps;
 
 import edu.kit.kastel.formal.util.Pair;
 import edu.kit.kastel.formal.util.ProcessUtils;
@@ -68,7 +68,7 @@ public final class ConfigReader {
     /**
      * Name of the settings file.
      */
-    private static final String SETTINGS = "settings";
+    private static final String SETTINGS = "settings.properties";
 
     /**
      * Prefix for the old settings file.
@@ -391,13 +391,12 @@ public final class ConfigReader {
             this.jplAvailable = false;
             this.swiplAvailable = false;
         }
-        res += getVersionString("JPL", null, JPL.version_string(), StringUtils.THREE);
-        return res;
+        return res + getVersionString("JPL", null, JPL.version_string(), StringUtils.THREE);
     }
 
     private Pair<Boolean, List<String>> checkConfigCompatibility() throws IOException {
         final Properties oldProperties = new Properties();
-        try (FileInputStream fis = new FileInputStream(this.configFile)) {
+        try (InputStream fis = java.nio.file.Files.newInputStream(this.configFile.toPath())) {
             oldProperties.load(fis);
         } catch (IOException e) {
             e.printStackTrace();
@@ -450,7 +449,7 @@ public final class ConfigReader {
         }
         writer.writeToFile(oldPropertiesFile.getAbsolutePath(), reader.readFile(this.configFile));
         final Properties oldProperties = new Properties();
-        try (FileInputStream fis = new FileInputStream(oldPropertiesFile)) {
+        try (InputStream fis = java.nio.file.Files.newInputStream(oldPropertiesFile.toPath())) {
             oldProperties.load(fis);
         } catch (IOException e) {
             e.printStackTrace();
@@ -461,15 +460,16 @@ public final class ConfigReader {
         IOUtils.copy(configFromResourcesStream, stringWriter, StandardCharsets.UTF_8);
         writer.writeToFile(this.configFile.getAbsolutePath(), stringWriter.toString());
         final Properties newProperties = new Properties();
-        try (FileInputStream fis = new FileInputStream(this.configFile)) {
+        try (InputStream fis = java.nio.file.Files.newInputStream(this.configFile.toPath())) {
             newProperties.load(fis);
         }
         for (final Object o: oldProperties.keySet()) {
-            if (o.toString().equals(VIRAGE_CONFIG_VERSION)) {
+            final String propName = o.toString();
+            if (VIRAGE_CONFIG_VERSION.equals(propName)) {
                 continue;
             }
             if (newProperties.keySet().contains(o)) {
-                this.updateValue(o.toString(), oldProperties.getProperty(o.toString()));
+                this.updateValue(propName, oldProperties.getProperty(propName));
             }
         }
     }
@@ -489,9 +489,11 @@ public final class ConfigReader {
      * @return the properties
      */
     public Map<String, String> getAllProperties() {
-        final Map<String, String> result = new HashMap<String, String>();
-        for (final Object prop: this.properties.keySet()) {
-            result.put(prop.toString(), this.properties.getProperty(prop.toString()));
+        final Properties props = this.properties;
+        final Map<String, String> result = Maps.newHashMapWithExpectedSize(props.size());
+        for (final Object prop: props.keySet()) {
+            final String propString = prop.toString();
+            result.put(propString, props.getProperty(propString));
         }
         return result;
     }
@@ -612,9 +614,9 @@ public final class ConfigReader {
      * @return the component aliases
      */
     public Map<String, String> getComponentAliases() {
-        final Map<String, String> toReturn = new HashMap<String, String>();
         final List<String> pairStrings =
                 readAndSplitList(this.properties.getProperty(COMPONENT_ALIASES));
+        final Map<String, String> toReturn = Maps.newHashMapWithExpectedSize(pairStrings.size());
         for (final String pairString: pairStrings) {
             final String[] elements = pairString.split(PAIR_SEPARATOR);
             toReturn.put(elements[0], elements[1]);
@@ -777,7 +779,7 @@ public final class ConfigReader {
         ProcessUtils.start(XDG_OPEN, this.configFile);
         final String editorExecutable;
         if (this.properties.containsKey(SYSTEM_EDITOR)
-                && !this.properties.getProperty(SYSTEM_EDITOR).toString().isEmpty()) {
+                && !this.properties.getProperty(SYSTEM_EDITOR).isEmpty()) {
             editorExecutable = this.properties.getProperty(SYSTEM_EDITOR);
         } else if (System.getenv().containsKey(EDITOR)
                 && !System.getenv().get(EDITOR).isEmpty()) {
@@ -818,7 +820,7 @@ public final class ConfigReader {
             this.copyConfigToExpectedPath();
         }
         final Properties proposedProperties = new Properties();
-        try (FileInputStream fis = new FileInputStream(this.configFile)) {
+        try (InputStream fis = java.nio.file.Files.newInputStream(this.configFile.toPath())) {
             proposedProperties.load(fis);
         } catch (IOException e) {
             e.printStackTrace();
@@ -835,7 +837,7 @@ public final class ConfigReader {
                         + StringUtils.printCollection(configCompatibility.getSecondValue()));
             }
         }
-        try (FileInputStream fis = new FileInputStream(this.configFile)) {
+        try (InputStream fis = java.nio.file.Files.newInputStream(this.configFile.toPath())) {
             this.properties.load(fis);
         } catch (IOException e) {
             e.printStackTrace();
@@ -849,7 +851,7 @@ public final class ConfigReader {
         }
         final List<String> replacements =
                 readAndSplitList(this.properties.getProperty(SESSION_SPECIFIC_TYPE_ALIASES));
-        final Map<String, String> replMap = new HashMap<String, String>();
+        final Map<String, String> replMap = Maps.newHashMapWithExpectedSize(replacements.size());
         for (final String repl: replacements) {
             final String[] parts = repl.split(PAIR_SEPARATOR);
             if (parts.length != 2) {

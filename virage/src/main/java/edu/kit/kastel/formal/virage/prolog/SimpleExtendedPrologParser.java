@@ -91,8 +91,7 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
         final List<String> propertySection = new LinkedList<String>();
         final List<String> compositionRuleSection = new LinkedList<String>();
 
-        for (int lineNumber = 0; lineNumber < representation.size(); lineNumber++) {
-            String currentLine = representation.get(lineNumber);
+        for (final String currentLine: representation) {
             // Skip comments
             if (currentLine.startsWith("%%")) {
                 continue;
@@ -101,29 +100,29 @@ public final class SimpleExtendedPrologParser implements ExtendedPrologParser {
                 this.findTheoryPath(currentLine, framework);
             }
             // Remove Prolog comment markings, they are not necessary any more.
-            currentLine = currentLine.replace("% ", StringUtils.EMPTY);
-            currentLine = currentLine.replace("%", StringUtils.EMPTY);
+            final String line =
+                    currentLine.replace("% ", StringUtils.EMPTY).replace("%", StringUtils.EMPTY);
             // Skip empty lines. (Careful: currentLine is not actually sanitized after
             // this!)
-            if (this.sanitizeLine(currentLine).isEmpty()) {
+            if (this.sanitizeLine(line).isEmpty()) {
                 continue;
             }
-            state = this.newState(currentLine, state);
+            state = this.newState(line, state);
             switch (state) {
             case COMPOSITION_TYPE:
-                compositionTypeSection.add(currentLine);
+                compositionTypeSection.add(line);
                 break;
             case COMPOSABLE_MODULE:
-                composableModuleSection.add(currentLine);
+                composableModuleSection.add(line);
                 break;
             case COMPOSITIONAL_STRUCTURE:
-                compositionalStructureSection.add(currentLine);
+                compositionalStructureSection.add(line);
                 break;
             case PROPERTY:
-                propertySection.add(currentLine);
+                propertySection.add(line);
                 break;
             case COMPOSITION_RULE:
-                compositionRuleSection.add(currentLine);
+                compositionRuleSection.add(line);
                 break;
             default: // skip operation, invalid call.
             }

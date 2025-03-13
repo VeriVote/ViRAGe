@@ -155,8 +155,7 @@ public abstract class VirageJob<T> {
         } else {
             res += StringUtils.sentence("Something went wrong while executing this job");
         }
-        res += StringUtils.repeat(StringUtils.TEN, StringUtils.DASH);
-        return res;
+        return res + StringUtils.repeat(StringUtils.TEN, StringUtils.DASH);
     }
 
     /**
@@ -198,8 +197,7 @@ public abstract class VirageJob<T> {
         res += printPropertyLine(finishedString, SystemUtils.getTime(lastMeasurement));
         res += printPropertyLine("Elapsed time:", elapsedTime);
         res += printPropertyLine(StringUtils.repeat(StringUtils.FIVE, StringUtils.DASH));
-        res += printPropertyLine("State:", this.state.toString());
-        return res;
+        return res + printPropertyLine("State:", this.state.toString());
     }
 
     /**

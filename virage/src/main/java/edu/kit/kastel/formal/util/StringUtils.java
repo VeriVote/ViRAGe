@@ -38,6 +38,11 @@ public final class StringUtils {
     public static final String HASH = "#";
 
     /**
+     * A star sign.
+     */
+    public static final String STAR = "*";
+
+    /**
      * An opening parenthesis sign.
      */
     public static final String OPENING_PARENTHESIS = "(";
@@ -123,6 +128,16 @@ public final class StringUtils {
     public static final int TEN = 10;
 
     /**
+     * An opening bracket sign.
+     */
+    private static final String OPENING_BRACKET = "]";
+
+    /**
+     * A closing bracket sign.
+     */
+    private static final String CLOSING_BRACKET = "[";
+
+    /**
      * The disjunction (or) sign.
      */
     private static final String OR = "or";
@@ -195,9 +210,9 @@ public final class StringUtils {
         if (c.isEmpty()) {
             return EMPTY;
         }
-        final StringBuilder res = new StringBuilder(EMPTY);
+        final StringBuilder res = new StringBuilder();
         for (final Object obj: c) {
-            res.append(obj).append(COMMA);
+            res.append(obj).append(COMMA.charAt(0));
         }
         return res.deleteCharAt(res.length() - 1).toString();
     }
@@ -222,9 +237,9 @@ public final class StringUtils {
         if (c.isEmpty()) {
             return EMPTY;
         }
-        final StringBuilder res = new StringBuilder(EMPTY);
+        final StringBuilder res = new StringBuilder();
         for (final Object obj: c) {
-            res.append(obj).append(SPACE);
+            res.append(obj).append(SPACE.charAt(0));
         }
         return res.deleteCharAt(res.length() - 1).toString();
     }
@@ -277,6 +292,62 @@ public final class StringUtils {
      */
     public static String surroundWithSpaces(final String s) {
         return SPACE + s + SPACE;
+    }
+
+    /**
+     * Adds the separator and a space before and a space and the separator after the given String.
+     *
+     * @param s the given String.
+     * @param separator the separator.
+     * @return new String with added separator and spaces before and after
+     */
+    public static String surroundWithSpacedSeparators(final String s, final String separator) {
+        return separator + surroundWithSpaces(s) + separator;
+    }
+
+    /**
+     * Put the given String in a raw Isabelle comment.
+     *
+     * @param s the given String.
+     * @return the resulting Isabelle comment containing the given String
+     */
+    public static String isabelleComment(final String s) {
+        return parenthesize(surroundWithSpacedSeparators(s, STAR));
+    }
+
+    /**
+     * Put the given String in a raw Isabelle comment line.
+     *
+     * @param s the given String.
+     * @return the resulting Isabelle comment line containing the given String
+     */
+    public static String isabelleCommentLine(final String s) {
+        return isabelleComment(s) + System.lineSeparator();
+    }
+
+    /**
+     * Put the given Strings in raw Isabelle comment lines.
+     *
+     * @param s the given Strings.
+     * @return the resulting Isabelle comment lines containing the given Strings
+     */
+    public static String isabelleCommentLines(final String... s) {
+        final StringBuilder sb = new StringBuilder();
+        for (final String s1: s) {
+            sb.append(isabelleCommentLine(s1));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Put the given Strings in raw Isabelle comment block.
+     *
+     * @param s the given Strings.
+     * @return the resulting Isabelle comment block containing the given Strings
+     */
+    public static String isabelleCommentBlock(final String... s) {
+        final String starLine = parenthesize(repeat(22, addSpace(STAR)) + STAR);
+        return starLine + System.lineSeparator() + isabelleCommentLines(s) + starLine;
     }
 
     /**
@@ -373,6 +444,39 @@ public final class StringUtils {
     }
 
     /**
+     * Puts brackets around a comma-separated list of strings.
+     *
+     * @param args the string arguments to bracketize
+     * @return the bracketized string representation
+     */
+    public static String bracketize(final String... args) {
+        return OPENING_BRACKET + printCollection(Arrays.asList(args)) + CLOSING_BRACKET;
+    }
+
+    /**
+     * Puts parentheses around a comma-separated list of strings.
+     *
+     * @param args the string arguments to bracketize
+     * @return the bracketized string representation
+     */
+    public static String bracketize(final Collection<String> args) {
+        if (args == null || args.isEmpty()) {
+            return EMPTY;
+        }
+        return bracketize(args.toArray(new String[args.size()]));
+    }
+
+    /**
+     * Puts brackets around a space-separated list of strings.
+     *
+     * @param args the string arguments to bracketize
+     * @return the bracketized string representation
+     */
+    public static String bracketize2(final String... args) {
+        return OPENING_BRACKET + printCollection2(Arrays.asList(args)) + CLOSING_BRACKET;
+    }
+
+    /**
      * Returns function string with a variable amount of argument.
      *
      * @param fun the function name
@@ -410,12 +514,12 @@ public final class StringUtils {
     /**
      * Returns map function string with two separately parenthesized arguments.
      *
-     * @param arg1 the function which is to be applied by the map
-     * @param arg2 the collection argument to which the function is applied
+     * @param fun the function which is to be applied by the map
+     * @param app the collection argument to which the function is applied
      * @return the function string representation
      */
-    public static String map(final String arg1, final String arg2) {
-        return map(MAP, arg1, arg2);
+    public static String map(final String fun, final String app) {
+        return map(MAP, fun, app);
     }
 
     /**

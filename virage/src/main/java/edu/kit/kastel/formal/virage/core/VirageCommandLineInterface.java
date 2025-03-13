@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -37,15 +38,13 @@ import edu.kit.kastel.formal.virage.jobs.VirageParseJob;
 import edu.kit.kastel.formal.virage.jobs.VirageProveJob;
 import edu.kit.kastel.formal.virage.prolog.JplFacade;
 import edu.kit.kastel.formal.virage.prolog.PrologParser;
-import edu.kit.kastel.formal.virage.types.Component;
-import edu.kit.kastel.formal.virage.types.ComposableModule;
 import edu.kit.kastel.formal.virage.types.CompositionProof;
-import edu.kit.kastel.formal.virage.types.CompositionalStructure;
 import edu.kit.kastel.formal.virage.types.DecompositionTree;
 import edu.kit.kastel.formal.virage.types.ExternalSoftwareUnavailableException;
 import edu.kit.kastel.formal.virage.types.FrameworkRepresentation;
 import edu.kit.kastel.formal.virage.types.InvalidConfigVersionException;
 import edu.kit.kastel.formal.virage.types.Property;
+import edu.kit.kastel.formal.virage.types.TypedAndParameterized;
 
 /**
  * A simple command line interface for ViRAGe.
@@ -238,11 +237,6 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
      * Writer to display output.
      */
     private final Writer outputWriter;
-
-    /**
-     * This UI's thread.
-     */
-    private Thread thread;
 
     /**
      * Simple constructor.
@@ -551,12 +545,10 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             this.displayInputMarker();
             final String input = this.scanner.nextLine();
             switch (input) {
-            case StringUtils.QUESTION:
-            case "h":
-            case HELP:
+            case StringUtils.QUESTION, "h", "H", HELP:
                 this.displayHelp();
                 break;
-            case EXIT:
+            case "x", "X", "q", "Q", EXIT:
                 this.core.submit(new VirageExitJob(this, 0));
                 break;
             default:
@@ -641,6 +633,14 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         return propertiesString;
     }
 
+    private static List<String> convertNames(final Set<? extends TypedAndParameterized> cs) {
+        final List<String> names = new ArrayList<String>(cs.size());
+        for (final TypedAndParameterized c: cs) {
+            names.add(StringUtils.indentWithTab(c.toString()));
+        }
+        return names;
+    }
+
     private String requestCompositionString() {
         boolean invalid = false;
         String compositionString = this
@@ -661,18 +661,16 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
             }
         }
         if (compositionString.isEmpty() || invalid) {
-            final List<String> sortedStrings = new ArrayList<String>();
-            for (final Component c: this.core.getFrameworkRepresentation().getComponents()) {
-                sortedStrings.add(StringUtils.indentWithTab(c.toString()));
-            }
-            for (final ComposableModule c: this.core.getFrameworkRepresentation()
-                    .getComposableModules()) {
-                sortedStrings.add(StringUtils.indentWithTab(c.toString()));
-            }
-            for (final CompositionalStructure c: this.core.getFrameworkRepresentation()
-                    .getCompositionalStructures()) {
-                sortedStrings.add(StringUtils.indentWithTab(c.toString()));
-            }
+            final FrameworkRepresentation fr = this.core.getFrameworkRepresentation();
+            final List<String> compNames = convertNames(fr.getComponents());
+            final List<String> modNames = convertNames(fr.getComposableModules());
+            final List<String> structNames = convertNames(fr.getCompositionalStructures());
+            final List<String> sortedStrings =
+                    new ArrayList<String>(compNames.size() + modNames.size() + structNames.size());
+
+            sortedStrings.addAll(compNames);
+            sortedStrings.addAll(modNames);
+            sortedStrings.addAll(structNames);
             Collections.sort(sortedStrings);
             for (final String s: sortedStrings) {
                 this.displayMessage(s);
@@ -707,8 +705,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
 
     private VirageProveJob createProofQuery(final String composition, final String propertyString) {
         final List<String> properties = StringUtils.separate(StringUtils.COMMA, propertyString);
-        final VirageProveJob res = new VirageProveJob(this, composition, properties);
-        return res;
+        return new VirageProveJob(this, composition, properties);
     }
 
     private VirageJob<?> createIsabelleQuery() {
@@ -753,9 +750,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
         }
         this.core.submit(generateJob);
         generateJob.waitFor();
-        final VirageIsabelleVerifyJob verifyJob =
-                new VirageIsabelleVerifyJob(this, generateJob.getResult());
-        return verifyJob;
+        return new VirageIsabelleVerifyJob(this, generateJob.getResult());
     }
 
     /**
@@ -937,8 +932,7 @@ public final class VirageCommandLineInterface implements VirageUserInterface {
      */
     @Override
     public void launch() {
-        this.thread = new Thread(this, "vcli");
-        this.thread.start();
+        new Thread(this, "vcli").start();
     }
 
     @Override

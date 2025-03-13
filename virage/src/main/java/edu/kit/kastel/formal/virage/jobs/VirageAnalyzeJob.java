@@ -36,16 +36,6 @@ public final class VirageAnalyzeJob
     private final DecompositionTree tree;
 
     /**
-     * The compositional framework.
-     */
-    private FrameworkRepresentation framework;
-
-    /**
-     * The search manager.
-     */
-    private VirageSearchManager manager;
-
-    /**
      * Simple constructor.
      *
      * @param issuer the issuer
@@ -61,13 +51,14 @@ public final class VirageAnalyzeJob
 
     @Override
     public void concreteExecute() {
-        this.framework = this.getExecutingCore().getFrameworkRepresentation();
-        this.manager = this.getExecutingCore().getSearchManager();
+        final FrameworkRepresentation framework =
+                this.getExecutingCore().getFrameworkRepresentation();
+        final VirageSearchManager manager = this.getExecutingCore().getSearchManager();
         this.properties = new LinkedList<Property>();
         for (final String s: this.propertyStrings) {
-            this.properties.add(this.framework.getProperty(s));
+            this.properties.add(framework.getProperty(s));
         }
-        this.setResult(this.manager.analyzeComposition(this.tree, this.properties));
+        this.setResult(manager.analyzeComposition(this.tree, this.properties));
     }
 
     @Override

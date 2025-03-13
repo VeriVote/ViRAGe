@@ -251,7 +251,7 @@
                </children>
             </VBox>
             <Separator orientation="VERTICAL" />
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Candidates:" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Alternatives:" />
             <VBox>
                <children>
                   <HBox>
@@ -261,7 +261,7 @@
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="min" BorderPane.alignment="CENTER" />
                            </left>
                         </BorderPane>
-              <TextField fx:id="minCandidates" alignment="CENTER_RIGHT" onAction="#minCandidates" prefWidth="50.0" text="1" />
+              <TextField fx:id="minAlternatives" alignment="CENTER_RIGHT" onAction="#minAlternatives" prefWidth="50.0" text="1" />
                      </children>
                   </HBox>
                   <HBox>
@@ -271,7 +271,7 @@
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="max" BorderPane.alignment="CENTER" />
                            </left>
                         </BorderPane>
-              <TextField fx:id="maxCandidates" alignment="CENTER_RIGHT" onAction="#maxCandidates" prefWidth="50.0" text="1" />
+              <TextField fx:id="maxAlternatives" alignment="CENTER_RIGHT" onAction="#maxAlternatives" prefWidth="50.0" text="1" />
                      </children>
                   </HBox>
                </children>
@@ -354,7 +354,7 @@
                                                                               </MenuItem>
                                                                               <MenuItem mnemonicParsing="false" onAction="#addSymbCand">
                                                                                  <graphic>
-                                                                                    <Label text="%key.addCandidate" />
+                                                                                    <Label text="%key.addAlternative" />
                                                                                  </graphic>
                                                                               </MenuItem>
                                                                               <MenuItem mnemonicParsing="false" onAction="#addSymbSeat">
@@ -458,9 +458,9 @@
                                                       </BorderPane>
                                                    </left>
                                                    <center>
-                                                      <ScrollPane fx:id="candidateScrollPane" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+                                                      <ScrollPane fx:id="alternativeScrollPane" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
                                                          <content>
-                                                            <GridPane fx:id="candidateGridPane">
+                                                            <GridPane fx:id="alternativeGridPane">
                                                                <columnConstraints>
                                                                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
                                                                </columnConstraints>
@@ -480,8 +480,8 @@
                                             <items>
                                                 <Label text="Voters" />
                                                 <TextField fx:id="inputVoterField" maxWidth="50.0" text="0" />
-                                                <Label text="Candidates" />
-                                                <TextField fx:id="inputCandidateField" maxWidth="50.0" text="0" />
+                                                <Label text="Alternatives" />
+                                                <TextField fx:id="inputAlternativeField" maxWidth="50.0" text="0" />
                                                 <Label text="Seats" />
                                                 <TextField fx:id="inputSeatField" maxWidth="50.0" text="0" />
                                                 <Pane HBox.hgrow="ALWAYS" />

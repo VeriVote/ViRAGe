@@ -117,15 +117,6 @@ public final class PrologPredicate {
     }
 
     /**
-     * Checks whether a PrologPredicate is a variable.
-     *
-     * @return true if this is a variable, false otherwise
-     */
-    public boolean isVariable() {
-        return PrologPredicate.isVariable(this.name);
-    }
-
-    /**
      * Checks whether a string represents a Prolog variable.
      *
      * @param s the string
@@ -133,6 +124,15 @@ public final class PrologPredicate {
      */
     public static boolean isVariable(final String s) {
         return s.matches("[A-Z_][a-zA-Z_0-9]*");
+    }
+
+    /**
+     * Checks whether a PrologPredicate is a variable.
+     *
+     * @return true if this is a variable, false otherwise
+     */
+    public boolean isVariable() {
+        return isVariable(this.name);
     }
 
     /**
@@ -164,8 +164,9 @@ public final class PrologPredicate {
      * @param replacements the replacements
      */
     public void replaceVariables(final Map<String, String> replacements) {
-        if (replacements.keySet().contains(this.name)) {
-            this.name = replacements.get(this.name);
+        final String s = replacements.get(this.name);
+        if (s != null) {
+            this.name = s;
         } else {
             for (final PrologPredicate parameter: this.parameters) {
                 parameter.replaceVariables(replacements);
@@ -179,8 +180,7 @@ public final class PrologPredicate {
         int result = 1;
         result = prime * result + this.arity;
         result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-        result = prime * result + ((this.parameters == null) ? 0 : this.parameters.hashCode());
-        return result;
+        return prime * result + ((this.parameters == null) ? 0 : this.parameters.hashCode());
     }
 
     @Override

@@ -149,8 +149,7 @@ public final class CompositionRule implements Comparable<CompositionRule> {
         int result = 1;
         result = prime * result + ((this.clause == null) ? 0 : this.clause.hashCode());
         result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-        result = prime * result + ((this.origin == null) ? 0 : this.origin.hashCode());
-        return result;
+        return prime * result + ((this.origin == null) ? 0 : this.origin.hashCode());
     }
 
     /**
@@ -162,8 +161,7 @@ public final class CompositionRule implements Comparable<CompositionRule> {
         String res = StringUtils.EMPTY;
         res += StringUtils.printCollection2("% =", this.origin) + System.lineSeparator();
         res += StringUtils.printCollection2("%", this.name) + System.lineSeparator();
-        res += this.clause.toString() + System.lineSeparator();
-        return res;
+        return res + this.clause.toString() + System.lineSeparator();
     }
 
     @Override

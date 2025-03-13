@@ -8,15 +8,6 @@ import de.unruh.isabelle.control.IsabelleBuildException
 import scala.jdk.CollectionConverters._
 
 object JIsabelleWrapper {
-  /** Sets the [[de.unruh.isabelle.control.Isabelle.Setup.logic logic]] directory in the
-   *  setup `setup`.
-   *
-   * @return `setup` with [[de.unruh.isabelle.control.Isabelle.Setup.logic logic]] set to `logic`
-   * @param logic the new value for `setup.`[[de.unruh.isabelle.control.Isabelle.Setup.logic logic]]
-   * */
-  def setupSetLogic(logic: String, setup: Isabelle.Setup): Isabelle.Setup =
-    setup.copy(logic = logic)
-
   /**
    * Invokes the constructor [[de.unruh.isabelle.control.Isabelle]]`(setup: SetupGeneral)` and
    * explicitly declares that exceptions of [[de.unruh.isabelle.control.IsabelleBuildException]]

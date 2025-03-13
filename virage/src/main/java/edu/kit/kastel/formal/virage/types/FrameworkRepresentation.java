@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -93,9 +94,9 @@ public final class FrameworkRepresentation {
     private List<Pair<String, String>> typeSynonyms;
 
     /**
-     * List of atomic types.
+     * Set of atomic types.
      */
-    private List<ComponentType> atomicTypes;
+    private Set<ComponentType> atomicTypes;
 
     /**
      * Alias for modules that can be composed.
@@ -263,7 +264,7 @@ public final class FrameworkRepresentation {
      */
     private void addDummyRules() {
         final List<String> atomicTypeStrings = ConfigReader.getInstance().getAtomicTypes();
-        this.atomicTypes = new LinkedList<ComponentType>();
+        this.atomicTypes = new LinkedHashSet<ComponentType>(atomicTypeStrings.size());
         for (final String s: atomicTypeStrings) {
             final ComponentType type = new ComponentType(s);
             this.add(type);
@@ -340,8 +341,7 @@ public final class FrameworkRepresentation {
                 + StringUtils.sentence(
                         "%% % example_rule_without_meaning" + System.lineSeparator()
                                 + "%% property_a(X) :- property_b(X)");
-        res += SEPARATOR;
-        return res;
+        return res + SEPARATOR;
     }
 
     /**

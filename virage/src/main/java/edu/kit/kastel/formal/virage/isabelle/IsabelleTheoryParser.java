@@ -112,7 +112,7 @@ public final class IsabelleTheoryParser {
             if (line.contains(IsabelleUtils.IMPORTS)) {
                 final String[] splits = line.split(StringUtils.SPACE);
                 for (final String split: splits) {
-                    if (split.isBlank() || split.equals(IsabelleUtils.IMPORTS)) {
+                    if (split.isBlank() || IsabelleUtils.IMPORTS.equals(split)) {
                         continue;
                     }
                     res.add(split);

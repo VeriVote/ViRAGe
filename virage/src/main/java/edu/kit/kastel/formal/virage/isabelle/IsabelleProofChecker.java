@@ -149,6 +149,16 @@ public final class IsabelleProofChecker {
     private static final String PWD_CMD = "`pwd`";
 
     /**
+     * The prefix for ad-hoc Isabelle sessions.
+     */
+    private static final String AD_HOC_SESSION_PREFIX = "ad_hoc_session_";
+
+    /**
+     * The pattern for simple date formats, intended for creating quasi unique file names.
+     */
+    private static final String DATE_FORMAT_PATTERN = "yyyyMMddHHmmss";
+
+    /**
      * The session name variable.
      */
     private static final String SESSION_NAME_VAR = "$SESSION_NAME";
@@ -162,11 +172,6 @@ public final class IsabelleProofChecker {
      * The parent name variable.
      */
     private static final String PARENT_NAME_VAR = "$PARENT_NAME";
-
-    /**
-     * The runtime.
-     */
-    private final Runtime runtime;
 
     /**
      * The server process.
@@ -231,7 +236,6 @@ public final class IsabelleProofChecker {
     private IsabelleProofChecker(final String sessionNameValue, final String theoryPathValue)
             throws ExternalSoftwareUnavailableException, IsabelleBuildFailedException {
         this.theoryPath = theoryPathValue;
-        this.runtime = Runtime.getRuntime();
         this.solvers = ConfigReader.getInstance().getIsabelleTactics();
 
         // Use scala-isabelle to build the session, as my own solution
@@ -244,7 +248,7 @@ public final class IsabelleProofChecker {
                             ConfigReader.getInstance().getIsabelleExecutable(),
                             BUILD_TOOL, SYS_OPT, BROWSER_INFO,
                             BUILD_OPT, INCL_SEL_SESS_DIR, PWD_CMD);
-            final Process process = Runtime.getRuntime().exec(String.format(clString));
+            final Process process = ProcessUtils.exec(clString, false);
             process.waitFor();
 
             this.initServer();
@@ -321,7 +325,8 @@ public final class IsabelleProofChecker {
         // rebuilding single sessions without triggering full rebuilds.
         // TODO: Is there a way to do it?
         final String localSessionName =
-                "ad_hoc_session_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+                AD_HOC_SESSION_PREFIX
+                + new SimpleDateFormat(DATE_FORMAT_PATTERN).format(new Date());
         String result = this.rootTemplate
                 .replace(SESSION_NAME_VAR, localSessionName).replace(THEORY_NAME_VAR, theoryName);
         result = result.replace(PARENT_NAME_VAR, this.parentName);
@@ -380,7 +385,7 @@ public final class IsabelleProofChecker {
                         ConfigReader.getInstance().getIsabelleExecutable(),
                         CLIENT_TOOL, NAME_OPT, SERVER_NAME);
         this.sessionName = localSessionName;
-        this.client = this.runtime.exec(String.format(clString));
+        this.client = ProcessUtils.exec(clString, false);
         this.clientInput = this.client.getOutputStream();
 
         IsabelleClientObserver.start(this, this.client);
@@ -397,7 +402,7 @@ public final class IsabelleProofChecker {
                 StringUtils.printCollection2(
                         ConfigReader.getInstance().getIsabelleExecutable(),
                         SERVER_TOOL, NAME_OPT, SERVER_NAME);
-        this.server = this.runtime.exec(String.format(clString));
+        this.server = ProcessUtils.exec(clString, false);
         // The server will send a message when startup is finished.
         // Contents are irrelevant, just wait for it to appear.
         try (BufferedReader br = new BufferedReader(new InputStreamReader(
@@ -558,7 +563,7 @@ public final class IsabelleProofChecker {
         String command = "use_theories " + sessionAndTheoriesCommand;
         this.sendCommandAndWaitForTermination(command);
 
-        final String result = this.lastEvent.getValue(IsabelleUtils.SUCCESS_STRING.toLowerCase());
+        final String result = this.lastEvent.getValue(IsabelleUtils.SUCCESS_STRING);
         if ("true".equals(result)) {
             LOGGER.info("Verification successful.");
             final String adHocSessionName = this.buildSessionRoot(
@@ -569,33 +574,35 @@ public final class IsabelleProofChecker {
                     | ExternalSoftwareUnavailableException e) {
                 LOGGER.warn("No documentation could be generated.");
             }
-            return new Pair<Boolean, File>(true, theory);
+            return new Pair<Boolean, File>(Boolean.TRUE, theory);
         } else {
             LOGGER.info("Verification failed. Attempting to solve automatically "
                     + "by employing different solvers.");
             final String errors = this.lastEvent.getValue("errors");
 
-            command = "purge_theories "  + sessionAndTheoriesCommand;
-            this.sendCommandAndWaitForOk(command);
-            final Pattern pattern = Pattern.compile("line=[0-9]+");
-            final Matcher matcher = pattern.matcher(errors);
+            if (errors != null) {
+                command = "purge_theories "  + sessionAndTheoriesCommand;
+                this.sendCommandAndWaitForOk(command);
+                final Pattern pattern = Pattern.compile("line=[0-9]+");
+                final Matcher matcher = pattern.matcher(errors);
 
-            if (matcher.find()) {
-                final String line = errors.substring(matcher.start(), matcher.end());
-                // Isabelle starts counting at 1.
-                final int lineNum = Integer.parseInt(line.split("=")[1]) - 1;
-                final File newFile = this.replaceSolver(theory, lineNum);
-                if (newFile != null) {
-                    // The content of the file has changed, and this can
-                    // only happen IsabelleUtils.SOLVERS.length times,
-                    // so the recursive call is fine.
-                    return this.verifyTheoryFile(newFile, framework);
-                } else {
-                    LOGGER.info("Automatic verification failed. "
-                            + "You might be able to fix the errors manually within Isabelle.");
+                if (matcher.find()) {
+                    final String line = errors.substring(matcher.start(), matcher.end());
+                    // Isabelle starts counting at 1.
+                    final int lineNum = Integer.parseInt(line.split("=")[1]) - 1;
+                    final File newFile = this.replaceSolver(theory, lineNum);
+                    if (newFile != null) {
+                        // The content of the file has changed, and this can
+                        // only happen IsabelleUtils.SOLVERS.length times,
+                        // so the recursive call is fine.
+                        return this.verifyTheoryFile(newFile, framework);
+                    } else {
+                        LOGGER.info("Automatic verification failed. "
+                                + "You might be able to fix the errors manually within Isabelle.");
+                    }
                 }
             }
-            return new Pair<Boolean, File>(false, null);
+            return new Pair<Boolean, File>(Boolean.FALSE, null);
         }
     }
 

@@ -59,10 +59,8 @@ public class VirageSearchManager {
         // TODO Parallelize.
         final List<List<SearchResult<BooleanWithUncertainty>>> results =
                 new LinkedList<List<SearchResult<BooleanWithUncertainty>>>();
-        for (int i = 0; i < this.analyzers.size(); i++) {
-            final List<SearchResult<BooleanWithUncertainty>> result =
-                    this.analyzers.get(i).analyzeComposition(composition, properties);
-            results.add(result);
+        for (final CompositionAnalyzer analyzer: this.analyzers) {
+            results.add(analyzer.analyzeComposition(composition, properties));
         }
         return results;
     }
@@ -82,10 +80,8 @@ public class VirageSearchManager {
         // TODO Parallelize.
         final List<SearchResult<DecompositionTree>> results =
                 new LinkedList<SearchResult<DecompositionTree>>();
-        for (int i = 0; i < this.analyzers.size(); i++) {
-            final SearchResult<DecompositionTree> result =
-                    this.analyzers.get(i).generateComposition(properties);
-            results.add(result);
+        for (final CompositionAnalyzer analyzer: this.analyzers) {
+            results.add(analyzer.generateComposition(properties));
         }
         return results;
     }
@@ -106,10 +102,8 @@ public class VirageSearchManager {
         }
         // TODO Parallelize.
         final List<List<CompositionProof>> results = new LinkedList<List<CompositionProof>>();
-        for (int i = 0; i < this.analyzers.size(); i++) {
-            final List<CompositionProof> result =
-                    this.analyzers.get(i).proveClaims(composition, properties);
-            results.add(result);
+        for (final CompositionAnalyzer analyzer: this.analyzers) {
+            results.add(analyzer.proveClaims(composition, properties));
         }
         return results;
     }

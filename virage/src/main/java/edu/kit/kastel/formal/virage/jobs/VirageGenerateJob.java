@@ -30,11 +30,6 @@ public final class VirageGenerateJob
     private List<Property> properties;
 
     /**
-     * The search manager to be used.
-     */
-    private VirageSearchManager manager;
-
-    /**
      * Simple constructor.
      *
      * @param issuer the issuing user interface
@@ -48,12 +43,12 @@ public final class VirageGenerateJob
     @Override
     public void concreteExecute() {
         final VirageCore execCore = this.getExecutingCore();
-        this.manager = execCore.getSearchManager();
+        final VirageSearchManager manager = execCore.getSearchManager();
         this.properties = new LinkedList<Property>();
         for (final String s: this.propertyStrings) {
             this.properties.add(execCore.getFrameworkRepresentation().getProperty(s));
         }
-        this.setResult(this.manager.generateComposition(this.properties));
+        this.setResult(manager.generateComposition(this.properties));
     }
 
     @Override
