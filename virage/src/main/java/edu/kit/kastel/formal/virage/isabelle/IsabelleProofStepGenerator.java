@@ -118,13 +118,12 @@ public class IsabelleProofStepGenerator {
     private static String replaceVariables(final String goalId, final String goal,
                                            final String subgoalIds, final String rule,
                                            final String solver) {
-        String res = IsabelleProofStepGenerator.proofStepTemplate;
-        res = res.replace(VAR_GOAL_ID, goalId);
-        res = res.replace(VAR_GOAL, goal);
-        res = res.replace(VAR_SUBGOAL_IDS, subgoalIds);
-        res = res.replace(VAR_RULE, rule);
-        res = res.replace(VAR_SOLVER, solver);
-        return res;
+        return IsabelleProofStepGenerator.proofStepTemplate
+                .replace(VAR_GOAL_ID, goalId)
+                .replace(VAR_GOAL, goal)
+                .replace(VAR_SUBGOAL_IDS, subgoalIds)
+                .replace(VAR_RULE, rule)
+                .replace(VAR_SOLVER, solver);
     }
 
     /**
@@ -141,7 +140,7 @@ public class IsabelleProofStepGenerator {
         final Map<String, Set<String>> goalMap =
                 IsabelleUtils
                 .translatePrologToIsabelle(this.functionsAndDefinitions, predicate.toString());
-        if (goalMap.keySet().size() != 1) {
+        if (goalMap.size() != 1) {
             throw new IllegalArgumentException();
         }
         String goal = StringUtils.EMPTY;
@@ -151,9 +150,9 @@ public class IsabelleProofStepGenerator {
 
         final StringBuilder subgoalIds = new StringBuilder();
         for (final CompositionProof subgoal: step.getSubgoals()) {
-            if (subgoal.getAllCompositionRules().size() == 1) {
-                final CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
-                if (rule.getOrigin().equals(ExtendedPrologStrings.ASSUMPTION)) {
+            final Set<CompositionRule> rules = subgoal.getAllCompositionRules();
+            if (rules.size() == 1) {
+                if (ExtendedPrologStrings.ASSUMPTION.equals(rules.iterator().next().getOrigin())) {
                     continue;
                 }
             }

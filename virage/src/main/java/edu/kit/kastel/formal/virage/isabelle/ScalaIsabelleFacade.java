@@ -18,6 +18,8 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.collect.Maps;
+
 import de.unruh.isabelle.control.Isabelle;
 import de.unruh.isabelle.control.Isabelle.Setup;
 import de.unruh.isabelle.control.IsabelleBuildException;
@@ -342,13 +344,12 @@ public final class ScalaIsabelleFacade {
                                final String sessionDir,
                                final Iterable<String> sessionDirs) {
         Setup s = JIsabelle.setup(Path.of(isabelleHome));
-        s = JIsabelle.setupSetVerbose(true, s);
+        s = JIsabelle.setupSetVerbose(verbose, s);
         s = JIsabelle.setupSetUserDir(Path.of(isabelleDirectory), s);
         s = JIsabelle.setupSetWorkingDirectory(Path.of(sessionDir), s);
         s = JIsabelle.setupSetSessionRoots(toPaths(sessionDirs), s);
-        s = JIsabelleWrapper.setupSetLogic(sessionName, s);
-        s = JIsabelle.setupSetBuild(true, s);
-        return s;
+        s = JIsabelle.setupSetLogic(sessionName, s);
+        return JIsabelle.setupSetBuild(true, s);
     }
 
     private static synchronized void setIsabelleInstance(final Isabelle instance) {
@@ -458,7 +459,7 @@ public final class ScalaIsabelleFacade {
      * Extracts functions and definitions from a given framework in Isabelle.
      */
     public void extractFunctionsAndDefinitions() {
-        this.functionsAndDefinitions = new HashMap<String, Map<String, String>>();
+        this.functionsAndDefinitions = Maps.newHashMapWithExpectedSize(this.theoryNames.size());
         final MLFunction<Theory, scala.collection.immutable.List<String>> mlFunToExtractAllNames =
                 MLValue.compileFunction(funToExtractAllNames(THY), ScalaIsabelleFacade.isabelle,
                                         Implicits.theoryConverter(), LIST_CONVERTER);
@@ -468,8 +469,6 @@ public final class ScalaIsabelleFacade {
                                     Implicits.theoryConverter(), PAIR_TO_LIST_CONVERTER);
         for (final String thy: this.theoryNames) {
             final String thyWithoutSession = thy.split("\\.")[1];
-            final Map<String, String> toBeFilled = new HashMap<String, String>();
-            this.functionsAndDefinitions.put(thy, toBeFilled);
             final Context ctxt = Context.apply(thy, ScalaIsabelleFacade.isabelle);
             final Theory theory = ctxt.theoryOf(ScalaIsabelleFacade.isabelle);
             final List<String> names =
@@ -480,41 +479,42 @@ public final class ScalaIsabelleFacade {
                     JavaConverters.asJava(mlFunToExtractSigns
                             .apply(theory.mlValue(), ScalaIsabelleFacade.isabelle)
                             .retrieveNow(PAIR_TO_LIST_CONVERTER, ScalaIsabelleFacade.isabelle));
-            for (int i = 0; i < names.size(); i++) {
-                String name = names.get(i);
+            final Map<String, String> toBeFilled = Maps.newHashMapWithExpectedSize(names.size());
+            this.functionsAndDefinitions.put(thy, toBeFilled);
+            for (final String name: names) {
                 if (!name.startsWith(thyWithoutSession + IsabelleUtils.THEORY_NAME_SEPARATOR)) {
                     continue;
                 }
-                final String defSfx = "_def";
-                final String relSfx = "_rel";
-                final String rawSfx = "_raw";
-                final String graphSfx = "_graph";
-                final String sumSfx = "_sumC";
-                final String defRawSfx = defSfx + rawSfx;
-                if (name.endsWith(defSfx) || name.endsWith(defRawSfx)) {
-                    name = name.replace(rawSfx, StringUtils.EMPTY);
-                    name = name.replace(defSfx, StringUtils.EMPTY);
-                    if (name.endsWith(relSfx) || name.endsWith(graphSfx) || name.endsWith(sumSfx)) {
+                if (name.endsWith(IsabelleUtils.DEFINITION_SUFFIX)
+                        || name.endsWith(IsabelleUtils.DEFINITION_SUFFIX
+                                            + IsabelleUtils.RAW_SUFFIX)) {
+                    final String def =
+                            name.replace(IsabelleUtils.RAW_SUFFIX, StringUtils.EMPTY)
+                                .replace(IsabelleUtils.DEFINITION_SUFFIX, StringUtils.EMPTY);
+                    if (def.endsWith(IsabelleUtils.RELATION_SUFFIX)
+                            || def.endsWith(IsabelleUtils.GRAPH_SUFFIX)
+                            || def.endsWith(IsabelleUtils.SUM_SUFFIX)) {
                         continue;
                     }
                     String type = StringUtils.EMPTY;
                     for (final Tuple2<String, String> tup: types) {
-                        if (tup._1.equals(name)) {
+                        if (tup._1.equals(def)) {
                             type = tup._2;
+                            break;
                         }
                     }
                     type = type.replace(
                             IsabelleUtils.SET + IsabelleUtils.THEORY_NAME_SEPARATOR
                             + StringUtils.func(SET_FUN, ALTERNATIVE),
                             ALTERNATIVES_NAME);
-                    toBeFilled.put(name, type);
+                    toBeFilled.put(def, type);
                 }
             }
         }
     }
 
     private void extractTheorems() {
-        this.theorems = new HashMap<String, Map<String, String>>();
+        this.theorems = Maps.newHashMapWithExpectedSize(this.theoryNames.size());
         final MLFunction<Theory, scala.collection.immutable.List<String>> mlFun =
                 MLValue.compileFunction(
                         addSpace(fnTo(THY,
@@ -531,13 +531,13 @@ public final class ScalaIsabelleFacade {
                         ScalaIsabelleFacade.isabelle,
                         Implicits.thmConverter(), STRING_CONVERTER);
         for (final String thyName: this.theoryNames) {
-            final Map<String, String> toBeFilled = new HashMap<String, String>();
-            this.theorems.put(thyName, toBeFilled);
             final Context ctxt = Context.apply(thyName, ScalaIsabelleFacade.isabelle);
             final Theory theory = ctxt.theoryOf(ScalaIsabelleFacade.isabelle);
             final scala.collection.immutable.List<String> defs =
                     mlFun.apply(theory, ScalaIsabelleFacade.isabelle, Implicits.theoryConverter())
                     .retrieveNow(LIST_CONVERTER, ScalaIsabelleFacade.isabelle);
+            final Map<String, String> toBeFilled = new HashMap<String, String>(defs.length());
+            this.theorems.put(thyName, toBeFilled);
             for (int i = 0; i < defs.length(); i++) {
                 final String thmName = defs.apply(i);
                 // This filters out all theorems generated by Isabelle for internal usage.

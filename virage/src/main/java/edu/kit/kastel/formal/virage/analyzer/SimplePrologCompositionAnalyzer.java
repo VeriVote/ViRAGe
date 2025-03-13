@@ -194,10 +194,10 @@ public class SimplePrologCompositionAnalyzer implements CompositionAnalyzer {
             this.facade.setTimeout(oldTimeout);
             if (result.hasValue()) {
                 try {
-                    final Map<String, String> map = result.getValue();
-                    if (map.containsKey(proofVariable)) {
-                        LOGGER.debug(map.get(proofVariable));
-                        proofs.add(PrologProof.createProofFromString(map.get(proofVariable)));
+                    final String val = result.getValue().get(proofVariable);
+                    if (val != null) {
+                        LOGGER.debug(val);
+                        proofs.add(PrologProof.createProofFromString(val));
                     } else {
                         throw new IllegalArgumentException();
                     }

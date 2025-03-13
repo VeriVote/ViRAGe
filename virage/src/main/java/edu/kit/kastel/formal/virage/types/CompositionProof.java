@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
+
 import edu.kit.kastel.formal.util.StringUtils;
 import edu.kit.kastel.formal.virage.isabelle.IsabelleUtils;
 
@@ -79,8 +81,8 @@ public final class CompositionProof {
      * @return all origins
      */
     public Set<String> getAllOrigins() {
-        final Set<String> origins = new HashSet<String>();
         final Set<CompositionRule> allRules = this.getAllCompositionRules();
+        final Set<String> origins = Sets.newHashSetWithExpectedSize(allRules.size());
         for (final CompositionRule localRule: allRules) {
             origins.add(localRule.getOrigin());
         }

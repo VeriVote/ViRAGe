@@ -55,7 +55,7 @@ public class VirageAnalyzeAllPropertiesJob extends
     public final String presentConcreteResult() {
         final List<Boolean> hasProperties = new LinkedList<Boolean>();
         for (int i = 0; i < this.unaryProperties.size(); i++) {
-            hasProperties.add(false);
+            hasProperties.add(Boolean.FALSE);
         }
         for (final List<SearchResult<BooleanWithUncertainty>> resultList: this.getResult()) {
             for (int i = 0; i < resultList.size(); i++) {

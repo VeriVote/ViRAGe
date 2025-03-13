@@ -81,11 +81,6 @@ public class IsabelleProofGenerator {
     private final IsabelleProofStepGenerator generator;
 
     /**
-     * Functions and definitions from an Isabelle session.
-     */
-    private final Map<String, String> functionsAndDefinitions;
-
-    /**
      * The parent theory generator.
      */
     private final IsabelleTheoryGenerator parent;
@@ -111,8 +106,7 @@ public class IsabelleProofGenerator {
             }
             setProofTemplate(writer.toString());
         }
-        this.functionsAndDefinitions = functionsAndDefinitionsValue;
-        this.generator = new IsabelleProofStepGenerator(this, this.functionsAndDefinitions);
+        this.generator = new IsabelleProofStepGenerator(this, functionsAndDefinitionsValue);
         this.parent = parentValue;
     }
 
@@ -123,13 +117,12 @@ public class IsabelleProofGenerator {
     private static String replaceVariables(final String theoremName, final String goal,
                                            final String proofSteps, final String subgoalIds,
                                            final String assumptions) {
-        String res = IsabelleProofGenerator.proofTemplate;
-        res = res.replace(VAR_THEOREM_NAME, theoremName);
-        res = res.replace(VAR_GOAL, goal);
-        res = res.replace(VAR_PROOF_STEPS, proofSteps);
-        res = res.replace(VAR_SUBGOAL_ID, subgoalIds);
-        res = res.replace(VAR_ASSUMPTIONS, assumptions);
-        return res;
+        return IsabelleProofGenerator.proofTemplate
+                .replace(VAR_THEOREM_NAME, theoremName)
+                .replace(VAR_GOAL, goal)
+                .replace(VAR_PROOF_STEPS, proofSteps)
+                .replace(VAR_SUBGOAL_ID, subgoalIds)
+                .replace(VAR_ASSUMPTIONS, assumptions);
     }
 
     /**
@@ -165,26 +158,24 @@ public class IsabelleProofGenerator {
         final Set<String> assumptions = new HashSet<String>();
         final StringBuilder proofSteps = new StringBuilder();
         for (final CompositionProof subgoal: proof.getAllStepsDepthFirst()) {
-            if (subgoal.getAllCompositionRules().size() == 1) {
-                final CompositionRule rule = subgoal.getAllCompositionRules().iterator().next();
-                if (rule.getOrigin().equals(ExtendedPrologStrings.ASSUMPTION)) {
-                    final Property p =
-                            this.parent.getFramework().getProperty(rule.getSuccedent().getName());
-                    String newAssumptions =
-                            StringUtils.addSpace(StringUtils.QUOTATION
-                                                    + rule.getSuccedent().getName());
+            final Set<CompositionRule> rules = subgoal.getAllCompositionRules();
+            if (rules.size() == 1) {
+                final CompositionRule rule = rules.iterator().next();
+                if (ExtendedPrologStrings.ASSUMPTION.equals(rule.getOrigin())) {
+                    final String succName = rule.getSuccedent().getName();
+                    final Property p = this.parent.getFramework().getProperty(succName);
+                    String newAssumptions = StringUtils.addSpace(StringUtils.QUOTATION + succName);
                     for (final ComponentType child: p.getParameters()) {
+                        final String childVar =
+                                this.getParent().getTypedVariables().get(child.getName());
                         // Only parameters defined within the module definition can be referenced,
                         // so if
                         // any others
                         // occur, we skip.
-                        if (!this.getParent().getTypedVariables().containsKey(child.getName())) {
+                        if (childVar == null) {
                             break;
                         }
-                        newAssumptions +=
-                                StringUtils.addSpace(
-                                        this.getParent().getTypedVariables().get(child.getName()))
-                                    + StringUtils.QUOTATION;
+                        newAssumptions += StringUtils.addSpace(childVar) + StringUtils.QUOTATION;
                         assumptions.add(newAssumptions);
                     }
                     // This is needed to not add subgoal identities for these "virtual" goals.

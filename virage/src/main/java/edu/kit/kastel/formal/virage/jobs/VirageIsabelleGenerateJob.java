@@ -27,11 +27,6 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
     private final String outputPath;
 
     /**
-     * The Isabelle theory generator to be used.
-     */
-    private IsabelleTheoryGenerator generator;
-
-    /**
      * Simple constructor.
      *
      * @param issuer the issuing user interface
@@ -65,8 +60,9 @@ public final class VirageIsabelleGenerateJob extends VirageJobWithExplicitResult
 
     @Override
     protected void concreteExecute() {
-        this.generator = this.getExecutingCore().getIsabelleTheoryGenerator();
-        this.setResult(this.generator
+        final IsabelleTheoryGenerator generator =
+                this.getExecutingCore().getIsabelleTheoryGenerator();
+        this.setResult(generator
                 .generateTheoryFile(this.composition, this.proofs, this.outputPath));
     }
 }

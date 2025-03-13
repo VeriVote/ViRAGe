@@ -39,7 +39,7 @@ public final class IsabelleUtils {
     /**
      * String used by Isabelle to denote successful termination.
      */
-    public static final String SUCCESS_STRING = "OK ";
+    public static final String SUCCESS_STRING = "ok ";
 
     /**
      * String used by Isabelle to denote the line stating imported theories.
@@ -80,6 +80,31 @@ public final class IsabelleUtils {
      * String used to separate session and theory names.
      */
     public static final String THEORY_NAME_SEPARATOR = StringUtils.PERIOD;
+
+    /**
+     * Suffix for definition-unfolding rules.
+     */
+    public static final String DEFINITION_SUFFIX = "_def";
+
+    /**
+     * Suffix for relation rules.
+     */
+    public static final String RELATION_SUFFIX = "_rel";
+
+    /**
+     * Suffix for raw rules.
+     */
+    public static final String RAW_SUFFIX = "_raw";
+
+    /**
+     * Suffix for graph rules.
+     */
+    public static final String GRAPH_SUFFIX = "_graph";
+
+    /**
+     * Suffix for sum rules.
+     */
+    public static final String SUM_SUFFIX = "_sumC";
 
     /**
      * Main theory.

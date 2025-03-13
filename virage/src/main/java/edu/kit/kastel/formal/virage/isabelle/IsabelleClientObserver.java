@@ -27,11 +27,6 @@ public final class IsabelleClientObserver implements Runnable {
     private final IsabelleProofChecker listener;
 
     /**
-     * The Isabelle client process.
-     */
-    private final Process isabelleClient;
-
-    /**
      * The Isabelle event factory.
      */
     private final IsabelleEventFactory factory;
@@ -49,13 +44,12 @@ public final class IsabelleClientObserver implements Runnable {
     private IsabelleClientObserver(final IsabelleProofChecker listenerValue,
             final Process isabelleClientValue) {
         this.listener = listenerValue;
-        this.isabelleClient = isabelleClientValue;
         this.factory = new IsabelleEventFactory();
         this.stdoutReader = new BufferedReader(
-                new InputStreamReader(this.isabelleClient.getInputStream(),
+                new InputStreamReader(isabelleClientValue.getInputStream(),
                                       StandardCharsets.UTF_8));
         this.stderrReader = new BufferedReader(
-                new InputStreamReader(this.isabelleClient.getErrorStream(),
+                new InputStreamReader(isabelleClientValue.getErrorStream(),
                                       StandardCharsets.UTF_8));
         final Thread thread = new Thread(this, "Isabelle Console Output");
         thread.start();

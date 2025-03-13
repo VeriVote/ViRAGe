@@ -100,11 +100,6 @@ public final class CCodeGenerator {
     private final String codeFileTemplate;
 
     /**
-     * Templates for the components of the framework.
-     */
-    private final String compositionsTemplate;
-
-    /**
      * Templates for each component.
      */
     private final Map<String, String> templates;
@@ -144,7 +139,6 @@ public final class CCodeGenerator {
         } catch (final IOException e) {
             e.printStackTrace();
         }
-        this.compositionsTemplate = writer.toString();
         this.templates = new HashMap<String, String>();
         this.signatures = new HashMap<String, List<String>>();
         final String componentNameGroup = "componentName";
@@ -155,7 +149,7 @@ public final class CCodeGenerator {
                 + signatureGroup + ">[^\\)]*\\)).*)\\/\\/[ ]*\\k<" + componentNameGroup + ">"
                 + System.lineSeparator(),
                 Pattern.DOTALL);
-        final Matcher matcher = pattern.matcher(this.compositionsTemplate);
+        final Matcher matcher = pattern.matcher(writer.toString());
         while (matcher.find()) {
             this.templates.put(matcher.group(componentNameGroup),
                     matcher.group(implementationGroup));
@@ -210,8 +204,8 @@ public final class CCodeGenerator {
                 this.frameworkField.getComponent(composition.getLabel());
         if (currentComponent != null) {
             final String componentName = composition.getLabel();
-            if (this.templates.containsKey(componentName)) {
-                String componentTemplate = this.templates.get(componentName);
+            String componentTemplate = this.templates.get(componentName);
+            if (componentTemplate != null) {
                 componentTemplate =
                         componentTemplate.replace(COMPONENT_INDEX_VARIABLE, String.valueOf(ctr));
                 int moduleCounter = 1;
@@ -256,7 +250,7 @@ public final class CCodeGenerator {
 
     private List<String> findMissingTemplates(final DecompositionTree composition,
                                               final List<String> found) {
-        if (!this.templates.keySet().contains(composition.getLabel())) {
+        if (!this.templates.containsKey(composition.getLabel())) {
             found.add(composition.getLabel());
         }
         for (final DecompositionTree child: composition.getChildren()) {

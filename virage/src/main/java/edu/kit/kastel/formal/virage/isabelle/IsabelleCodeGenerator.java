@@ -335,7 +335,7 @@ public final class IsabelleCodeGenerator {
         String newName = StringUtils.EMPTY;
         final Map<String, String> map =
                 IsabelleTheoryParser.getAllFunctionsAndDefinitions(theory.getCanonicalPath());
-        if (map.keySet().size() != 1) {
+        if (map.size() != 1) {
             throw new IllegalArgumentException();
         }
         for (final String definition: map.keySet()) {
@@ -359,7 +359,7 @@ public final class IsabelleCodeGenerator {
         final List<String> lines = this.reader.readFileByLine(theory);
         for (int i = 0; i < lines.size(); i++) {
             final String line = lines.get(i);
-            if (StringUtils.removeWhitespace(line).equals(END)) {
+            if (END.equals(StringUtils.removeWhitespace(line))) {
                 lines.add(i, result);
                 break;
             }

@@ -5,8 +5,8 @@ import java.io.IOException;
 
 import edu.kit.kastel.formal.util.Pair;
 import edu.kit.kastel.formal.virage.core.ConfigReader;
+import edu.kit.kastel.formal.virage.core.VirageCore;
 import edu.kit.kastel.formal.virage.core.VirageUserInterface;
-import edu.kit.kastel.formal.virage.isabelle.IsabelleProofChecker;
 
 /**
  * A {@link VirageJob} that invokes Isabelle to automatically attempt proof verification.
@@ -15,11 +15,6 @@ import edu.kit.kastel.formal.virage.isabelle.IsabelleProofChecker;
  */
 public final class VirageIsabelleVerifyJob
         extends VirageJobWithExplicitResult<Pair<Boolean, File>> {
-    /**
-     * The checker used to verify the proof.
-     */
-    private IsabelleProofChecker checker;
-
     /**
      * The theory file to be checked.
      */
@@ -59,10 +54,8 @@ public final class VirageIsabelleVerifyJob
 
     @Override
     protected void concreteExecute() throws IOException, InterruptedException {
-        this.checker = this.getExecutingCore().getIsabelleProofChecker();
-
-        this.setResult(this.checker.verifyTheoryFile(this.file,
-                this.getExecutingCore().getFrameworkRepresentation()));
+        final VirageCore core = this.getExecutingCore();
+        this.setResult(core.getIsabelleProofChecker()
+                        .verifyTheoryFile(this.file, core.getFrameworkRepresentation()));
     }
-
 }

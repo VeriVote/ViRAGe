@@ -208,8 +208,7 @@ public final class DecompositionTree {
         int result = 1;
         result = prime * result + this.arity;
         result = prime * result + ((this.children == null) ? 0 : this.children.hashCode());
-        result = prime * result + ((this.label == null) ? 0 : this.label.hashCode());
-        return result;
+        return prime * result + ((this.label == null) ? 0 : this.label.hashCode());
     }
 
     @Override
@@ -217,9 +216,8 @@ public final class DecompositionTree {
         if (this.arity == 0) {
             return this.label;
         } else {
-            String res = this.label;
-            res += StringUtils.parenthesize(StringUtils.printCollection(this.children));
-            return res;
+            return this.label
+                    + StringUtils.parenthesize(StringUtils.printCollection(this.children));
         }
     }
 

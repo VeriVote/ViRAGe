@@ -3,6 +3,7 @@ package edu.kit.kastel.formal.util;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.StringTokenizer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +42,24 @@ public final class ProcessUtils {
     }
 
     /**
+     * Wrapper method for process execution, either strip and escape or simply format.
+     *
+     * @param cmd the command string, multiple ones separated by blanks
+     * @param escape flag for determining whether to strip and escape or not
+     * @return the resulting process
+     * @throws IOException if an I/O error occurs
+     */
+    public static Process exec(final String cmd, final boolean escape) throws IOException {
+        final String command = escape ? StringUtils.stripAndEscape(cmd) : String.format(cmd);
+        final StringTokenizer st = new StringTokenizer(command);
+        final String[] cmdarray = new String[st.countTokens()];
+        for (int i = 0; st.hasMoreTokens(); i++) {
+            cmdarray[i] = st.nextToken();
+        }
+        return new ProcessBuilder(cmdarray).start();
+    }
+
+    /**
      * Executes a terminating command and prints its output to System.out/System.err, respectively.
      * <b>Does not return if the command is non-terminating!</b>
      *
@@ -52,8 +71,7 @@ public final class ProcessUtils {
      */
     public static Output runTerminatingProcess(final String command)
             throws IOException, InterruptedException {
-        final Runtime rt = Runtime.getRuntime();
-        final Process p = rt.exec(StringUtils.stripAndEscape(command));
+        final Process p = exec(command, true);
         final int status = p.waitFor();
         final String stdErr = new String(p.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
         final String stdOut = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);

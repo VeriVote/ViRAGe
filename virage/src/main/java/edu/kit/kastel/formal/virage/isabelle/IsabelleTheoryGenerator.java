@@ -196,7 +196,7 @@ public final class IsabelleTheoryGenerator {
                 // Isabelle expects imports without suffix.
                 originStrings.add(origin.replace(IsabelleUtils.DOT_THY, StringUtils.EMPTY));
             } else {
-                if (origin.equals(ExtendedPrologStrings.UNPROVEN)) {
+                if (ExtendedPrologStrings.UNPROVEN.equals(origin)) {
                     // Proof relies on unproven facts, add a comment explaining this.
                     usingUnprovenFacts = true;
                 }
@@ -209,23 +209,11 @@ public final class IsabelleTheoryGenerator {
         }
         String res = r.toString();
         if (usingUnprovenFacts) {
-            final String star = "*";
-            final String separatorStart = StringUtils.addSpace(star);
-            final String separatorEnd = StringUtils.prefixSpace(star);
-            final String separatorLine =
-                    StringUtils.parenthesize(
-                            StringUtils.repeat(22, StringUtils.addSpace(star)) + star);
             res += System.lineSeparator() + System.lineSeparator()
-                    + separatorLine + System.lineSeparator()
-                    + StringUtils.parenthesize(separatorStart
-                            + "Some proofs appear to rely on facts not yet" + separatorEnd)
-                     + System.lineSeparator()
-                    + StringUtils.parenthesize(separatorStart
-                            + " proven within Isabelle/HOL. Check Isabelle" + separatorEnd)
-                     + System.lineSeparator()
-                    + StringUtils.parenthesize(separatorStart
-                            + "    error messages for more information.   " + separatorEnd)
-                     + System.lineSeparator() + separatorLine;
+                    + StringUtils.isabelleCommentBlock(
+                            "Some proofs appear to rely on facts not yet",
+                            " proven within Isabelle/HOL. Check Isabelle",
+                            "    error messages for more information.   ");
         }
         return res;
     }
@@ -264,8 +252,7 @@ public final class IsabelleTheoryGenerator {
         for (final String type: moduleParamTypesList) {
             moduleParamTypes.append(type);
         }
-        final String moduleParameterTypeString = moduleParamTypes.toString();
-        return moduleParameterTypeString;
+        return moduleParamTypes.toString();
     }
 
     private static Pair<String, String> buildModuleDef(final Map<String, Set<String>> moduleDefMap,
@@ -302,15 +289,14 @@ public final class IsabelleTheoryGenerator {
                                            final String moduleParamTypes, final String moduleName,
                                            final String moduleParameters, final String moduleDef,
                                            final String proofs) {
-        String res = IsabelleTheoryGenerator.theoryTemplate;
-        res = res.replace(VAR_PROOFS, proofs);
-        res = res.replace(VAR_THEORY_NAME, theoryName);
-        res = res.replace(VAR_IMPORTS, imports);
-        res = res.replace(VAR_MODULE_PARAM_TYPES, moduleParamTypes);
-        res = res.replace(VAR_MODULE_DEF, moduleDef);
-        res = res.replace(VAR_MODULE_NAME, moduleName);
-        res = res.replace(VAR_MODULE_PARAMETERS, moduleParameters);
-        return res;
+        return IsabelleTheoryGenerator.theoryTemplate
+                .replace(VAR_PROOFS, proofs)
+                .replace(VAR_THEORY_NAME, theoryName)
+                .replace(VAR_IMPORTS, imports)
+                .replace(VAR_MODULE_PARAM_TYPES, moduleParamTypes)
+                .replace(VAR_MODULE_DEF, moduleDef)
+                .replace(VAR_MODULE_NAME, moduleName)
+                .replace(VAR_MODULE_PARAMETERS, moduleParameters);
     }
 
     /**
@@ -358,7 +344,7 @@ public final class IsabelleTheoryGenerator {
         final Map<String, Set<String>> moduleDefMap =
                 IsabelleUtils.translatePrologToIsabelle(this.functionsAndDefinitions,
                                                         proofPredicate);
-        if (moduleDefMap.keySet().size() != 1) {
+        if (moduleDefMap.size() != 1) {
             throw new IllegalArgumentException();
         }
         final Pair<String, String> moduleDefResult =

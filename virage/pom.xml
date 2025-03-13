@@ -40,19 +40,24 @@
     <skipTests>false</skipTests>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.version>3.8.1</maven.version>
-    <maven.clean.version>3.3.1</maven.clean.version>
-    <maven.install.version>3.1.1</maven.install.version>
-    <maven.jar.version>3.3.0</maven.jar.version>
-    <maven.compiler.release>17</maven.compiler.release>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
-    <jdk.version>17</jdk.version>
-    <scala.version>2.13.12</scala.version>
-    <log4j.version>2.20.0</log4j.version>
-    <spotbugs.version>4.7.3</spotbugs.version>
-    <junit.jupiter.version>5.10.0</junit.jupiter.version>
-    <surefire.version>3.1.2</surefire.version>
+    <maven.version>3.6.3</maven.version>
+    <jdk.version>21</jdk.version>
+    <maven.clean.version>3.4.1</maven.clean.version>
+    <maven.install.version>3.1.4</maven.install.version>
+    <maven.exec.version>3.5.0</maven.exec.version>
+    <maven.jar.version>3.4.2</maven.jar.version>
+    <maven.resources.version>3.3.1</maven.resources.version>
+    <maven.checkstyle.version>3.6.0</maven.checkstyle.version>
+    <maven.buildhelper.version>3.6.0</maven.buildhelper.version>
+    <maven.reports.version>3.9.0</maven.reports.version>
+    <maven.compiler.release>${jdk.version}</maven.compiler.release>
+    <maven.compiler.source>${jdk.version}</maven.compiler.source>
+    <maven.compiler.target>${jdk.version}</maven.compiler.target>
+    <scala.version>2.13.16</scala.version>
+    <log4j.version>2.24.3</log4j.version>
+    <spotbugs.version>4.9.2.0</spotbugs.version>
+    <junit.jupiter.version>5.12.0</junit.jupiter.version>
+    <surefire.version>3.5.2</surefire.version>
     <swi.home.dir>/usr/lib/swi-prolog</swi.home.dir>
     <main.class>edu.kit.kastel.formal.virage.core.VirageMain</main.class>
   </properties>
@@ -108,7 +113,7 @@
     <dependency>
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-suite-engine</artifactId>
-      <version>1.10.0</version>
+      <version>1.12.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -135,22 +140,22 @@
     <dependency>
       <groupId>com.github.SWI-Prolog</groupId>
       <artifactId>packages-jpl</artifactId>
-      <version>V9.1.15</version>
+      <version>V9.3.21</version>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
-      <version>1.5.0</version>
+      <version>1.9.0</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.13.0</version>
+      <version>2.18.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.15.2</version>
+      <version>2.18.3</version>
     </dependency>
     <!-- <dependency> <groupId>com.github.VeriVote</groupId> <artifactId>ViRAGe</artifactId>
       <version>master-SNAPSHOT</version> </dependency> -->
@@ -158,22 +163,22 @@
     <dependency>
       <groupId>de.unruh</groupId>
       <artifactId>scala-isabelle_2.13</artifactId>
-      <version>0.4.2-RC1</version>
+      <version>0.4.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-configuration2</artifactId>
-      <version>2.9.0</version>
+      <version>2.11.0</version>
     </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
-      <version>1.9.4</version>
+      <version>1.10.1</version>
     </dependency>
     <dependency>
       <groupId>com.github.ferstl</groupId>
       <artifactId>depgraph-maven-plugin</artifactId>
-      <version>4.0.2</version>
+      <version>4.0.3</version>
     </dependency>
   </dependencies>
 
@@ -190,6 +195,7 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <executions>
               <execution>
@@ -207,6 +213,14 @@
             </executions>
           </plugin>
         </plugins>
+        <resources>
+          <resource>
+            <directory>${user.home}/.virage/</directory>
+            <includes>
+              <include>settings.properties</include>
+            </includes>
+          </resource>
+        </resources>
       </build>
     </profile>
   </profiles>
@@ -222,12 +236,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>${maven.clean.version}</version>
+        <version>${maven.resources.version}</version>
       </plugin>
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
-        <version>4.8.1</version>
+        <version>4.9.2</version>
         <configuration>
           <scalaVersion>${scala.version}</scalaVersion>
         </configuration>
@@ -251,7 +265,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.11.0</version>
+        <version>3.14.0</version>
+        <configuration>
+          <source>${jdk.version}</source>
+          <target>${jdk.version}</target>
+          <compilerArgument>-Xlint:deprecation</compilerArgument>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -278,7 +297,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.12.1</version>
+        <version>3.21.0</version>
         <configuration>
           <locales>en</locales>
         </configuration>
@@ -286,7 +305,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${maven.jar.version}</version>
+        <version>${maven.checkstyle.version}</version>
         <configuration>
           <configLocation>checks.xml</configLocation>
           <encoding>UTF-8</encoding>
@@ -309,14 +328,14 @@
           <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>10.12.3</version>
+            <version>10.21.4</version>
           </dependency>
         </dependencies>
       </plugin>
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>${spotbugs.version}.5</version>
+        <version>${spotbugs.version}</version>
         <configuration>
           <xmlOutput>true</xmlOutput>
           <failOnError>false</failOnError>
@@ -336,7 +355,7 @@
         <dependencies>
           <dependency>
             <groupId>com.github.spotbugs</groupId>
-            <artifactId>spotbugs</artifactId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
             <version>${spotbugs.version}</version>
           </dependency>
         </dependencies>
@@ -344,7 +363,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>${maven.buildhelper.version}</version>
         <executions>
           <execution>
             <id>add-source</id>
@@ -364,7 +383,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.4.1</version>
+        <version>3.5.0</version>
         <executions>
           <execution>
             <id>enforce-versions</id>
@@ -374,7 +393,7 @@
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.3.9</version>
+                  <version>3.6.3</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>${jdk.version}</version>
@@ -387,7 +406,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
-        <version>2.16.1</version>
+        <version>2.18.0</version>
         <configuration>
           <rulesUri>file:///${basedir}/rules.xml</rulesUri>
           <allowSnapshots>false</allowSnapshots>
@@ -407,7 +426,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>properties-maven-plugin</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
         <executions>
           <execution>
             <id>read-settings</id>
@@ -417,7 +436,7 @@
             </goals>
             <configuration>
               <files>
-                <file>${user.home}/.virage/settings</file>
+                <file>${user.home}/.virage/settings.properties</file>
               </files>
               <!-- settings will not be there on first startup. -->
               <!-- This is fine, as ViRAGe will copy it and enforce a restart if 
@@ -455,7 +474,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>${maven.exec.version}</version>
         <executions>
           <execution>
             <id>execute</id>
@@ -487,7 +506,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>${maven.jar.version}</version>
+        <version>${maven.checkstyle.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -497,12 +516,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.11.2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.4.5</version>
+        <version>${maven.reports.version}</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -525,7 +544,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.7.2.1</version>
+        <version>${spotbugs.version}</version>
         <reportSets>
           <reportSet>
             <reports>
