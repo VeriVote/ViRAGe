@@ -7,7 +7,7 @@
 // via an additional header or via gcc option "-D DEFAULT_X="concrete implementation"",
 // where "concrete implementation" has to be supplied by the user.
 //
-// "V" and "C": These defines specify the number of Voters and Candidates. For SBMC
+// "V" and "C": These defines specify the number of Voters and Alternatives. For SBMC
 // performance, these have to be known at compile time. Default values are 3 and 3,
 // but they have to fit your test instances. If the numbers don't match, segmentation
 // faults and undefined behaviour will occur. Recompile and explicitly set the correct
@@ -26,7 +26,7 @@ result voting_rule(profile input) {
 
   result result_1;
 
-  for(int i=0; i<C; i++) {
+  for (int i = 0; i < C; i++) {
     result_1.values[i] = DEFERRED;
   }
 

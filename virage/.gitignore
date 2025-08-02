@@ -4,4 +4,9 @@
 /.classpath
 /.project
 /.settings/
+/.bloop/
+/.metals/
+/.vscode/
 /src/main/resources/generated/
+/.apt_generated/
+/.apt_generated_tests/

@@ -14,7 +14,7 @@ result parallel_comp_$IDX(profile p, result r) {
 
 // loop_comp
 result loop_comp_$IDX(profile p, result r) {
-	while(!$TERMINATION_CONDITION) {
+	while (!$TERMINATION_CONDITION) {
 	  r = $MODULE_1;
 	}
 
@@ -25,8 +25,8 @@ result loop_comp_$IDX(profile p, result r) {
 // downgrade
 result downgrade_$IDX(profile p, result r) {
 	r = $MODULE_1;
-	for(int i=0; i<C; i++) {
-		if(r.values[i] == ELECTED) {
+	for (int i = 0; i < C; i++) {
+		if (r.values[i] == ELECTED) {
 			r.values[i] = DEFERRED;
 		} else {
 			r.values[i] = REJECTED;

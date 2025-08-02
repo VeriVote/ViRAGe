@@ -277,7 +277,7 @@ next
   thus "False"
     using "0" "1" condorcet_winner.simps dcc IntI empty_iff
           defer_condorcet_consistency_def result_disj
-    by (metis (no_types, hide_lams))
+    by (metis (no_types, opaque_lifting))
 next
   fix
     A :: "'a set" and
@@ -299,7 +299,7 @@ next
   thus "False"
     using "0" "1" dcc defer_condorcet_consistency_def IntI
           Diff_empty Diff_iff finite prof_A result_disj
-    by (metis (no_types, hide_lams))
+    by (metis (no_types, opaque_lifting))
 next
   fix
     A :: "'a set" and
@@ -365,7 +365,7 @@ proof (rule ccontr)
     by metis
   from ccomp have other_side: "w \<notin> reject m A p"
     using condorcet_compatibility_def c_win winner
-    by (metis (no_types, hide_lams))
+    by (metis (no_types, opaque_lifting))
   thus False
     by (simp add: one_side)
 qed

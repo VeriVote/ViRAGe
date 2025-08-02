@@ -2,5 +2,5 @@ These are randomly generated test instances for the voting rule implementations 
 They can be used for both the Scala and C implementations.
 
 The format is as follows:
-The file name gives both the number of voters and candidates, the file XcYv contains a profile with X candidates and Y voters.
-Each line represents a ballot, with candidates separated by ; and ordered from lowest to highest preference (might be counterintuitive).
+The file name gives both the number of voters and alternatives, the file XcYv contains a profile with X alternatives and Y voters.
+Each line represents a ballot, with alternatives separated by ; and ordered from lowest to highest preference (might be counterintuitive).
