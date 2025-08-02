@@ -158,7 +158,7 @@
       <version>2.19.2</version>
     </dependency>
     <!-- <dependency> <groupId>com.github.VeriVote</groupId> <artifactId>ViRAGe</artifactId>
-      <version>master-SNAPSHOT</version> </dependency> -->
+      <version>main-SNAPSHOT</version> </dependency> -->
     <!-- https://mvnrepository.com/artifact/de.unruh/scala-isabelle -->
     <dependency>
       <groupId>de.unruh</groupId>
@@ -308,7 +308,6 @@
         <version>${maven.checkstyle.version}</version>
         <configuration>
           <configLocation>checks.xml</configLocation>
-          <encoding>UTF-8</encoding>
           <consoleOutput>true</consoleOutput>
           <failsOnError>false</failsOnError>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
