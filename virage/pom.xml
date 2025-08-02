@@ -113,7 +113,7 @@
     <dependency>
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-suite-engine</artifactId>
-      <version>1.12.2</version>
+      <version>1.13.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -158,7 +158,7 @@
       <version>2.19.2</version>
     </dependency>
     <!-- <dependency> <groupId>com.github.VeriVote</groupId> <artifactId>ViRAGe</artifactId>
-      <version>master-SNAPSHOT</version> </dependency> -->
+      <version>main-SNAPSHOT</version> </dependency> -->
     <!-- https://mvnrepository.com/artifact/de.unruh/scala-isabelle -->
     <dependency>
       <groupId>de.unruh</groupId>
@@ -308,7 +308,6 @@
         <version>${maven.checkstyle.version}</version>
         <configuration>
           <configLocation>checks.xml</configLocation>
-          <encoding>UTF-8</encoding>
           <consoleOutput>true</consoleOutput>
           <failsOnError>false</failsOnError>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
@@ -346,9 +345,9 @@
               <version>1.12.0</version>
             </plugin>
             <plugin>
-              <groupId>com.mebigfatguy.fb-contrib</groupId>
-              <artifactId>fb-contrib</artifactId>
-              <version>7.4.3</version>
+              <groupId>com.mebigfatguy.sb-contrib</groupId>
+              <artifactId>sb-contrib</artifactId>
+              <version>7.6.12</version>
             </plugin>
           </plugins>
         </configuration>
@@ -393,7 +392,7 @@
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.6.3</version>
+                  <version>3.8.1</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>${jdk.version}</version>
@@ -553,6 +552,27 @@
           </reportSet>
         </reportSets>
       </plugin>
+      <!-- plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.5</version>
+        <configuration>
+          <plugins>
+            <plugin>
+              <groupId>com.mebigfatguy.fb-contrib</groupId>
+              <artifactId>fb-contrib</artifactId>
+              <version>7.6.12</version>
+            </plugin>
+          </plugins>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin -->
     </plugins>
   </reporting>
 </project>

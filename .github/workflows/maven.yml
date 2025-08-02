@@ -9,6 +9,9 @@
 # documentation.
 
 name: Java CI with Maven
+permissions:
+  contents: read
+  checks: write
 
 on:
   workflow_dispatch:
@@ -26,7 +29,7 @@ jobs:
         working-directory: ./virage
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Set up JDK 21
       uses: actions/setup-java@v3
       with:
@@ -55,7 +58,7 @@ jobs:
 
     # Optional: Uploads the full dependency graph to GitHub to improve
     # the quality of Dependabot alerts this repository can receive
-    - name: Update dependency graph
-      uses: advanced-security/maven-dependency-submission-action@v1
-      with:
-        directory: ./virage
+    # - name: Update dependency graph
+    #   uses: advanced-security/maven-dependency-submission-action@v1
+    #   with:
+    #     directory: ./virage
